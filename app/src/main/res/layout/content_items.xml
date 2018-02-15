@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context="co.edu.uniquindio.campusuq.activity.ItemsActivity">
+
+    <TextView
+        android:id="@+id/message_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:text="Seleccionar items"
+        android:textColor="@android:color/black"
+        android:textSize="12dp" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/items_recycler_view"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="@dimen/items_recycler_right_margin"
+        android:layout_marginBottom="@dimen/items_recycler_bottom_margin"/>
+
+</LinearLayout>

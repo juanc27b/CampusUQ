@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Campus UQ</string>
+
+    <string name="app_title_menu">Menu</string>
+
+    <string name="search_hint">Search items</string>
+
+    <string name="information_module">Information</string>
+    <string name="events">Events</string>
+    <string name="events_description"></string>
+    <string name="news">News</string>
+    <string name="news_description"></string>
+    <string name="institution">Institution</string>
+    <string name="institution_description"></string>
+    <string name="directory">Phone directory</string>
+    <string name="directory_description"></string>
+    <string name="academic_offer">Academic offer</string>
+    <string name="academic_offer_description"></string>
+    <string name="academic_calendar">Academic calendar</string>
+    <string name="academic_calendar_description"></string>
+    <string name="employment_exchange">Employment exchange</string>
+    <string name="employment_exchange_description"></string>
+    <string name="institutional_welfare">Institutional welfare</string>
+    <string name="institutional_welfare_description"></string>
+
+    <string name="services_module">Services</string>
+    <string name="university_map">University map</string>
+    <string name="university_map_description"></string>
+    <string name="library_services">Library services</string>
+    <string name="library_services_description"></string>
+    <string name="radio">Institutional radio</string>
+    <string name="radio_description"></string>
+    <string name="pqrsd_system">Claims and complaints</string>
+    <string name="pqrsd_system_description"></string>
+    <string name="lost_objects">Lost objects</string>
+    <string name="lost_objects_description"></string>
+    <string name="security_system">Security system</string>
+    <string name="security_system_description"></string>
+
+    <string name="state_module">State</string>
+    <string name="restaurant">Restaurant menu</string>
+    <string name="restaurant_description"></string>
+    <string name="billboard_information">Billboard information</string>
+    <string name="billboard_information_description"></string>
+    <string name="computer_rooms">Computer rooms</string>
+    <string name="computer_rooms_description"></string>
+    <string name="parking_lots">Parking lots</string>
+    <string name="parking_lots_description"></string>
+
+    <string name="communication_module">Communication</string>
+    <string name="institutional_mail">Institutional mail</string>
+    <string name="institutional_mail_description"></string>
+    <string name="web_page">Web page</string>
+    <string name="web_page_description"></string>
+    <string name="ecotic">Ecotic</string>
+    <string name="ecotic_description"></string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_change_language">Change language</string>
+    <string name="action_adjust_notifications">Adjust notifications</string>
+    <string name="action_delete_history">Delete history</string>
+    <string name="action_login_as_administrator">Login as administrator</string>
+
+    <string name="loading_content">Loading content</string>
+    <string name="please_wait">Please wait ...</string>
+
+</resources>

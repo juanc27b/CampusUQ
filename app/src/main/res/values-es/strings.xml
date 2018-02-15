@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Campus UQ</string>
+
+    <string name="app_title_menu">Menú</string>
+
+    <string name="search_hint">Buscar ítems</string>
+
+    <string name="information_module">Información</string>
+    <string name="events">Eventos</string>
+    <string name="events_description">Ver y compartir los eventos de la Universidad del Quindío</string>
+    <string name="news">Noticias</string>
+    <string name="news_description">Ver y compartir las noticias de la Universidad del Quindío</string>
+    <string name="institution">Institución</string>
+    <string name="institution_description">Ver la misión, visión, política de calidad, ejes estratégicos y símbolos de la UQ</string>
+    <string name="directory">Directorio telefónico</string>
+    <string name="directory_description">Ver información de contacto de las dependencias y funcionarios de la UQ</string>
+    <string name="academic_offer">Oferta académica</string>
+    <string name="academic_offer_description">Consultar el perfil ocupacional y el plan de estudios de los programas</string>
+    <string name="academic_calendar">Calendario académico</string>
+    <string name="academic_calendar_description">Ver la programación de los eventos académicos de la Universidad</string>
+    <string name="employment_exchange">Bolsa de empleo</string>
+    <string name="employment_exchange_description">Ingresar al portal de empleos de la Universidad del Quindío</string>
+    <string name="institutional_welfare">Bienestar institucional</string>
+    <string name="institutional_welfare_description">Consultar la oferta de cursos deportivos y culturales de la UQ</string>
+
+    <string name="services_module">Servicios</string>
+    <string name="university_map">Mapa de la universidad</string>
+    <string name="university_map_description">Orientarse dentro de la Universidad mediante un mapa con indicaciones</string>
+    <string name="library_services">Servicios de biblioteca</string>
+    <string name="library_services_description">Acceder al repositorio digital, al catálogo público y a las bases de datos</string>
+    <string name="radio">Emisora institucional</string>
+    <string name="radio_description">Escuchar la emisora de la Universidad "La UFM Estéreo" 102.1 FM</string>
+    <string name="pqrsd_system">Sistema PQRSD</string>
+    <string name="pqrsd_system_description">Realizar peticiones, quejas, reclamos, solicitudes y denuncias a la Universidad</string>
+    <string name="lost_objects">Objetos perdidos</string>
+    <string name="lost_objects_description">Consultar y reportar objetos perdidos dentro de la Universidad</string>
+    <string name="security_system">Sistema de seguridad</string>
+    <string name="security_system_description">Consultar y reportar emergencias, robos y otros incidentes</string>
+
+    <string name="state_module">Estado</string>
+    <string name="restaurant">Menú del restaurante</string>
+    <string name="restaurant_description">Ver el menú del restaurante de la Universidad, detalles y precios</string>
+    <string name="billboard_information">Información de cartelera</string>
+    <string name="billboard_information_description">Ver y compartir la información publicada en cartelera</string>
+    <string name="computer_rooms">Salas de cómputo</string>
+    <string name="computer_rooms_description">Consultar la disponibilidad de las salas e cómputo de la Universidad</string>
+    <string name="parking_lots">Parqueaderos</string>
+    <string name="parking_lots_description">Consultar la disponibilidad de los estacionamientos de la Universidad</string>
+
+    <string name="communication_module">Comunicación</string>
+    <string name="institutional_mail">Correo institucional</string>
+    <string name="institutional_mail_description">Leer y escribir correos desde la cuenta de correo institucional</string>
+    <string name="web_page">Página web</string>
+    <string name="web_page_description">Ingresar a la página web de la Universidad del Quindío</string>
+    <string name="ecotic">Ecotic</string>
+    <string name="ecotic_description">Ingresar al sistema ECOTIC de la Universidad del Quindío</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_change_language">Cambiar idioma</string>
+    <string name="action_adjust_notifications">Ajustar notificaciones</string>
+    <string name="action_delete_history">Eliminar historial</string>
+    <string name="action_login_as_administrator">Ingresar como administrador</string>
+
+    <string name="loading_content">Cargando conteido</string>
+    <string name="please_wait">Por favor espere ...</string>
+
+</resources>

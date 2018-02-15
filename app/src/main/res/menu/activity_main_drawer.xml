@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <item android:title="@string/information_module">
+        <menu>
+            <item
+                android:id="@+id/nav_events"
+                android:icon="@drawable/ic_menu_events"
+                android:title="@string/events" />
+            <item
+                android:id="@+id/nav_news"
+                android:icon="@drawable/ic_menu_news"
+                android:title="@string/news" />
+            <item
+                android:id="@+id/nav_institution"
+                android:icon="@drawable/ic_menu_institution"
+                android:title="@string/institution" />
+            <item
+                android:id="@+id/nav_directory"
+                android:icon="@drawable/ic_menu_directory"
+                android:title="@string/directory" />
+            <item
+                android:id="@+id/nav_academic_offer"
+                android:icon="@drawable/ic_menu_academic_offer"
+                android:title="@string/academic_offer" />
+            <item
+                android:id="@+id/nav_academic_calendar"
+                android:icon="@drawable/ic_menu_academic_calendar"
+                android:title="@string/academic_calendar" />
+            <item
+                android:id="@+id/nav_employment_exchange"
+                android:icon="@drawable/ic_menu_employment_exchange"
+                android:title="@string/employment_exchange" />
+            <item
+                android:id="@+id/nav_institutional_welfare"
+                android:icon="@drawable/ic_menu_institutional_welfare"
+                android:title="@string/institutional_welfare" />
+        </menu>
+    </item>
+
+    <item android:title="@string/services_module">
+        <menu>
+            <item
+                android:id="@+id/nav_university_map"
+                android:icon="@drawable/ic_menu_university_map"
+                android:title="@string/university_map" />
+            <item
+                android:id="@+id/nav_library_services"
+                android:icon="@drawable/ic_menu_library_services"
+                android:title="@string/library_services" />
+            <item
+                android:id="@+id/nav_radio"
+                android:icon="@drawable/ic_menu_radio"
+                android:title="@string/radio" />
+            <item
+                android:id="@+id/nav_pqrsd_system"
+                android:icon="@drawable/ic_menu_pqrsd_system"
+                android:title="@string/pqrsd_system" />
+            <item
+                android:id="@+id/nav_lost_objects"
+                android:icon="@drawable/ic_menu_lost_objects"
+                android:title="@string/lost_objects" />
+            <item
+                android:id="@+id/nav_security_system"
+                android:icon="@drawable/ic_menu_security_system"
+                android:title="@string/security_system" />
+        </menu>
+    </item>
+
+    <item android:title="@string/state_module">
+        <menu>
+            <item
+                android:id="@+id/nav_restaurant"
+                android:icon="@drawable/ic_menu_restaurant"
+                android:title="@string/restaurant" />
+            <item
+                android:id="@+id/nav_billboard_information"
+                android:icon="@drawable/ic_menu_billboard_information"
+                android:title="@string/billboard_information" />
+            <item
+                android:id="@+id/nav_computer_rooms"
+                android:icon="@drawable/ic_menu_computer_rooms"
+                android:title="@string/computer_rooms" />
+            <item
+                android:id="@+id/nav_parking_lots"
+                android:icon="@drawable/ic_menu_parking_lots"
+                android:title="@string/parking_lots" />
+        </menu>
+    </item>
+
+    <item android:title="@string/communication_module">
+        <menu>
+            <item
+                android:id="@+id/nav_institutional_mail"
+                android:icon="@drawable/ic_menu_institutional_mail"
+                android:title="@string/institutional_mail" />
+            <item
+                android:id="@+id/nav_web_page"
+                android:icon="@drawable/ic_menu_web_page"
+                android:title="@string/web_page" />
+            <item
+                android:id="@+id/nav_ecotic"
+                android:icon="@drawable/ic_menu_ecotic"
+                android:title="@string/ecotic" />
+        </menu>
+    </item>
+
+</menu>
