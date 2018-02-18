@@ -147,13 +147,16 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+        Intent intent;
         int id = item.getItemId();
         switch(id) {
             case R.id.nav_events:
-
+                intent = new Intent(MainActivity.this, NewsActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.events));
+                MainActivity.this.startActivity(intent);
                 break;
             case R.id.nav_news:
-                Intent intent = new Intent(MainActivity.this, NewsActivity.class);
+                intent = new Intent(MainActivity.this, NewsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.news));
                 MainActivity.this.startActivity(intent);
                 break;
@@ -176,13 +179,17 @@ public class MainActivity extends AppCompatActivity
 
                 break;
             case R.id.nav_university_map:
-
+                intent = new Intent(MainActivity.this, MapsActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.university_map));
+                MainActivity.this.startActivity(intent);
                 break;
             case R.id.nav_library_services:
 
                 break;
             case R.id.nav_radio:
-
+                intent = new Intent(MainActivity.this, RadioActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.radio));
+                MainActivity.this.startActivity(intent);
                 break;
             case R.id.nav_lost_objects:
 

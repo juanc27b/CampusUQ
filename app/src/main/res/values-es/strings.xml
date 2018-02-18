@@ -56,6 +56,8 @@
     <string name="ecotic">Ecotic</string>
     <string name="ecotic_description">Ingresar al sistema ECOTIC de la Universidad del Quindío</string>
 
+    <string name="news_detail">Detalle de noticia</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -66,5 +68,13 @@
 
     <string name="loading_content">Cargando conteido</string>
     <string name="please_wait">Por favor espere ...</string>
+
+    <string name="change_to_mapview">Cambiar a vista de mapa</string>
+    <string name="change_to_streetview">Cambiar a vista de calle</string>
+
+    <string name="radio_title">Emisora La UFM Estéreo 102.1</string>
+    <string name="radio_notification_id">Campus UQ</string>
+    <string name="radio_notification_name">La UFM UQ Estéreo</string>
+    <string name="radio_notification_description">Emisora Institucional</string>
 
 </resources>

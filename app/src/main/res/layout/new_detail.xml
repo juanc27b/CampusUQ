@@ -49,40 +49,56 @@
                 android:orientation="horizontal"
                 android:layout_marginTop="5dp">
 
-                <ImageView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_date"/>
+                    android:orientation="horizontal"
+                    android:layout_weight="1">
 
-                <TextView
-                    android:id="@+id/new_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:layout_marginLeft="5dp"
-                    android:text="Date"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="12dp" />
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_date"/>
 
-                <ImageView
+                    <TextView
+                        android:id="@+id/new_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_marginLeft="5dp"
+                        android:text="Date"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="12dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:scaleType="centerInside"
-                    android:layout_marginLeft="10dp"
-                    android:src="@drawable/ic_person"/>
+                    android:orientation="horizontal"
+                    android:layout_weight="1">
 
-                <TextView
-                    android:id="@+id/new_author"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:layout_marginLeft="5dp"
-                    android:text="Author"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="12dp" />
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerInside"
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/ic_person"/>
+
+                    <TextView
+                        android:id="@+id/new_author"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_marginLeft="5dp"
+                        android:text="Author"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="12dp" />
+
+                </LinearLayout>
 
             </LinearLayout>
 

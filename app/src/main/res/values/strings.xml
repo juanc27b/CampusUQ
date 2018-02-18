@@ -55,6 +55,8 @@
     <string name="ecotic">Ecotic</string>
     <string name="ecotic_description">Ingresar al sistema ECOTIC de la Universidad del Quindío</string>
 
+    <string name="news_detail">Detalle de noticia</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -66,8 +68,57 @@
     <string name="loading_content">Cargando conteido</string>
     <string name="please_wait">Por favor espere ...</string>
 
+    <string name="change_to_mapview">Cambiar a vista de mapa</string>
+    <string name="change_to_streetview">Cambiar a vista de calle</string>
+
+    <string name="marker_a1">Edificio Administrativo 1</string>
+    <string name="marker_a2">Edificio Administrativo 2</string>
+    <string name="marker_b1">Ciencias Básicas</string>
+    <string name="marker_b2">Auditorio de Ciencias Básicas</string>
+    <string name="marker_b3">Biblioteca Infantil</string>
+    <string name="marker_b4">Precooperativa Juvenil</string>
+    <string name="marker_b5">Interdisciplinario de las Ciencias</string>
+    <string name="marker_b6">Edificio Aulas 50 Años</string>
+    <string name="marker_b7">Laboratorio de Suelos</string>
+    <string name="marker_b8">Laboratorio de Bioterio</string>
+    <string name="marker_b9">Jardin Botánico</string>
+    <string name="marker_b10">Futuro desarrollo</string>
+    <string name="marker_b11">Finca la Aldana</string>
+    <string name="marker_b12">Centro de Acopio</string>
+    <string name="marker_b13">Lombricultivo y Lobricultura</string>
+    <string name="marker_c1">Coliseo</string>
+    <string name="marker_c2">Bienestar Universitario</string>
+    <string name="marker_c3">Cafetería</string>
+    <string name="marker_c4">Canchas Múltiples</string>
+    <string name="marker_c5">Piscina</string>
+    <string name="marker_c6">Camerinos</string>
+    <string name="marker_c7">Cancha de Fútbol</string>
+    <string name="marker_c8">Futuro desarrollo</string>
+    <string name="marker_c9">Teatrino y Mediatorta</string>
+    <string name="marker_c10">Centro de Salud</string>
+    <string name="marker_d1">Futuro desarrollo</string>
+    <string name="marker_d2">Facultad de Ciencias de la Salud</string>
+    <string name="marker_d3">Laboratorio Biomédicas</string>
+    <string name="marker_d4">Facultad de Ingeniería</string>
+    <string name="marker_e1">Capilla Universitaria</string>
+    <string name="marker_e2">Zona de Estudio</string>
+    <string name="marker_e3">Biblioteca Euclides Jaramillo</string>
+    <string name="marker_e4">Auditorio Euclides Jaramillo</string>
+    <string name="marker_f1">Facultad de Educación</string>
+    <string name="marker_f2">Ciencias Económicas y Administrativas</string>
+    <string name="marker_f3">Facultad de Ciencias Económicas</string>
+    <string name="marker_f4">Planta Piloto</string>
+    <string name="marker_f5">Facultad de Ciencias Agroindustriales</string>
+    <string name="marker_f6">Laboratorio de Post Cosecha</string>
+    <string name="marker_f7">Futuro desarrollo</string>
+    <string name="marker_f8">Futuro desarrollo</string>
+
+    <string name="radio_title">Emisora La UFM Estéreo 102.1</string>
+    <string name="radio_notification_id">Campus UQ</string>
+    <string name="radio_notification_name">La UFM UQ Estéreo</string>
+    <string name="radio_notification_description">Emisora Institucional</string>
+
     <string name="facebook_app_id">291424651384761</string>
     <string name="fb_login_protocol_scheme">fb291424651384761</string>
-    <string name="title_activity_maps">Map</string>
 
 </resources>

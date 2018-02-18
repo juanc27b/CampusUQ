@@ -36,7 +36,7 @@ public class NewsSQLiteController {
 
     public static String createTable(){
         String crearTabla = "CREATE TABLE ? ( ? INTEGER PRIMARY KEY, " +
-                "? TEXT NOT NULL UNIQUE, ? TEXT NOT NULL, ? TEXT NOT NULL, ? TEXT NOT NULL, " +
+                "? TEXT NOT NULL, ? TEXT NOT NULL, ? TEXT NOT NULL, ? TEXT NOT NULL, " +
                 "? TEXT NOT NULL, ? TEXT NOT NULL, ? TEXT NOT NULL)";
         StringBuilder builder = new StringBuilder(crearTabla);
         builder.replace(builder.indexOf("?"), crearTabla.indexOf("?") + 1, NOMBRE_TABLA);
@@ -73,7 +73,7 @@ public class NewsSQLiteController {
     }
 
     public void insert(String... campos) {
-        String insertar = "INSERT INTO ? (?,?,?,?,?,?,?,?) VALUES ( '?', '?', '?', '?', '?', '?', '?', '?' )";
+        String insertar = "INSERT INTO ? (?,?,?,?,?,?,?,?) VALUES (?,?,?,?,?,?,?,?)";
         StringBuilder builder = new StringBuilder(insertar);
         builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, NOMBRE_TABLA);
         builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[0]);
@@ -84,38 +84,38 @@ public class NewsSQLiteController {
         builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[5]);
         builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[6]);
         builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[7]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[0]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[1]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[2]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[3]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[4]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[5]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[6]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[7]);
-        db.execSQL(builder.toString());
+        db.execSQL(builder.toString(), new String[] {
+                campos[0],
+                campos[1],
+                campos[2],
+                campos[3],
+                campos[4],
+                campos[5],
+                campos[6],
+                campos[7]
+        });
     }
 
     public void update(String... campos) {
-        String insertar = "UPDATE ? SET ?='?', ?='?', ?='?', ?='?', ?='?', ?='?', ?='?' WHERE ? = '?'";
-        StringBuilder builder = new StringBuilder(insertar);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, NOMBRE_TABLA);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[1]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[1]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[2]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[2]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[3]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[3]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[4]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[4]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[5]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[5]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[6]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[6]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[7]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[7]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[0]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[0]);
-        db.execSQL(builder.toString());
+        String update = "UPDATE "+NOMBRE_TABLA+" SET ?=?,?=?,?=?,?=?,?=?,?=?,?=? WHERE ? = ?";
+        StringBuilder builder = new StringBuilder(update);
+        int offset = builder.indexOf("?");
+        for (int i = 1; i < 8; i++) {
+            builder.replace(offset, offset+1, CAMPOS_TABLA[i]);
+            offset = builder.indexOf("?", offset)+2;
+        }
+        offset = offset+6;
+        builder.replace(offset, offset+1, CAMPOS_TABLA[0]);
+        db.execSQL(builder.toString(), new String[] {
+                campos[1],
+                campos[2],
+                campos[3],
+                campos[4],
+                campos[5],
+                campos[6],
+                campos[7],
+                campos[0]
+        });
     }
 
     public void delete(String id) {
@@ -154,24 +154,17 @@ public class NewsSQLiteController {
     }
 
     public void insertCategory(String... campos) {
-        String insertar = "INSERT INTO ? (?,?,?) VALUES ( '?', '?', '?' )";
+        String insertar = "INSERT INTO ? (?,?,?) VALUES (?,?,?)";
         StringBuilder builder = new StringBuilder(insertar);
         builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, NOMBRE_CATEGORIA);
         builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_CATEGORIA[0]);
         builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_CATEGORIA[1]);
         builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_CATEGORIA[2]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[0]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[1]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[1]);
-        db.execSQL(builder.toString());
-    }
-
-    public void deleteCategory(String id) {
-        StringBuilder builder = new StringBuilder("DELETE FROM ? WHERE ? = '?'");
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, NOMBRE_CATEGORIA);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_CATEGORIA[0]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, id);
-        db.execSQL(builder.toString());
+        db.execSQL(builder.toString(), new String[] {
+                campos[0],
+                campos[1],
+                campos[2]
+        });
     }
 
     public static String createRelationTable(){
@@ -208,24 +201,15 @@ public class NewsSQLiteController {
     }
 
     public void insertRelation(String... campos) {
-        String insertar = "INSERT INTO ? (?,?) VALUES ( '?', '?' )";
+        String insertar = "INSERT INTO ? (?,?) VALUES (?,?)";
         StringBuilder builder = new StringBuilder(insertar);
         builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, NOMBRE_RELACION);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_RELACION[1]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_RELACION[2]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[0]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, campos[1]);
-        db.execSQL(builder.toString());
-    }
-
-    public void deleteRelation(String categoryId, String newId) {
-        StringBuilder builder = new StringBuilder("DELETE FROM ? WHERE ? = '?' AND ? = '?'");
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, NOMBRE_RELACION);
         builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_RELACION[0]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, categoryId);
         builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_RELACION[1]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, newId);
-        db.execSQL(builder.toString());
+        db.execSQL(builder.toString(), new String[] {
+                campos[0],
+                campos[1]
+        });
     }
 
 }

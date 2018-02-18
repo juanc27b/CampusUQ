@@ -110,12 +110,15 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
 
     @Override
     public void onItemClick(int pos) {
+        Intent intent;
         switch(items.get(pos).getTitle()) {
             case R.string.events:
-
+                intent = new Intent(ItemsActivity.this, NewsActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.events));
+                ItemsActivity.this.startActivity(intent);
                 break;
             case R.string.news:
-                Intent intent = new Intent(ItemsActivity.this, NewsActivity.class);
+                intent = new Intent(ItemsActivity.this, NewsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.news));
                 ItemsActivity.this.startActivity(intent);
                 break;
@@ -138,13 +141,17 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
 
                 break;
             case R.string.university_map:
-
+                intent = new Intent(ItemsActivity.this, MapsActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.university_map));
+                ItemsActivity.this.startActivity(intent);
                 break;
             case R.string.library_services:
 
                 break;
             case R.string.radio:
-
+                intent = new Intent(ItemsActivity.this, RadioActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.radio));
+                ItemsActivity.this.startActivity(intent);
                 break;
             case R.string.pqrsd_system:
 

@@ -16,14 +16,6 @@ import java.security.NoSuchAlgorithmException;
 
 public class Utilities {
 
-    public final static String URL_SERVICIO =
-            "http://10.0.2.2:3000/api/peliculas";
-
-    public static final int LISTAR_PELICULAS = 1;
-    public static final int AGREGAR_PELICULA= 2;
-    public static final int MODIFICAR_PELICULA = 3;
-    public static final int ELIMINAR_PELICULA = 4;
-
     public static final String NOMBRE_BD = "Campus_UQ";
 
 

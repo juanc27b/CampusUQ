@@ -3,12 +3,16 @@ package co.edu.uniquindio.campusuq.util;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
+import org.apache.commons.text.StringEscapeUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.vo.New;
+import co.edu.uniquindio.campusuq.vo.NewCategory;
+import co.edu.uniquindio.campusuq.vo.NewRelation;
 import cz.msebera.android.httpclient.HttpResponse;
 import cz.msebera.android.httpclient.client.HttpClient;
 import cz.msebera.android.httpclient.client.methods.HttpDelete;
@@ -24,17 +28,36 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 
 public class NewsServiceController {
 
-    public static ArrayList<New> getNews(){
+    public final static String URL_SERVICIO = "https://campus-uq.000webhostapp.com";
+
+    public static ArrayList<New> getNews(String idNew) {
+        String url = URL_SERVICIO+"/noticias";
+        if (idNew != null) {
+            url += idNew;
+        }
         ArrayList<New> news = new ArrayList<New>();
         HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO);
-        request.setHeader("content-type", "application/json");
+        HttpGet request = new HttpGet(url);
+        request.setHeader("Content-Type", "application/json; Charset=UTF-8");
+        request.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
         try {
             HttpResponse resp = httpClient.execute(request);
-            String respStr = EntityUtils.toString(resp.getEntity());
-            Gson gson = new Gson();
-            Type listType = new TypeToken<ArrayList<New>>(){}.getType();
-            news = gson.fromJson(respStr, listType);
+            String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
+            JSONObject json = new JSONObject(respStr);
+            JSONArray array = json.getJSONArray("datos");
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject object = array.getJSONObject(i);
+                String id = StringEscapeUtils.unescapeHtml4(object.getString("ID"));
+                String name = StringEscapeUtils.unescapeHtml4(object.getString("Nombre"));
+                String link = StringEscapeUtils.unescapeHtml4(object.getString("Enlace"));
+                String image = StringEscapeUtils.unescapeHtml4(object.getString("Imagen"));
+                String summary = StringEscapeUtils.unescapeHtml4(object.getString("Resumen"));
+                String content = StringEscapeUtils.unescapeHtml4(object.getString("Contenido"));
+                String date = StringEscapeUtils.unescapeHtml4(object.getString("Fecha"));
+                String author = StringEscapeUtils.unescapeHtml4(object.getString("Autor"));
+                New mNew = new New(id, name, link, image, summary, content, date, author);
+                news.add(mNew);
+            }
         } catch (Exception e) {
             Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
             return null;
@@ -42,9 +65,65 @@ public class NewsServiceController {
         return news;
     }
 
+    public static ArrayList<NewCategory> getNewCategories() {
+        String url = URL_SERVICIO+"/noticia_categorias";
+        ArrayList<NewCategory> categories = new ArrayList<NewCategory>();
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet request = new HttpGet(url);
+        request.setHeader("Content-Type", "application/json; Charset=UTF-8");
+        request.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
+        try {
+            HttpResponse resp = httpClient.execute(request);
+            String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
+            JSONObject json = new JSONObject(respStr);
+            JSONArray array = json.getJSONArray("datos");
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject object = array.getJSONObject(i);
+                String id = StringEscapeUtils.unescapeHtml4(object.getString("ID"));
+                String name = StringEscapeUtils.unescapeHtml4(object.getString("Nombre"));
+                String link = StringEscapeUtils.unescapeHtml4(object.getString("Enlace"));
+                NewCategory category = new NewCategory(id, name, link);
+                categories.add(category);
+            }
+        } catch (Exception e) {
+            Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
+            return null;
+        }
+        return categories;
+    }
+
+    public static ArrayList<NewRelation> getNewRelations(String idNew) {
+        String url = URL_SERVICIO+"/noticia_relaciones";
+        if (idNew != null) {
+            url += "/" + idNew;
+        }
+        ArrayList<NewRelation> relations = new ArrayList<NewRelation>();
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet request = new HttpGet(url);
+        request.setHeader("Content-Type", "application/json; Charset=UTF-8");
+        request.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
+        try {
+            HttpResponse resp = httpClient.execute(request);
+            String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
+            JSONObject json = new JSONObject(respStr);
+            JSONArray array = json.getJSONArray("datos");
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject object = array.getJSONObject(i);
+                String categoria_id = StringEscapeUtils.unescapeHtml4(object.getString("Categoria_ID"));
+                String noticia_id = StringEscapeUtils.unescapeHtml4(object.getString("Noticia_ID"));
+                NewRelation relation = new NewRelation(categoria_id, noticia_id);
+                relations.add(relation);
+            }
+        } catch (Exception e) {
+            Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
+            return null;
+        }
+        return relations;
+    }
+
     public static New addNew(String json) {
         HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpPost post = new HttpPost(Utilities.URL_SERVICIO);
+        HttpPost post = new HttpPost(URL_SERVICIO);
         post.setHeader("content-type", "application/json");
         New mNew = null;
         try {
@@ -62,7 +141,7 @@ public class NewsServiceController {
 
     public static New deleteNew(String id) {
         HttpClient client = HttpClientBuilder.create().build();
-        HttpDelete delete = new HttpDelete(Utilities.URL_SERVICIO + "/" + id);
+        HttpDelete delete = new HttpDelete(URL_SERVICIO + "/" + id);
         delete.setHeader("content-type", "application/json");
         try {
             HttpResponse response = client.execute(delete);

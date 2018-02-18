@@ -56,6 +56,8 @@
     <string name="ecotic">Ecotic</string>
     <string name="ecotic_description"></string>
 
+    <string name="news_detail">News detail</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -66,5 +68,13 @@
 
     <string name="loading_content">Loading content</string>
     <string name="please_wait">Please wait ...</string>
+
+    <string name="change_to_mapview">Change to map view</string>
+    <string name="change_to_streetview">Change to street view</string>
+
+    <string name="radio_title">Radio La UFM Estéreo 102.1</string>
+    <string name="radio_notification_id">Campus UQ</string>
+    <string name="radio_notification_name">La UFM UQ Estéreo</string>
+    <string name="radio_notification_description">Institutional Radio</string>
 
 </resources>
