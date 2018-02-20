@@ -26,6 +26,7 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
     public ArrayList<Item> servicesItems;
     public ArrayList<Item> stateItems;
     public ArrayList<Item> communicationItems;
+    public ArrayList<Item> libraryItems;
 
     public ArrayList<Item> items;
     public int[] circleColors;
@@ -104,6 +105,7 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
             }
         } else if (mAdapter != null) {
             String category = intent.getStringExtra("CATEGORY");
+            getSupportActionBar().setTitle(category);
             setItems(category, true);
         }
     }
@@ -135,7 +137,9 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
 
                 break;
             case R.string.employment_exchange:
-
+                intent = new Intent(ItemsActivity.this, WebActivity.class);
+                intent.putExtra("URL", getString(R.string.employment_exchange_url));
+                ItemsActivity.this.startActivity(intent);
                 break;
             case R.string.institutional_welfare:
 
@@ -146,7 +150,9 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
                 ItemsActivity.this.startActivity(intent);
                 break;
             case R.string.library_services:
-
+                intent = new Intent(ItemsActivity.this, ItemsActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.library_services));
+                ItemsActivity.this.startActivity(intent);
                 break;
             case R.string.radio:
                 intent = new Intent(ItemsActivity.this, RadioActivity.class);
@@ -154,7 +160,9 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
                 ItemsActivity.this.startActivity(intent);
                 break;
             case R.string.pqrsd_system:
-
+                intent = new Intent(ItemsActivity.this, WebActivity.class);
+                intent.putExtra("URL", getString(R.string.pqrsd_system_url));
+                ItemsActivity.this.startActivity(intent);
                 break;
             case R.string.lost_objects:
 
@@ -178,10 +186,29 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
 
                 break;
             case R.string.web_page:
-
+                intent = new Intent(ItemsActivity.this, WebActivity.class);
+                intent.putExtra("URL", getString(R.string.web_page_url));
+                ItemsActivity.this.startActivity(intent);
                 break;
             case R.string.ecotic:
-
+                intent = new Intent(ItemsActivity.this, WebActivity.class);
+                intent.putExtra("URL", getString(R.string.ecotic_url));
+                ItemsActivity.this.startActivity(intent);
+                break;
+            case R.string.digital_repository:
+                intent = new Intent(ItemsActivity.this, WebActivity.class);
+                intent.putExtra("URL", getString(R.string.digital_repository_url));
+                ItemsActivity.this.startActivity(intent);
+                break;
+            case R.string.public_catalog:
+                intent = new Intent(ItemsActivity.this, WebActivity.class);
+                intent.putExtra("URL", getString(R.string.public_catalog_url));
+                ItemsActivity.this.startActivity(intent);
+                break;
+            case R.string.databases:
+                intent = new Intent(ItemsActivity.this, WebActivity.class);
+                intent.putExtra("URL", getString(R.string.databases_url));
+                ItemsActivity.this.startActivity(intent);
                 break;
             default:
                 break;
@@ -198,6 +225,8 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
             this.items = stateItems != null ? stateItems : getStateItems();
         } else if (category.equals(getString(R.string.communication_module))) {
             this.items = communicationItems != null ? communicationItems : getCommunicationItems();
+        } else if (category.equals(getString(R.string.library_services))) {
+            this.items = libraryItems != null ? libraryItems : getLibraryItems();
         }
         if (oldActivity) {
             mAdapter.setItems(this.items);
@@ -264,6 +293,17 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         communicationItems.add(
                 new Item(getColor(), R.drawable.ic_menu_ecotic, R.string.ecotic, R.string.ecotic_description));
         return communicationItems;
+    }
+
+    public ArrayList<Item> getLibraryItems() {
+        libraryItems = new ArrayList<Item>();
+        libraryItems.add(
+                new Item(getColor(), R.drawable.ic_digital_repository, R.string.digital_repository, R.string.digital_repository_description));
+        libraryItems.add(
+                new Item(getColor(), R.drawable.ic_public_catalog, R.string.public_catalog, R.string.public_catalog_description));
+        libraryItems.add(
+                new Item(getColor(), R.drawable.ic_databases, R.string.databases, R.string.databases_description));
+        return libraryItems;
     }
 
     public int getColor() {

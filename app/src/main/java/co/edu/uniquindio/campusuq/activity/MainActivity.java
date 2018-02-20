@@ -173,7 +173,9 @@ public class MainActivity extends AppCompatActivity
 
                 break;
             case R.id.nav_employment_exchange:
-
+                intent = new Intent(MainActivity.this, WebActivity.class);
+                intent.putExtra("URL", getString(R.string.employment_exchange_url));
+                MainActivity.this.startActivity(intent);
                 break;
             case R.id.nav_institutional_welfare:
 
@@ -184,11 +186,18 @@ public class MainActivity extends AppCompatActivity
                 MainActivity.this.startActivity(intent);
                 break;
             case R.id.nav_library_services:
-
+                intent = new Intent(MainActivity.this, ItemsActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.library_services));
+                MainActivity.this.startActivity(intent);
                 break;
             case R.id.nav_radio:
                 intent = new Intent(MainActivity.this, RadioActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.radio));
+                MainActivity.this.startActivity(intent);
+                break;
+            case R.id.nav_pqrsd_system:
+                intent = new Intent(MainActivity.this, WebActivity.class);
+                intent.putExtra("URL", getString(R.string.pqrsd_system_url));
                 MainActivity.this.startActivity(intent);
                 break;
             case R.id.nav_lost_objects:
@@ -213,10 +222,14 @@ public class MainActivity extends AppCompatActivity
 
                 break;
             case R.id.nav_web_page:
-
+                intent = new Intent(MainActivity.this, WebActivity.class);
+                intent.putExtra("URL", getString(R.string.web_page_url));
+                MainActivity.this.startActivity(intent);
                 break;
             case R.id.nav_ecotic:
-
+                intent = new Intent(MainActivity.this, WebActivity.class);
+                intent.putExtra("URL", getString(R.string.ecotic_url));
+                MainActivity.this.startActivity(intent);
                 break;
             default:
                 break;

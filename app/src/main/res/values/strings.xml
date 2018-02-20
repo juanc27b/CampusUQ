@@ -55,6 +55,13 @@
     <string name="ecotic">Ecotic</string>
     <string name="ecotic_description">Ingresar al sistema ECOTIC de la Universidad del Quindío</string>
 
+    <string name="digital_repository">Repositorio digital</string>
+    <string name="digital_repository_description">Buscar artículos, e-books, libros, revistas electrónicas y demás contenido digital</string>
+    <string name="public_catalog">Catálogo público</string>
+    <string name="public_catalog_description">Consultar el material bibliográfico disponible en las bibliotecas</string>
+    <string name="databases">Bases de datos</string>
+    <string name="databases_description">Buscar recursos digitales en las diferentes bases de datos que ofrece la universidad</string>
+
     <string name="news_detail">Detalle de noticia</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -117,8 +124,18 @@
     <string name="radio_notification_id">Campus UQ</string>
     <string name="radio_notification_name">La UFM UQ Estéreo</string>
     <string name="radio_notification_description">Emisora Institucional</string>
+    <string name="radio_volume">Volumen</string>
+    <string name="radio_error">No se puede reproducir en este momento</string>
 
     <string name="facebook_app_id">291424651384761</string>
     <string name="fb_login_protocol_scheme">fb291424651384761</string>
+
+    <string name="web_page_url">https://www.uniquindio.edu.co/</string>
+    <string name="employment_exchange_url">http://trabajando.uniquindio.edu.co/</string>
+    <string name="digital_repository_url">https://bdigital.uniquindio.edu.co/</string>
+    <string name="public_catalog_url">http://catalogo.uniquindio.edu.co/</string>
+    <string name="databases_url">https://www.uniquindio.edu.co/biblioteca/publicaciones/bases_de_datos_pub</string>
+    <string name="pqrsd_system_url">https://uniquindio.sysaidit.com/SubmitSR.jsp?accountId=uniquindio</string>
+    <string name="ecotic_url">https://ecotic.uniquindio.edu.co/ecotic/#!/home</string>
 
 </resources>

@@ -39,4 +39,7 @@ dependencies {
     implementation 'cz.msebera.android:httpclient:4.4.1.2'
     implementation 'org.apache.commons:commons-lang3:3.7'
     implementation 'org.apache.commons:commons-text:1.2'
+    implementation 'com.github.bumptech.glide:glide:4.6.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
+    compile 'com.android.support:support-v4:26.1.0'
 }

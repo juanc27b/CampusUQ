@@ -56,6 +56,13 @@
     <string name="ecotic">Ecotic</string>
     <string name="ecotic_description"></string>
 
+    <string name="digital_repository">Digital repository</string>
+    <string name="digital_repository_description"></string>
+    <string name="public_catalog">Public catalog</string>
+    <string name="public_catalog_description"></string>
+    <string name="databases">Databases</string>
+    <string name="databases_description"></string>
+
     <string name="news_detail">News detail</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -76,5 +83,7 @@
     <string name="radio_notification_id">Campus UQ</string>
     <string name="radio_notification_name">La UFM UQ Estéreo</string>
     <string name="radio_notification_description">Institutional Radio</string>
+    <string name="radio_volume">Volume</string>
+    <string name="radio_error">Unable to play at this time</string>
 
 </resources>
