@@ -30,7 +30,7 @@ public class NewsSQLiteController {
     private SQLiteDatabase db;
 
     public NewsSQLiteController(Context context, int version) {
-        usdbh = new SQLiteHelper(context, Utilities.NOMBRE_BD , null, version, "NewsSQLiteController");
+        usdbh = new SQLiteHelper(context, Utilities.NOMBRE_BD , null, version);
         db = usdbh.getWritableDatabase();
     }
 

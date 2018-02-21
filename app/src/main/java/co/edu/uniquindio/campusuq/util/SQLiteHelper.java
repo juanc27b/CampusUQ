@@ -10,24 +10,20 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
 
-    String controller;
-
-    public SQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, String controller) {
+    public SQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
-        this.controller = controller;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        switch(controller) {
-            case "NewsSQLiteController":
-                db.execSQL(NewsSQLiteController.createTable());
-                db.execSQL(NewsSQLiteController.createCategoryTable());
-                db.execSQL(NewsSQLiteController.createRelationTable());
-                break;
-            default:
-                break;
-        }
+
+        db.execSQL(NewsSQLiteController.createTable());
+        db.execSQL(NewsSQLiteController.createCategoryTable());
+        db.execSQL(NewsSQLiteController.createRelationTable());
+
+        db.execSQL(InformationsSQLiteController.createCategoryTable());
+        db.execSQL(InformationsSQLiteController.createTable());
+
     }
 
     @Override

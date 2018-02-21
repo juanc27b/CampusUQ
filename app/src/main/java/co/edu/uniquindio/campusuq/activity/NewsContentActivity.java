@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewStub;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -57,12 +58,19 @@ public class NewsContentActivity extends MainActivity {
         webSettings.setBuiltInZoomControls(true);
         webSettings.setDisplayZoomControls(true);
 
-        webView.loadDataWithBaseURL(link, content, "text/html", null, null);
+        webSettings.setAllowFileAccess(true);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setAllowContentAccess(true);
+        webSettings.setAllowFileAccessFromFileURLs(true);
+
+        webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient() {
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 Toast.makeText(NewsContentActivity.this, "Oh no! " + description, Toast.LENGTH_SHORT).show();
             }
         });
+
+        webView.loadDataWithBaseURL(link, content, "text/html", null, null);
 
     }
 

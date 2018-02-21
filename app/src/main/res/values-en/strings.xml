@@ -56,6 +56,15 @@
     <string name="ecotic">Ecotic</string>
     <string name="ecotic_description"></string>
 
+    <string name="mission_vision">Mission and vision</string>
+    <string name="mission_vision_description"></string>
+    <string name="quality_policy">Quality policy</string>
+    <string name="quality_policy_description"></string>
+    <string name="axes_pillars_objectives">Strategic axes, pillars and objectives</string>
+    <string name="axes_pillars_objectives_description"></string>
+    <string name="symbols">Symbols</string>
+    <string name="symbols_description"></string>
+
     <string name="digital_repository">Digital repository</string>
     <string name="digital_repository_description"></string>
     <string name="public_catalog">Public catalog</string>

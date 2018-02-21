@@ -23,6 +23,7 @@ import android.widget.Toast;
 import java.lang.reflect.Method;
 
 import co.edu.uniquindio.campusuq.R;
+import co.edu.uniquindio.campusuq.util.LoadWebContentAsync;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -147,21 +148,20 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        Intent intent;
+        Intent intent = null;
         int id = item.getItemId();
         switch(id) {
             case R.id.nav_events:
                 intent = new Intent(MainActivity.this, NewsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.events));
-                MainActivity.this.startActivity(intent);
                 break;
             case R.id.nav_news:
                 intent = new Intent(MainActivity.this, NewsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.news));
-                MainActivity.this.startActivity(intent);
                 break;
             case R.id.nav_institution:
-
+                intent = new Intent(MainActivity.this, ItemsActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.institution));
                 break;
             case R.id.nav_directory:
 
@@ -175,30 +175,26 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_employment_exchange:
                 intent = new Intent(MainActivity.this, WebActivity.class);
                 intent.putExtra("URL", getString(R.string.employment_exchange_url));
-                MainActivity.this.startActivity(intent);
                 break;
             case R.id.nav_institutional_welfare:
-
+                LoadWebContentAsync loadWebContentAsync = new LoadWebContentAsync(MainActivity.this);
+                loadWebContentAsync.execute(getString(R.string.institutional_welfare));
                 break;
             case R.id.nav_university_map:
                 intent = new Intent(MainActivity.this, MapsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.university_map));
-                MainActivity.this.startActivity(intent);
                 break;
             case R.id.nav_library_services:
                 intent = new Intent(MainActivity.this, ItemsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.library_services));
-                MainActivity.this.startActivity(intent);
                 break;
             case R.id.nav_radio:
                 intent = new Intent(MainActivity.this, RadioActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.radio));
-                MainActivity.this.startActivity(intent);
                 break;
             case R.id.nav_pqrsd_system:
                 intent = new Intent(MainActivity.this, WebActivity.class);
                 intent.putExtra("URL", getString(R.string.pqrsd_system_url));
-                MainActivity.this.startActivity(intent);
                 break;
             case R.id.nav_lost_objects:
 
@@ -224,15 +220,16 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_web_page:
                 intent = new Intent(MainActivity.this, WebActivity.class);
                 intent.putExtra("URL", getString(R.string.web_page_url));
-                MainActivity.this.startActivity(intent);
                 break;
             case R.id.nav_ecotic:
                 intent = new Intent(MainActivity.this, WebActivity.class);
                 intent.putExtra("URL", getString(R.string.ecotic_url));
-                MainActivity.this.startActivity(intent);
                 break;
             default:
                 break;
+        }
+        if (intent != null) {
+            MainActivity.this.startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -268,8 +265,8 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public boolean haveNetworkConnection(Context context) {
-        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static boolean haveNetworkConnection(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null && activeNetwork.isConnected();
         return isConnected;

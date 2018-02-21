@@ -28,10 +28,8 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 
 public class NewsServiceController {
 
-    public final static String URL_SERVICIO = "https://campus-uq.000webhostapp.com";
-
     public static ArrayList<New> getNews(String idNew) {
-        String url = URL_SERVICIO+"/noticias";
+        String url = Utilities.URL_SERVICIO+"/noticias";
         if (idNew != null) {
             url += idNew;
         }
@@ -60,13 +58,13 @@ public class NewsServiceController {
             }
         } catch (Exception e) {
             Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
-            return null;
+            return new ArrayList<New>();
         }
         return news;
     }
 
     public static ArrayList<NewCategory> getNewCategories() {
-        String url = URL_SERVICIO+"/noticia_categorias";
+        String url = Utilities.URL_SERVICIO+"/noticia_categorias";
         ArrayList<NewCategory> categories = new ArrayList<NewCategory>();
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
@@ -87,13 +85,13 @@ public class NewsServiceController {
             }
         } catch (Exception e) {
             Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
-            return null;
+            return new ArrayList<NewCategory>();
         }
         return categories;
     }
 
     public static ArrayList<NewRelation> getNewRelations(String idNew) {
-        String url = URL_SERVICIO+"/noticia_relaciones";
+        String url = Utilities.URL_SERVICIO+"/noticia_relaciones";
         if (idNew != null) {
             url += "/" + idNew;
         }
@@ -116,14 +114,14 @@ public class NewsServiceController {
             }
         } catch (Exception e) {
             Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
-            return null;
+            return new ArrayList<NewRelation>();
         }
         return relations;
     }
 
     public static New addNew(String json) {
         HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpPost post = new HttpPost(URL_SERVICIO);
+        HttpPost post = new HttpPost(Utilities.URL_SERVICIO);
         post.setHeader("content-type", "application/json");
         New mNew = null;
         try {
@@ -141,7 +139,7 @@ public class NewsServiceController {
 
     public static New deleteNew(String id) {
         HttpClient client = HttpClientBuilder.create().build();
-        HttpDelete delete = new HttpDelete(URL_SERVICIO + "/" + id);
+        HttpDelete delete = new HttpDelete(Utilities.URL_SERVICIO + "/" + id);
         delete.setHeader("content-type", "application/json");
         try {
             HttpResponse response = client.execute(delete);

@@ -55,6 +55,15 @@
     <string name="ecotic">Ecotic</string>
     <string name="ecotic_description">Ingresar al sistema ECOTIC de la Universidad del Quindío</string>
 
+    <string name="mission_vision">Misión y visión</string>
+    <string name="mission_vision_description">Ver la misión y la visión actuales de la Universidad del Quindío</string>
+    <string name="quality_policy">Política de calidad</string>
+    <string name="quality_policy_description">Ver la política de calidad de la Universidad del Quindío</string>
+    <string name="axes_pillars_objectives">Ejes estratégicos, pilares y objetivos</string>
+    <string name="axes_pillars_objectives_description">Ver los ejes estratégicos, pilares y objetivos de la Universidad del Quindío</string>
+    <string name="symbols">Símbolos</string>
+    <string name="symbols_description">Reseña histórica, logotipo, himno, bandera y estampilla de la Universidad del Quindío</string>
+
     <string name="digital_repository">Repositorio digital</string>
     <string name="digital_repository_description">Buscar artículos, e-books, libros, revistas electrónicas y demás contenido digital</string>
     <string name="public_catalog">Catálogo público</string>
@@ -137,5 +146,10 @@
     <string name="databases_url">https://www.uniquindio.edu.co/biblioteca/publicaciones/bases_de_datos_pub</string>
     <string name="pqrsd_system_url">https://uniquindio.sysaidit.com/SubmitSR.jsp?accountId=uniquindio</string>
     <string name="ecotic_url">https://ecotic.uniquindio.edu.co/ecotic/#!/home</string>
+
+    <string name="mission_vision_url">http://campus-uq.000webhostapp.com/files/mision_vision.pdf</string>
+    <string name="quality_policy_url">http://campus-uq.000webhostapp.com/files/politica_calidad.pdf</string>
+    <string name="axes_pillars_objectives_url">http://campus-uq.000webhostapp.com/files/ejes_pilares_objetivos.pdf</string>
+    <string name="pdf_viewer">http://campus-uq.000webhostapp.com/pdf/web/viewer.html?file=URL</string>
 
 </resources>

@@ -4,15 +4,10 @@ import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.MediaScannerConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Toast;
@@ -26,17 +21,13 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.NewsAdapter;
 import co.edu.uniquindio.campusuq.util.NewsSQLiteController;
 import co.edu.uniquindio.campusuq.util.NewsServiceController;
+import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.vo.New;
 import co.edu.uniquindio.campusuq.vo.NewCategory;
 import co.edu.uniquindio.campusuq.vo.NewRelation;
@@ -169,7 +160,7 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
 
     }
 
-    public class LoadNewsAsync extends AsyncTask<String, String, Boolean> {
+    public class LoadNewsAsync extends AsyncTask<String, Void, Boolean> {
 
         private Context context;
         private ProgressDialog pDialog;
@@ -236,9 +227,8 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                     lastNewId += "/"+lastNews.get(0).getId();
                 }
                 ArrayList<New> updated = NewsServiceController.getNews(lastNewId);
-                updated = (updated != null) ? updated : new ArrayList<New>();
                 for (New mNew : updated) {
-                    String imagePath = saveImage(mNew.getImage());
+                    String imagePath = Utilities.saveImage(mNew.getImage(), context);
                     if (imagePath != null) {
                         mNew.setImage(imagePath);
                     } else {
@@ -253,9 +243,6 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                         dbController.insert(mNew.getId(), mNew.getName(), mNew.getLink(), mNew.getImage(),
                                 mNew.getSummary(), mNew.getContent(), mNew.getDate(), mNew.getAuthor());
                         relations = NewsServiceController.getNewRelations(mNew.getId());
-                        String estado = relations != null ? "lleno" : "vacio";
-                        relations = (relations != null) ? relations : new ArrayList<NewRelation>();
-                        Log.i("Relacion de noticia "+mNew.getId(), "Array está "+estado);
                         for (NewRelation relation : relations) {
                             dbController.insertRelation(relation.getCategoryId(), relation.getNewId());
                         }
@@ -333,59 +320,6 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                 }
 
             }
-        }
-
-        public String saveImage(String url) {
-
-            String imagePath = null;
-            InputStream is = null;
-
-            try {
-                URL ImageUrl = new URL(url);
-
-                HttpURLConnection conn = (HttpURLConnection) ImageUrl.openConnection();
-                conn.setDoInput(true);
-                conn.connect();
-                is = conn.getInputStream();
-
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.RGB_565;
-                Bitmap bmImg = BitmapFactory.decodeStream(is, null, options);
-
-                String path = ImageUrl.getPath();
-                String idStr = path.substring(path.lastIndexOf('/') + 1);
-                File filepath = Environment.getExternalStorageDirectory();
-                File dir = new File(filepath.getAbsolutePath() + "/CampusUQ/Media/Images");
-                dir.mkdirs();
-
-                File file = new File(dir, idStr);
-                if (file.exists()) {
-                    file = new File(dir, "new_"+idStr);
-                }
-                FileOutputStream fos = new FileOutputStream(file);
-                bmImg.compress(Bitmap.CompressFormat.JPEG, 75, fos);
-                fos.flush();
-                fos.close();
-
-                imagePath = file.getPath();
-                MediaScannerConnection.scanFile(context,
-                        new String[]{imagePath},
-                        new String[]{"image/jpeg"}, null);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (is != null) {
-                    try {
-                        is.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            return imagePath;
-
         }
 
     }

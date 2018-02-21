@@ -1,5 +1,6 @@
 package co.edu.uniquindio.campusuq.activity;
 
+import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewStub;
@@ -31,6 +32,9 @@ public class WebContentActivity extends MainActivity {
         stub.setLayoutResource(R.layout.content_web);
         View inflated = stub.inflate();
 
+        String category = getIntent().getStringExtra("CATEGORY");
+        getSupportActionBar().setTitle(category);
+
         String link = getIntent().getStringExtra("LINK");
         String content = getIntent().getStringExtra("CONTENT");
 
@@ -53,8 +57,29 @@ public class WebContentActivity extends MainActivity {
             }
         });
 
-        webView.loadDataWithBaseURL(link, content, "text/html", null, null);
+        if (content != null) {
+            webView.loadDataWithBaseURL(link, content, "text/html", null, null);
+        } else {
+            webView.loadUrl(link);
+        }
 
+    }
+
+    @Override
+    public void handleIntent(Intent intent) {
+        if (webView != null) {
+            String category = intent.getStringExtra("CATEGORY");
+            getSupportActionBar().setTitle(category);
+
+            String link = intent.getStringExtra("LINK");
+            String content = intent.getStringExtra("CONTENT");
+
+            if (content != null) {
+                webView.loadDataWithBaseURL(link, content, "text/html", null, null);
+            } else {
+                webView.loadUrl(link);
+            }
+        }
     }
 
     @Override

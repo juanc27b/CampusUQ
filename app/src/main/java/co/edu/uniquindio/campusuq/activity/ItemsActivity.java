@@ -14,6 +14,8 @@ import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.ItemsAdapter;
+import co.edu.uniquindio.campusuq.util.ItemsPresenter;
+import co.edu.uniquindio.campusuq.util.LoadWebContentAsync;
 import co.edu.uniquindio.campusuq.vo.Item;
 
 public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickItemListener {
@@ -22,30 +24,12 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
     private ItemsAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    public ArrayList<Item> informationItems;
-    public ArrayList<Item> servicesItems;
-    public ArrayList<Item> stateItems;
-    public ArrayList<Item> communicationItems;
-    public ArrayList<Item> libraryItems;
-
     public ArrayList<Item> items;
-    public int[] circleColors;
-    public ArrayList<Integer> colors;
+    public ItemsPresenter itemsPresenter;
 
     public ItemsActivity() {
-        circleColors = new int[7];
-        circleColors[0] = R.drawable.circle_blue;
-        circleColors[1] = R.drawable.circle_orange;
-        circleColors[2] = R.drawable.circle_red;
-        circleColors[3] = R.drawable.circle_yellow;
-        circleColors[4] = R.drawable.circle_purple;
-        circleColors[5] = R.drawable.circle_dark_blue;
-        circleColors[6] = R.drawable.circle_green;
-
-        colors = new ArrayList<Integer>();
-        fillColors();
-
         super.setHasNavigationDrawerIcon(false);
+        itemsPresenter = new ItemsPresenter();
     }
 
     @Override
@@ -112,20 +96,21 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
 
     @Override
     public void onItemClick(int pos) {
-        Intent intent;
+        Intent intent = null;
+        String url = null;
+        LoadWebContentAsync loadWebContentAsync = new LoadWebContentAsync(ItemsActivity.this);
         switch(items.get(pos).getTitle()) {
             case R.string.events:
                 intent = new Intent(ItemsActivity.this, NewsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.events));
-                ItemsActivity.this.startActivity(intent);
                 break;
             case R.string.news:
                 intent = new Intent(ItemsActivity.this, NewsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.news));
-                ItemsActivity.this.startActivity(intent);
                 break;
             case R.string.institution:
-
+                intent = new Intent(ItemsActivity.this, ItemsActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.institution));
                 break;
             case R.string.directory:
 
@@ -139,30 +124,25 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
             case R.string.employment_exchange:
                 intent = new Intent(ItemsActivity.this, WebActivity.class);
                 intent.putExtra("URL", getString(R.string.employment_exchange_url));
-                ItemsActivity.this.startActivity(intent);
                 break;
             case R.string.institutional_welfare:
-
+                loadWebContentAsync.execute(getString(R.string.institutional_welfare));
                 break;
             case R.string.university_map:
                 intent = new Intent(ItemsActivity.this, MapsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.university_map));
-                ItemsActivity.this.startActivity(intent);
                 break;
             case R.string.library_services:
                 intent = new Intent(ItemsActivity.this, ItemsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.library_services));
-                ItemsActivity.this.startActivity(intent);
                 break;
             case R.string.radio:
                 intent = new Intent(ItemsActivity.this, RadioActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.radio));
-                ItemsActivity.this.startActivity(intent);
                 break;
             case R.string.pqrsd_system:
                 intent = new Intent(ItemsActivity.this, WebActivity.class);
                 intent.putExtra("URL", getString(R.string.pqrsd_system_url));
-                ItemsActivity.this.startActivity(intent);
                 break;
             case R.string.lost_objects:
 
@@ -188,141 +168,69 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
             case R.string.web_page:
                 intent = new Intent(ItemsActivity.this, WebActivity.class);
                 intent.putExtra("URL", getString(R.string.web_page_url));
-                ItemsActivity.this.startActivity(intent);
                 break;
             case R.string.ecotic:
                 intent = new Intent(ItemsActivity.this, WebActivity.class);
                 intent.putExtra("URL", getString(R.string.ecotic_url));
-                ItemsActivity.this.startActivity(intent);
+                break;
+            case R.string.mission_vision:
+                intent = new Intent(ItemsActivity.this, WebContentActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.mission_vision));
+                intent.putExtra("LINK",
+                        getString(R.string.pdf_viewer).replaceAll("URL", getString(R.string.mission_vision_url)));
+                break;
+            case R.string.quality_policy:
+                intent = new Intent(ItemsActivity.this, WebContentActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.quality_policy));
+                intent.putExtra("LINK",
+                        getString(R.string.pdf_viewer).replaceAll("URL", getString(R.string.quality_policy_url)));
+                break;
+            case R.string.axes_pillars_objectives:
+                intent = new Intent(ItemsActivity.this, WebContentActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.axes_pillars_objectives));
+                intent.putExtra("LINK",
+                        getString(R.string.pdf_viewer).replaceAll("URL", getString(R.string.axes_pillars_objectives_url)));
+                break;
+            case R.string.symbols:
+                loadWebContentAsync.execute(getString(R.string.symbols));
                 break;
             case R.string.digital_repository:
                 intent = new Intent(ItemsActivity.this, WebActivity.class);
                 intent.putExtra("URL", getString(R.string.digital_repository_url));
-                ItemsActivity.this.startActivity(intent);
                 break;
             case R.string.public_catalog:
                 intent = new Intent(ItemsActivity.this, WebActivity.class);
                 intent.putExtra("URL", getString(R.string.public_catalog_url));
-                ItemsActivity.this.startActivity(intent);
                 break;
             case R.string.databases:
                 intent = new Intent(ItemsActivity.this, WebActivity.class);
                 intent.putExtra("URL", getString(R.string.databases_url));
-                ItemsActivity.this.startActivity(intent);
                 break;
             default:
                 break;
         }
-        Toast.makeText(this, "Item clicked: "+getString(items.get(pos).getTitle()), Toast.LENGTH_SHORT).show();
+        if (intent != null) {
+            ItemsActivity.this.startActivity(intent);
+        }
     }
 
     public void setItems(String category, boolean oldActivity) {
         if (category.equals(getString(R.string.information_module))) {
-            this.items = informationItems != null ? informationItems : getInformationItems();
+            this.items = itemsPresenter.getInformationItems();
         } else if (category.equals(getString(R.string.services_module))) {
-            this.items = servicesItems != null ? servicesItems : getServicesItems();
+            this.items = itemsPresenter.getServicesItems();
         } else if (category.equals(getString(R.string.state_module))) {
-            this.items = stateItems != null ? stateItems : getStateItems();
+            this.items = itemsPresenter.getStateItems();
         } else if (category.equals(getString(R.string.communication_module))) {
-            this.items = communicationItems != null ? communicationItems : getCommunicationItems();
+            this.items = itemsPresenter.getCommunicationItems();
+        } else if (category.equals(getString(R.string.institution))) {
+            this.items = itemsPresenter.getInstitutionItems();
         } else if (category.equals(getString(R.string.library_services))) {
-            this.items = libraryItems != null ? libraryItems : getLibraryItems();
+            this.items = itemsPresenter.getLibraryItems();
         }
         if (oldActivity) {
             mAdapter.setItems(this.items);
         }
-    }
-
-    public ArrayList<Item> getInformationItems() {
-        informationItems = new ArrayList<Item>();
-        informationItems.add(
-                new Item(getColor(), R.drawable.ic_menu_events, R.string.events, R.string.events_description));
-        informationItems.add(
-                new Item(getColor(), R.drawable.ic_menu_news, R.string.news, R.string.news_description));
-        informationItems.add(
-                new Item(getColor(), R.drawable.ic_menu_institution, R.string.institution, R.string.institution_description));
-        informationItems.add(
-                new Item(getColor(), R.drawable.ic_menu_directory, R.string.directory, R.string.directory_description));
-        informationItems.add(
-                new Item(getColor(), R.drawable.ic_menu_academic_offer, R.string.academic_offer, R.string.academic_offer_description));
-        informationItems.add(
-                new Item(getColor(), R.drawable.ic_menu_academic_calendar, R.string.academic_calendar, R.string.academic_calendar_description));
-        informationItems.add(
-                new Item(getColor(), R.drawable.ic_menu_employment_exchange, R.string.employment_exchange, R.string.employment_exchange_description));
-        informationItems.add(
-                new Item(getColor(), R.drawable.ic_menu_institutional_welfare, R.string.institutional_welfare, R.string.institutional_welfare_description));
-        return informationItems;
-    }
-
-    public ArrayList<Item> getServicesItems() {
-        servicesItems = new ArrayList<Item>();
-        servicesItems.add(
-                new Item(getColor(), R.drawable.ic_menu_university_map, R.string.university_map, R.string.university_map_description));
-        servicesItems.add(
-                new Item(getColor(), R.drawable.ic_menu_library_services, R.string.library_services, R.string.library_services_description));
-        servicesItems.add(
-                new Item(getColor(), R.drawable.ic_menu_radio, R.string.radio, R.string.radio_description));
-        servicesItems.add(
-                new Item(getColor(), R.drawable.ic_menu_pqrsd_system, R.string.pqrsd_system, R.string.pqrsd_system_description));
-        servicesItems.add(
-                new Item(getColor(), R.drawable.ic_menu_lost_objects, R.string.lost_objects, R.string.lost_objects_description));
-        servicesItems.add(
-                new Item(getColor(), R.drawable.ic_menu_security_system, R.string.security_system, R.string.security_system_description));
-        return servicesItems;
-    }
-
-    public ArrayList<Item> getStateItems() {
-        stateItems = new ArrayList<Item>();
-        stateItems.add(
-                new Item(getColor(), R.drawable.ic_menu_restaurant, R.string.restaurant, R.string.restaurant_description));
-        stateItems.add(
-                new Item(getColor(), R.drawable.ic_menu_billboard_information, R.string.billboard_information, R.string.billboard_information_description));
-        stateItems.add(
-                new Item(getColor(), R.drawable.ic_menu_computer_rooms, R.string.computer_rooms, R.string.computer_rooms_description));
-        stateItems.add(
-                new Item(getColor(), R.drawable.ic_menu_parking_lots, R.string.parking_lots, R.string.parking_lots_description));
-        return stateItems;
-    }
-
-    public ArrayList<Item> getCommunicationItems() {
-        communicationItems = new ArrayList<Item>();
-        communicationItems.add(
-                new Item(getColor(), R.drawable.ic_menu_institutional_mail, R.string.institutional_mail, R.string.institutional_mail_description));
-        communicationItems.add(
-                new Item(getColor(), R.drawable.ic_menu_web_page, R.string.web_page, R.string.web_page_description));
-        communicationItems.add(
-                new Item(getColor(), R.drawable.ic_menu_ecotic, R.string.ecotic, R.string.ecotic_description));
-        return communicationItems;
-    }
-
-    public ArrayList<Item> getLibraryItems() {
-        libraryItems = new ArrayList<Item>();
-        libraryItems.add(
-                new Item(getColor(), R.drawable.ic_digital_repository, R.string.digital_repository, R.string.digital_repository_description));
-        libraryItems.add(
-                new Item(getColor(), R.drawable.ic_public_catalog, R.string.public_catalog, R.string.public_catalog_description));
-        libraryItems.add(
-                new Item(getColor(), R.drawable.ic_databases, R.string.databases, R.string.databases_description));
-        return libraryItems;
-    }
-
-    public int getColor() {
-        if (colors.size() == 0) {
-            fillColors();
-        }
-        int random = (int) (Math.random()*colors.size());
-        int pos = colors.remove(random);
-        return circleColors[pos];
-    }
-
-    public void fillColors() {
-        colors.add(0,0);
-        colors.add(1,1);
-        colors.add(2,2);
-        colors.add(3,3);
-        colors.add(4,4);
-        colors.add(5,5);
-        colors.add(6,6);
     }
 
 }
