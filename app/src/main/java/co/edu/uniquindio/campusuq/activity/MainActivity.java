@@ -209,10 +209,12 @@ public class MainActivity extends AppCompatActivity
 
                 break;
             case R.id.nav_computer_rooms:
-
+                intent = new Intent(MainActivity.this, QuotasActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.computer_rooms));
                 break;
             case R.id.nav_parking_lots:
-
+                intent = new Intent(MainActivity.this, QuotasActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.parking_lots));
                 break;
             case R.id.nav_institutional_mail:
 

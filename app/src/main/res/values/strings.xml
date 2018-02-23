@@ -156,4 +156,8 @@
     <string name="axes_pillars_objectives_url">http://campus-uq.000webhostapp.com/files/ejes_pilares_objetivos.pdf</string>
     <string name="pdf_viewer">http://campus-uq.000webhostapp.com/pdf/web/viewer.html?file=URL</string>
 
+    <string name="sample_quota_name">Sala A</string>
+    <string name="sample_quota_quota">24</string>
+    <string name="quota_text">cupo(s)</string>
+
 </resources>
