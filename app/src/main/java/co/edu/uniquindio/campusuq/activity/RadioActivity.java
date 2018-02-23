@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.MediaPlaybackService;
+import co.edu.uniquindio.campusuq.util.Utilities;
 
 public class RadioActivity extends MainActivity {
 
@@ -144,7 +145,7 @@ public class RadioActivity extends MainActivity {
                 if (pbState == PlaybackStateCompat.STATE_PLAYING) {
                     play.setEnabled(false);
                     MediaControllerCompat.getMediaController(RadioActivity.this).getTransportControls().pause();
-                } else if (haveNetworkConnection(RadioActivity.this)) {
+                } else if (Utilities.haveNetworkConnection(RadioActivity.this)) {
                     play.setEnabled(false);
                     MediaControllerCompat.getMediaController(RadioActivity.this).getTransportControls().play();
                 } else {

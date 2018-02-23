@@ -83,6 +83,7 @@
 
     <string name="loading_content">Cargando conteido</string>
     <string name="please_wait">Por favor espere ...</string>
+    <string name="no_internet">No hay conexión a internet</string>
 
     <string name="change_to_mapview">Cambiar a vista de mapa</string>
     <string name="change_to_streetview">Cambiar a vista de calle</string>

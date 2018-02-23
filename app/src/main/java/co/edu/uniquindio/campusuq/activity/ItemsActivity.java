@@ -1,7 +1,10 @@
 package co.edu.uniquindio.campusuq.activity;
 
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,7 +18,7 @@ import java.util.ArrayList;
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.ItemsAdapter;
 import co.edu.uniquindio.campusuq.util.ItemsPresenter;
-import co.edu.uniquindio.campusuq.util.LoadWebContentAsync;
+import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.Item;
 
 public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickItemListener {
@@ -26,6 +29,8 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
 
     public ArrayList<Item> items;
     public ItemsPresenter itemsPresenter;
+
+    private String category;
 
     public ItemsActivity() {
         super.setHasNavigationDrawerIcon(false);
@@ -51,7 +56,8 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         stub.setLayoutResource(R.layout.content_items);
         View inflated = stub.inflate();
 
-        setItems(getIntent().getStringExtra("CATEGORY"), false);
+        category = getIntent().getStringExtra("CATEGORY");
+        setItems(false);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.items_recycler_view);
 
@@ -88,17 +94,15 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
                 Toast.makeText(this, "No se ha encontrado el ítem: "+query, Toast.LENGTH_SHORT).show();
             }
         } else if (mAdapter != null) {
-            String category = intent.getStringExtra("CATEGORY");
+            category = intent.getStringExtra("CATEGORY");
             getSupportActionBar().setTitle(category);
-            setItems(category, true);
+            setItems(true);
         }
     }
 
     @Override
     public void onItemClick(int pos) {
         Intent intent = null;
-        String url = null;
-        LoadWebContentAsync loadWebContentAsync = new LoadWebContentAsync(ItemsActivity.this);
         switch(items.get(pos).getTitle()) {
             case R.string.events:
                 intent = new Intent(ItemsActivity.this, NewsActivity.class);
@@ -126,7 +130,8 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
                 intent.putExtra("URL", getString(R.string.employment_exchange_url));
                 break;
             case R.string.institutional_welfare:
-                loadWebContentAsync.execute(getString(R.string.institutional_welfare));
+                pendingAction = WebService.ACTION_WELFARE;
+                loadInformations(getString(R.string.institutional_welfare), ItemsActivity.this);
                 break;
             case R.string.university_map:
                 intent = new Intent(ItemsActivity.this, MapsActivity.class);
@@ -192,7 +197,8 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
                         getString(R.string.pdf_viewer).replaceAll("URL", getString(R.string.axes_pillars_objectives_url)));
                 break;
             case R.string.symbols:
-                loadWebContentAsync.execute(getString(R.string.symbols));
+                pendingAction = WebService.ACTION_SYMBOLS;
+                loadInformations(getString(R.string.symbols), ItemsActivity.this);
                 break;
             case R.string.digital_repository:
                 intent = new Intent(ItemsActivity.this, WebActivity.class);
@@ -214,7 +220,7 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         }
     }
 
-    public void setItems(String category, boolean oldActivity) {
+    public void setItems(boolean oldActivity) {
         if (category.equals(getString(R.string.information_module))) {
             this.items = itemsPresenter.getInformationItems();
         } else if (category.equals(getString(R.string.services_module))) {
@@ -231,6 +237,51 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         if (oldActivity) {
             mAdapter.setItems(this.items);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getString(R.string.institution).equals(category)) {
+            Intent intent = new Intent(ItemsActivity.this, ItemsActivity.class);
+            intent.putExtra("CATEGORY", getString(R.string.information_module));
+            ItemsActivity.this.startActivity(intent);
+        } else if (getString(R.string.library_services).equals(category)) {
+            Intent intent = new Intent(ItemsActivity.this, ItemsActivity.class);
+            intent.putExtra("CATEGORY", getString(R.string.services_module));
+            ItemsActivity.this.startActivity(intent);
+        } else {
+            super.onBackPressed();
+        }
+        // directorio, dependencias y contactos
+        // calendario
+        // ¿menu restaurante?
+        // ¿correo institucional?
+    }
+
+    private IntentFilter symbolsFilter = new IntentFilter(WebService.ACTION_INFORMATIONS);
+    // Define the callback for what to do when data is received
+    private BroadcastReceiver symbolsReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (progressDialog.isShowing() && WebService.ACTION_SYMBOLS.equals(pendingAction)) {
+                loadInformations(getString(R.string.symbols), ItemsActivity.this);
+            }
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Register for the particular broadcast based on ACTION string
+        registerReceiver(symbolsReceiver, symbolsFilter);
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Unregister the listener when the application is paused
+        unregisterReceiver(symbolsReceiver);
     }
 
 }

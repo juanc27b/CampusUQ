@@ -38,6 +38,9 @@ public class WebBroadcastReceiver extends BroadcastReceiver {
         ComponentName serviceComponent = new ComponentName(context, WebService.class);
         JobInfo jobInfo = new JobInfo.Builder(JOB_ID, serviceComponent)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setRequiresDeviceIdle(false)
+                .setRequiresCharging(false)
+                .setMinimumLatency(0)
                 .setOverrideDeadline(0)
                 .setExtras(extras)
                 .build();

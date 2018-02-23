@@ -4,10 +4,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="10dp"
-    tools:context="co.edu.uniquindio.campusuq.activity.RadioActivity">
+    tools:context="co.edu.uniquindio.campusuq.activity.RadioActivity"
+    android:layout_gravity="center">
 
     <TextView
         android:id="@+id/radio_title"
@@ -22,7 +23,10 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -36,7 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_margin="20dp">
+            android:layout_marginTop="20dp">
 
             <ImageView
                 android:id="@+id/play_button"
@@ -67,12 +71,12 @@
 
                 <FrameLayout
                     android:layout_width="32dp"
-                    android:layout_height="128dp"
+                    android:layout_height="96dp"
                     android:layout_gravity="center">
 
                     <SeekBar
                         android:id="@+id/seek_bar"
-                        android:layout_width="128dp"
+                        android:layout_width="96dp"
                         android:layout_height="32dp"
                         android:rotation="270"
                         android:layout_gravity="center"
@@ -94,15 +98,5 @@
         </LinearLayout>
 
     </FrameLayout>
-
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:adjustViewBounds="true"
-        android:scaleType="centerInside"
-        android:src="@drawable/radio_logo"
-        android:layout_marginBottom="15dp"/>
 
 </LinearLayout>

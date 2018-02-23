@@ -1,6 +1,5 @@
 package co.edu.uniquindio.campusuq.activity;
 
-import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -27,6 +26,7 @@ import java.util.ArrayList;
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.NewsAdapter;
 import co.edu.uniquindio.campusuq.util.NewsSQLiteController;
+import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.util.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.New;
@@ -42,7 +42,6 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
     public ArrayList<New> news;
     public boolean oldActivity = false;
 
-    private ProgressDialog pDialog;
     boolean oldNews = true;
 
     private String action;
@@ -89,14 +88,9 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
         stub.setLayoutResource(R.layout.content_news);
         View inflated = stub.inflate();
 
-        pDialog = new ProgressDialog(NewsActivity.this);
-        pDialog.setTitle(getString(R.string.loading_content));
-        pDialog.setMessage(getString(R.string.please_wait));
-        pDialog.setIndeterminate(false);
-        pDialog.setCancelable(true);
-
         String category = getIntent().getStringExtra("CATEGORY");
         action = getString(R.string.news).equals(category) ? WebService.ACTION_NEWS : WebService.ACTION_EVENTS;
+        loadNews(0);
 
     }
 
@@ -120,7 +114,7 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
             String category = intent.getStringExtra("CATEGORY");
             getSupportActionBar().setTitle(category);
             action = getString(R.string.news).equals(category) ? WebService.ACTION_NEWS : WebService.ACTION_EVENTS;
-            this.oldActivity = true;
+            loadNews(0);
         }
     }
 
@@ -169,6 +163,9 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
 
     private void loadNews(int inserted) {
 
+        if (!progressDialog.isShowing()) {
+            progressDialog.show();
+        }
         int scrollTo = 0;
 
         NewsSQLiteController dbController = new NewsSQLiteController(getApplicationContext(), 1);
@@ -224,16 +221,15 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                     super.onScrollStateChanged(recyclerView, newState);
                     if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
                         if (!mRecyclerView.canScrollVertically(-1)) {
-                            if (haveNetworkConnection(NewsActivity.this)) {
+                            if (Utilities.haveNetworkConnection(NewsActivity.this)) {
                                 oldNews = false;
-                                pDialog.show();
+                                progressDialog.show();
                                 WebBroadcastReceiver.scheduleJob(getApplicationContext(), WebService.ACTION_NEWS);
                             } else {
-                                Toast.makeText(NewsActivity.this, "No hay conexión a internet", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(NewsActivity.this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
                             }
                         } else if (!mRecyclerView.canScrollVertically(1)) {
                             oldNews = true;
-                            pDialog.show();
                             loadNews(0);
                         }
                     }
@@ -246,20 +242,19 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
             mLayoutManager.scrollToPosition(scrollTo);
         }
 
-        if (pDialog != null && pDialog.isShowing()) {
-            pDialog.dismiss();
+        if (progressDialog.isShowing() && news.size() > 0) {
+            progressDialog.dismiss();
         }
 
     }
 
+    private IntentFilter newsFilter = new IntentFilter(WebService.ACTION_NEWS);
     // Define the callback for what to do when data is received
     private BroadcastReceiver newsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-
             int inserted = intent.getIntExtra("INSERTED", 0);
             loadNews(inserted);
-
         }
     };
 
@@ -267,11 +262,7 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
     protected void onResume() {
         super.onResume();
         // Register for the particular broadcast based on ACTION string
-        IntentFilter filter = new IntentFilter(WebService.ACTION_NEWS);
-        registerReceiver(newsReceiver, filter);
-
-        pDialog.show();
-        loadNews(0);
+        registerReceiver(newsReceiver, newsFilter);
     }
 
     @Override

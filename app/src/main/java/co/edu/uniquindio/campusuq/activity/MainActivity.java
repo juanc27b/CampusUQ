@@ -1,11 +1,12 @@
 package co.edu.uniquindio.campusuq.activity;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -23,7 +24,9 @@ import android.widget.Toast;
 import java.lang.reflect.Method;
 
 import co.edu.uniquindio.campusuq.R;
-import co.edu.uniquindio.campusuq.util.LoadWebContentAsync;
+import co.edu.uniquindio.campusuq.util.MainPresenter;
+import co.edu.uniquindio.campusuq.util.Utilities;
+import co.edu.uniquindio.campusuq.util.WebService;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -31,9 +34,16 @@ public class MainActivity extends AppCompatActivity
     private boolean hasSearch;
     private boolean hasNavigationDrawerIcon;
 
+    public ProgressDialog progressDialog;
+    public static String pendingAction = WebService.ACTION_NONE;
+
+    public IntentFilter mainFilter = new IntentFilter();
+
     public MainActivity() {
         setHasSearch(true);
         setHasNavigationDrawerIcon(true);
+
+        mainFilter.addAction(WebService.ACTION_INFORMATIONS);
     }
 
     @Override
@@ -59,6 +69,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        progressDialog = Utilities.getProgressDialog(MainActivity.this);
 
         addContent();
 
@@ -128,13 +140,12 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     onBackPressed();
                 }
-                return true;
             case R.id.action_change_language:
-                return true;
+
             case R.id.action_adjust_notifications:
-                return true;
+
             case R.id.action_delete_history:
-                return true;
+
             case R.id.action_login_as_administrator:
                 return true;
             default:
@@ -177,8 +188,8 @@ public class MainActivity extends AppCompatActivity
                 intent.putExtra("URL", getString(R.string.employment_exchange_url));
                 break;
             case R.id.nav_institutional_welfare:
-                LoadWebContentAsync loadWebContentAsync = new LoadWebContentAsync(MainActivity.this);
-                loadWebContentAsync.execute(getString(R.string.institutional_welfare));
+                pendingAction = WebService.ACTION_WELFARE;
+                loadInformations(getString(R.string.institutional_welfare), MainActivity.this);
                 break;
             case R.id.nav_university_map:
                 intent = new Intent(MainActivity.this, MapsActivity.class);
@@ -265,11 +276,63 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public static boolean haveNetworkConnection(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null && activeNetwork.isConnected();
-        return isConnected;
+    // Define the callback for what to do when data is received
+    public BroadcastReceiver mainReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (progressDialog.isShowing()) {
+                switch (pendingAction) {
+                    case WebService.ACTION_WELFARE:
+                        loadInformations(getString(R.string.institutional_welfare), MainActivity.this);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Register for the particular broadcast based on ACTION string
+        registerReceiver(mainReceiver, mainFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Unregister the listener when the application is paused
+        unregisterReceiver(mainReceiver);
+    }
+
+    public static void loadInformations(String type, Context context) {
+
+        ProgressDialog progressDialog = ((MainActivity) context).progressDialog;
+
+        if (!progressDialog.isShowing()) {
+            progressDialog.show();
+        }
+
+        String[] content = new String[2];
+        if (context.getString(R.string.symbols).equals(type)) {
+            content = MainPresenter.getInformation("Simbolos", context);
+        } else if (context.getString(R.string.institutional_welfare).equals(type)) {
+            content = MainPresenter.getInformation("Cursos Culturales y Deportivos", context);
+        }
+
+        if (progressDialog.isShowing() && content[0] != null) {
+            progressDialog.dismiss();
+            pendingAction = WebService.ACTION_NONE;
+            Intent intent = new Intent(context, WebContentActivity.class);
+            intent.putExtra("CATEGORY", type);
+            intent.putExtra("LINK", content[0]);
+            intent.putExtra("CONTENT", content[1]);
+            context.startActivity(intent);
+        } else if (content[0] == null && !Utilities.haveNetworkConnection(context)) {
+            Toast.makeText(context, context.getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+        }
+
     }
 
 }

@@ -84,6 +84,7 @@
 
     <string name="loading_content">Loading content</string>
     <string name="please_wait">Please wait ...</string>
+    <string name="no_internet">There isn\'t internet connection</string>
 
     <string name="change_to_mapview">Change to map view</string>
     <string name="change_to_streetview">Change to street view</string>

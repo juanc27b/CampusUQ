@@ -148,4 +148,27 @@ public class InformationsSQLiteController {
         });
     }
 
+    public void updateCategory(String... campos) {
+        String update = "UPDATE "+NOMBRE_CATEGORIA+" SET ?=?,?=?,?=? WHERE ? = ?";
+        StringBuilder builder = new StringBuilder(update);
+        int offset = builder.indexOf("?");
+        for (int i = 1; i < 4; i++) {
+            builder.replace(offset, offset+1, CAMPOS_CATEGORIA[i]);
+            offset = builder.indexOf("?", offset)+2;
+        }
+        offset = offset+6;
+        builder.replace(offset, offset+1, CAMPOS_CATEGORIA[0]);
+        db.execSQL(builder.toString(), new String[] {
+                campos[1],
+                campos[2],
+                campos[3],
+                campos[0]
+        });
+    }
+
+
+    public void destroy() {
+        usdbh.close();
+    }
+
 }

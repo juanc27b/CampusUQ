@@ -1,12 +1,16 @@
 package co.edu.uniquindio.campusuq.util;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
@@ -18,6 +22,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import co.edu.uniquindio.campusuq.R;
+import co.edu.uniquindio.campusuq.activity.MainActivity;
 
 /**
  * Created by Juan Camilo on 8/02/2018.
@@ -45,6 +52,28 @@ public class Utilities {
         } catch (NoSuchAlgorithmException e) {
             Log.d("Test", "2 KeyHash Error: " + e.getMessage());
         }
+    }
+
+    public static boolean haveNetworkConnection(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnected();
+        return isConnected;
+    }
+
+    public static ProgressDialog getProgressDialog(Context context) {
+        ProgressDialog pDialog = new ProgressDialog(context);
+        pDialog.setTitle(context.getString(R.string.loading_content));
+        pDialog.setMessage(context.getString(R.string.please_wait));
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(true);
+        pDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                MainActivity.pendingAction = WebService.ACTION_NONE;
+            }
+        });
+        return pDialog;
     }
 
     public static String saveImage(String url, Context context) {

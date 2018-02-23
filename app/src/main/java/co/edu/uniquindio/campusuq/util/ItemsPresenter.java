@@ -1,13 +1,8 @@
 package co.edu.uniquindio.campusuq.util;
 
-import android.content.Context;
-
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
-import co.edu.uniquindio.campusuq.activity.MainActivity;
-import co.edu.uniquindio.campusuq.vo.Information;
-import co.edu.uniquindio.campusuq.vo.InformationCategory;
 import co.edu.uniquindio.campusuq.vo.Item;
 
 /**
@@ -156,64 +151,5 @@ public class ItemsPresenter {
         }
         return institutionItems;
     }
-
-
-    public static String[] getInformation(String categoryName, Context context) {
-        String[] info = new String[2];
-        String link = "";
-        String content = "";
-
-        InformationsSQLiteController dbController = new InformationsSQLiteController(context, 1);
-
-        if (MainActivity.haveNetworkConnection(context)) {
-            boolean updateInformations = false;
-            ArrayList<InformationCategory> updatedCategories = InformationsServiceController.getInformationCategories();
-            for (InformationCategory category : updatedCategories) {
-                ArrayList<InformationCategory> oldCategories = dbController.selectCategory(
-                        InformationsSQLiteController.CAMPOS_CATEGORIA[0] + " = ?", new String[]{category.get_ID()});
-                if (oldCategories.size() == 0) {
-                    updateInformations = true;
-                    dbController.insertCategory(category.get_ID(), category.getName(), category.getLink(), category.getDate());
-                } else if (oldCategories.get(0).getDate().compareTo(category.getDate()) < 0) {
-                    updateInformations = true;
-                    // update category
-                }
-                if (updateInformations){
-                    ArrayList<Information> updatedInformations = InformationsServiceController.getInformations(category.get_ID());
-                    for (Information information : updatedInformations) {
-                        ArrayList<Information> olds = dbController.select(
-                                InformationsSQLiteController.CAMPOS_TABLA[0]+" = ?", new String[]{information.get_ID()});
-                        if (olds.size() > 0) {
-                            dbController.update(information.get_ID(), information.getCategory_ID(),
-                                    information.name, information.getContent());
-                        } else {
-                            dbController.insert(information.get_ID(), information.getCategory_ID(),
-                                    information.name, information.getContent());
-                        }
-                    }
-                }
-            }
-        }
-
-        ArrayList<InformationCategory> categories = dbController.selectCategory(
-                InformationsSQLiteController.CAMPOS_CATEGORIA[1] + " = ?", new String[]{categoryName});
-        ArrayList<Information> informations;
-        if (categories.size() > 0) {
-            link = categories.get(0).getLink();
-            informations = dbController.select(
-                    InformationsSQLiteController.CAMPOS_TABLA[1] + " = ?", new String[]{categories.get(0).get_ID()});
-        } else {
-            informations = new ArrayList<>();
-        }
-
-        for (Information information : informations) {
-            content += information.getContent();
-        }
-
-        info[0] = link;
-        info[1] = content;
-        return info;
-    }
-
 
 }

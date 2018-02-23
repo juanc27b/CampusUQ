@@ -19,8 +19,9 @@ import java.io.File;
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
-import co.edu.uniquindio.campusuq.activity.MainActivity;
 import co.edu.uniquindio.campusuq.activity.NewsActivity;
+import co.edu.uniquindio.campusuq.vo.Information;
+import co.edu.uniquindio.campusuq.vo.InformationCategory;
 import co.edu.uniquindio.campusuq.vo.New;
 import co.edu.uniquindio.campusuq.vo.NewCategory;
 import co.edu.uniquindio.campusuq.vo.NewRelation;
@@ -31,9 +32,13 @@ import co.edu.uniquindio.campusuq.vo.NewRelation;
 
 public class WebService extends JobService {
 
+    public static final String ACTION_NONE = "co.edu.uniquindio.campusuq.ACTION_NONE";
     public static final String ACTION_ALL = "co.edu.uniquindio.campusuq.ACTION_ALL";
     public static final String ACTION_NEWS = "co.edu.uniquindio.campusuq.ACTION_NEWS";
     public static final String ACTION_EVENTS = "co.edu.uniquindio.campusuq.ACTION_EVENTS";
+    public static final String ACTION_INFORMATIONS = "co.edu.uniquindio.campusuq.ACTION_INFORMATIONS";
+    public static final String ACTION_SYMBOLS = "co.edu.uniquindio.campusuq.ACTION_SYMBOLS";
+    public static final String ACTION_WELFARE = "co.edu.uniquindio.campusuq.ACTION_WELFARE";
 
     private static final int mNotificationId = 2;
 
@@ -74,6 +79,7 @@ public class WebService extends JobService {
             case ACTION_ALL:
                 loadNews(ACTION_NEWS);
                 loadNews(ACTION_EVENTS);
+                loadInformations();
                 break;
             case ACTION_NEWS:
                 loadNews(ACTION_NEWS);
@@ -200,7 +206,7 @@ public class WebService extends JobService {
             return;
 
         int inserted = 0;
-        if (MainActivity.haveNetworkConnection(getApplicationContext())) {
+        if (Utilities.haveNetworkConnection(getApplicationContext())) {
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             categories = NewsServiceController.getNewCategories();
             for (NewCategory category: categories) {
@@ -217,10 +223,6 @@ public class WebService extends JobService {
             }
             ArrayList<New> updated = NewsServiceController.getNews(lastNewId);
             for (New mNew : updated) {
-                // If the job has been cancelled, stop working; the job will be rescheduled.
-                if (jobCancelled)
-                    return;
-
                 String imagePath = Utilities.saveImage(mNew.getImage(), getApplicationContext());
                 if (imagePath != null) {
                     mNew.setImage(imagePath);
@@ -239,7 +241,7 @@ public class WebService extends JobService {
                     }
                 }
                 inserted += 1;
-                if (notify) {
+                if (notify && inserted <= 5) {
                     manager.notify(mNew.getName(), mNotificationId, buildNotification(type, mNew));
                 }
             }
@@ -249,6 +251,51 @@ public class WebService extends JobService {
 
         Intent intent = new Intent(ACTION_NEWS);
         intent.putExtra("INSERTED", inserted);
+        sendBroadcast(intent);
+
+    }
+
+    private void loadInformations() {
+
+        InformationsSQLiteController dbController = new InformationsSQLiteController(getApplicationContext(), 1);
+
+        if (Utilities.haveNetworkConnection(getApplicationContext())) {
+            boolean updateInformations = false;
+            ArrayList<InformationCategory> updatedCategories = InformationsServiceController.getInformationCategories();
+            for (InformationCategory category : updatedCategories) {
+                // If the job has been cancelled, stop working; the job will be rescheduled.
+                if (jobCancelled)
+                    return;
+
+                ArrayList<InformationCategory> oldCategories = dbController.selectCategory(
+                        InformationsSQLiteController.CAMPOS_CATEGORIA[0] + " = ?", new String[]{category.get_ID()});
+                if (oldCategories.size() == 0) {
+                    updateInformations = true;
+                    dbController.insertCategory(category.get_ID(), category.getName(), category.getLink(), category.getDate());
+                } else if (oldCategories.get(0).getDate().compareTo(category.getDate()) < 0) {
+                    updateInformations = true;
+                    // update category
+                }
+                if (updateInformations){
+                    ArrayList<Information> updatedInformations = InformationsServiceController.getInformations(category.get_ID());
+                    for (Information information : updatedInformations) {
+                        ArrayList<Information> olds = dbController.select(
+                                InformationsSQLiteController.CAMPOS_TABLA[0]+" = ?", new String[]{information.get_ID()});
+                        if (olds.size() > 0) {
+                            dbController.update(information.get_ID(), information.getCategory_ID(),
+                                    information.name, information.getContent());
+                        } else {
+                            dbController.insert(information.get_ID(), information.getCategory_ID(),
+                                    information.name, information.getContent());
+                        }
+                    }
+                }
+            }
+        }
+
+        dbController.destroy();
+
+        Intent intent = new Intent(ACTION_INFORMATIONS);
         sendBroadcast(intent);
 
     }
