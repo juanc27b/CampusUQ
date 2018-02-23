@@ -162,10 +162,12 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
 
                 break;
             case R.string.computer_rooms:
-
+                intent = new Intent(ItemsActivity.this, QuotasActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.computer_rooms));
                 break;
             case R.string.parking_lots:
-
+                intent = new Intent(ItemsActivity.this, QuotasActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.parking_lots));
                 break;
             case R.string.institutional_mail:
 
