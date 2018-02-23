@@ -6,32 +6,32 @@ package co.edu.uniquindio.campusuq.vo;
 
 public class Information {
 
-    public String id;
-    public String categoryId;
+    public String _ID;
+    public String category_ID;
     public String name;
     public String content;
 
-    public Information(String id, String categoryId, String name, String content) {
-        this.id = id;
-        this.categoryId = categoryId;
+    public Information(String _ID, String category_ID, String name, String content) {
+        this._ID = _ID;
+        this.category_ID = category_ID;
         this.name = name;
         this.content = content;
     }
 
-    public String getId() {
-        return id;
+    public String get_ID() {
+        return _ID;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void set_ID(String _ID) {
+        this._ID = _ID;
     }
 
-    public String getCategoryId() {
-        return categoryId;
+    public String getCategory_ID() {
+        return category_ID;
     }
 
-    public void setCategoryId(String categoryId) {
-        this.categoryId = categoryId;
+    public void setCategory_ID(String category_ID) {
+        this.category_ID = category_ID;
     }
 
     public String getName() {

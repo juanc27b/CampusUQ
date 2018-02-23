@@ -39,11 +39,11 @@ public class InformationsServiceController {
             JSONArray array = json.getJSONArray("datos");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                String id = StringEscapeUtils.unescapeHtml4(object.getString("ID"));
-                String categoryId = StringEscapeUtils.unescapeHtml4(object.getString("Categoria_ID"));
+                String _ID = StringEscapeUtils.unescapeHtml4(object.getString("_ID"));
+                String category_ID = StringEscapeUtils.unescapeHtml4(object.getString("Categoria_ID"));
                 String name = StringEscapeUtils.unescapeHtml4(object.getString("Nombre"));
                 String content = StringEscapeUtils.unescapeHtml4(object.getString("Contenido"));
-                Information information = new Information(id, categoryId, name, content);
+                Information information = new Information(_ID, category_ID, name, content);
                 informations.add(information);
             }
         } catch (Exception e) {
@@ -67,11 +67,11 @@ public class InformationsServiceController {
             JSONArray array = json.getJSONArray("datos");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                String id = StringEscapeUtils.unescapeHtml4(object.getString("ID"));
+                String _ID = StringEscapeUtils.unescapeHtml4(object.getString("_ID"));
                 String name = StringEscapeUtils.unescapeHtml4(object.getString("Nombre"));
                 String link = StringEscapeUtils.unescapeHtml4(object.getString("Enlace"));
                 String date = StringEscapeUtils.unescapeHtml4(object.getString("Fecha"));
-                InformationCategory category = new InformationCategory(id, name, link, date);
+                InformationCategory category = new InformationCategory(_ID, name, link, date);
                 categories.add(category);
             }
         } catch (Exception e) {

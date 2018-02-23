@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -81,7 +83,12 @@
             android:name=".activity.NewsActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
+            android:parentActivityName=".activity.ItemsActivity"
             android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.ItemsActivity" />
+
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -94,7 +101,12 @@
             android:name=".activity.NewsContentActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
+            android:parentActivityName=".activity.NewsActivity"
             android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.NewsActivity" />
+
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -107,7 +119,12 @@
             android:name=".activity.WebContentActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
+            android:parentActivityName=".activity.ItemsActivity"
             android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.ItemsActivity" />
+
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -120,11 +137,38 @@
             android:name=".activity.WebActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
+            android:parentActivityName=".activity.ItemsActivity"
             android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.ItemsActivity" />
         </activity>
 
         <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing"
             android:value="true" />
+
+        <service
+            android:name=".util.WebService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false">
+        </service>
+
+        <receiver
+            android:name=".util.WebBroadcastReceiver"
+            android:process=":remote">
+            <intent-filter>
+                <action android:name="co.edu.uniquindio.campusuq.ACTION_START_WEB_SERVICE" />
+                <action android:name="co.edu.uniquindio.campusuq.ACTION_STOP_WEB_SERVICE" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".util.StarterReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
+            </intent-filter>
+        </receiver>
 
         <!-- Facebook -->
 
@@ -170,7 +214,12 @@
             android:name=".activity.MapsActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
+            android:parentActivityName=".activity.ItemsActivity"
             android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.ItemsActivity" />
+
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>

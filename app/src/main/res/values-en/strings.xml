@@ -88,6 +88,10 @@
     <string name="change_to_mapview">Change to map view</string>
     <string name="change_to_streetview">Change to street view</string>
 
+    <string name="web_notification_id">Campus UQ Web Service</string>
+    <string name="web_notification_name">Campus UQ web service</string>
+    <string name="web_notification_description">Application web content</string>
+
     <string name="radio_title">Radio La UFM Estéreo 102.1</string>
     <string name="radio_notification_id">Campus UQ</string>
     <string name="radio_notification_name">La UFM UQ Estéreo</string>

@@ -45,7 +45,7 @@ public class NewsServiceController {
             JSONArray array = json.getJSONArray("datos");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                String id = StringEscapeUtils.unescapeHtml4(object.getString("ID"));
+                String _ID = StringEscapeUtils.unescapeHtml4(object.getString("_ID"));
                 String name = StringEscapeUtils.unescapeHtml4(object.getString("Nombre"));
                 String link = StringEscapeUtils.unescapeHtml4(object.getString("Enlace"));
                 String image = StringEscapeUtils.unescapeHtml4(object.getString("Imagen"));
@@ -53,7 +53,7 @@ public class NewsServiceController {
                 String content = StringEscapeUtils.unescapeHtml4(object.getString("Contenido"));
                 String date = StringEscapeUtils.unescapeHtml4(object.getString("Fecha"));
                 String author = StringEscapeUtils.unescapeHtml4(object.getString("Autor"));
-                New mNew = new New(id, name, link, image, summary, content, date, author);
+                New mNew = new New(_ID, name, link, image, summary, content, date, author);
                 news.add(mNew);
             }
         } catch (Exception e) {
@@ -77,10 +77,10 @@ public class NewsServiceController {
             JSONArray array = json.getJSONArray("datos");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                String id = StringEscapeUtils.unescapeHtml4(object.getString("ID"));
+                String _ID = StringEscapeUtils.unescapeHtml4(object.getString("_ID"));
                 String name = StringEscapeUtils.unescapeHtml4(object.getString("Nombre"));
                 String link = StringEscapeUtils.unescapeHtml4(object.getString("Enlace"));
-                NewCategory category = new NewCategory(id, name, link);
+                NewCategory category = new NewCategory(_ID, name, link);
                 categories.add(category);
             }
         } catch (Exception e) {
@@ -107,9 +107,9 @@ public class NewsServiceController {
             JSONArray array = json.getJSONArray("datos");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                String categoria_id = StringEscapeUtils.unescapeHtml4(object.getString("Categoria_ID"));
-                String noticia_id = StringEscapeUtils.unescapeHtml4(object.getString("Noticia_ID"));
-                NewRelation relation = new NewRelation(categoria_id, noticia_id);
+                String category_ID = StringEscapeUtils.unescapeHtml4(object.getString("Categoria_ID"));
+                String new_ID = StringEscapeUtils.unescapeHtml4(object.getString("Noticia_ID"));
+                NewRelation relation = new NewRelation(category_ID, new_ID);
                 relations.add(relation);
             }
         } catch (Exception e) {

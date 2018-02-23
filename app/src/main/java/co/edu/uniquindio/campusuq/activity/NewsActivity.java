@@ -2,9 +2,10 @@ package co.edu.uniquindio.campusuq.activity;
 
 import android.app.ProgressDialog;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,8 +27,8 @@ import java.util.ArrayList;
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.NewsAdapter;
 import co.edu.uniquindio.campusuq.util.NewsSQLiteController;
-import co.edu.uniquindio.campusuq.util.NewsServiceController;
-import co.edu.uniquindio.campusuq.util.Utilities;
+import co.edu.uniquindio.campusuq.util.WebBroadcastReceiver;
+import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.New;
 import co.edu.uniquindio.campusuq.vo.NewCategory;
 import co.edu.uniquindio.campusuq.vo.NewRelation;
@@ -39,7 +40,12 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
     private RecyclerView.LayoutManager mLayoutManager;
 
     public ArrayList<New> news;
-    public boolean oldActivity;
+    public boolean oldActivity = false;
+
+    private ProgressDialog pDialog;
+    boolean oldNews = true;
+
+    private String action;
 
     public CallbackManager callbackManager;
     public boolean loggedIn;
@@ -83,7 +89,14 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
         stub.setLayoutResource(R.layout.content_news);
         View inflated = stub.inflate();
 
-        addItems(getIntent().getStringExtra("CATEGORY"));
+        pDialog = new ProgressDialog(NewsActivity.this);
+        pDialog.setTitle(getString(R.string.loading_content));
+        pDialog.setMessage(getString(R.string.please_wait));
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(true);
+
+        String category = getIntent().getStringExtra("CATEGORY");
+        action = getString(R.string.news).equals(category) ? WebService.ACTION_NEWS : WebService.ACTION_EVENTS;
 
     }
 
@@ -105,8 +118,9 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
             }
         } else if (mAdapter != null) {
             String category = intent.getStringExtra("CATEGORY");
+            getSupportActionBar().setTitle(category);
+            action = getString(R.string.news).equals(category) ? WebService.ACTION_NEWS : WebService.ACTION_EVENTS;
             this.oldActivity = true;
-            addItems(category);
         }
     }
 
@@ -153,175 +167,118 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
         }
     }
 
-    public void addItems(String category) {
+    private void loadNews(int inserted) {
 
-        LoadNewsAsync loadImageAsync = new LoadNewsAsync(this);
-        loadImageAsync.execute(category, "new");
+        int scrollTo = 0;
+
+        NewsSQLiteController dbController = new NewsSQLiteController(getApplicationContext(), 1);
+        String validRows = null;
+
+        String events = "";
+        ArrayList<NewCategory> categories = dbController.selectCategory(null,
+                NewsSQLiteController.CAMPOS_CATEGORIA[1] + " = ?", new String[]{"Eventos"});
+        ArrayList<NewRelation> relations;
+        if (categories.size() > 0) {
+            relations = dbController.selectRelation(null,
+                    NewsSQLiteController.CAMPOS_RELACION[0] + " = ?", new String[]{categories.get(0).get_ID()});
+            for (NewRelation relation : relations) {
+                events += relation.getNew_ID() + ",";
+            }
+            events = events.substring(0, events.length() - 1);
+            if (WebService.ACTION_NEWS.equals(action)) {
+                validRows = NewsSQLiteController.CAMPOS_TABLA[0]+" NOT IN ("+events+")";
+            } else {
+                validRows = NewsSQLiteController.CAMPOS_TABLA[0]+" IN ("+events+")";
+            }
+        }
+
+        int limit = inserted > 0 ? news.size()+inserted : news.size()+3;
+        if (!oldNews) {
+            scrollTo = (inserted != 0) ? inserted - 1 : 0;
+        } else {
+            scrollTo = oldActivity ? news.size()-1 : 0;
+        }
+        news = dbController.select(""+limit,
+                validRows, null);
+
+        dbController.destroy();
+
+        if (!oldActivity) {
+            mRecyclerView = (RecyclerView) findViewById(R.id.news_recycler_view);
+            mRecyclerView.setHasFixedSize(true);
+
+            mLayoutManager = new LinearLayoutManager(NewsActivity.this, LinearLayoutManager.VERTICAL, false);
+            mRecyclerView.setLayoutManager(mLayoutManager);
+
+            mAdapter = new NewsAdapter(news, NewsActivity.this);
+            mRecyclerView.setAdapter(mAdapter);
+
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                }
+
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                        if (!mRecyclerView.canScrollVertically(-1)) {
+                            if (haveNetworkConnection(NewsActivity.this)) {
+                                oldNews = false;
+                                pDialog.show();
+                                WebBroadcastReceiver.scheduleJob(getApplicationContext(), WebService.ACTION_NEWS);
+                            } else {
+                                Toast.makeText(NewsActivity.this, "No hay conexión a internet", Toast.LENGTH_SHORT).show();
+                            }
+                        } else if (!mRecyclerView.canScrollVertically(1)) {
+                            oldNews = true;
+                            pDialog.show();
+                            loadNews(0);
+                        }
+                    }
+                }
+            });
+
+            oldActivity = true;
+        } else {
+            mAdapter.setNews(news);
+            mLayoutManager.scrollToPosition(scrollTo);
+        }
+
+        if (pDialog != null && pDialog.isShowing()) {
+            pDialog.dismiss();
+        }
 
     }
 
-    public class LoadNewsAsync extends AsyncTask<String, Void, Boolean> {
-
-        private Context context;
-        private ProgressDialog pDialog;
-        private int scrollTo = 0;
-
-        public LoadNewsAsync(Context context) {
-            this.context = context;
-        }
-
+    // Define the callback for what to do when data is received
+    private BroadcastReceiver newsReceiver = new BroadcastReceiver() {
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pDialog = new ProgressDialog(context);
-            pDialog.setTitle(context.getString(R.string.loading_content));
-            pDialog.setMessage(context.getString(R.string.please_wait));
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
+        public void onReceive(Context context, Intent intent) {
 
-        @Override
-        protected Boolean doInBackground(String... args) {
-
-            Boolean success = true;
-
-            NewsSQLiteController dbController = new NewsSQLiteController(NewsActivity.this, 1);
-            String validRows = null;
-            String lastNewId = null;
-
-            String events = "";
-            ArrayList<NewCategory> categories = dbController.selectCategory(null,
-                    NewsSQLiteController.CAMPOS_CATEGORIA[1] + " = ?", new String[]{"Eventos"});
-            ArrayList<NewRelation> relations;
-            if (categories.size() > 0) {
-                relations = dbController.selectRelation(null,
-                        NewsSQLiteController.CAMPOS_RELACION[0] + " = ?", new String[]{categories.get(0).getId()});
-                for (NewRelation relation : relations) {
-                    events += relation.getNewId() + ",";
-                }
-                events = events.substring(0, events.length() - 1);
-                if (args[0].equals(getString(R.string.news))) {
-                    validRows = NewsSQLiteController.CAMPOS_TABLA[0]+" NOT IN ("+events+")";
-                    lastNewId = "/no_eventos";
-                } else {
-                    validRows = NewsSQLiteController.CAMPOS_TABLA[0]+" IN ("+events+")";
-                    lastNewId = "/eventos";
-                }
-
-            }
-
-            if (args[1].equals("new") && haveNetworkConnection(NewsActivity.this)) {
-                int inserted = 0;
-                categories = NewsServiceController.getNewCategories();
-                for (NewCategory category: categories) {
-                    ArrayList<NewCategory> oldCategories = dbController.selectCategory("1",
-                            NewsSQLiteController.CAMPOS_CATEGORIA[0]+" = ?", new String[]{category.getId()});
-                    if (oldCategories.size() == 0) {
-                        dbController.insertCategory(category.getId(), category.getName(), category.getLink());
-                    }
-                }
-
-                ArrayList<New> lastNews = dbController.select("1", validRows, null);
-                if (lastNews.size() > 0) {
-                    lastNewId += "/"+lastNews.get(0).getId();
-                }
-                ArrayList<New> updated = NewsServiceController.getNews(lastNewId);
-                for (New mNew : updated) {
-                    String imagePath = Utilities.saveImage(mNew.getImage(), context);
-                    if (imagePath != null) {
-                        mNew.setImage(imagePath);
-                    } else {
-                        success = false;
-                    }
-                    ArrayList<New> olds = dbController.select("1",
-                            NewsSQLiteController.CAMPOS_TABLA[0]+" = ?", new String[]{mNew.getId()});
-                    if (olds.size() > 0) {
-                        dbController.update(mNew.getId(), mNew.getName(), mNew.getLink(), mNew.getImage(),
-                                mNew.getSummary(), mNew.getContent(), mNew.getDate(), mNew.getAuthor());
-                    } else {
-                        dbController.insert(mNew.getId(), mNew.getName(), mNew.getLink(), mNew.getImage(),
-                                mNew.getSummary(), mNew.getContent(), mNew.getDate(), mNew.getAuthor());
-                        relations = NewsServiceController.getNewRelations(mNew.getId());
-                        for (NewRelation relation : relations) {
-                            dbController.insertRelation(relation.getCategoryId(), relation.getNewId());
-                        }
-                        inserted += 1;
-                    }
-                }
-                int limit = news.size()+inserted;
-                if (limit < 3) {
-                    limit = 3;
-                }
-                scrollTo = (inserted != 0) ? inserted - 1 : 0;
-                news = dbController.select(""+limit,
-                        validRows, null);
-            } else {
-                scrollTo = oldActivity ? news.size()-1 : 0;
-                news = dbController.select(""+(news.size()+3),
-                        validRows, null);
-            }
-
-            return success;
+            int inserted = intent.getIntExtra("INSERTED", 0);
+            loadNews(inserted);
 
         }
+    };
 
-        @Override
-        protected void onPostExecute(Boolean success) {
-            if (!success) {
-                Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
-                pDialog.dismiss();
-            } else {
-                if (pDialog != null) {
-                    if (pDialog.isShowing()) {
-                        pDialog.dismiss();
-                    }
-                }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Register for the particular broadcast based on ACTION string
+        IntentFilter filter = new IntentFilter(WebService.ACTION_NEWS);
+        registerReceiver(newsReceiver, filter);
 
-                if (!oldActivity) {
-                    mRecyclerView = (RecyclerView) findViewById(R.id.news_recycler_view);
-                    mRecyclerView.setHasFixedSize(true);
+        pDialog.show();
+        loadNews(0);
+    }
 
-                    mLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
-                    mRecyclerView.setLayoutManager(mLayoutManager);
-
-                    mAdapter = new NewsAdapter(news, NewsActivity.this);
-                    mRecyclerView.setAdapter(mAdapter);
-
-                    mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                        @Override
-                        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                            super.onScrolled(recyclerView, dx, dy);
-                        }
-
-                        @Override
-                        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                            super.onScrollStateChanged(recyclerView, newState);
-                            if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                                if (!mRecyclerView.canScrollVertically(-1)) {
-                                    if (haveNetworkConnection(context)) {
-                                        LoadNewsAsync loadImageAsync = new LoadNewsAsync(context);
-                                        loadImageAsync.execute(getIntent().getStringExtra("CATEGORY"), "new");
-                                    } else {
-                                        Toast.makeText(context, "No hay conexión a internet", Toast.LENGTH_SHORT).show();
-                                    }
-                                } else if (!mRecyclerView.canScrollVertically(1)) {
-                                    LoadNewsAsync loadImageAsync = new LoadNewsAsync(context);
-                                    loadImageAsync.execute(getIntent().getStringExtra("CATEGORY"), "old");
-                                }
-                            }
-                        }
-                    });
-
-                    oldActivity = true;
-                } else {
-                    mAdapter.setNews(news);
-                    mLayoutManager.scrollToPosition(scrollTo);
-                }
-
-            }
-        }
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Unregister the listener when the application is paused
+        unregisterReceiver(newsReceiver);
     }
 
 }

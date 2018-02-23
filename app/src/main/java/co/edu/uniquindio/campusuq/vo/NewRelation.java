@@ -6,28 +6,28 @@ package co.edu.uniquindio.campusuq.vo;
 
 public class NewRelation {
 
-    public String categoryId;
-    public String newId;
+    public String category_ID;
+    public String new_ID;
 
-    public NewRelation(String categoryId, String newId) {
-        this.categoryId = categoryId;
-        this.newId = newId;
+    public NewRelation(String category_ID, String new_ID) {
+        this.category_ID = category_ID;
+        this.new_ID = new_ID;
     }
 
-    public String getCategoryId() {
-        return categoryId;
+    public String getCategory_ID() {
+        return category_ID;
     }
 
-    public void setCategoryId(String categoryId) {
-        this.categoryId = categoryId;
+    public void setCategory_ID(String category_ID) {
+        this.category_ID = category_ID;
     }
 
-    public String getNewId() {
-        return newId;
+    public String getNew_ID() {
+        return new_ID;
     }
 
-    public void setNewId(String newId) {
-        this.newId = newId;
+    public void setNew_ID(String new_ID) {
+        this.new_ID = new_ID;
     }
 
 }

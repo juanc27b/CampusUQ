@@ -6,7 +6,7 @@ package co.edu.uniquindio.campusuq.vo;
 
 public class New {
 
-    public String id;
+    public String _ID;
     public String name;
     public String link;
     public String image;
@@ -15,8 +15,8 @@ public class New {
     public String date;
     public String author;
 
-    public New(String id, String name, String link, String image, String summary, String content, String date, String author) {
-        this.id = id;
+    public New(String _ID, String name, String link, String image, String summary, String content, String date, String author) {
+        this._ID = _ID;
         this.name = name;
         this.link = link;
         this.image = image;
@@ -26,12 +26,12 @@ public class New {
         this.author = author;
     }
 
-    public String getId() {
-        return id;
+    public String get_ID() {
+        return _ID;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void set_ID(String _ID) {
+        this._ID = _ID;
     }
 
     public String getName() {

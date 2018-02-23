@@ -16,10 +16,10 @@ import co.edu.uniquindio.campusuq.vo.InformationCategory;
 public class InformationsSQLiteController {
 
     public static final String NOMBRE_TABLA = "Informacion";
-    public static final String CAMPOS_TABLA[] = new String[]{"ID", "Categoria_ID", "Nombre", "Contenido"};
+    public static final String CAMPOS_TABLA[] = new String[]{"_ID", "Categoria_ID", "Nombre", "Contenido"};
 
     public static final String NOMBRE_CATEGORIA = "Informacion_Categoria";
-    public static final String CAMPOS_CATEGORIA[] = new String[]{"ID", "Nombre", "Enlace", "Fecha"};
+    public static final String CAMPOS_CATEGORIA[] = new String[]{"_ID", "Nombre", "Enlace", "Fecha"};
 
     private SQLiteHelper usdbh;
     private SQLiteDatabase db;

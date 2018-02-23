@@ -6,24 +6,24 @@ package co.edu.uniquindio.campusuq.vo;
 
 public class InformationCategory {
 
-    public String id;
+    public String _ID;
     public String name;
     public String link;
     public String date;
 
-    public InformationCategory(String id, String name, String link, String date) {
-        this.id = id;
+    public InformationCategory(String _ID, String name, String link, String date) {
+        this._ID = _ID;
         this.name = name;
         this.link = link;
         this.date = date;
     }
 
-    public String getId() {
-        return id;
+    public String get_ID() {
+        return _ID;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void set_ID(String _ID) {
+        this._ID = _ID;
     }
 
     public String getName() {

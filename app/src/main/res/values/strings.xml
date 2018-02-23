@@ -129,6 +129,10 @@
     <string name="marker_f7">Futuro desarrollo</string>
     <string name="marker_f8">Futuro desarrollo</string>
 
+    <string name="web_notification_id">Campus UQ Web Service</string>
+    <string name="web_notification_name">Servicio web de Campus UQ</string>
+    <string name="web_notification_description">Contenido web de la aplicación</string>
+
     <string name="radio_title">Emisora La UFM Estéreo 102.1</string>
     <string name="radio_notification_id">Campus UQ</string>
     <string name="radio_notification_name">La UFM UQ Estéreo</string>

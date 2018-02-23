@@ -170,24 +170,24 @@ public class ItemsPresenter {
             ArrayList<InformationCategory> updatedCategories = InformationsServiceController.getInformationCategories();
             for (InformationCategory category : updatedCategories) {
                 ArrayList<InformationCategory> oldCategories = dbController.selectCategory(
-                        InformationsSQLiteController.CAMPOS_CATEGORIA[0] + " = ?", new String[]{category.getId()});
+                        InformationsSQLiteController.CAMPOS_CATEGORIA[0] + " = ?", new String[]{category.get_ID()});
                 if (oldCategories.size() == 0) {
                     updateInformations = true;
-                    dbController.insertCategory(category.getId(), category.getName(), category.getLink(), category.getDate());
+                    dbController.insertCategory(category.get_ID(), category.getName(), category.getLink(), category.getDate());
                 } else if (oldCategories.get(0).getDate().compareTo(category.getDate()) < 0) {
                     updateInformations = true;
                     // update category
                 }
                 if (updateInformations){
-                    ArrayList<Information> updatedInformations = InformationsServiceController.getInformations(category.getId());
+                    ArrayList<Information> updatedInformations = InformationsServiceController.getInformations(category.get_ID());
                     for (Information information : updatedInformations) {
                         ArrayList<Information> olds = dbController.select(
-                                InformationsSQLiteController.CAMPOS_TABLA[0]+" = ?", new String[]{information.getId()});
+                                InformationsSQLiteController.CAMPOS_TABLA[0]+" = ?", new String[]{information.get_ID()});
                         if (olds.size() > 0) {
-                            dbController.update(information.getId(), information.getCategoryId(),
+                            dbController.update(information.get_ID(), information.getCategory_ID(),
                                     information.name, information.getContent());
                         } else {
-                            dbController.insert(information.getId(), information.getCategoryId(),
+                            dbController.insert(information.get_ID(), information.getCategory_ID(),
                                     information.name, information.getContent());
                         }
                     }
@@ -201,7 +201,7 @@ public class ItemsPresenter {
         if (categories.size() > 0) {
             link = categories.get(0).getLink();
             informations = dbController.select(
-                    InformationsSQLiteController.CAMPOS_TABLA[1] + " = ?", new String[]{categories.get(0).getId()});
+                    InformationsSQLiteController.CAMPOS_TABLA[1] + " = ?", new String[]{categories.get(0).get_ID()});
         } else {
             informations = new ArrayList<>();
         }

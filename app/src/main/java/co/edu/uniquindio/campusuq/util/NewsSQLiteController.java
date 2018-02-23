@@ -18,10 +18,10 @@ public class NewsSQLiteController {
 
     public static final String NOMBRE_TABLA = "Noticia";
     public static final String CAMPOS_TABLA[] =
-            new String[]{"ID", "Nombre", "Enlace", "Imagen", "Resumen", "Contenido", "Fecha", "Autor"};
+            new String[]{"_ID", "Nombre", "Enlace", "Imagen", "Resumen", "Contenido", "Fecha", "Autor"};
 
     public static final String NOMBRE_CATEGORIA = "Noticia_Categoria";
-    public static final String CAMPOS_CATEGORIA[] = new String[]{"ID", "Nombre", "Enlace"};
+    public static final String CAMPOS_CATEGORIA[] = new String[]{"_ID", "Nombre", "Enlace"};
 
     public static final String NOMBRE_RELACION = "Noticia_Relacion";
     public static final String CAMPOS_RELACION[] = new String[]{"Categoria_ID", "Noticia_ID"};
@@ -210,6 +210,10 @@ public class NewsSQLiteController {
                 campos[0],
                 campos[1]
         });
+    }
+
+    public void destroy() {
+        usdbh.close();
     }
 
 }

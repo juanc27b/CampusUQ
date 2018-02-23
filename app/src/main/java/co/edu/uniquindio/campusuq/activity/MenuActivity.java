@@ -8,6 +8,7 @@ import android.view.ViewStub;
 import android.widget.LinearLayout;
 
 import co.edu.uniquindio.campusuq.R;
+import co.edu.uniquindio.campusuq.util.StarterReceiver;
 
 public class MenuActivity extends MainActivity {
 
@@ -71,6 +72,13 @@ public class MenuActivity extends MainActivity {
             }
         });
 
+        loadContent();
+
+    }
+
+    public void loadContent() {
+        StarterReceiver.cancelAlarm(getApplicationContext());
+        StarterReceiver.scheduleAlarm(getApplicationContext());
     }
 
 }
