@@ -25,6 +25,7 @@ import co.edu.uniquindio.campusuq.vo.InformationCategory;
 import co.edu.uniquindio.campusuq.vo.New;
 import co.edu.uniquindio.campusuq.vo.NewCategory;
 import co.edu.uniquindio.campusuq.vo.NewRelation;
+import co.edu.uniquindio.campusuq.vo.Quota;
 
 /**
  * Created by Juan Camilo on 21/02/2018.
@@ -39,6 +40,7 @@ public class WebService extends JobService {
     public static final String ACTION_INFORMATIONS = "co.edu.uniquindio.campusuq.ACTION_INFORMATIONS";
     public static final String ACTION_SYMBOLS = "co.edu.uniquindio.campusuq.ACTION_SYMBOLS";
     public static final String ACTION_WELFARE = "co.edu.uniquindio.campusuq.ACTION_WELFARE";
+    public static final String ACTION_QUOTAS = "co.edu.uniquindio.campusuq.ACTION_QUOTAS";
 
     private static final int mNotificationId = 2;
 
@@ -80,6 +82,7 @@ public class WebService extends JobService {
                 loadNews(ACTION_NEWS);
                 loadNews(ACTION_EVENTS);
                 loadInformations();
+                loadQuotas();
                 break;
             case ACTION_NEWS:
                 loadNews(ACTION_NEWS);
@@ -298,6 +301,28 @@ public class WebService extends JobService {
         Intent intent = new Intent(ACTION_INFORMATIONS);
         sendBroadcast(intent);
 
+    }
+
+    private void loadQuotas() {
+        if(Utilities.haveNetworkConnection(getApplicationContext())) {
+            QuotasSQLiteController dbController = new QuotasSQLiteController(
+                getApplicationContext(), 1
+            );
+            for(Quota quota : QuotasServiceController.getQuotas(null)) {
+                ArrayList<Quota> olds = dbController.select(
+                    null, '`'+QuotasSQLiteController.CAMPOS_TABLA[0]+"` = ?",
+                    new String[]{quota.get_ID()}
+                );
+                if(olds.size() > 0) dbController.update(
+                        quota.get_ID(), quota.getType(), quota.getName(), quota.getQuota()
+                );
+                else dbController.insert(
+                        quota.get_ID(), quota.getType(), quota.getName(), quota.getQuota()
+                );
+            }
+            dbController.destroy();
+        }
+        sendBroadcast(new Intent(ACTION_QUOTAS));
     }
 
     @Override

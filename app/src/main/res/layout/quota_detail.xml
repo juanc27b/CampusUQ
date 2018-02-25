@@ -11,20 +11,17 @@
     card_view:cardBackgroundColor="#ffffff"
     card_view:cardCornerRadius="10dp"
     tools:context="co.edu.uniquindio.campusuq.activity.QuotasActivity">
-
     <LinearLayout
         android:id="@+id/quota_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp">
-
         <ImageView
             android:id="@+id/quota_icon"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginEnd="5dp"
             android:src="@drawable/circle_green" />
-
         <TextView
             android:id="@+id/quota_name"
             android:layout_width="0dp"
@@ -36,31 +33,25 @@
             android:text="@string/sample_quota_name"
             android:textSize="20sp"
             android:textColor="@android:color/black" />
-
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:layout_marginStart="5dp">
-
             <TextView
                 android:id="@+id/quota_quota"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/sample_quota_quota"
-                android:textSize="20sp"
+                android:textSize="15sp"
                 android:textColor="@android:color/black" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/quota_text"
-                android:textSize="20sp"
+                android:textSize="15sp"
                 android:textColor="@android:color/black" />
-
         </LinearLayout>
-
     </LinearLayout>
-
 </android.support.v7.widget.CardView>

@@ -26,7 +26,9 @@ public class QuotasAdapter extends RecyclerView.Adapter<QuotasAdapter.QuotaViewH
         }
 
         public void bindItem(Quota q) {
+            if(q.getQuota().equals("0")) icon.setImageResource(R.drawable.circle_gray);
             name.setText(q.getName());
+            if(q.getType().equals("P")) name.setTextSize(12);
             quota.setText(q.getQuota());
         }
 
@@ -51,8 +53,9 @@ public class QuotasAdapter extends RecyclerView.Adapter<QuotasAdapter.QuotaViewH
 
     @Override
     public QuotaViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View quotaView = LayoutInflater.from(parent.getContext()).inflate(R.layout.quota_detail, parent, false);
-        return new QuotasAdapter.QuotaViewHolder(quotaView);
+        return new QuotasAdapter.QuotaViewHolder(LayoutInflater.from(parent.getContext()).inflate(
+            R.layout.quota_detail, parent, false
+        ));
     }
 
     @Override

@@ -24,6 +24,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(InformationsSQLiteController.createCategoryTable());
         db.execSQL(InformationsSQLiteController.createTable());
 
+        db.execSQL(QuotasSQLiteController.createTable());
     }
 
     @Override
