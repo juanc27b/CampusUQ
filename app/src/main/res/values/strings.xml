@@ -1,8 +1,11 @@
 <resources>
     <string name="app_name">Campus UQ</string>
+    <string name="author">Juan Camilo González Idárraga</string>
 
     <string name="app_title_menu">Menú</string>
+    <string name="function_menu">Menú de Funciones</string>
 
+    <string name="select_items">Seleccione un ítem</string>
     <string name="search_hint">Buscar ítems</string>
 
     <string name="information_module">Información</string>
@@ -81,7 +84,8 @@
     <string name="profiles_description">Leer la descripción de las habilidades obtenidas al egresar de este programa</string>
     <string name="program_contact">Información adicional</string>
     <string name="program_contact_description">Ver información de contacto, registro calificado, horarios de atención, etc.</string>
-    
+
+    <string name="read_more">Leer más</string>
     <string name="news_detail">Detalle de noticia</string>
 
     <string name="contacts">contacto(s)</string>
@@ -90,6 +94,10 @@
     <string name="email">Correo</string>
     <string name="charge">Cargo</string>
     <string name="additional_information">Información adicional</string>
+
+    <string name="category">Categoría</string>
+
+    <string name="select_event">Seleccione un evento para ver fechas detalladas</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

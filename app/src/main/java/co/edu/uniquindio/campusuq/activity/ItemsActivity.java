@@ -139,7 +139,8 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
             WebService.PENDING_ACTION = WebService.ACTION_PROGRAMS;
             loadPrograms(ItemsActivity.this);
         } else if (getString(R.string.academic_calendar).equals(title)) {
-
+            WebService.PENDING_ACTION = WebService.ACTION_CALENDAR;
+            loadEventCategories(ItemsActivity.this);
         } else if (getString(R.string.employment_exchange).equals(title)) {
             intent = new Intent(ItemsActivity.this, WebActivity.class);
             intent.putExtra("URL", getString(R.string.employment_exchange_url));
@@ -217,6 +218,9 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
                 getString(R.string.profiles).equals(title) ||
                 getString(R.string.program_contact).equals(title)) {
             loadProgramContent(category, title);
+        } else if (getString(R.string.academic_calendar).equals(category)) {
+            intent = new Intent(ItemsActivity.this, CalendarActivity.class);
+            intent.putExtra("CATEGORY", title);
         }
 
         if (intent != null) {
@@ -250,17 +254,16 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (getString(R.string.institution).equals(category)) {
+        } else if (getString(R.string.institution).equals(category) ||
+                getString(R.string.directory).equals(category) ||
+                getString(R.string.academic_offer).equals(category) ||
+                getString(R.string.academic_calendar).equals(category)) {
             Intent intent = new Intent(ItemsActivity.this, ItemsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.information_module));
             ItemsActivity.this.startActivity(intent);
         } else if (getString(R.string.library_services).equals(category)) {
             Intent intent = new Intent(ItemsActivity.this, ItemsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.services_module));
-            ItemsActivity.this.startActivity(intent);
-        } else if (getString(R.string.directory).equals(category)) {
-            Intent intent = new Intent(ItemsActivity.this, ItemsActivity.class);
-            intent.putExtra("CATEGORY", getString(R.string.information_module));
             ItemsActivity.this.startActivity(intent);
         } else if (subcategory != null) {
             if (getString(R.string.directory).equals(subcategory)) {

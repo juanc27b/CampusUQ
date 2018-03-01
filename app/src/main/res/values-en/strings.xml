@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Campus UQ</string>
+    <string name="author">Juan Camilo González Idárraga</string>
 
     <string name="app_title_menu">Menu</string>
+    <string name="function_menu">Function Menu</string>
 
+    <string name="select_items">Select an item</string>
     <string name="search_hint">Search items</string>
 
     <string name="information_module">Information</string>
@@ -83,6 +86,7 @@
     <string name="program_contact">Additional information</string>
     <string name="program_contact_description"></string>
 
+    <string name="read_more">Read more</string>
     <string name="news_detail">News detail</string>
 
     <string name="contacts">contact(s)</string>
@@ -91,6 +95,10 @@
     <string name="email">Email</string>
     <string name="charge">Charge</string>
     <string name="additional_information">Additional information</string>
+
+    <string name="category">Category</string>
+
+    <string name="select_event">Select an event for see detailed dates</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

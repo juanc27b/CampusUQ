@@ -22,6 +22,11 @@ import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.NewsActivity;
 import co.edu.uniquindio.campusuq.vo.Contact;
 import co.edu.uniquindio.campusuq.vo.ContactCategory;
+import co.edu.uniquindio.campusuq.vo.Event;
+import co.edu.uniquindio.campusuq.vo.EventCategory;
+import co.edu.uniquindio.campusuq.vo.EventDate;
+import co.edu.uniquindio.campusuq.vo.EventPeriod;
+import co.edu.uniquindio.campusuq.vo.EventRelation;
 import co.edu.uniquindio.campusuq.vo.Information;
 import co.edu.uniquindio.campusuq.vo.InformationCategory;
 import co.edu.uniquindio.campusuq.vo.New;
@@ -45,6 +50,12 @@ public class WebService extends JobService {
     public static final String ACTION_WELFARE = "co.edu.uniquindio.campusuq.ACTION_WELFARE";
     public static final String ACTION_CONTACTS = "co.edu.uniquindio.campusuq.ACTION_CONTACTS";
     public static final String ACTION_PROGRAMS = "co.edu.uniquindio.campusuq.ACTION_PROGRAMS";
+    public static final String ACTION_CALENDAR = "co.edu.uniquindio.campusuq.ACTION_CALENDAR";
+
+    public static final String METHOD_GET = "co.edu.uniquindio.campusuq.METHOD_GET";
+    public static final String METHOD_POST = "co.edu.uniquindio.campusuq.METHOD_POST";
+    public static final String METHOD_PUT = "co.edu.uniquindio.campusuq.METHOD_PUT";
+    public static final String METHOD_DELETE = "co.edu.uniquindio.campusuq.METHOD_DELETE";
 
     public static String PENDING_ACTION = ACTION_NONE;
 
@@ -83,11 +94,13 @@ public class WebService extends JobService {
     private void doWork(JobParameters params) {
         Log.i(TAG, "entrando a doWork");
         String action = params.getExtras().getString("ACTION");
+        String method = params.getExtras().getString("METHOD");
         switch (action) {
             case ACTION_ALL:
                 loadInformations();
                 loadContacts();
                 loadPrograms();
+                loadCalendar();
                 loadNews(ACTION_EVENTS);
                 loadNews(ACTION_NEWS);
                 break;
@@ -390,6 +403,70 @@ public class WebService extends JobService {
                             program.getProfilesLink(), program.getProfilesDate());
                 }
             }
+        }
+
+        dbController.destroy();
+
+        Intent intent = new Intent(PENDING_ACTION);
+        sendBroadcast(intent);
+
+    }
+
+    private void loadCalendar() {
+
+        EventsSQLiteController dbController = new EventsSQLiteController(getApplicationContext(), 1);
+
+        ArrayList<EventDate> oldDates = dbController.selectDate(
+                EventsSQLiteController.CAMPOS_FECHA[1]+" = ?", new String[]{"fechasPub"});
+        if (oldDates.size() > 0 && Utilities.haveNetworkConnection(getApplicationContext())) {
+            ArrayList<EventDate> updatedDates = EventsServiceController.getEventDates();
+            for (EventDate date : updatedDates) {
+                if (date.getType().equals("fechasPub")) {
+                    if (oldDates.get(0).getDate().compareTo(date.getDate()) < 0) {
+                        dbController.deleteRelation();
+                        dbController.deleteDate();
+                        dbController.deletePeriod();
+                        dbController.delete();
+                        dbController.deleteCategory();
+                    }
+                    break;
+                }
+            }
+        }
+
+        // If the job has been cancelled, stop working; the job will be rescheduled.
+        if (jobCancelled)
+            return;
+
+        ArrayList<EventCategory> oldCategories = dbController.selectCategory(null, null);
+        if (oldCategories.size() == 0 && Utilities.haveNetworkConnection(getApplicationContext())) {
+
+            ArrayList<EventCategory> updatedCategories = EventsServiceController.getEventCategories();
+            for (EventCategory category : updatedCategories) {
+                dbController.insertCategory(category.get_ID(), category.getAbbreviation(), category.getName());
+            }
+
+            ArrayList<Event> updatedEvents = EventsServiceController.getEvents();
+            for (Event event : updatedEvents) {
+                dbController.insert(event.get_ID(), event.getName());
+            }
+
+            ArrayList<EventPeriod> updatedPeriods = EventsServiceController.getEventPeriods();
+            for (EventPeriod period : updatedPeriods) {
+                dbController.insertPeriod(period.get_ID(), period.getName());
+            }
+
+            ArrayList<EventDate> updatedDates = EventsServiceController.getEventDates();
+            for (EventDate date : updatedDates) {
+                dbController.insertDate(date.get_ID(), date.getType(), date.getDate());
+            }
+
+            ArrayList<EventRelation> updatedRelations = EventsServiceController.getEventRelations();
+            for (EventRelation relation : updatedRelations) {
+                dbController.insertRelation(relation.getCategory_ID(), relation.getEvent_ID(),
+                        relation.getPeriod_ID(), relation.getDate_ID());
+            }
+
         }
 
         dbController.destroy();

@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.vo.Contact;
 import co.edu.uniquindio.campusuq.vo.ContactCategory;
+import co.edu.uniquindio.campusuq.vo.EventCategory;
+import co.edu.uniquindio.campusuq.vo.EventRelation;
 import co.edu.uniquindio.campusuq.vo.Information;
 import co.edu.uniquindio.campusuq.vo.InformationCategory;
 import co.edu.uniquindio.campusuq.vo.Item;
@@ -355,5 +357,27 @@ public class ItemsPresenter {
         return info;
     }
 
+    public static ArrayList<Item> getEventCategories(Context context) {
+
+        ArrayList<Item> items = new ArrayList<>();
+
+        EventsSQLiteController dbController = new EventsSQLiteController(context, 1);
+
+        ArrayList<EventCategory> categories = dbController.selectCategory(null, null);
+
+        for (EventCategory category : categories) {
+            ArrayList<EventRelation> relations = dbController.selectRelation(
+                    new String[]{EventsSQLiteController.CAMPOS_RELACION[1]},
+                    EventsSQLiteController.CAMPOS_RELACION[0] + " = ?", new String[]{category.get_ID()});
+            String description = context.getString(R.string.category)+": "+category.getAbbreviation()+", "+
+                    context.getString(R.string.events)+": "+relations.size();
+            Item item = new Item(getColor(), 0, category.getName(), description);
+            items.add(item);
+        }
+
+        dbController.destroy();
+
+        return items;
+    }
 
 }

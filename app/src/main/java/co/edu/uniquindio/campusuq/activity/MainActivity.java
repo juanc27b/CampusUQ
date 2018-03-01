@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity
         mainFilter.addAction(WebService.ACTION_WELFARE);
         mainFilter.addAction(WebService.ACTION_CONTACTS);
         mainFilter.addAction(WebService.ACTION_PROGRAMS);
+        mainFilter.addAction(WebService.ACTION_CALENDAR);
     }
 
     @Override
@@ -186,7 +187,8 @@ public class MainActivity extends AppCompatActivity
                 loadPrograms(MainActivity.this);
                 break;
             case R.id.nav_academic_calendar:
-
+                WebService.PENDING_ACTION = WebService.ACTION_CALENDAR;
+                loadEventCategories(MainActivity.this);
                 break;
             case R.id.nav_employment_exchange:
                 intent = new Intent(MainActivity.this, WebActivity.class);
@@ -297,6 +299,9 @@ public class MainActivity extends AppCompatActivity
                     case WebService.ACTION_PROGRAMS:
                         loadPrograms(MainActivity.this);
                         break;
+                    case WebService.ACTION_CALENDAR:
+                        loadEventCategories(MainActivity.this);
+                        break;
                     default:
                         break;
                 }
@@ -388,6 +393,28 @@ public class MainActivity extends AppCompatActivity
             intent.putParcelableArrayListExtra("ITEMS", programs);
             context.startActivity(intent);
         } else if (programs.size() == 0 && !Utilities.haveNetworkConnection(context)) {
+            Toast.makeText(context, context.getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    public static void loadEventCategories(Context context) {
+
+        ProgressDialog progressDialog = ((MainActivity) context).progressDialog;
+
+        if (!progressDialog.isShowing()) {
+            progressDialog.show();
+        }
+
+        ArrayList<Item> categories = ItemsPresenter.getEventCategories(context);
+
+        if (progressDialog.isShowing() && categories.size() > 0) {
+            progressDialog.dismiss();
+            Intent intent = new Intent(context, ItemsActivity.class);
+            intent.putExtra("CATEGORY", context.getString(R.string.academic_calendar));
+            intent.putParcelableArrayListExtra("ITEMS", categories);
+            context.startActivity(intent);
+        } else if (categories.size() == 0 && !Utilities.haveNetworkConnection(context)) {
             Toast.makeText(context, context.getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
         }
 
