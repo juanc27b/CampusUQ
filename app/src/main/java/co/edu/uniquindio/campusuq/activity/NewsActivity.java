@@ -25,13 +25,11 @@ import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.NewsAdapter;
-import co.edu.uniquindio.campusuq.util.NewsSQLiteController;
+import co.edu.uniquindio.campusuq.util.NewsPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.util.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.New;
-import co.edu.uniquindio.campusuq.vo.NewCategory;
-import co.edu.uniquindio.campusuq.vo.NewRelation;
 
 public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNewListener {
 
@@ -40,10 +38,9 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
     private RecyclerView.LayoutManager mLayoutManager;
 
     public ArrayList<New> news;
+    public NewsPresenter newsPresenter;
     public boolean oldActivity = false;
-
     boolean oldNews = true;
-
     private String action;
 
     public CallbackManager callbackManager;
@@ -51,14 +48,15 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
 
     public NewsActivity() {
         this.news = new ArrayList<New>();
+        newsPresenter = new NewsPresenter();
         this.oldActivity = false;
 
         super.setHasNavigationDrawerIcon(false);
     }
 
     @Override
-    public void addContent() {
-        super.addContent();
+    public void addContent(Bundle savedInstanceState) {
+        super.addContent(savedInstanceState);
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
@@ -166,39 +164,16 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
         if (!progressDialog.isShowing()) {
             progressDialog.show();
         }
+
         int scrollTo = 0;
-
-        NewsSQLiteController dbController = new NewsSQLiteController(getApplicationContext(), 1);
-        String validRows = null;
-
-        String events = "";
-        ArrayList<NewCategory> categories = dbController.selectCategory(null,
-                NewsSQLiteController.CAMPOS_CATEGORIA[1] + " = ?", new String[]{"Eventos"});
-        ArrayList<NewRelation> relations;
-        if (categories.size() > 0) {
-            relations = dbController.selectRelation(null,
-                    NewsSQLiteController.CAMPOS_RELACION[0] + " = ?", new String[]{categories.get(0).get_ID()});
-            for (NewRelation relation : relations) {
-                events += relation.getNew_ID() + ",";
-            }
-            events = events.substring(0, events.length() - 1);
-            if (WebService.ACTION_NEWS.equals(action)) {
-                validRows = NewsSQLiteController.CAMPOS_TABLA[0]+" NOT IN ("+events+")";
-            } else {
-                validRows = NewsSQLiteController.CAMPOS_TABLA[0]+" IN ("+events+")";
-            }
-        }
-
         int limit = inserted > 0 ? news.size()+inserted : news.size()+3;
         if (!oldNews) {
             scrollTo = (inserted != 0) ? inserted - 1 : 0;
         } else {
             scrollTo = oldActivity ? news.size()-1 : 0;
         }
-        news = dbController.select(""+limit,
-                validRows, null);
 
-        dbController.destroy();
+        news = newsPresenter.loadNews(action, NewsActivity.this, limit);
 
         if (!oldActivity) {
             mRecyclerView = (RecyclerView) findViewById(R.id.news_recycler_view);

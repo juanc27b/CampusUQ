@@ -24,6 +24,13 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(InformationsSQLiteController.createCategoryTable());
         db.execSQL(InformationsSQLiteController.createTable());
 
+        db.execSQL(ContactsSQLiteController.createCategoryTable());
+        db.execSQL(ContactsSQLiteController.createTable());
+
+        db.execSQL(ProgramsSQLiteController.createCategoryTable());
+        db.execSQL(ProgramsSQLiteController.createFacultyTable());
+        db.execSQL(ProgramsSQLiteController.createTable());
+
     }
 
     @Override

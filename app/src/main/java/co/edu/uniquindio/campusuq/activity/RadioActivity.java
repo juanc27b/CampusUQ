@@ -83,8 +83,8 @@ public class RadioActivity extends MainActivity {
     }
 
     @Override
-    public void addContent() {
-        super.addContent();
+    public void addContent(Bundle savedInstanceState) {
+        super.addContent(savedInstanceState);
 
         super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
 

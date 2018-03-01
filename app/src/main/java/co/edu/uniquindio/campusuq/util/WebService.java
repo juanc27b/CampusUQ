@@ -20,11 +20,16 @@ import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.NewsActivity;
+import co.edu.uniquindio.campusuq.vo.Contact;
+import co.edu.uniquindio.campusuq.vo.ContactCategory;
 import co.edu.uniquindio.campusuq.vo.Information;
 import co.edu.uniquindio.campusuq.vo.InformationCategory;
 import co.edu.uniquindio.campusuq.vo.New;
 import co.edu.uniquindio.campusuq.vo.NewCategory;
 import co.edu.uniquindio.campusuq.vo.NewRelation;
+import co.edu.uniquindio.campusuq.vo.Program;
+import co.edu.uniquindio.campusuq.vo.ProgramCategory;
+import co.edu.uniquindio.campusuq.vo.ProgramFaculty;
 
 /**
  * Created by Juan Camilo on 21/02/2018.
@@ -36,11 +41,14 @@ public class WebService extends JobService {
     public static final String ACTION_ALL = "co.edu.uniquindio.campusuq.ACTION_ALL";
     public static final String ACTION_NEWS = "co.edu.uniquindio.campusuq.ACTION_NEWS";
     public static final String ACTION_EVENTS = "co.edu.uniquindio.campusuq.ACTION_EVENTS";
-    public static final String ACTION_INFORMATIONS = "co.edu.uniquindio.campusuq.ACTION_INFORMATIONS";
     public static final String ACTION_SYMBOLS = "co.edu.uniquindio.campusuq.ACTION_SYMBOLS";
     public static final String ACTION_WELFARE = "co.edu.uniquindio.campusuq.ACTION_WELFARE";
+    public static final String ACTION_CONTACTS = "co.edu.uniquindio.campusuq.ACTION_CONTACTS";
+    public static final String ACTION_PROGRAMS = "co.edu.uniquindio.campusuq.ACTION_PROGRAMS";
 
-    private static final int mNotificationId = 2;
+    public static String PENDING_ACTION = ACTION_NONE;
+
+    private static final int mNotificationId = 1;
 
     private static final String TAG = WebService.class.getSimpleName();
     boolean isWorking = false;
@@ -77,15 +85,17 @@ public class WebService extends JobService {
         String action = params.getExtras().getString("ACTION");
         switch (action) {
             case ACTION_ALL:
-                loadNews(ACTION_NEWS);
-                loadNews(ACTION_EVENTS);
                 loadInformations();
-                break;
-            case ACTION_NEWS:
+                loadContacts();
+                loadPrograms();
+                loadNews(ACTION_EVENTS);
                 loadNews(ACTION_NEWS);
                 break;
             case ACTION_EVENTS:
                 loadNews(ACTION_EVENTS);
+                break;
+            case ACTION_NEWS:
+                loadNews(ACTION_NEWS);
                 break;
             default:
                 break;
@@ -274,7 +284,7 @@ public class WebService extends JobService {
                     dbController.insertCategory(category.get_ID(), category.getName(), category.getLink(), category.getDate());
                 } else if (oldCategories.get(0).getDate().compareTo(category.getDate()) < 0) {
                     updateInformations = true;
-                    // update category
+                    dbController.updateCategory(category.get_ID(), category.getName(), category.getLink(), category.getDate());
                 }
                 if (updateInformations){
                     ArrayList<Information> updatedInformations = InformationsServiceController.getInformations(category.get_ID());
@@ -283,10 +293,10 @@ public class WebService extends JobService {
                                 InformationsSQLiteController.CAMPOS_TABLA[0]+" = ?", new String[]{information.get_ID()});
                         if (olds.size() > 0) {
                             dbController.update(information.get_ID(), information.getCategory_ID(),
-                                    information.name, information.getContent());
+                                    information.getName(), information.getContent());
                         } else {
                             dbController.insert(information.get_ID(), information.getCategory_ID(),
-                                    information.name, information.getContent());
+                                    information.getName(), information.getContent());
                         }
                     }
                 }
@@ -295,7 +305,96 @@ public class WebService extends JobService {
 
         dbController.destroy();
 
-        Intent intent = new Intent(ACTION_INFORMATIONS);
+        Intent intent = new Intent(PENDING_ACTION);
+        sendBroadcast(intent);
+
+    }
+
+    private void loadContacts() {
+
+        ContactsSQLiteController dbController = new ContactsSQLiteController(getApplicationContext(), 1);
+
+        ArrayList<ContactCategory> oldCategories = dbController.selectCategory(null, null);
+        if (oldCategories.size() == 0 && Utilities.haveNetworkConnection(getApplicationContext())) {
+
+            ArrayList<ContactCategory> updatedCategories = ContactsServiceController.getContactCategories();
+            for (ContactCategory category : updatedCategories) {
+                dbController.insertCategory(category.get_ID(), category.getName(), category.getLink());
+            }
+
+            ArrayList<Contact> updatedContacts = ContactsServiceController.getContacts();
+            for (Contact contact : updatedContacts) {
+                dbController.insert(contact.get_ID(), contact.getCategory_ID(),
+                        contact.getName(), contact.getAddress(), contact.getPhone(),
+                        contact.getEmail(), contact.getCharge(), contact.getAdditionalInformation());
+            }
+
+        }
+
+        dbController.destroy();
+
+        Intent intent = new Intent(PENDING_ACTION);
+        sendBroadcast(intent);
+
+    }
+
+    private void loadPrograms() {
+
+        ProgramsSQLiteController dbController = new ProgramsSQLiteController(getApplicationContext(), 1);
+
+        ArrayList<ProgramCategory> oldCategories = dbController.selectCategory(null, null);
+        if (oldCategories.size() == 0 && Utilities.haveNetworkConnection(getApplicationContext())) {
+
+            ArrayList<ProgramCategory> updatedCategories = ProgramsServiceController.getProgramCategories();
+            for (ProgramCategory category : updatedCategories) {
+                dbController.insertCategory(category.get_ID(), category.getName());
+            }
+
+            ArrayList<ProgramFaculty> updatedFaculties = ProgramsServiceController.getProgramFaculties();
+            for (ProgramFaculty faculty : updatedFaculties) {
+                dbController.insertFaculty(faculty.get_ID(), faculty.getName());
+            }
+
+        }
+
+        // If the job has been cancelled, stop working; the job will be rescheduled.
+        if (jobCancelled)
+            return;
+
+        if (Utilities.haveNetworkConnection(getApplicationContext())) {
+            ArrayList<Program> updatedPrograms = ProgramsServiceController.getPrograms();
+            for (Program program : updatedPrograms) {
+                // If the job has been cancelled, stop working; the job will be rescheduled.
+                if (jobCancelled)
+                    return;
+
+                ArrayList<Program> olds = dbController.select(
+                        ProgramsSQLiteController.CAMPOS_TABLA[0]+" = ?", new String[]{program.get_ID()});
+                if (olds.size() == 0) {
+                    dbController.insert(program.get_ID(), program.getCategory_ID(), program.getFaculty_ID(),
+                            program.getName(), program.getHistory(), program.getHistoryLink(), program.getHistoryDate(),
+                            program.getMissionVision(), program.getMissionVisionLink(), program.getMissionVisionDate(),
+                            program.getCurriculum(), program.getCurriculumLink(), program.getCurriculumDate(),
+                            program.getProfiles(), program.getProfilesLink(), program.getProfilesDate(), program.getContact());
+                } else if (olds.get(0).getHistoryDate().compareTo(program.getHistoryDate()) < 0) {
+                    dbController.update(4, program.getHistory(),
+                            program.getHistoryLink(), program.getHistoryDate());
+                } else if (olds.get(0).getMissionVisionDate().compareTo(program.getMissionVisionDate()) < 0) {
+                    dbController.update(7, program.getMissionVision(),
+                            program.getMissionVisionLink(), program.getMissionVisionDate());
+                } else if (olds.get(0).getCurriculumDate().compareTo(program.getCurriculumDate()) < 0) {
+                    dbController.update(10, program.getCurriculum(),
+                            program.getCurriculumLink(), program.getCurriculumDate());
+                } else if (olds.get(0).getProfilesDate().compareTo(program.getProfilesDate()) < 0) {
+                    dbController.update(13, program.getProfiles(),
+                            program.getProfilesLink(), program.getProfilesDate());
+                }
+            }
+        }
+
+        dbController.destroy();
+
+        Intent intent = new Intent(PENDING_ACTION);
         sendBroadcast(intent);
 
     }

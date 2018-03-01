@@ -6,14 +6,14 @@ package co.edu.uniquindio.campusuq.vo;
 
 public class New {
 
-    public String _ID;
-    public String name;
-    public String link;
-    public String image;
-    public String summary;
-    public String content;
-    public String date;
-    public String author;
+    private String _ID;
+    private String name;
+    private String link;
+    private String image;
+    private String summary;
+    private String content;
+    private String date;
+    private String author;
 
     public New(String _ID, String name, String link, String image, String summary, String content, String date, String author) {
         this._ID = _ID;

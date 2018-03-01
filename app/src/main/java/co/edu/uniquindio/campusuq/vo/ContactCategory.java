@@ -1,21 +1,19 @@
 package co.edu.uniquindio.campusuq.vo;
 
 /**
- * Created by Juan Camilo on 20/02/2018.
+ * Created by Juan Camilo on 23/02/2018.
  */
 
-public class InformationCategory {
+public class ContactCategory {
 
     private String _ID;
     private String name;
     private String link;
-    private String date;
 
-    public InformationCategory(String _ID, String name, String link, String date) {
+    public ContactCategory(String _ID, String name, String link) {
         this._ID = _ID;
         this.name = name;
         this.link = link;
-        this.date = date;
     }
 
     public String get_ID() {
@@ -40,14 +38,6 @@ public class InformationCategory {
 
     public void setLink(String link) {
         this.link = link;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
     }
 
 }

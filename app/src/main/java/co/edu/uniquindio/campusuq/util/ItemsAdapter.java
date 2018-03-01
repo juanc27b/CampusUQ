@@ -49,7 +49,12 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
 
         public void bindItem(Item i) {
             circleView.setBackgroundResource(i.getBackground());
-            itemIcon.setImageResource(i.getImage());
+            if (i.getImage() != 0) {
+                itemIcon.setVisibility(View.VISIBLE);
+                itemIcon.setImageResource(i.getImage());
+            } else {
+                itemIcon.setVisibility(View.GONE);
+            }
             itemTitle.setText(i.getTitle());
             itemDescription.setText(i.getDescription());
         }

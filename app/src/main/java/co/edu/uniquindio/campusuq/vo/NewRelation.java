@@ -6,8 +6,8 @@ package co.edu.uniquindio.campusuq.vo;
 
 public class NewRelation {
 
-    public String category_ID;
-    public String new_ID;
+    private String category_ID;
+    private String new_ID;
 
     public NewRelation(String category_ID, String new_ID) {
         this.category_ID = category_ID;

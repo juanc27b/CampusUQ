@@ -6,10 +6,10 @@ package co.edu.uniquindio.campusuq.vo;
 
 public class Information {
 
-    public String _ID;
-    public String category_ID;
-    public String name;
-    public String content;
+    private String _ID;
+    private String category_ID;
+    private String name;
+    private String content;
 
     public Information(String _ID, String category_ID, String name, String content) {
         this._ID = _ID;

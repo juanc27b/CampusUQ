@@ -1,26 +1,24 @@
 package co.edu.uniquindio.campusuq.vo;
 
 /**
- * Created by Juan Camilo on 13/02/2018.
+ * Created by Juan Camilo on 28/02/2018.
  */
 
-public class NewCategory {
+public class ProgramCategory {
 
     private String _ID;
     private String name;
-    private String link;
 
-    public NewCategory(String _ID, String name, String link) {
+    public ProgramCategory(String _ID, String name) {
         this._ID = _ID;
         this.name = name;
-        this.link = link;
     }
 
     public String get_ID() {
         return _ID;
     }
 
-    public void setId(String _ID) {
+    public void set_ID(String _ID) {
         this._ID = _ID;
     }
 
@@ -30,14 +28,6 @@ public class NewCategory {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
     }
 
 }

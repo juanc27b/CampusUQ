@@ -71,7 +71,25 @@
     <string name="databases">Bases de datos</string>
     <string name="databases_description">Buscar recursos digitales en las diferentes bases de datos que ofrece la universidad</string>
 
+    <string name="history">Historia</string>
+    <string name="history_description">Leer la historia detallada del programa</string>
+    <string name="program_mission_vision">Misión y visión del programa</string>
+    <string name="program_mission_vision_description">Leer la misión y visión específicos del programa</string>
+    <string name="curriculum">Plan de estudios</string>
+    <string name="curriculum_description">Ver las asignaturas, créditos y requisitos por semestre del programa</string>
+    <string name="profiles">Perfil profesional y ocupacional</string>
+    <string name="profiles_description">Leer la descripción de las habilidades obtenidas al egresar de este programa</string>
+    <string name="program_contact">Información adicional</string>
+    <string name="program_contact_description">Ver información de contacto, registro calificado, horarios de atención, etc.</string>
+    
     <string name="news_detail">Detalle de noticia</string>
+
+    <string name="contacts">contacto(s)</string>
+    <string name="address">Dirección</string>
+    <string name="phone">Teléfono</string>
+    <string name="email">Correo</string>
+    <string name="charge">Cargo</string>
+    <string name="additional_information">Información adicional</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
