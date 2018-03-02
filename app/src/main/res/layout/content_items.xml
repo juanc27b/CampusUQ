@@ -13,10 +13,10 @@
         android:id="@+id/message_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:text="Seleccionar items"
+        android:layout_marginStart="5dp"
+        android:text="@string/select_items"
         android:textColor="@android:color/black"
-        android:textSize="12dp" />
+        android:textSize="12sp" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/items_recycler_view"
@@ -24,7 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:layout_marginRight="@dimen/items_recycler_right_margin"
+        android:layout_marginEnd="@dimen/items_recycler_right_margin"
         android:layout_marginBottom="@dimen/items_recycler_bottom_margin"/>
 
 </LinearLayout>

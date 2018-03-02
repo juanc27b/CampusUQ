@@ -6,10 +6,10 @@ package co.edu.uniquindio.campusuq.vo;
 
 public class InformationCategory {
 
-    public String _ID;
-    public String name;
-    public String link;
-    public String date;
+    private String _ID;
+    private String name;
+    private String link;
+    private String date;
 
     public InformationCategory(String _ID, String name, String link, String date) {
         this._ID = _ID;

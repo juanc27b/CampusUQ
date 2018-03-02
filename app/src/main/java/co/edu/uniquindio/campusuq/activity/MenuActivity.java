@@ -1,14 +1,17 @@
 package co.edu.uniquindio.campusuq.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.LinearLayout;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.StarterReceiver;
+import co.edu.uniquindio.campusuq.util.WebService;
 
 public class MenuActivity extends MainActivity {
 
@@ -17,8 +20,8 @@ public class MenuActivity extends MainActivity {
     }
 
     @Override
-    public void addContent() {
-        super.addContent();
+    public void addContent(Bundle savedInstanceState) {
+        super.addContent(savedInstanceState);
 
         super.setBackground(R.drawable.portrait_background, R.drawable.landscape_background);
 
@@ -77,8 +80,13 @@ public class MenuActivity extends MainActivity {
     }
 
     public void loadContent() {
-        StarterReceiver.cancelAlarm(getApplicationContext());
-        StarterReceiver.scheduleAlarm(getApplicationContext());
+        WebService.PENDING_ACTION = WebService.ACTION_NONE;
+        if (!StarterReceiver.started) {
+            Log.i(MenuActivity.class.getSimpleName(), "Reactivando alarma");
+            StarterReceiver.cancelAlarm(getApplicationContext());
+            StarterReceiver.scheduleAlarm(getApplicationContext());
+            StarterReceiver.started = true;
+        }
     }
 
 }

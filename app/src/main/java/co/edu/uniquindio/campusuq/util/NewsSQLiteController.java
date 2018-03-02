@@ -69,6 +69,7 @@ public class NewsSQLiteController {
                 news.add(mNew);
             } while (c.moveToNext());
         }
+        c.close();
         return news;
     }
 
@@ -150,6 +151,7 @@ public class NewsSQLiteController {
                 categories.add(newCategory);
             } while (c.moveToNext());
         }
+        c.close();
         return categories;
     }
 
@@ -197,6 +199,7 @@ public class NewsSQLiteController {
                 relations.add(newRelation);
             } while (c.moveToNext());
         }
+        c.close();
         return relations;
     }
 

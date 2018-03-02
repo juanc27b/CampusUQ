@@ -54,10 +54,11 @@ public class InformationsSQLiteController {
                 String categoryId = c.getString(1);
                 String name = c.getString(2);
                 String content = c.getString(3);
-                Information information = new Information(id, name, categoryId, content);
+                Information information = new Information(id, categoryId, name, content);
                 informations.add(information);
             } while (c.moveToNext());
         }
+        c.close();
         return informations;
     }
 
@@ -129,6 +130,7 @@ public class InformationsSQLiteController {
                 categories.add(category);
             } while (c.moveToNext());
         }
+        c.close();
         return categories;
     }
 

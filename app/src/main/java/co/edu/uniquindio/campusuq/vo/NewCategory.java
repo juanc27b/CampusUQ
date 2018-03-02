@@ -6,9 +6,9 @@ package co.edu.uniquindio.campusuq.vo;
 
 public class NewCategory {
 
-    public String _ID;
-    public String name;
-    public String link;
+    private String _ID;
+    private String name;
+    private String link;
 
     public NewCategory(String _ID, String name, String link) {
         this._ID = _ID;

@@ -1,6 +1,7 @@
 package co.edu.uniquindio.campusuq.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewStub;
@@ -28,8 +29,8 @@ public class NewsContentActivity extends MainActivity {
     }
 
     @Override
-    public void addContent() {
-        super.addContent();
+    public void addContent(Bundle savedInstanceState) {
+        super.addContent(savedInstanceState);
 
         super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
 

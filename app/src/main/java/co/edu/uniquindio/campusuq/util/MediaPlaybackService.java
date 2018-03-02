@@ -52,7 +52,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
     private AudioManager audioManager;
     private AudioManager.OnAudioFocusChangeListener afChangeListener;
 
-    private final static int mNotificationId = 3;
+    private final static int mNotificationId = 2;
     private Notification playNotification;
     private Notification pauseNotification;
     private Notification connectNotification;

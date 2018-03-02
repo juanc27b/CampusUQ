@@ -22,11 +22,13 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
-import co.edu.uniquindio.campusuq.util.MainPresenter;
+import co.edu.uniquindio.campusuq.util.ItemsPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.util.WebService;
+import co.edu.uniquindio.campusuq.vo.Item;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -35,7 +37,6 @@ public class MainActivity extends AppCompatActivity
     private boolean hasNavigationDrawerIcon;
 
     public ProgressDialog progressDialog;
-    public static String pendingAction = WebService.ACTION_NONE;
 
     public IntentFilter mainFilter = new IntentFilter();
 
@@ -43,7 +44,10 @@ public class MainActivity extends AppCompatActivity
         setHasSearch(true);
         setHasNavigationDrawerIcon(true);
 
-        mainFilter.addAction(WebService.ACTION_INFORMATIONS);
+        mainFilter.addAction(WebService.ACTION_WELFARE);
+        mainFilter.addAction(WebService.ACTION_CONTACTS);
+        mainFilter.addAction(WebService.ACTION_PROGRAMS);
+        mainFilter.addAction(WebService.ACTION_CALENDAR);
     }
 
     @Override
@@ -72,7 +76,7 @@ public class MainActivity extends AppCompatActivity
 
         progressDialog = Utilities.getProgressDialog(MainActivity.this);
 
-        addContent();
+        addContent(savedInstanceState);
 
     }
 
@@ -175,20 +179,23 @@ public class MainActivity extends AppCompatActivity
                 intent.putExtra("CATEGORY", getString(R.string.institution));
                 break;
             case R.id.nav_directory:
-
+                WebService.PENDING_ACTION = WebService.ACTION_CONTACTS;
+                loadContactCategories(MainActivity.this);
                 break;
             case R.id.nav_academic_offer:
-
+                WebService.PENDING_ACTION = WebService.ACTION_PROGRAMS;
+                loadPrograms(MainActivity.this);
                 break;
             case R.id.nav_academic_calendar:
-
+                WebService.PENDING_ACTION = WebService.ACTION_CALENDAR;
+                loadEventCategories(MainActivity.this);
                 break;
             case R.id.nav_employment_exchange:
                 intent = new Intent(MainActivity.this, WebActivity.class);
                 intent.putExtra("URL", getString(R.string.employment_exchange_url));
                 break;
             case R.id.nav_institutional_welfare:
-                pendingAction = WebService.ACTION_WELFARE;
+                WebService.PENDING_ACTION = WebService.ACTION_WELFARE;
                 loadInformations(getString(R.string.institutional_welfare), MainActivity.this);
                 break;
             case R.id.nav_university_map:
@@ -274,7 +281,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void addContent() {
+    public void addContent(Bundle savedInstanceState) {
 
     }
 
@@ -282,10 +289,20 @@ public class MainActivity extends AppCompatActivity
     public BroadcastReceiver mainReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            WebService.PENDING_ACTION = WebService.ACTION_NONE;
             if (progressDialog.isShowing()) {
-                switch (pendingAction) {
+                switch (intent.getAction()) {
                     case WebService.ACTION_WELFARE:
                         loadInformations(getString(R.string.institutional_welfare), MainActivity.this);
+                        break;
+                    case WebService.ACTION_CONTACTS:
+                        loadContactCategories(MainActivity.this);
+                        break;
+                    case WebService.ACTION_PROGRAMS:
+                        loadPrograms(MainActivity.this);
+                        break;
+                    case WebService.ACTION_CALENDAR:
+                        loadEventCategories(MainActivity.this);
                         break;
                     default:
                         break;
@@ -306,6 +323,9 @@ public class MainActivity extends AppCompatActivity
         super.onPause();
         // Unregister the listener when the application is paused
         unregisterReceiver(mainReceiver);
+        if (progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
     }
 
     public static void loadInformations(String type, Context context) {
@@ -318,20 +338,85 @@ public class MainActivity extends AppCompatActivity
 
         String[] content = new String[2];
         if (context.getString(R.string.symbols).equals(type)) {
-            content = MainPresenter.getInformation("Simbolos", context);
+            content = ItemsPresenter.getInformation("Simbolos", context);
         } else if (context.getString(R.string.institutional_welfare).equals(type)) {
-            content = MainPresenter.getInformation("Cursos Culturales y Deportivos", context);
+            content = ItemsPresenter.getInformation("Cursos Culturales y Deportivos", context);
         }
 
         if (progressDialog.isShowing() && content[0] != null) {
             progressDialog.dismiss();
-            pendingAction = WebService.ACTION_NONE;
             Intent intent = new Intent(context, WebContentActivity.class);
             intent.putExtra("CATEGORY", type);
             intent.putExtra("LINK", content[0]);
             intent.putExtra("CONTENT", content[1]);
             context.startActivity(intent);
         } else if (content[0] == null && !Utilities.haveNetworkConnection(context)) {
+            Toast.makeText(context, context.getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    public static void loadContactCategories(Context context) {
+
+        ProgressDialog progressDialog = ((MainActivity) context).progressDialog;
+
+        if (!progressDialog.isShowing()) {
+            progressDialog.show();
+        }
+
+        ArrayList<Item> categories = ItemsPresenter.getContactCategories(context);
+
+        if (progressDialog.isShowing() && categories.size() > 0) {
+            progressDialog.dismiss();
+            Intent intent = new Intent(context, ItemsActivity.class);
+            intent.putExtra("CATEGORY", context.getString(R.string.directory));
+            intent.putParcelableArrayListExtra("ITEMS", categories);
+            context.startActivity(intent);
+        } else if (categories.size() == 0 && !Utilities.haveNetworkConnection(context)) {
+            Toast.makeText(context, context.getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    public static void loadPrograms(Context context) {
+
+        ProgressDialog progressDialog = ((MainActivity) context).progressDialog;
+
+        if (!progressDialog.isShowing()) {
+            progressDialog.show();
+        }
+
+        ArrayList<Item> programs = ItemsPresenter.getPrograms(context);
+
+        if (progressDialog.isShowing() && programs.size() > 0) {
+            progressDialog.dismiss();
+            Intent intent = new Intent(context, ItemsActivity.class);
+            intent.putExtra("CATEGORY", context.getString(R.string.academic_offer));
+            intent.putParcelableArrayListExtra("ITEMS", programs);
+            context.startActivity(intent);
+        } else if (programs.size() == 0 && !Utilities.haveNetworkConnection(context)) {
+            Toast.makeText(context, context.getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    public static void loadEventCategories(Context context) {
+
+        ProgressDialog progressDialog = ((MainActivity) context).progressDialog;
+
+        if (!progressDialog.isShowing()) {
+            progressDialog.show();
+        }
+
+        ArrayList<Item> categories = ItemsPresenter.getEventCategories(context);
+
+        if (progressDialog.isShowing() && categories.size() > 0) {
+            progressDialog.dismiss();
+            Intent intent = new Intent(context, ItemsActivity.class);
+            intent.putExtra("CATEGORY", context.getString(R.string.academic_calendar));
+            intent.putParcelableArrayListExtra("ITEMS", categories);
+            context.startActivity(intent);
+        } else if (categories.size() == 0 && !Utilities.haveNetworkConnection(context)) {
             Toast.makeText(context, context.getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
         }
 

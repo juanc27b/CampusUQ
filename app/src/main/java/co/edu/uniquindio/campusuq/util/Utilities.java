@@ -24,7 +24,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import co.edu.uniquindio.campusuq.R;
-import co.edu.uniquindio.campusuq.activity.MainActivity;
 
 /**
  * Created by Juan Camilo on 8/02/2018.
@@ -70,7 +69,7 @@ public class Utilities {
         pDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                MainActivity.pendingAction = WebService.ACTION_NONE;
+                WebService.PENDING_ACTION = WebService.ACTION_NONE;
             }
         });
         return pDialog;
