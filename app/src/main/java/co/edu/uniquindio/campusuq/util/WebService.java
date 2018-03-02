@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.NewsActivity;
+import co.edu.uniquindio.campusuq.vo.Dish;
 import co.edu.uniquindio.campusuq.vo.Information;
 import co.edu.uniquindio.campusuq.vo.InformationCategory;
 import co.edu.uniquindio.campusuq.vo.New;
@@ -41,6 +42,7 @@ public class WebService extends JobService {
     public static final String ACTION_SYMBOLS = "co.edu.uniquindio.campusuq.ACTION_SYMBOLS";
     public static final String ACTION_WELFARE = "co.edu.uniquindio.campusuq.ACTION_WELFARE";
     public static final String ACTION_QUOTAS = "co.edu.uniquindio.campusuq.ACTION_QUOTAS";
+    public static final String ACTION_DISHES = "co.edu.uniquindio.campusuq.ACTION_DISHES";
 
     private static final int mNotificationId = 2;
 
@@ -83,6 +85,7 @@ public class WebService extends JobService {
                 loadNews(ACTION_EVENTS);
                 loadInformations();
                 loadQuotas();
+                loadDishes();
                 break;
             case ACTION_NEWS:
                 loadNews(ACTION_NEWS);
@@ -90,6 +93,11 @@ public class WebService extends JobService {
             case ACTION_EVENTS:
                 loadNews(ACTION_EVENTS);
                 break;
+            case ACTION_QUOTAS:
+                loadQuotas();
+                break;
+            case ACTION_DISHES:
+                loadDishes();
             default:
                 break;
         }
@@ -305,24 +313,28 @@ public class WebService extends JobService {
 
     private void loadQuotas() {
         if(Utilities.haveNetworkConnection(getApplicationContext())) {
-            QuotasSQLiteController dbController = new QuotasSQLiteController(
-                getApplicationContext(), 1
-            );
+            QuotasSQLiteController dbController = new QuotasSQLiteController(getApplicationContext(), 1);
             for(Quota quota : QuotasServiceController.getQuotas(null)) {
-                ArrayList<Quota> olds = dbController.select(
-                    null, '`'+QuotasSQLiteController.CAMPOS_TABLA[0]+"` = ?",
-                    new String[]{quota.get_ID()}
-                );
-                if(olds.size() > 0) dbController.update(
-                        quota.get_ID(), quota.getType(), quota.getName(), quota.getQuota()
-                );
-                else dbController.insert(
-                        quota.get_ID(), quota.getType(), quota.getName(), quota.getQuota()
-                );
+                ArrayList<Quota> olds = dbController.select(null, '`'+QuotasSQLiteController.CAMPOS_TABLA[0]+"` = ?", new String[]{quota.get_ID()});
+                if(olds.size() > 0) dbController.update(quota.get_ID(), quota.getType(), quota.getName(), quota.getQuota());
+                else dbController.insert(quota.get_ID(), quota.getType(), quota.getName(), quota.getQuota());
             }
             dbController.destroy();
         }
         sendBroadcast(new Intent(ACTION_QUOTAS));
+    }
+
+    private void loadDishes() {
+        if(Utilities.haveNetworkConnection(getApplicationContext())) {
+            DishesSQLiteController dbController = new DishesSQLiteController(getApplicationContext(), 1);
+            for(Dish dish : DishesServiceController.getDishes(null)) {
+                ArrayList<Dish> olds = dbController.select(null, '`'+DishesSQLiteController.CAMPOS_TABLA[0]+"` = ?", new String[]{dish.get_ID()});
+                if(olds.size() > 0) dbController.update(dish.get_ID(), dish.getName(), dish.getDescription(), dish.getPrice(), dish.getImage());
+                else dbController.insert(dish.get_ID(), dish.getName(), dish.getDescription(), dish.getPrice(), dish.getImage());
+            }
+            dbController.destroy();
+        }
+        sendBroadcast(new Intent(ACTION_DISHES));
     }
 
     @Override

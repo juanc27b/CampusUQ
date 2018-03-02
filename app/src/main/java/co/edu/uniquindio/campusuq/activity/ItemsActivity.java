@@ -156,7 +156,7 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
 
                 break;
             case R.string.restaurant:
-
+                intent = new Intent(ItemsActivity.this, DishesActivity.class);
                 break;
             case R.string.billboard_information:
 

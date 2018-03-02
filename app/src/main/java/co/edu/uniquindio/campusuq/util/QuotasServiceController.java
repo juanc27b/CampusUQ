@@ -11,16 +11,19 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.vo.Quota;
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.HeaderElement;
+import cz.msebera.android.httpclient.HttpResponse;
+import cz.msebera.android.httpclient.ParseException;
+import cz.msebera.android.httpclient.client.HttpClient;
 import cz.msebera.android.httpclient.client.methods.HttpDelete;
 import cz.msebera.android.httpclient.client.methods.HttpGet;
 import cz.msebera.android.httpclient.client.methods.HttpPost;
 import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
+import cz.msebera.android.httpclient.message.BasicHeader;
+import cz.msebera.android.httpclient.protocol.HTTP;
 import cz.msebera.android.httpclient.util.EntityUtils;
-
-/**
- * Created by JuanCamilo on 24/02/2018.
- */
 
 public class QuotasServiceController {
     public static ArrayList<Quota> getQuotas(String idQuota) {
@@ -51,31 +54,22 @@ public class QuotasServiceController {
         return quotas;
     }
 
-    public static Quota addQuota(String json) {
-        HttpPost post = new HttpPost(Utilities.URL_SERVICIO);
-        post.setHeader("content-type", "application/json");
+    public static String modQuota(String json) {
+        HttpPost post = new HttpPost(Utilities.URL_SERVICIO+"/cupos");
+        post.setHeader("Content-Type", "application/json");
+        post.setHeader("Accept", "application/json");
+        post.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
         try {
-            post.setEntity(new StringEntity(json));
-            return (new Gson()).fromJson(
-                EntityUtils.toString(HttpClientBuilder.create().build().execute(post).getEntity()),
-                Quota.class
-            );
+            StringEntity entity = new StringEntity(json, "UTF-8");
+            entity.setContentType(new BasicHeader("Content-Type", "application/json"));
+            post.setEntity(entity);
+            HttpClient httpClient = HttpClientBuilder.create().build();
+            HttpResponse respose = httpClient.execute(post);
+            Log.i("ServicioRest", EntityUtils.toString(respose.getEntity()));
+            return null;//EntityUtils.toString(respose.getEntity());
         } catch (Exception e) {
-            Log.e("ServicioRest", "Error! insercion de noticia " + e.getMessage());
-            return null;
-        }
-    }
-
-    public static Quota deleteQuota(String id) {
-        HttpDelete delete = new HttpDelete(Utilities.URL_SERVICIO + "/" + id);
-        delete.setHeader("content-type", "application/json");
-        try {
-            return (new Gson()).fromJson(
-                EntityUtils.toString(HttpClientBuilder.create().build().execute(delete).getEntity()),
-                Quota.class
-            );
-        } catch (Exception e) {
-            Log.e("ServicioRest", "Error! eliminando la noticia " + e.getMessage());
+            //Log.e("ServicioRest", "Error! insercion de cupo " + e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }

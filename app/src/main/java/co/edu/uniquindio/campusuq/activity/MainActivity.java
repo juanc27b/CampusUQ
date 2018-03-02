@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity
 
                 break;
             case R.id.nav_restaurant:
-
+                intent = new Intent(MainActivity.this, DishesActivity.class);
                 break;
             case R.id.nav_billboard_information:
 

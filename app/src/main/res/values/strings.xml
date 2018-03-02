@@ -157,8 +157,15 @@
     <string name="axes_pillars_objectives_url">http://campus-uq.000webhostapp.com/files/ejes_pilares_objetivos.pdf</string>
     <string name="pdf_viewer">http://campus-uq.000webhostapp.com/pdf/web/viewer.html?file=URL</string>
 
-    <string name="sample_quota_name">Sala A</string>
-    <string name="sample_quota_quota">24</string>
+    <string name="quota_sample_name">Sala A</string>
+    <string name="quota_sample_quota">24</string>
     <string name="quota_text">cupo(s)</string>
+    <string name="quota_dialog_sample_title">Ajustar Cupos de Sala A</string>
 
+    <string name="dialog_ok">ACEPTAR</string>
+    <string name="dialog_cancel">CANCELAR</string>
+
+    <string name="dishes_sample_name">Desayuno Uniquindiano</string>
+    <string name="dishes_sample_description">Plato para las jornadas de mañana que incluye un sandwich de jamon con huevo</string>
+    <string name="dishes_sample_price">$ 7.500</string>
 </resources>
