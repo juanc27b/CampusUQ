@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,8 +34,8 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
     }
 
     @Override
-    public void addContent() {
-        super.addContent();
+    public void addContent(Bundle savedInstanceState) {
+        super.addContent(savedInstanceState);
         super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
         ViewStub viewStub = findViewById(R.id.layout_stub);
         viewStub.setLayoutResource(R.layout.content_quotas);
@@ -98,7 +99,7 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
                             if(Utilities.haveNetworkConnection(QuotasActivity.this)) {
                                 oldQuotas = false;
                                 progressDialog.show();
-                                WebBroadcastReceiver.scheduleJob(getApplicationContext(), WebService.ACTION_QUOTAS);
+                                WebBroadcastReceiver.scheduleJob(getApplicationContext(), WebService.ACTION_QUOTAS, WebService.METHOD_GET);
                             } else {
                                 Toast.makeText(QuotasActivity.this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
                             }
