@@ -97,8 +97,8 @@
     <string name="additional_information">Additional information</string>
 
     <string name="category">Category</string>
-
     <string name="select_event">Select an event for see detailed dates</string>
+    <string name="period">Period</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
