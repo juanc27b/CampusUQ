@@ -36,7 +36,7 @@
     <string name="radio_description"></string>
     <string name="pqrsd_system">Claims and complaints</string>
     <string name="pqrsd_system_description"></string>
-    <string name="lost_objects">Lost objects</string>
+    <string name="lost_objects">Lost lostObjects</string>
     <string name="lost_objects_description"></string>
     <string name="security_system">Security system</string>
     <string name="security_system_description"></string>

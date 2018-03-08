@@ -19,7 +19,8 @@
             android:id="@+id/dish_image"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_marginEnd="5dp"/>
+            android:layout_marginEnd="5dp"
+            android:src="@drawable/rectangle_gray"/>
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="wrap_content"
@@ -28,20 +29,20 @@
                 android:id="@+id/dish_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/dishes_sample_name"
+                android:text="@string/dish_sample_name"
                 android:textSize="15sp"
                 android:textColor="@android:color/black"/>
             <TextView
                 android:id="@+id/dish_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/dishes_sample_description"
+                android:text="@string/dish_sample_description"
                 android:textSize="12sp"/>
             <TextView
                 android:id="@+id/dish_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/dishes_sample_price"
+                android:text="@string/dish_sample_price"
                 android:textSize="15sp"
                 android:textColor="@android:color/black"/>
         </LinearLayout>

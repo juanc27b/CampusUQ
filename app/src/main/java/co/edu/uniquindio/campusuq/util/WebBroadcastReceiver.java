@@ -28,14 +28,15 @@ public class WebBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (ACTION_START_WEB_SERVICE.equals(intent.getAction())) {
-            scheduleJob(context, WebService.ACTION_ALL, WebService.METHOD_GET);
+            scheduleJob(context, WebService.ACTION_ALL, WebService.METHOD_GET, null);
         }
     }
 
-    public static void scheduleJob(Context context, String action, String method) {
+    public static void scheduleJob(Context context, String action, String method, String object) {
         PersistableBundle extras = new PersistableBundle();
         extras.putString("ACTION", action);
         extras.putString("METHOD", method);
+        extras.putString("OBJECT", object);
         ComponentName serviceComponent = new ComponentName(context, WebService.class);
         JobInfo jobInfo = new JobInfo.Builder(JOB_ID, serviceComponent)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)

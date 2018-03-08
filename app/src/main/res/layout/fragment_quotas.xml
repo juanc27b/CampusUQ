@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_gravity="center"
     tools:context="co.edu.uniquindio.campusuq.activity.QuotasFragment">
     <TextView
         android:id="@+id/quota_dialog_name"
@@ -16,50 +17,55 @@
         android:layout_marginBottom="20dp"
         android:layout_gravity="center_horizontal"
         android:gravity="center_horizontal"
-        android:text="@string/quota_dialog_sample_title"
+        android:text="@string/quota_dialog_sample_name"
         android:textSize="20sp"
         android:textColor="@color/colorGreen"/>
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="40dp"
-        android:layout_gravity="center_horizontal">
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_vertical">
         <LinearLayout
+            android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical">
+            android:layout_marginEnd="5dp"
+            android:gravity="center_horizontal">
             <TextView
                 android:id="@+id/quota_dialog_quota"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
                 android:text="@string/quota_sample_quota"
                 android:textSize="40sp"
                 android:textColor="@android:color/black"/>
-            <Button
-                android:id="@+id/quota_dialog_minus"
-                android:layout_width="60dp"
-                android:layout_height="40dp"/>
-            <Button
-                android:id="@+id/quota_dialog_plus"
-                android:layout_width="60dp"
-                android:layout_height="40dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/quota_text"
+                android:textSize="20sp"
+                android:textColor="@android:color/black"/>
         </LinearLayout>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/quota_text"
-            android:textSize="20sp"
-            android:textColor="@android:color/black"/>
+        <Button
+            android:id="@+id/quota_dialog_minus"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="-"/>
+        <Button
+            android:id="@+id/quota_dialog_plus"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="+"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginBottom="10dp"
         android:layout_gravity="end">
         <TextView

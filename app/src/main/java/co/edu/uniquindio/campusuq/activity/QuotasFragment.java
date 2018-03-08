@@ -1,34 +1,28 @@
 package co.edu.uniquindio.campusuq.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-
-import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import co.edu.uniquindio.campusuq.R;
-import co.edu.uniquindio.campusuq.util.QuotasServiceController;
+import co.edu.uniquindio.campusuq.util.QuotasSQLiteController;
+import co.edu.uniquindio.campusuq.util.WebBroadcastReceiver;
+import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.Quota;
-
-import static org.apache.commons.lang3.math.NumberUtils.max;
-import static org.apache.commons.lang3.math.NumberUtils.min;
-import static org.apache.commons.lang3.math.NumberUtils.toInt;
 
 public class QuotasFragment extends DialogFragment implements View.OnClickListener {
     private static final String INDEX = "index";
 
-    private int index;
+    private QuotasActivity quotasActivity;
+    private Quota q;
     private TextView quota;
 
     public static QuotasFragment newInstance(int index) {
@@ -42,10 +36,12 @@ public class QuotasFragment extends DialogFragment implements View.OnClickListen
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        QuotasActivity quotasActivity = (QuotasActivity) getActivity();
-        View view = quotasActivity.getLayoutInflater().inflate(R.layout.fragment_quotas, null);
-        index = getArguments().getInt(INDEX);
-        Quota q = quotasActivity.quotas.get(index);
+        quotasActivity = (QuotasActivity) getActivity();
+        assert quotasActivity != null;
+        @SuppressLint("InflateParams") View view = quotasActivity.getLayoutInflater().inflate(R.layout.fragment_quotas, null);
+        Bundle args = getArguments();
+        assert args != null;
+        q = quotasActivity.getQuota(args.getInt(INDEX));
         ((TextView) view.findViewById(R.id.quota_dialog_name)).setText("Ajustar Cupos de "+q.getName());
         quota = view.findViewById(R.id.quota_dialog_quota);
         quota.setText(q.getQuota());
@@ -60,60 +56,25 @@ public class QuotasFragment extends DialogFragment implements View.OnClickListen
     public void onClick(View view) {
         switch(view.getId()) {
         case R.id.quota_dialog_minus:
-            quota.setText(String.valueOf(min(max(toInt(quota.getText().toString())-1, 0), 99)));
+            quota.setText(String.valueOf(Math.min(Math.max(Integer.valueOf(quota.getText().toString())-1, 0), 99)));
             break;
         case R.id.quota_dialog_plus:
-            quota.setText(String.valueOf(min(max(toInt(quota.getText().toString())+1, 0), 99)));
+            quota.setText(String.valueOf(Math.min(Math.max(Integer.valueOf(quota.getText().toString())+1, 0), 99)));
             break;
         case R.id.quota_dialog_ok:
-            QuotasActivity quotasActivity = (QuotasActivity) getActivity();
-            Quota q = quotasActivity.quotas.get(index);
-            q.setQuota(quota.getText().toString());
-            quotasActivity.quotas.set(index, q);
-
             JSONObject json = new JSONObject();
             try {
                 json.put("UPDATE_ID", q.get_ID());
-                json.put("Cupo", q.getQuota());
+                json.put(QuotasSQLiteController.columns[3], quota.getText());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            PostAsync postAsync = new PostAsync(quotasActivity.getApplicationContext());
-            postAsync.execute(json.toString());
-
-            //QuotasServiceController.modQuota("{\"UPDATE_ID\":\""+q.get_ID()+"\",\"Cupo\":\""+q.getQuota()+"\"}");
-            //Log.i("post Cupo", "{\"UPDATE_ID\":\""+q.get_ID()+"\",\"Cupo\":\""+q.getQuota()+"\"}");
-            quotasActivity.mAdapter.setQuotas(quotasActivity.quotas);
+            quotasActivity.progressDialog.show();
+            WebBroadcastReceiver.scheduleJob(quotasActivity.getApplicationContext(), WebService.ACTION_QUOTAS, WebService.METHOD_PUT, json.toString());
+            // Tanto ok como cancel cierran el dialogo, por eso aqui no hay break
         case R.id.quota_dialog_cancel:
             dismiss();
             break;
-        }
-    }
-
-    public class PostAsync extends AsyncTask<String, Void, String> {
-        private ProgressDialog progressDialog;
-
-        public PostAsync(Context context) {
-            progressDialog = ((QuotasActivity) getActivity()).progressDialog;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog.show();
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            QuotasServiceController.modQuota(strings[0]);
-            Log.i("post Cupo", strings[0]);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            if(progressDialog.isShowing()) progressDialog.dismiss();
         }
     }
 }

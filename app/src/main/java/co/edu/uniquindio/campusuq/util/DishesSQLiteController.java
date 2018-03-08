@@ -7,13 +7,13 @@ import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import co.edu.uniquindio.campusuq.vo.Dish;
-import co.edu.uniquindio.campusuq.vo.Quota;
 
 public class DishesSQLiteController {
-    private static String tablename = "Plato";
-    public static String CAMPOS_TABLA[] = new String[]{"_ID", "Nombre", "Descripcion", "Precio", "Imagen"};
+    private static final String tablename = "Plato";
+    public static final String columns[] = {"_ID", "Nombre", "Descripcion", "Precio", "Imagen"};
 
     private SQLiteHelper usdbh;
     private SQLiteDatabase db;
@@ -23,29 +23,30 @@ public class DishesSQLiteController {
         db = usdbh.getWritableDatabase();
     }
 
-    public static String createTable() {
-        return "CREATE TABLE `"+tablename+"`(`"+CAMPOS_TABLA[0]+"` INTEGER PRIMARY KEY, `"+TextUtils.join("` TEXT NOT NULL, `", Arrays.copyOfRange(CAMPOS_TABLA, 1, CAMPOS_TABLA.length))+"` TEXT NOT NULL)";
+    static String createTable() {
+        return "CREATE TABLE `"+tablename+"`(`"+columns[0]+"` INTEGER PRIMARY KEY, `"+TextUtils.join("` TEXT NOT NULL, `", Arrays.copyOfRange(columns, 1, columns.length))+"` TEXT NOT NULL)";
     }
 
     public ArrayList<Dish> select(String limit, String selection, String[] selectionArgs) {
-        Cursor c = db.query(tablename, CAMPOS_TABLA, selection, selectionArgs, null, null, null, limit);
         ArrayList<Dish> dishes = new ArrayList<>();
+        Cursor c = db.query(tablename, columns, selection, selectionArgs, null, null, null, limit);
         if(c.moveToFirst()) do {
             dishes.add(new Dish(c.getString(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4)));
         } while(c.moveToNext());
+        c.close();
         return dishes;
     }
 
-    public void insert(String... campos) {
-        db.execSQL("INSERT INTO `"+tablename+"`(`"+TextUtils.join("`, `", CAMPOS_TABLA)+"`) VALUES(?, ?, ?, ?, ?)", campos);
+    public void insert(String... values) {
+        db.execSQL("INSERT INTO `"+tablename+"`(`"+TextUtils.join("`, `", columns)+"`) VALUES("+TextUtils.join(", ", Collections.nCopies(columns.length, "?"))+")", values);
     }
 
-    public void update(String... campos) {
-        db.execSQL("UPDATE `"+tablename+"` SET `"+TextUtils.join("` = ?, `", Arrays.copyOfRange(CAMPOS_TABLA, 1, CAMPOS_TABLA.length))+"` = ? WHERE `"+CAMPOS_TABLA[0]+"` = ?", campos);
+    void update(String... values) {
+        db.execSQL("UPDATE `"+tablename+"` SET `"+TextUtils.join("` = ?, `", columns)+"` = ? WHERE `"+columns[0]+"` = ?", values);
     }
 
     public void delete(String id) {
-        db.execSQL("DELETE FROM `"+tablename+"` WHERE `"+CAMPOS_TABLA[0]+"` = ?", new String[]{id});
+        db.execSQL("DELETE FROM `"+tablename+"` WHERE `"+columns[0]+"` = ?", new String[]{id});
     }
 
     public void destroy() {

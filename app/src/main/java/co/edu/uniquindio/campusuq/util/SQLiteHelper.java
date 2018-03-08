@@ -39,7 +39,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
         db.execSQL(QuotasSQLiteController.createTable());
         db.execSQL(DishesSQLiteController.createTable());
-
+        db.execSQL(ObjectsSQLiteController.createTable());
     }
 
     @Override

@@ -9,16 +9,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import co.edu.uniquindio.campusuq.vo.Quota;
+import co.edu.uniquindio.campusuq.vo.LostObject;
 
-public class QuotasSQLiteController {
-    private static final String tablename = "Cupo";
-    public static final String columns[] = {"_ID", "Tipo", "Nombre", "Cupo"};
+public class ObjectsSQLiteController {
+    private static final String tablename = "Objetos";
+    public static final String columns[] = {"_ID", "Usuario_Perdio_ID", "Nombre", "Lugar", "Fecha", "Descripcion", "Imagen", "Usuario_Encontro_ID", "Leido"};
 
     private SQLiteHelper usdbh;
     private SQLiteDatabase db;
 
-    public QuotasSQLiteController(Context context, int version) {
+    public ObjectsSQLiteController(Context context, int version) {
         usdbh = new SQLiteHelper(context, Utilities.NOMBRE_BD , null, version);
         db = usdbh.getWritableDatabase();
     }
@@ -27,14 +27,14 @@ public class QuotasSQLiteController {
         return "CREATE TABLE `"+tablename+"`(`"+columns[0]+"` INTEGER PRIMARY KEY, `"+TextUtils.join("` TEXT NOT NULL, `", Arrays.copyOfRange(columns, 1, columns.length))+"` TEXT NOT NULL)";
     }
 
-    public ArrayList<Quota> select(String limit, String selection, String[] selectionArgs) {
-        ArrayList<Quota> quotas = new ArrayList<>();
+    public ArrayList<LostObject> select(String limit, String selection, String[] selectionArgs) {
+        ArrayList<LostObject> objects = new ArrayList<>();
         Cursor c = db.query(tablename, columns, selection, selectionArgs, null, null, null, limit);
         if(c.moveToFirst()) do {
-            quotas.add(new Quota(c.getString(0), c.getString(1), c.getString(2), c.getString(3)));
+            objects.add(new LostObject(c.getString(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getString(5), c.getString(6), c.getString(7)));
         } while(c.moveToNext());
         c.close();
-        return quotas;
+        return objects;
     }
 
     public void insert(String... values) {
@@ -42,7 +42,11 @@ public class QuotasSQLiteController {
     }
 
     void update(String... values) {
-        db.execSQL("UPDATE `"+tablename+"` SET `"+TextUtils.join("` = ?, `", columns)+"` = ? WHERE `"+columns[0]+"` = ?", values);
+        db.execSQL("UPDATE `"+tablename+"` SET `"+TextUtils.join("` = ?, `", Arrays.copyOfRange(columns, 0, columns.length-1))+"` = ? WHERE `"+columns[0]+"` = ?", values);
+    }
+
+    public void readed(String... values) {
+        db.execSQL("UPDATE `"+tablename+"` SET `"+columns[8]+"` = 'S' WHERE `"+columns[0]+"` = ?", values);
     }
 
     public void delete(String id) {

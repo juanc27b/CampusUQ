@@ -14,11 +14,19 @@ import co.edu.uniquindio.campusuq.activity.QuotasActivity;
 import co.edu.uniquindio.campusuq.vo.Quota;
 
 public class QuotasAdapter extends RecyclerView.Adapter<QuotasAdapter.QuotaViewHolder> {
-    public static class QuotaViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public ImageView icon;
-        public TextView name, quota;
+    private ArrayList<Quota> quotas;
+    private OnClickQuotaListener listener;
 
-        public QuotaViewHolder(View quotaView) {
+    public QuotasAdapter(ArrayList<Quota> quotas, QuotasActivity quotasActivity) {
+        this.quotas = quotas;
+        listener = quotasActivity;
+    }
+
+    public class QuotaViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private ImageView icon;
+        private TextView name, quota;
+
+        QuotaViewHolder(View quotaView) {
             super(quotaView);
             quotaView.findViewById(R.id.quota_layout).setOnClickListener(this);
             icon = quotaView.findViewById(R.id.quota_icon);
@@ -26,7 +34,7 @@ public class QuotasAdapter extends RecyclerView.Adapter<QuotasAdapter.QuotaViewH
             quota = quotaView.findViewById(R.id.quota_quota);
         }
 
-        public void bindItem(Quota q) {
+        void bindItem(Quota q) {
             icon.setImageResource(q.getQuota().equals("0")? R.drawable.circle_gray : R.drawable.circle_green);
             name.setText(q.getName());
             name.setTextSize(q.getType().equals("S")? 20 : 15);
@@ -39,14 +47,6 @@ public class QuotasAdapter extends RecyclerView.Adapter<QuotasAdapter.QuotaViewH
         }
     }
 
-    private ArrayList<Quota> mQuotas;
-    private static OnClickQuotaListener listener;
-
-    public QuotasAdapter(ArrayList<Quota> mQuotas, QuotasActivity quotasActivity) {
-        this.mQuotas = mQuotas;
-        listener = quotasActivity;
-    }
-
     @Override
     public QuotaViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new QuotaViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.quota_detail, parent, false));
@@ -54,20 +54,20 @@ public class QuotasAdapter extends RecyclerView.Adapter<QuotasAdapter.QuotaViewH
 
     @Override
     public void onBindViewHolder(QuotaViewHolder holder, int position) {
-        holder.bindItem(mQuotas.get(position));
+        holder.bindItem(quotas.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return mQuotas.size();
-    }
-
-    public void setQuotas(ArrayList<Quota> mQuotas) {
-        this.mQuotas = mQuotas;
-        notifyDataSetChanged();
+        return quotas.size();
     }
 
     public interface OnClickQuotaListener {
         void onQuotaClick(int index);
+    }
+
+    public void setQuotas(ArrayList<Quota> quotas) {
+        this.quotas = quotas;
+        notifyDataSetChanged();
     }
 }
