@@ -16,6 +16,7 @@ import co.edu.uniquindio.campusuq.activity.DishesActivity;
 import co.edu.uniquindio.campusuq.vo.Dish;
 
 public class DishesAdapter extends RecyclerView.Adapter<DishesAdapter.DishViewHolder> {
+
     private ArrayList<Dish> dishes;
     private OnClickDishListener listener;
 
@@ -25,6 +26,7 @@ public class DishesAdapter extends RecyclerView.Adapter<DishesAdapter.DishViewHo
     }
 
     public class DishViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
         private ImageView image;
         private TextView name, description, price;
 
@@ -67,12 +69,13 @@ public class DishesAdapter extends RecyclerView.Adapter<DishesAdapter.DishViewHo
         return dishes.size();
     }
 
-    public interface OnClickDishListener {
-        void onDishClick(int index);
-    }
-
     public void setDishes(ArrayList<Dish> dishes) {
         this.dishes = dishes;
         notifyDataSetChanged();
     }
+
+    public interface OnClickDishListener {
+        void onDishClick(int index);
+    }
+
 }

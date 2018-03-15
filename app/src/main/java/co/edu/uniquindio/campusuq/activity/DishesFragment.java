@@ -21,6 +21,7 @@ import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.Dish;
 
 public class DishesFragment extends DialogFragment implements View.OnClickListener {
+
     private static final String INDEX = "index";
 
     private DishesActivity dishesActivity;

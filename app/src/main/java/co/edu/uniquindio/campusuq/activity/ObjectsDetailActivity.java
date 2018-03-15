@@ -23,8 +23,9 @@ import co.edu.uniquindio.campusuq.util.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.util.WebService;
 
 public class ObjectsDetailActivity extends MainActivity implements View.OnClickListener {
-    private String user_lost_ID;
-    private TextView name, place, date, description, description_count;
+
+    private String userLost_ID;
+    private TextView name, place, date, description, descriptionCount;
     private ImageView image;
 
     public ObjectsDetailActivity() {
@@ -35,67 +36,74 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
+
         super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+
         ViewStub viewStub = findViewById(R.id.layout_stub);
         viewStub.setLayoutResource(R.layout.activity_objects_detail);
         viewStub.inflate();
+
         Intent intent = getIntent();
-        user_lost_ID = intent.getStringExtra(ObjectsSQLiteController.columns[1]);
+        userLost_ID = intent.getStringExtra(ObjectsSQLiteController.columns[1]);
         name = findViewById(R.id.object_detail_name);
         name.setText(intent.getStringExtra(ObjectsSQLiteController.columns[2]));
         place = findViewById(R.id.object_detail_place);
         place.setText(intent.getStringExtra(ObjectsSQLiteController.columns[3]));
         date = findViewById(R.id.object_detail_date);
         date.setText(intent.getStringExtra(ObjectsSQLiteController.columns[4]));
-        String description_text = intent.getStringExtra(ObjectsSQLiteController.columns[5]);
-        description_count = findViewById(R.id.object_detail_description_count);
-        description_count.setText(String.valueOf(description_text.length()));
+        String descriptionText = intent.getStringExtra(ObjectsSQLiteController.columns[5]);
+        descriptionCount = findViewById(R.id.object_detail_description_count);
+        descriptionCount.setText(String.valueOf(descriptionText.length()));
         description = findViewById(R.id.object_detail_description);
-        description.setText(description_text);
+        description.setText(descriptionText);
         description.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                description_count.setText(String.valueOf(charSequence.length()));
+                descriptionCount.setText(String.valueOf(charSequence.length()));
             }
 
             @Override
             public void afterTextChanged(Editable editable) {}
         });
+
         File imgFile = new  File(intent.getStringExtra(ObjectsSQLiteController.columns[6]));
         image = findViewById(R.id.object_detail_image);
         if(imgFile.exists()) image.setImageBitmap(BitmapFactory.decodeFile(imgFile.getAbsolutePath()));
         image.setOnClickListener(this);
+
         findViewById(R.id.object_detail_ok).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
         switch(view.getId()){
-        case R.id.object_detail_image:
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-            startActivityForResult(Intent.createChooser(intent, "Select Picture"), 0);
-            break;
-        case R.id.object_detail_ok:
-            JSONObject json = new JSONObject();
-            try {
-                String id = getIntent().getStringExtra(ObjectsSQLiteController.columns[0]);
-                if(id != null) json.put("UPDATE_ID", id);
-                json.put(ObjectsSQLiteController.columns[1], user_lost_ID);
-                json.put(ObjectsSQLiteController.columns[2], name.getText());
-                json.put(ObjectsSQLiteController.columns[3], place.getText());
-                json.put(ObjectsSQLiteController.columns[4], date.getText());
-                json.put(ObjectsSQLiteController.columns[5], description.getText());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            WebBroadcastReceiver.scheduleJob(getApplicationContext(), WebService.ACTION_OBJECTS, WebService.METHOD_POST, json.toString());
-            setResult(RESULT_OK, getIntent());
-            finish();
-            break;
+            case R.id.object_detail_image:
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), 0);
+                break;
+            case R.id.object_detail_ok:
+                JSONObject json = new JSONObject();
+                try {
+                    String id = getIntent().getStringExtra(ObjectsSQLiteController.columns[0]);
+                    if(id != null) json.put("UPDATE_ID", id);
+                    json.put(ObjectsSQLiteController.columns[1], userLost_ID);
+                    json.put(ObjectsSQLiteController.columns[2], name.getText());
+                    json.put(ObjectsSQLiteController.columns[3], place.getText());
+                    json.put(ObjectsSQLiteController.columns[4], date.getText());
+                    json.put(ObjectsSQLiteController.columns[5], description.getText());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                WebBroadcastReceiver.scheduleJob(getApplicationContext(), WebService.ACTION_OBJECTS, WebService.METHOD_POST, json.toString());
+                setResult(RESULT_OK, getIntent());
+                finish();
+                break;
+            default:
+                break;
         }
     }
 
@@ -110,4 +118,5 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
             }
         }
     }
+
 }

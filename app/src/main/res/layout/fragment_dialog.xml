@@ -5,6 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center">
+
     <TextView
         android:id="@+id/dialog_name"
         android:layout_width="wrap_content"
@@ -17,38 +18,47 @@
         android:gravity="center_horizontal"
         android:text="@string/dish_sample_name"
         android:textSize="20sp"
-        android:textColor="@color/colorGreen"/>
+        android:textColor="@color/colorPrimary"/>
+
     <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="40dp">
+
         <RadioButton
             android:id="@+id/dialog_modify"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             android:text="@string/dialog_sample_modify"
             android:textSize="15sp"
             android:textColor="@android:color/black"/>
+
         <RadioButton
             android:id="@+id/dialog_delete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             android:text="@string/dialog_sample_delete"
             android:textSize="15sp"
             android:textColor="@android:color/black"/>
+
     </RadioGroup>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="10dp"
         android:layout_gravity="end">
+
         <TextView
             android:id="@+id/dialog_cancel"
             android:layout_width="wrap_content"
@@ -57,12 +67,15 @@
             android:text="@string/dialog_cancel"
             android:textSize="15sp"
             android:textColor="@android:color/black"/>
+
         <TextView
             android:id="@+id/dialog_ok"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/dialog_ok"
             android:textSize="15sp"
-            android:textColor="@android:color/holo_blue_dark"/>
+            android:textColor="@color/colorAccent"/>
+
     </LinearLayout>
+
 </LinearLayout>

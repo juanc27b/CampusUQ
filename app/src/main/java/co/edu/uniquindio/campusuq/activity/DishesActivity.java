@@ -24,10 +24,12 @@ import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.Dish;
 
 public class DishesActivity extends MainActivity implements DishesAdapter.OnClickDishListener {
+
     private ArrayList<Dish> dishes = new ArrayList<>();
     private boolean newActivity = true, oldDishes = true;
     private DishesAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
+
     private IntentFilter dishesFilter = new IntentFilter(WebService.ACTION_DISHES);
     private BroadcastReceiver dishesReceiver = new BroadcastReceiver() {
         @Override
@@ -41,24 +43,15 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
     }
 
     @Override
-    public void handleIntent(Intent intent) {
-        if(Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            for(Dish dish : dishes) if(dish.getName().toLowerCase().contains(query.trim().toLowerCase())) {
-                layoutManager.scrollToPosition(dishes.indexOf(dish));
-                return;
-            }
-            Toast.makeText(this, "No se ha encontrado el plato: "+query, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
+
         super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+
         ViewStub viewStub = findViewById(R.id.layout_stub);
         viewStub.setLayoutResource(R.layout.content_dishes);
         viewStub.inflate();
+
         FloatingActionButton insert = findViewById(R.id.fab);
         insert.setVisibility(View.VISIBLE);
         insert.setOnClickListener(new View.OnClickListener() {
@@ -73,14 +66,32 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
                 startActivityForResult(intent, 0);
             }
         });
+
         loadDishes(0);
     }
 
+    @Override
+    public void handleIntent(Intent intent) {
+        if(Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            for(Dish dish : dishes) if(dish.getName().toLowerCase().contains(query.trim().toLowerCase())) {
+                layoutManager.scrollToPosition(dishes.indexOf(dish));
+                return;
+            }
+            Toast.makeText(this, "No se ha encontrado el plato: "+query, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void loadDishes(int inserted) {
+
         if(!progressDialog.isShowing()) progressDialog.show();
+
+        int scrollTo = oldDishes ? (newActivity ? 0 : dishes.size()-1) : (inserted != 0? inserted-1 : 0);
+
         DishesSQLiteController dbController = new DishesSQLiteController(getApplicationContext(), 1);
-        dishes = dbController.select(String.valueOf(inserted > 0? dishes.size()+inserted : dishes.size()+6), null, null);
+        dishes = dbController.select(String.valueOf(inserted > 0 ? dishes.size()+inserted : dishes.size()+6), null, null);
         dbController.destroy();
+
         if(newActivity) {
             adapter = new DishesAdapter(dishes, DishesActivity.this);
             layoutManager = new LinearLayoutManager(DishesActivity.this, LinearLayoutManager.VERTICAL, false);
@@ -111,9 +122,11 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
             newActivity = false;
         } else {
             adapter.setDishes(dishes);
-            layoutManager.scrollToPosition(oldDishes? (newActivity? 0 : dishes.size()-1) : (inserted != 0? inserted-1 : 0));
+            layoutManager.scrollToPosition(scrollTo);
         }
+
         if(progressDialog.isShowing() && dishes.size() > 0) progressDialog.dismiss();
+
     }
 
     @Override

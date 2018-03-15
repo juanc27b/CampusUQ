@@ -23,7 +23,8 @@ import co.edu.uniquindio.campusuq.util.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.util.WebService;
 
 public class DishesDetailActivity extends MainActivity implements View.OnClickListener {
-    private TextView name, description, description_count, price;
+
+    private TextView name, description, descriptionCount, price;
     private ImageView image;
 
     public DishesDetailActivity() {
@@ -34,16 +35,19 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
+
         super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+
         ViewStub viewStub = findViewById(R.id.layout_stub);
         viewStub.setLayoutResource(R.layout.activity_dishes_detail);
         viewStub.inflate();
+
         Intent intent = getIntent();
         name = findViewById(R.id.dish_detail_name);
         name.setText(intent.getStringExtra(DishesSQLiteController.columns[1]));
         String description_text = intent.getStringExtra(DishesSQLiteController.columns[2]);
-        description_count = findViewById(R.id.dish_detail_description_count);
-        description_count.setText(String.valueOf(description_text.length()));
+        descriptionCount = findViewById(R.id.dish_detail_description_count);
+        descriptionCount.setText(String.valueOf(description_text.length()));
         description = findViewById(R.id.dish_detail_description);
         description.setText(description_text);
         description.addTextChangedListener(new TextWatcher() {
@@ -52,7 +56,7 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                description_count.setText(String.valueOf(charSequence.length()));
+                descriptionCount.setText(String.valueOf(charSequence.length()));
             }
 
             @Override
@@ -60,10 +64,12 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
         });
         price = findViewById(R.id.dish_detail_price);
         price.setText(intent.getStringExtra(DishesSQLiteController.columns[3]));
+
         File imgFile = new  File(intent.getStringExtra(DishesSQLiteController.columns[4]));
         image = findViewById(R.id.dish_detail_image);
         if(imgFile.exists()) image.setImageBitmap(BitmapFactory.decodeFile(imgFile.getAbsolutePath()));
         image.setOnClickListener(this);
+
         findViewById(R.id.dish_detail_ok).setOnClickListener(this);
     }
 

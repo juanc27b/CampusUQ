@@ -5,23 +5,25 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="10dp"
     tools:context="co.edu.uniquindio.campusuq.activity.ObjectsActivity">
+
     <Button
         android:id="@+id/object_report"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"
+        android:layout_height="30dp"
         android:text="@string/object_report"
+        android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:background="@drawable/round_green_filled_button"
         android:backgroundTint="@color/colorRed"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/objects_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="25dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
         android:scrollbars="vertical"/>
+
 </LinearLayout>

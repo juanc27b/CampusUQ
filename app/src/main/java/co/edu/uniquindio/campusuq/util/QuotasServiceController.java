@@ -16,16 +16,18 @@ import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 import cz.msebera.android.httpclient.util.EntityUtils;
 
 class QuotasServiceController {
-    static ArrayList<Quota> getQuotas(String idQuota) {
+
+    static ArrayList<Quota> getQuotas() {
         String url = Utilities.URL_SERVICIO+"/cupos";
-        if(idQuota != null) url += idQuota;
         HttpGet request = new HttpGet(url);
         request.setHeader("Content-Type", "application/json; Charset=UTF-8");
         request.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
         ArrayList<Quota> quotas = new ArrayList<>();
         try {
-            JSONArray array = (new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build().execute(request).getEntity(), "UTF-8"))).getJSONArray("datos");
-            for(int i = 0; i < array.length(); i++) {
+            JSONArray array = (new JSONObject(
+                    EntityUtils.toString(HttpClientBuilder.create().build().execute(request).getEntity(), "UTF-8")))
+                    .getJSONArray("datos");
+            for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 quotas.add(new Quota(
                     StringEscapeUtils.unescapeHtml4(object.getString(QuotasSQLiteController.columns[0])),
@@ -53,4 +55,5 @@ class QuotasServiceController {
             return null;
         }
     }
+
 }

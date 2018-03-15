@@ -23,10 +23,12 @@ import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.LostObject;
 
 public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnClickObjectListener {
+
     private ArrayList<LostObject> objects = new ArrayList<>();
     private boolean newActivity = true, oldObjects = true;
     private ObjectsAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
+
     private IntentFilter objectsFilter = new IntentFilter(WebService.ACTION_OBJECTS);
     private BroadcastReceiver objectsReceiver = new BroadcastReceiver() {
         @Override
@@ -40,24 +42,15 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
     }
 
     @Override
-    public void handleIntent(Intent intent) {
-        if(Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            for(LostObject object : objects) if(object.getName().toLowerCase().contains(query.trim().toLowerCase())) {
-                layoutManager.scrollToPosition(objects.indexOf(object));
-                return;
-            }
-            Toast.makeText(this, "No se ha encontrado el objeto: "+query, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
+
         super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+
         ViewStub viewStub = findViewById(R.id.layout_stub);
         viewStub.setLayoutResource(R.layout.content_objects);
         viewStub.inflate();
+
         findViewById(R.id.object_report).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,14 +65,32 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                 startActivityForResult(intent, 0);
             }
         });
+
         loadObjects(0);
     }
 
+    @Override
+    public void handleIntent(Intent intent) {
+        if(Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            for(LostObject object : objects) if(object.getName().toLowerCase().contains(query.trim().toLowerCase())) {
+                layoutManager.scrollToPosition(objects.indexOf(object));
+                return;
+            }
+            Toast.makeText(this, "No se ha encontrado el objeto: "+query, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void loadObjects(int inserted) {
+
         if(!progressDialog.isShowing()) progressDialog.show();
+
+        int scrollTo = oldObjects ? (newActivity ? 0 : objects.size()-1) : (inserted != 0 ? inserted-1 : 0);
+
         ObjectsSQLiteController dbController = new ObjectsSQLiteController(getApplicationContext(), 1);
-        objects = dbController.select(String.valueOf(inserted > 0? objects.size()+inserted : objects.size()+3), "`"+ObjectsSQLiteController.columns[8]+"` = 'N'", null);
+        objects = dbController.select(String.valueOf(inserted > 0 ? objects.size()+inserted : objects.size()+3), "`"+ObjectsSQLiteController.columns[8]+"` = 'N'", null);
         dbController.destroy();
+
         if(newActivity) {
             adapter = new ObjectsAdapter(objects, ObjectsActivity.this);
             layoutManager = new LinearLayoutManager(ObjectsActivity.this, LinearLayoutManager.VERTICAL, false);
@@ -110,26 +121,30 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
             newActivity = false;
         } else {
             adapter.setObjects(objects);
-            layoutManager.scrollToPosition(oldObjects? (newActivity? 0 : objects.size()-1) : (inserted != 0? inserted-1 : 0));
+            layoutManager.scrollToPosition(scrollTo);
         }
+
         if(progressDialog.isShowing() && objects.size() > 0) progressDialog.dismiss();
+
     }
 
     @Override
     public void onObjectClick(int index, String action) {
         switch(action) {
-        case ObjectsAdapter.DIALOG:
-            ObjectsFragment.newInstance(index).show(getSupportFragmentManager(), null);
-            break;
-        case ObjectsAdapter.READED:
-            LostObject object = objects.get(index);
-            ObjectsSQLiteController dbController = new ObjectsSQLiteController(getApplicationContext(), 1);
-            dbController.readed(object.get_ID());
-            dbController.destroy();
-            loadObjects(0);
-            break;
-        case ObjectsAdapter.FOUND:
-            break;
+            case ObjectsAdapter.DIALOG:
+                ObjectsFragment.newInstance(index).show(getSupportFragmentManager(), null);
+                break;
+            case ObjectsAdapter.READED:
+                LostObject object = objects.get(index);
+                ObjectsSQLiteController dbController = new ObjectsSQLiteController(getApplicationContext(), 1);
+                dbController.readed(object.get_ID());
+                dbController.destroy();
+                loadObjects(0);
+                break;
+            case ObjectsAdapter.FOUND:
+                break;
+            default:
+                break;
         }
     }
 

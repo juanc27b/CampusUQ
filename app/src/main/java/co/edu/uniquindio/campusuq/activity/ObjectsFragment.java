@@ -21,6 +21,7 @@ import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.LostObject;
 
 public class ObjectsFragment extends DialogFragment implements View.OnClickListener {
+
     private static final String INDEX = "index";
 
     private ObjectsActivity objectsActivity;
@@ -83,4 +84,5 @@ public class ObjectsFragment extends DialogFragment implements View.OnClickListe
             break;
         }
     }
+
 }

@@ -16,15 +16,17 @@ import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 import cz.msebera.android.httpclient.util.EntityUtils;
 
 class DishesServiceController {
-    static ArrayList<Dish> getDishes(String idDish) {
+
+    static ArrayList<Dish> getDishes() {
         String url = Utilities.URL_SERVICIO+"/platos";
-        if(idDish != null) url += idDish;
         HttpGet request = new HttpGet(url);
         request.setHeader("Content-Type", "application/json; Charset=UTF-8");
         request.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
         ArrayList<Dish> dishes = new ArrayList<>();
         try {
-            JSONArray array = (new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build().execute(request).getEntity(), "UTF-8"))).getJSONArray("datos");
+            JSONArray array = (new JSONObject(
+                    EntityUtils.toString(HttpClientBuilder.create().build().execute(request).getEntity(), "UTF-8")))
+                    .getJSONArray("datos");
             for(int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 dishes.add(new Dish(
@@ -54,4 +56,5 @@ class DishesServiceController {
             return null;
         }
     }
+
 }

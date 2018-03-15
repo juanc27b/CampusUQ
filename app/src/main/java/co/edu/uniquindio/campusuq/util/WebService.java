@@ -54,9 +54,10 @@ public class WebService extends JobService {
     public static final String ACTION_CONTACTS = "co.edu.uniquindio.campusuq.ACTION_CONTACTS";
     public static final String ACTION_PROGRAMS = "co.edu.uniquindio.campusuq.ACTION_PROGRAMS";
     public static final String ACTION_CALENDAR = "co.edu.uniquindio.campusuq.ACTION_CALENDAR";
-    public static final String ACTION_QUOTAS = "co.edu.uniquindio.campusuq.ACTION_QUOTAS";
-    public static final String ACTION_DISHES = "co.edu.uniquindio.campusuq.ACTION_DISHES";
+
     public static final String ACTION_OBJECTS = "co.edu.uniquindio.campusuq.ACTION_OBJECTS";
+    public static final String ACTION_DISHES = "co.edu.uniquindio.campusuq.ACTION_DISHES";
+    public static final String ACTION_QUOTAS = "co.edu.uniquindio.campusuq.ACTION_QUOTAS";
 
     public static final String METHOD_GET = "co.edu.uniquindio.campusuq.METHOD_GET";
     public static final String METHOD_POST = "co.edu.uniquindio.campusuq.METHOD_POST";
@@ -494,69 +495,8 @@ public class WebService extends JobService {
 
     }
 
-    private void loadQuotas(String method, String object) {
-        if(Utilities.haveNetworkConnection(getApplicationContext())) {
-            QuotasSQLiteController dbController = new QuotasSQLiteController(getApplicationContext(), 1);
-            switch(method) {
-            case METHOD_POST:
-            case METHOD_PUT:
-            case METHOD_DELETE:
-                QuotasServiceController.modifyQuota(object);
-            case METHOD_GET:
-                boolean remove = false;
-                ArrayList<String> old_ids = new ArrayList<>();
-                for(Quota old : dbController.select(null, null, null)) old_ids.add(old.get_ID());
-                for(Quota quota : QuotasServiceController.getQuotas(null)) {
-                    remove = true;
-                    int index = old_ids.indexOf(quota.get_ID());
-                    if(index == -1) {
-                        dbController.insert(quota.get_ID(), quota.getType(), quota.getName(), quota.getQuota());
-                    } else {
-                        dbController.update(quota.get_ID(), quota.getType(), quota.getName(), quota.getQuota(), quota.get_ID());
-                        old_ids.remove(index);
-                    }
-                }
-                if(remove) for(String old_id : old_ids) dbController.delete(old_id);
-                break;
-            }
-            dbController.destroy();
-        }
-        sendBroadcast(new Intent(ACTION_QUOTAS));
-    }
-
-    private void loadDishes(String method, String object) {
-        if(Utilities.haveNetworkConnection(getApplicationContext())) {
-            DishesSQLiteController dbController = new DishesSQLiteController(getApplicationContext(), 1);
-            switch(method) {
-            case METHOD_POST:
-            case METHOD_PUT:
-            case METHOD_DELETE:
-                DishesServiceController.modifyDish(object);
-            case METHOD_GET:
-                boolean remove = false;
-                ArrayList<String> old_ids = new ArrayList<>();
-                for(Dish old : dbController.select(null, null, null)) old_ids.add(old.get_ID());
-                for(Dish dish : DishesServiceController.getDishes(null)) {
-                    remove = true;
-                    String imagePath = Utilities.saveImage(dish.getImage(), getApplicationContext());
-                    if(imagePath != null) dish.setImage(imagePath);
-                    int index = old_ids.indexOf(dish.get_ID());
-                    if(index == -1) {
-                        dbController.insert(dish.get_ID(), dish.getName(), dish.getDescription(), dish.getPrice(), dish.getImage());
-                    } else {
-                        dbController.update(dish.get_ID(), dish.getName(), dish.getDescription(), dish.getPrice(), dish.getImage(), dish.get_ID());
-                        old_ids.remove(index);
-                    }
-                }
-                if(remove) for(String old_id : old_ids) dbController.delete(old_id);
-                break;
-            }
-            dbController.destroy();
-        }
-        sendBroadcast(new Intent(ACTION_DISHES));
-    }
-
     private void loadObjects(String method, String object) {
+        int inserted = 0;
         if(Utilities.haveNetworkConnection(getApplicationContext())) {
             ObjectsSQLiteController dbController = new ObjectsSQLiteController(getApplicationContext(), 1);
             switch(method) {
@@ -565,33 +505,108 @@ public class WebService extends JobService {
             case METHOD_DELETE:
                 ObjectsServiceController.modifyObject(object);
             case METHOD_GET:
+                NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 boolean remove = false;
-                ArrayList<String> old_ids = new ArrayList<>();
-                for(LostObject old : dbController.select(null, null, null)) old_ids.add(old.get_ID());
-                for(LostObject lostObject : ObjectsServiceController.getObjects(null)) {
+                ArrayList<String> oldIDs = new ArrayList<>();
+                for(LostObject old : dbController.select(null, null, null)) oldIDs.add(old.get_ID());
+                String lastObjectId = oldIDs.size() > 0 ? "/"+oldIDs.get(0) : null;
+                for(LostObject lostObject : ObjectsServiceController.getObjects(lastObjectId)) {
                     remove = true;
                     String imagePath = Utilities.saveImage(lostObject.getImage(), getApplicationContext());
                     if(imagePath != null) lostObject.setImage(imagePath);
-                    int index = old_ids.indexOf(lostObject.get_ID());
+                    int index = oldIDs.indexOf(lostObject.get_ID());
                     if(index == -1) {
                         dbController.insert(
-                            lostObject.get_ID(), lostObject.getUserLost_ID(), lostObject.getName(), lostObject.getPlace(),
-                            lostObject.getDate(), lostObject.getDescription(), lostObject.getImage(), lostObject.getUserFound_ID(), "N"
+                            lostObject.get_ID(), lostObject.getUserLost_ID(), lostObject.getName(),
+                                lostObject.getPlace(), lostObject.getDate(), lostObject.getDescription(),
+                                lostObject.getImage(), lostObject.getUserFound_ID(), "N"
                         );
                     } else {
                         dbController.update(
                             lostObject.get_ID(), lostObject.getUserLost_ID(), lostObject.getName(), lostObject.getPlace(),
-                            lostObject.getDate(), lostObject.getDescription(), lostObject.getImage(), lostObject.getUserFound_ID(), lostObject.get_ID()
+                                lostObject.getDate(), lostObject.getDescription(), lostObject.getImage(),
+                                lostObject.getUserFound_ID(), lostObject.get_ID()
                         );
-                        old_ids.remove(index);
+                        oldIDs.remove(index);
+                    }
+                    inserted ++;
+                    if (lastObjectId != null && inserted <= 5) {
+                        //manager.notify(lostObject.getName(), mNotificationId, buildNotification(ACTION_OBJECTS, lostObject));
                     }
                 }
-                if(remove) for(String old_id : old_ids) dbController.delete(old_id);
+                if(remove) for(String oldID : oldIDs) dbController.delete(oldID);
                 break;
             }
             dbController.destroy();
         }
-        sendBroadcast(new Intent(ACTION_OBJECTS));
+        sendBroadcast(new Intent(ACTION_OBJECTS).putExtra("INSERTED", inserted));
+    }
+
+    private void loadDishes(String method, String object) {
+        int inserted = 0;
+        if(Utilities.haveNetworkConnection(getApplicationContext())) {
+            DishesSQLiteController dbController = new DishesSQLiteController(getApplicationContext(), 1);
+            switch(method) {
+                case METHOD_POST:
+                case METHOD_PUT:
+                case METHOD_DELETE:
+                    DishesServiceController.modifyDish(object);
+                case METHOD_GET:
+                    boolean remove = false;
+                    ArrayList<String> oldIDs = new ArrayList<>();
+                    for(Dish old : dbController.select(null, null, null)) oldIDs.add(old.get_ID());
+                    for(Dish dish : DishesServiceController.getDishes()) {
+                        remove = true;
+                        String imagePath = Utilities.saveImage(dish.getImage(), getApplicationContext());
+                        if(imagePath != null) dish.setImage(imagePath);
+                        int index = oldIDs.indexOf(dish.get_ID());
+                        if(index == -1) {
+                            dbController.insert(dish.get_ID(), dish.getName(), dish.getDescription(),
+                                    dish.getPrice(), dish.getImage());
+                            inserted ++;
+                        } else {
+                            dbController.update(dish.get_ID(), dish.getName(), dish.getDescription(),
+                                    dish.getPrice(), dish.getImage(), dish.get_ID());
+                            oldIDs.remove(index);
+                        }
+                    }
+                    if(remove) for(String oldID : oldIDs) dbController.delete(oldID);
+                    break;
+            }
+            dbController.destroy();
+        }
+        sendBroadcast(new Intent(ACTION_DISHES).putExtra("INSERTED", inserted));
+    }
+
+    private void loadQuotas(String method, String object) {
+        if(Utilities.haveNetworkConnection(getApplicationContext())) {
+            QuotasSQLiteController dbController = new QuotasSQLiteController(getApplicationContext(), 1);
+            switch(method) {
+                case METHOD_POST:
+                case METHOD_PUT:
+                case METHOD_DELETE:
+                    QuotasServiceController.modifyQuota(object);
+                case METHOD_GET:
+                    boolean remove = false;
+                    ArrayList<String> oldIDs = new ArrayList<>();
+                    for (Quota old : dbController.select(null, null)) oldIDs.add(old.get_ID());
+                    for (Quota quota : QuotasServiceController.getQuotas()) {
+                        remove = true;
+                        int index = oldIDs.indexOf(quota.get_ID());
+                        if(index == -1) {
+                            dbController.insert(quota.get_ID(), quota.getType(), quota.getName(), quota.getQuota());
+                        } else {
+                            dbController.update(quota.get_ID(), quota.getType(), quota.getName(),
+                                    quota.getQuota(), quota.get_ID());
+                            oldIDs.remove(index);
+                        }
+                    }
+                    if(remove) for(String oldID : oldIDs) dbController.delete(oldID);
+                    break;
+            }
+            dbController.destroy();
+        }
+        sendBroadcast(new Intent(ACTION_QUOTAS));
     }
 
     @Override

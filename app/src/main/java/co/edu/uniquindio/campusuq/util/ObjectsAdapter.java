@@ -16,6 +16,7 @@ import co.edu.uniquindio.campusuq.activity.ObjectsActivity;
 import co.edu.uniquindio.campusuq.vo.LostObject;
 
 public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectViewHolder> {
+
     public static final String DIALOG = "dialog", READED = "readed", FOUND = "found";
 
     private ArrayList<LostObject> objects;
@@ -27,6 +28,7 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
     }
 
     public class ObjectViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
         private TextView name, place, date, description;
         private ImageView image;
 
@@ -56,14 +58,14 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
         public void onClick(View view) {
             String action;
             switch(view.getId()) {
-            case R.id.object_readed:
-                action = READED;
-                break;
-            case R.id.object_found:
-                action = FOUND;
-                break;
-            default:
-                action = DIALOG;
+                case R.id.object_readed:
+                    action = READED;
+                    break;
+                case R.id.object_found:
+                    action = FOUND;
+                    break;
+                default:
+                    action = DIALOG;
             }
             listener.onObjectClick(getAdapterPosition(), action);
         }
@@ -84,12 +86,13 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
         return objects.size();
     }
 
-    public interface OnClickObjectListener {
-        void onObjectClick(int index, String action);
-    }
-
     public void setObjects(ArrayList<LostObject> objects) {
         this.objects = objects;
         notifyDataSetChanged();
     }
+
+    public interface OnClickObjectListener {
+        void onObjectClick(int index, String action);
+    }
+
 }

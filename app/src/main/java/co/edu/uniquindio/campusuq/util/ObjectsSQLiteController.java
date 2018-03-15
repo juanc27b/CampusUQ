@@ -12,8 +12,10 @@ import java.util.Collections;
 import co.edu.uniquindio.campusuq.vo.LostObject;
 
 public class ObjectsSQLiteController {
+
     private static final String tablename = "Objetos";
-    public static final String columns[] = {"_ID", "Usuario_Perdio_ID", "Nombre", "Lugar", "Fecha", "Descripcion", "Imagen", "Usuario_Encontro_ID", "Leido"};
+    public static final String columns[] =
+            {"_ID", "Usuario_Perdio_ID", "Nombre", "Lugar", "Fecha", "Descripcion", "Imagen", "Usuario_Encontro_ID", "Leido"};
 
     private SQLiteHelper usdbh;
     private SQLiteDatabase db;
@@ -24,25 +26,41 @@ public class ObjectsSQLiteController {
     }
 
     static String createTable() {
-        return "CREATE TABLE `"+tablename+"`(`"+columns[0]+"` INTEGER PRIMARY KEY, `"+TextUtils.join("` TEXT NOT NULL, `", Arrays.copyOfRange(columns, 1, columns.length))+"` TEXT NOT NULL)";
+        return "CREATE TABLE `"+tablename+"` (`"+columns[0]+"` INTEGER PRIMARY KEY, `"+columns[1]+"` INTEGER NOT NULL, `"+
+                TextUtils.join("` TEXT NOT NULL, `", Arrays.copyOfRange(columns, 2, columns.length-1))+
+                "` INTEGER NOT NULL, `"+columns[8]+"` TEXT NOT NULL )";
     }
 
     public ArrayList<LostObject> select(String limit, String selection, String[] selectionArgs) {
         ArrayList<LostObject> objects = new ArrayList<>();
-        Cursor c = db.query(tablename, columns, selection, selectionArgs, null, null, null, limit);
+        Cursor c = db.query(tablename, columns, selection, selectionArgs,
+                null, null, columns[4]+" DESC", limit);
         if(c.moveToFirst()) do {
-            objects.add(new LostObject(c.getString(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getString(5), c.getString(6), c.getString(7)));
+            objects.add(new LostObject(
+                    c.getString(0),
+                    c.getString(1),
+                    c.getString(2),
+                    c.getString(3),
+                    c.getString(4),
+                    c.getString(5),
+                    c.getString(6),
+                    c.getString(7)
+            ));
         } while(c.moveToNext());
         c.close();
         return objects;
     }
 
     public void insert(String... values) {
-        db.execSQL("INSERT INTO `"+tablename+"`(`"+TextUtils.join("`, `", columns)+"`) VALUES("+TextUtils.join(", ", Collections.nCopies(columns.length, "?"))+")", values);
+        db.execSQL("INSERT INTO `"+tablename+"`(`"+
+                TextUtils.join("`, `", columns)+"`) VALUES ("+
+                TextUtils.join(", ", Collections.nCopies(columns.length, "?"))+")", values);
     }
 
     void update(String... values) {
-        db.execSQL("UPDATE `"+tablename+"` SET `"+TextUtils.join("` = ?, `", Arrays.copyOfRange(columns, 0, columns.length-1))+"` = ? WHERE `"+columns[0]+"` = ?", values);
+        db.execSQL("UPDATE `"+tablename+"` SET `"+
+                TextUtils.join("` = ?, `", Arrays.copyOfRange(columns, 0, columns.length-1))+
+                "` = ? WHERE `"+columns[0]+"` = ?", values);
     }
 
     public void readed(String... values) {

@@ -12,6 +12,7 @@ import java.util.Collections;
 import co.edu.uniquindio.campusuq.vo.Dish;
 
 public class DishesSQLiteController {
+
     private static final String tablename = "Plato";
     public static final String columns[] = {"_ID", "Nombre", "Descripcion", "Precio", "Imagen"};
 
@@ -24,25 +25,37 @@ public class DishesSQLiteController {
     }
 
     static String createTable() {
-        return "CREATE TABLE `"+tablename+"`(`"+columns[0]+"` INTEGER PRIMARY KEY, `"+TextUtils.join("` TEXT NOT NULL, `", Arrays.copyOfRange(columns, 1, columns.length))+"` TEXT NOT NULL)";
+        return "CREATE TABLE `"+tablename+"`(`"+columns[0]+"` INTEGER PRIMARY KEY, `"+columns[1]+"` TEXT NOT NULL UNIQUE, `"+
+                TextUtils.join("` TEXT NOT NULL, `", Arrays.copyOfRange(columns, 2, columns.length))+
+                "` TEXT NOT NULL)";
     }
 
     public ArrayList<Dish> select(String limit, String selection, String[] selectionArgs) {
         ArrayList<Dish> dishes = new ArrayList<>();
-        Cursor c = db.query(tablename, columns, selection, selectionArgs, null, null, null, limit);
+        Cursor c = db.query(tablename, columns, selection, selectionArgs,
+                null, null, columns[0]+" DESC", limit);
         if(c.moveToFirst()) do {
-            dishes.add(new Dish(c.getString(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4)));
+            dishes.add(new Dish(
+                    c.getString(0),
+                    c.getString(1),
+                    c.getString(2),
+                    c.getString(3),
+                    c.getString(4)
+            ));
         } while(c.moveToNext());
         c.close();
         return dishes;
     }
 
     public void insert(String... values) {
-        db.execSQL("INSERT INTO `"+tablename+"`(`"+TextUtils.join("`, `", columns)+"`) VALUES("+TextUtils.join(", ", Collections.nCopies(columns.length, "?"))+")", values);
+        db.execSQL("INSERT INTO `"+tablename+"`(`"+
+                TextUtils.join("`, `", columns)+"`) VALUES ("+
+                TextUtils.join(", ", Collections.nCopies(columns.length, "?"))+")", values);
     }
 
     void update(String... values) {
-        db.execSQL("UPDATE `"+tablename+"` SET `"+TextUtils.join("` = ?, `", columns)+"` = ? WHERE `"+columns[0]+"` = ?", values);
+        db.execSQL("UPDATE `"+tablename+"` SET `"+
+                TextUtils.join("` = ?, `", columns)+"` = ? WHERE `"+columns[0]+"` = ?", values);
     }
 
     public void delete(String id) {
@@ -52,4 +65,5 @@ public class DishesSQLiteController {
     public void destroy() {
         usdbh.close();
     }
+
 }

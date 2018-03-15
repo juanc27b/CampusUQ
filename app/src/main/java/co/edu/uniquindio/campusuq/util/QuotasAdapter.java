@@ -14,6 +14,7 @@ import co.edu.uniquindio.campusuq.activity.QuotasActivity;
 import co.edu.uniquindio.campusuq.vo.Quota;
 
 public class QuotasAdapter extends RecyclerView.Adapter<QuotasAdapter.QuotaViewHolder> {
+
     private ArrayList<Quota> quotas;
     private OnClickQuotaListener listener;
 
@@ -23,8 +24,10 @@ public class QuotasAdapter extends RecyclerView.Adapter<QuotasAdapter.QuotaViewH
     }
 
     public class QuotaViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
         private ImageView icon;
-        private TextView name, quota;
+        private TextView name;
+        private TextView quota;
 
         QuotaViewHolder(View quotaView) {
             super(quotaView);
@@ -62,12 +65,13 @@ public class QuotasAdapter extends RecyclerView.Adapter<QuotasAdapter.QuotaViewH
         return quotas.size();
     }
 
-    public interface OnClickQuotaListener {
-        void onQuotaClick(int index);
-    }
-
     public void setQuotas(ArrayList<Quota> quotas) {
         this.quotas = quotas;
         notifyDataSetChanged();
     }
+
+    public interface OnClickQuotaListener {
+        void onQuotaClick(int index);
+    }
+
 }

@@ -36,8 +36,8 @@ public class NewsSQLiteController {
 
     public static String createTable(){
         String crearTabla = "CREATE TABLE ? ( ? INTEGER PRIMARY KEY, " +
-                "? TEXT NOT NULL, ? TEXT NOT NULL, ? TEXT NOT NULL, ? TEXT NOT NULL, " +
-                "? TEXT NOT NULL, ? TEXT NOT NULL, ? TEXT NOT NULL)";
+                "? TEXT NOT NULL UNIQUE, ? TEXT NOT NULL, ? TEXT NOT NULL, ? TEXT NOT NULL, " +
+                "? TEXT NOT NULL, ? TEXT NOT NULL, ? TEXT NOT NULL )";
         StringBuilder builder = new StringBuilder(crearTabla);
         builder.replace(builder.indexOf("?"), crearTabla.indexOf("?") + 1, NOMBRE_TABLA);
         builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[0]);
