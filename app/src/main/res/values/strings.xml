@@ -100,6 +100,9 @@
     <string name="select_event">Seleccione un evento para ver fechas detalladas</string>
     <string name="period">Período</string>
 
+    <string name="lost_objects_detail">Reportar Objeto Perdido</string>
+    <string name="restaurant_detail">Cambiar Menú Restaurante</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -184,4 +187,53 @@
     <string name="axes_pillars_objectives_url">http://campus-uq.000webhostapp.com/files/ejes_pilares_objetivos.pdf</string>
     <string name="pdf_viewer">http://campus-uq.000webhostapp.com/pdf/web/viewer.html?file=URL</string>
 
+    <string name="quota_sample_name">Sala A</string>
+    <string name="quota_sample_quota">24</string>
+    <string name="quota_text">cupo(s)</string>
+    <string name="quota_dialog_sample_name">Ajustar Cupos de Sala A</string>
+
+    <string name="dialog_sample_modify">Modificar ítem</string>
+    <string name="dialog_sample_delete">Eliminar ítem</string>
+    <string name="dialog_ok">ACEPTAR</string>
+    <string name="dialog_cancel">CANCELAR</string>
+
+    <string name="dish_sample_name">Desayuno Uniquindiano</string>
+    <string name="dish_sample_description">Plato para las jornadas de mañana que incluye un sandwich de jamon con huevo</string>
+    <string name="dish_sample_price">$ 7.500</string>
+
+    <string name="dish_detail_title">DETALLES</string>
+    <string name="dish_detail_name">Nombre</string>
+    <string name="dish_detail_name_hint">Escribe el nombre del plato</string>
+    <string name="dish_detail_description">Descripción</string>
+    <string name="dish_detail_description_hint">Escribe una breve descripción de la comida pra informar mejor al consumidor y brindar un mejor servicio</string>
+    <string name="dish_detail_sample_description_count">110</string>
+    <string name="dish_detail_description_count_limit">/120</string>
+    <string name="dish_detail_price">Precio</string>
+    <string name="dish_detail_price_hint">Asígnale un precio al plato</string>
+    <string name="dish_detail_image">Imagen o Foto (Opcional)</string>
+    <string name="dish_detail_ok">ENVIAR</string>
+
+    <string name="object_report">Reportar Objeto Perdido</string>
+    <string name="object_sample_name">Memoria USB 4GB</string>
+    <string name="object_place">Lugar:</string>
+    <string name="object_sample_place">Sala A de Computadores</string>
+    <string name="object_date">Fecha y Hora:</string>
+    <string name="object_sample_date">7 de Noviembre, 3:57 PM</string>
+    <string name="object_sample_description">Memoria USB con capacidad de 4 GB Marca Kingston color negro y verde en el agarre</string>
+    <string name="object_readed">Marcar como leído</string>
+    <string name="object_found">Encontrado</string>
+
+    <string name="object_detail_title">DETALLES DEL OBJETO PERDIDO</string>
+    <string name="object_detail_name">Nombre del Objeto</string>
+    <string name="object_detail_name_hint">Escribe el nombre del objeto</string>
+    <string name="object_detail_place">Lugar y Dirección</string>
+    <string name="object_detail_place_hint">Escribe el lugar en donde perdiste el objeto</string>
+    <string name="object_detail_date">Fecha y Hora</string>
+    <string name="object_detail_date_hint">Escribe la fecha y hora aprox. de la pérdida</string>
+    <string name="object_detail_description">Descripción</string>
+    <string name="object_detail_description_hint">Escribe una breve descripción de la apariencia del objeto que perdiste para ayudar a los demás a identificarlo</string>
+    <string name="object_detail_sample_description_count">110</string>
+    <string name="object_detail_description_count_limit">/120</string>
+    <string name="object_detail_image">Imagen o Foto (Opcional)</string>
+    <string name="object_detail_ok">ENVIAR</string>
 </resources>

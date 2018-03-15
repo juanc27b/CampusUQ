@@ -37,6 +37,12 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(EventsSQLiteController.createDateTable());
         db.execSQL(EventsSQLiteController.createRelationTable());
 
+        db.execSQL(ObjectsSQLiteController.createTable());
+
+        db.execSQL(DishesSQLiteController.createTable());
+
+        db.execSQL(QuotasSQLiteController.createTable());
+
     }
 
     @Override

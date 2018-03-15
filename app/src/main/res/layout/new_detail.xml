@@ -26,7 +26,7 @@
             android:orientation="vertical">
 
             <android.support.constraint.ConstraintLayout
-                android:layout_width="300dp"
+                android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:layout_gravity="center">
 
@@ -137,7 +137,7 @@
                 android:id="@+id/new_more_button"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
-                android:background="@drawable/round_button"
+                android:background="@drawable/round_green_button"
                 android:layout_gravity="center"
                 android:text="@string/read_more"
                 android:textAllCaps="false"

@@ -215,24 +215,28 @@ public class MainActivity extends AppCompatActivity
                 intent.putExtra("URL", getString(R.string.pqrsd_system_url));
                 break;
             case R.id.nav_lost_objects:
-
+                intent = new Intent(MainActivity.this, ObjectsActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.lost_objects));
                 break;
             case R.id.nav_security_system:
                 intent = new Intent(MainActivity.this, AnnouncementsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.security_system));
                 break;
             case R.id.nav_restaurant:
-
+                intent = new Intent(MainActivity.this, DishesActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.restaurant));
                 break;
             case R.id.nav_billboard_information:
                 intent = new Intent(MainActivity.this, AnnouncementsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.billboard_information));
                 break;
             case R.id.nav_computer_rooms:
-
+                intent = new Intent(MainActivity.this, QuotasActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.computer_rooms));
                 break;
             case R.id.nav_parking_lots:
-
+                intent = new Intent(MainActivity.this, QuotasActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.parking_lots));
                 break;
             case R.id.nav_institutional_mail:
 

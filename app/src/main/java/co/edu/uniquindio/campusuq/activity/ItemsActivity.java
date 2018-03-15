@@ -149,19 +149,23 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
             intent = new Intent(ItemsActivity.this, WebActivity.class);
             intent.putExtra("URL", getString(R.string.pqrsd_system_url));
         } else if (getString(R.string.lost_objects).equals(title)) {
-
+            intent = new Intent(ItemsActivity.this, ObjectsActivity.class);
+            intent.putExtra("CATEGORY", getString(R.string.lost_objects));
         } else if (getString(R.string.security_system).equals(title)) {
             intent = new Intent(ItemsActivity.this, AnnouncementsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.security_system));
         } else if (getString(R.string.restaurant).equals(title)) {
-
+            intent = new Intent(ItemsActivity.this, DishesActivity.class);
+            intent.putExtra("CATEGORY", getString(R.string.restaurant));
         } else if (getString(R.string.billboard_information).equals(title)) {
             intent = new Intent(ItemsActivity.this, AnnouncementsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.billboard_information));
         } else if (getString(R.string.computer_rooms).equals(title)) {
-
+            intent = new Intent(ItemsActivity.this, QuotasActivity.class);
+            intent.putExtra("CATEGORY", getString(R.string.computer_rooms));
         } else if (getString(R.string.parking_lots).equals(title)) {
-
+            intent = new Intent(ItemsActivity.this, QuotasActivity.class);
+            intent.putExtra("CATEGORY", getString(R.string.parking_lots));
         } else if (getString(R.string.institutional_mail).equals(title)) {
 
         } else if (getString(R.string.web_page).equals(title)) {
