@@ -123,7 +123,7 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
                 }
             }
             if (!found) {
-                Toast.makeText(this, "No se ha encontrado la noticia: "+query, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "No se ha encontrado el anuncio: "+query, Toast.LENGTH_SHORT).show();
             }
         } else if (mAdapter != null) {
             String category = intent.getStringExtra("CATEGORY");
@@ -210,7 +210,7 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
                                 oldAnnouncements = false;
                                 progressDialog.show();
                                 WebBroadcastReceiver.scheduleJob(getApplicationContext(),
-                                        WebService.ACTION_INCIDENTS, WebService.METHOD_GET);
+                                        action, WebService.METHOD_GET, null);
                             } else {
                                 Toast.makeText(AnnouncementsActivity.this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
                             }

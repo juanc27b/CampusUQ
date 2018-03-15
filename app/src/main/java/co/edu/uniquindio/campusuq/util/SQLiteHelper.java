@@ -37,6 +37,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(EventsSQLiteController.createDateTable());
         db.execSQL(EventsSQLiteController.createRelationTable());
 
+        db.execSQL(AnnouncementsSQLiteController.createTable());
+        db.execSQL(AnnouncementsSQLiteController.createLinkTable());
+
         db.execSQL(ObjectsSQLiteController.createTable());
 
         db.execSQL(DishesSQLiteController.createTable());

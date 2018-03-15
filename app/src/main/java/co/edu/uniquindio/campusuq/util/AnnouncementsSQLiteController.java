@@ -16,7 +16,7 @@ import co.edu.uniquindio.campusuq.vo.AnnouncementLink;
 public class AnnouncementsSQLiteController {
 
     public static final String NOMBRE_TABLA = "Anuncio";
-    public static final String CAMPOS_TABLA[] = new String[]{"_ID", "Tipo", "Nombre", "Fecha", "Descripcion, Leido"};
+    public static final String CAMPOS_TABLA[] = new String[]{"_ID", "Tipo", "Nombre", "Fecha", "Descripcion", "Leido"};
 
     public static final String NOMBRE_ENLACE = "Anuncio_Enlace";
     public static final String CAMPOS_ENLACE[] = new String[]{"_ID", "Anuncio_ID", "Tipo", "Enlace"};
@@ -31,7 +31,7 @@ public class AnnouncementsSQLiteController {
 
     public static String createTable(){
         String crearTabla = "CREATE TABLE ? ( ? INTEGER PRIMARY KEY, ? TEXT NOT NULL, " +
-                "? TEXT NOT NULL, ? TEXT NOT NULL, ? TEXT NOT NULL )";
+                "? TEXT NOT NULL, ? TEXT NOT NULL, ? TEXT NOT NULL, ? TEXT NOT NULL )";
         StringBuilder builder = new StringBuilder(crearTabla);
         builder.replace(builder.indexOf("?"), crearTabla.indexOf("?") + 1, NOMBRE_TABLA);
         builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[0]);

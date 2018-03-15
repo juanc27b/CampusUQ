@@ -19,7 +19,9 @@ import java.io.File;
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
+import co.edu.uniquindio.campusuq.activity.AnnouncementsActivity;
 import co.edu.uniquindio.campusuq.activity.NewsActivity;
+import co.edu.uniquindio.campusuq.activity.ObjectsActivity;
 import co.edu.uniquindio.campusuq.vo.Announcement;
 import co.edu.uniquindio.campusuq.vo.AnnouncementLink;
 import co.edu.uniquindio.campusuq.vo.Contact;
@@ -117,9 +119,9 @@ public class WebService extends JobService {
                 loadNews(ACTION_NEWS);
                 loadAnnouncements(ACTION_INCIDENTS);
                 loadAnnouncements(ACTION_COMMUNIQUES);
-                loadQuotas(method, object);
-                loadDishes(method, object);
                 loadObjects(method, object);
+                loadDishes(method, object);
+                loadQuotas(method, object);
                 break;
             case ACTION_EVENTS:
                 loadNews(ACTION_EVENTS);
@@ -133,14 +135,15 @@ public class WebService extends JobService {
             case ACTION_COMMUNIQUES:
                 loadAnnouncements(ACTION_COMMUNIQUES);
                 break;
-            case ACTION_QUOTAS:
-                loadQuotas(method, object);
+            case ACTION_OBJECTS:
+                loadObjects(method, object);
                 break;
             case ACTION_DISHES:
                 loadDishes(method, object);
                 break;
-            case ACTION_OBJECTS:
-                loadObjects(method, object);
+            case ACTION_QUOTAS:
+                loadQuotas(method, object);
+                break;
             default:
                 break;
         }
@@ -169,23 +172,50 @@ public class WebService extends JobService {
             builder = new NotificationCompat.Builder(getApplicationContext());
         }
 
+        File file = null;
         switch (type) {
             case ACTION_NEWS:
+            case ACTION_EVENTS:
                 New mNew = (New) object;
                 builder
-                        .setContentTitle(getString(R.string.app_name)+" - "+getString(R.string.news))
+                        .setContentTitle(getString(R.string.app_name)+" - "+
+                                (type.equals(ACTION_NEWS) ? getString(R.string.news) : getString(R.string.events)))
                         .setContentText(mNew.getName())
                         .setSubText(mNew.getSummary());
-                File file = new File(mNew.getImage());
-                if (file.exists()) {
-                    builder.setLargeIcon(BitmapFactory.decodeFile(file.getAbsolutePath()));
-                } else {
-                    builder.setLargeIcon(BitmapFactory.decodeResource(
-                            getApplicationContext().getResources(), R.drawable.app_icon));
-                }
+                file = new File(mNew.getImage());
+                break;
+            case ACTION_OBJECTS:
+                LostObject lostObject = (LostObject) object;
+                builder
+                        .setContentTitle(getString(R.string.app_name)+" - "+getString(R.string.lost_objects))
+                        .setContentText(lostObject.getName())
+                        .setSubText(lostObject.getDescription());
+                file = new File(lostObject.getImage());
+                break;
+            case ACTION_INCIDENTS:
+            case ACTION_COMMUNIQUES:
+                Announcement announcement = (Announcement) object;
+                builder
+                        .setContentTitle(getString(R.string.app_name)+" - "+
+                                (type.equals(ACTION_INCIDENTS) ?
+                                        getString(R.string.security_system) : getString(R.string.billboard_information)))
+                        .setContentText(announcement.getName())
+                        .setSubText(announcement.getDescription());
+                AnnouncementsSQLiteController dbController = new AnnouncementsSQLiteController(getApplicationContext(), 1);
+                ArrayList<AnnouncementLink> links = dbController.selectLink(
+                        AnnouncementsSQLiteController.CAMPOS_ENLACE[1] + " = ?", new String[]{announcement.get_ID()});
+                dbController.destroy();
+                file = links.size() > 0 ? new File(links.get(0).getLink()) : new File("");
                 break;
             default:
                 break;
+        }
+
+        if (file.exists()) {
+            builder.setLargeIcon(BitmapFactory.decodeFile(file.getAbsolutePath()));
+        } else {
+            builder.setLargeIcon(BitmapFactory.decodeResource(
+                    getApplicationContext().getResources(), R.drawable.app_icon));
         }
 
         builder
@@ -204,18 +234,34 @@ public class WebService extends JobService {
         PendingIntent resultPendingIntent = null;
         switch (type) {
             case ACTION_NEWS:
+            case ACTION_EVENTS:
                 resultIntent = new Intent(getApplicationContext(), NewsActivity.class);
-                resultIntent.putExtra("CATEGORY", getString(R.string.news));
+                resultIntent.putExtra("CATEGORY",
+                        (type.equals(ACTION_NEWS) ? getString(R.string.news) : getString(R.string.events)));
                 stackBuilder.addParentStack(NewsActivity.class);
                 stackBuilder.editIntentAt(0).putExtra("CATEGORY", getString(R.string.app_title_menu));
                 stackBuilder.editIntentAt(1).putExtra("CATEGORY", getString(R.string.information_module));
                 break;
-            case ACTION_EVENTS:
-                resultIntent = new Intent(getApplicationContext(), NewsActivity.class);
-                resultIntent.putExtra("CATEGORY", getString(R.string.events));
-                stackBuilder.addParentStack(NewsActivity.class);
+            case ACTION_OBJECTS:
+                resultIntent = new Intent(getApplicationContext(), ObjectsActivity.class);
+                resultIntent.putExtra("CATEGORY", getString(R.string.lost_objects));
+                stackBuilder.addParentStack(ObjectsActivity.class);
                 stackBuilder.editIntentAt(0).putExtra("CATEGORY", getString(R.string.app_title_menu));
-                stackBuilder.editIntentAt(1).putExtra("CATEGORY", getString(R.string.information_module));
+                stackBuilder.editIntentAt(1).putExtra("CATEGORY", getString(R.string.services_module));
+                break;
+            case ACTION_INCIDENTS:
+                resultIntent = new Intent(getApplicationContext(), AnnouncementsActivity.class);
+                resultIntent.putExtra("CATEGORY", getString(R.string.security_system));
+                stackBuilder.addParentStack(AnnouncementsActivity.class);
+                stackBuilder.editIntentAt(0).putExtra("CATEGORY", getString(R.string.app_title_menu));
+                stackBuilder.editIntentAt(1).putExtra("CATEGORY", getString(R.string.services_module));
+                break;
+            case ACTION_COMMUNIQUES:
+                resultIntent = new Intent(getApplicationContext(), AnnouncementsActivity.class);
+                resultIntent.putExtra("CATEGORY", getString(R.string.billboard_information));
+                stackBuilder.addParentStack(AnnouncementsActivity.class);
+                stackBuilder.editIntentAt(0).putExtra("CATEGORY", getString(R.string.app_title_menu));
+                stackBuilder.editIntentAt(1).putExtra("CATEGORY", getString(R.string.state_module));
                 break;
             default:
                 break;
@@ -627,7 +673,7 @@ public class WebService extends JobService {
                     }
                     inserted ++;
                     if (lastObjectId != null && inserted <= 5) {
-                        //manager.notify(lostObject.getName(), mNotificationId, buildNotification(ACTION_OBJECTS, lostObject));
+                        manager.notify(lostObject.getName(), mNotificationId, buildNotification(ACTION_OBJECTS, lostObject));
                     }
                 }
                 if(remove) for(String oldID : oldIDs) dbController.delete(oldID);
