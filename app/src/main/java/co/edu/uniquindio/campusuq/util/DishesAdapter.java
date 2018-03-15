@@ -38,8 +38,8 @@ public class DishesAdapter extends RecyclerView.Adapter<DishesAdapter.DishViewHo
         }
 
         void bindItem(Dish dish) {
-            File imgFile = new  File(dish.getImage());
-            if(imgFile.exists()) image.setImageBitmap(BitmapFactory.decodeFile(imgFile.getAbsolutePath()));
+            File imageFile = new File(dish.getImage());
+            if(imageFile.exists()) image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
             else image.setImageResource(R.drawable.rectangle_gray);
             name.setText(dish.getName());
             description.setText(dish.getDescription());

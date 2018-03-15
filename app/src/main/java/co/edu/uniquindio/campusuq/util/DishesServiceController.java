@@ -16,7 +16,7 @@ import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 import cz.msebera.android.httpclient.util.EntityUtils;
 
 class DishesServiceController {
-    static ArrayList<Dish> getDishes(String idDish) {
+    static ArrayList<Dish> get(String idDish) {
         String url = Utilities.URL_SERVICIO+"/platos";
         if(idDish != null) url += idDish;
         HttpGet request = new HttpGet(url);
@@ -42,7 +42,7 @@ class DishesServiceController {
         return dishes;
     }
 
-    static String modifyDish(String json) {
+    static String modify(String json) {
         HttpPost post = new HttpPost(Utilities.URL_SERVICIO+"/platos");
         post.setHeader("Content-Type", "application/json; Charset=UTF-8");
         post.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");

@@ -77,12 +77,13 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
 
     private void loadObjects(int inserted) {
         if(!progressDialog.isShowing()) progressDialog.show();
+        int scrollTo = oldObjects? (newActivity? 0 : objects.size()-1) : (inserted != 0? inserted-1 : 0);
         ObjectsSQLiteController dbController = new ObjectsSQLiteController(getApplicationContext(), 1);
         objects = dbController.select(String.valueOf(inserted > 0? objects.size()+inserted : objects.size()+3), "`"+ObjectsSQLiteController.columns[8]+"` = 'N'", null);
         dbController.destroy();
         if(newActivity) {
-            adapter = new ObjectsAdapter(objects, ObjectsActivity.this);
-            layoutManager = new LinearLayoutManager(ObjectsActivity.this, LinearLayoutManager.VERTICAL, false);
+            adapter = new ObjectsAdapter(objects, this);
+            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
             RecyclerView recyclerView = findViewById(R.id.objects_recycler_view);
             recyclerView.setHasFixedSize(true);
             recyclerView.setAdapter(adapter);
@@ -110,7 +111,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
             newActivity = false;
         } else {
             adapter.setObjects(objects);
-            layoutManager.scrollToPosition(oldObjects? (newActivity? 0 : objects.size()-1) : (inserted != 0? inserted-1 : 0));
+            layoutManager.scrollToPosition(scrollTo);
         }
         if(progressDialog.isShowing() && objects.size() > 0) progressDialog.dismiss();
     }

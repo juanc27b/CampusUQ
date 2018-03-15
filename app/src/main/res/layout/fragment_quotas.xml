@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="35dp"
         android:layout_gravity="center_horizontal"
         android:gravity="center_vertical">
         <LinearLayout
@@ -66,13 +66,15 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="5dp"
         android:layout_gravity="end">
         <TextView
             android:id="@+id/quota_dialog_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             android:text="@string/dialog_cancel"
             android:textSize="15sp"
             android:textColor="@android:color/black"/>
@@ -80,6 +82,8 @@
             android:id="@+id/quota_dialog_ok"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             android:text="@string/dialog_ok"
             android:textSize="15sp"
             android:textColor="@android:color/holo_blue_dark"/>

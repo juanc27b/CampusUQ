@@ -243,11 +243,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
     }
 
     public boolean allowBrowsing(String clientPackageName, int clientUid) {
-        if (clientPackageName.equals(getApplication().getPackageName())) {
-            return true;
-        } else {
-            return false;
-        }
+        return clientPackageName.equals(getApplication().getPackageName());
     }
 
     @Override

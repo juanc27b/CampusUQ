@@ -57,6 +57,7 @@ public class WebService extends JobService {
     public static final String ACTION_QUOTAS = "co.edu.uniquindio.campusuq.ACTION_QUOTAS";
     public static final String ACTION_DISHES = "co.edu.uniquindio.campusuq.ACTION_DISHES";
     public static final String ACTION_OBJECTS = "co.edu.uniquindio.campusuq.ACTION_OBJECTS";
+    public static final String ACTION_EMAILS = "co.edu.uniquindio.campusuq.ACTION_EMAILS";
 
     public static final String METHOD_GET = "co.edu.uniquindio.campusuq.METHOD_GET";
     public static final String METHOD_POST = "co.edu.uniquindio.campusuq.METHOD_POST";
@@ -113,6 +114,7 @@ public class WebService extends JobService {
                 loadQuotas(method, object);
                 loadDishes(method, object);
                 loadObjects(method, object);
+                loadEmails(method, object);
                 break;
             case ACTION_EVENTS:
                 loadNews(ACTION_EVENTS);
@@ -128,6 +130,10 @@ public class WebService extends JobService {
                 break;
             case ACTION_OBJECTS:
                 loadObjects(method, object);
+                break;
+            case ACTION_EMAILS:
+                loadEmails(method, object);
+                break;
             default:
                 break;
         }
@@ -501,12 +507,12 @@ public class WebService extends JobService {
             case METHOD_POST:
             case METHOD_PUT:
             case METHOD_DELETE:
-                QuotasServiceController.modifyQuota(object);
+                QuotasServiceController.modify(object);
             case METHOD_GET:
                 boolean remove = false;
                 ArrayList<String> old_ids = new ArrayList<>();
                 for(Quota old : dbController.select(null, null, null)) old_ids.add(old.get_ID());
-                for(Quota quota : QuotasServiceController.getQuotas(null)) {
+                for(Quota quota : QuotasServiceController.get(null)) {
                     remove = true;
                     int index = old_ids.indexOf(quota.get_ID());
                     if(index == -1) {
@@ -516,7 +522,7 @@ public class WebService extends JobService {
                         old_ids.remove(index);
                     }
                 }
-                if(remove) for(String old_id : old_ids) dbController.delete(old_id);
+                if(remove) dbController.delete(old_ids);
                 break;
             }
             dbController.destroy();
@@ -531,12 +537,12 @@ public class WebService extends JobService {
             case METHOD_POST:
             case METHOD_PUT:
             case METHOD_DELETE:
-                DishesServiceController.modifyDish(object);
+                DishesServiceController.modify(object);
             case METHOD_GET:
                 boolean remove = false;
                 ArrayList<String> old_ids = new ArrayList<>();
                 for(Dish old : dbController.select(null, null, null)) old_ids.add(old.get_ID());
-                for(Dish dish : DishesServiceController.getDishes(null)) {
+                for(Dish dish : DishesServiceController.get(null)) {
                     remove = true;
                     String imagePath = Utilities.saveImage(dish.getImage(), getApplicationContext());
                     if(imagePath != null) dish.setImage(imagePath);
@@ -548,7 +554,7 @@ public class WebService extends JobService {
                         old_ids.remove(index);
                     }
                 }
-                if(remove) for(String old_id : old_ids) dbController.delete(old_id);
+                if(remove) dbController.delete(old_ids);
                 break;
             }
             dbController.destroy();
@@ -563,12 +569,12 @@ public class WebService extends JobService {
             case METHOD_POST:
             case METHOD_PUT:
             case METHOD_DELETE:
-                ObjectsServiceController.modifyObject(object);
+                ObjectsServiceController.modify(object);
             case METHOD_GET:
                 boolean remove = false;
                 ArrayList<String> old_ids = new ArrayList<>();
                 for(LostObject old : dbController.select(null, null, null)) old_ids.add(old.get_ID());
-                for(LostObject lostObject : ObjectsServiceController.getObjects(null)) {
+                for(LostObject lostObject : ObjectsServiceController.get(null)) {
                     remove = true;
                     String imagePath = Utilities.saveImage(lostObject.getImage(), getApplicationContext());
                     if(imagePath != null) lostObject.setImage(imagePath);
@@ -586,12 +592,42 @@ public class WebService extends JobService {
                         old_ids.remove(index);
                     }
                 }
-                if(remove) for(String old_id : old_ids) dbController.delete(old_id);
+                if(remove) dbController.delete(old_ids);
                 break;
             }
             dbController.destroy();
         }
         sendBroadcast(new Intent(ACTION_OBJECTS));
+    }
+
+    private void loadEmails(String method, String object) {
+        if(Utilities.haveNetworkConnection(getApplicationContext())) {
+            //EmailsSQLiteController dbController = new EmailsSQLiteController(getApplicationContext(), 1);
+            switch(method) {
+                case METHOD_POST:
+                case METHOD_PUT:
+                case METHOD_DELETE:
+                    //EmailsServiceController.modify(object);
+                case METHOD_GET:
+                    /*boolean remove = false;
+                    ArrayList<String> old_ids = new ArrayList<>();
+                    for(Email old : dbController.select(null, null, null)) old_ids.add(old.get_ID());
+                    for(Email email : EmailsServiceController.get(null)) {
+                        remove = true;
+                        int index = old_ids.indexOf(email.get_ID());
+                        if(index == -1) {
+                            dbController.insert();
+                        } else {
+                            dbController.update();
+                            old_ids.remove(index);
+                        }
+                    }
+                    if(remove) dbController.delete(old_ids);*/
+                    break;
+            }
+            //dbController.destroy();
+        }
+        sendBroadcast(new Intent(ACTION_EMAILS));
     }
 
     @Override

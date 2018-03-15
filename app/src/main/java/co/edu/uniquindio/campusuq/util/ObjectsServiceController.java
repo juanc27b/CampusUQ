@@ -16,7 +16,7 @@ import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 import cz.msebera.android.httpclient.util.EntityUtils;
 
 class ObjectsServiceController {
-    static ArrayList<LostObject> getObjects(String idObject) {
+    static ArrayList<LostObject> get(String idObject) {
         String url = Utilities.URL_SERVICIO+"/objetos";
         if(idObject != null) url += idObject;
         HttpGet request = new HttpGet(url);
@@ -45,7 +45,7 @@ class ObjectsServiceController {
         return lostObjects;
     }
 
-    static String modifyObject(String json) {
+    static String modify(String json) {
         HttpPost post = new HttpPost(Utilities.URL_SERVICIO+"/objetos");
         post.setHeader("Content-Type", "application/json; Charset=UTF-8");
         post.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");

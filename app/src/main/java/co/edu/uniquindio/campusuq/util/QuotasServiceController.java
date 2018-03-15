@@ -16,7 +16,7 @@ import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 import cz.msebera.android.httpclient.util.EntityUtils;
 
 class QuotasServiceController {
-    static ArrayList<Quota> getQuotas(String idQuota) {
+    static ArrayList<Quota> get(String idQuota) {
         String url = Utilities.URL_SERVICIO+"/cupos";
         if(idQuota != null) url += idQuota;
         HttpGet request = new HttpGet(url);
@@ -41,7 +41,7 @@ class QuotasServiceController {
         return quotas;
     }
 
-    static String modifyQuota(String json) {
+    static String modify(String json) {
         HttpPost post = new HttpPost(Utilities.URL_SERVICIO+"/cupos");
         post.setHeader("Content-Type", "application/json; Charset=UTF-8");
         post.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");

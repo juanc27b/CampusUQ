@@ -9,32 +9,32 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import co.edu.uniquindio.campusuq.vo.Quota;
+import co.edu.uniquindio.campusuq.vo.Email;
 
-public class QuotasSQLiteController {
-    private static final String tablename = "Cupo";
-    public static final String columns[] = {"_ID", "Tipo", "Nombre", "Cupo"};
+public class EmailsSQLiteController {
+    private static final String tablename = "Correo";
+    public static final String columns[] = {"_ID", "Nombre", "De", "Para", "Fecha", "Contenido"};
 
     private SQLiteHelper usdbh;
     private SQLiteDatabase db;
 
-    public QuotasSQLiteController(Context context, int version) {
+    public EmailsSQLiteController(Context context, int version) {
         usdbh = new SQLiteHelper(context, Utilities.NOMBRE_BD , null, version);
         db = usdbh.getWritableDatabase();
     }
 
     static String createTable() {
-        return "CREATE TABLE `"+tablename+"`(`"+columns[0]+"` INTEGER PRIMARY KEY, `"+TextUtils.join("` TEXT NOT NULL, `", Arrays.copyOfRange(columns, 1, columns.length))+"` TEXT NOT NULL)";
+        return "CREATE TABLE `"+tablename+"`(`"+columns[0]+"` INTEGER PRIMARY KEY, `"+ TextUtils.join("` TEXT NOT NULL, `", Arrays.copyOfRange(columns, 1, columns.length))+"` TEXT NOT NULL)";
     }
 
-    public ArrayList<Quota> select(String limit, String selection, String[] selectionArgs) {
-        ArrayList<Quota> quotas = new ArrayList<>();
+    public ArrayList<Email> select(String limit, String selection, String[] selectionArgs) {
+        ArrayList<Email> emails = new ArrayList<>();
         Cursor c = db.query(tablename, columns, selection, selectionArgs, null, null, null, limit);
         if(c.moveToFirst()) do {
-            quotas.add(new Quota(c.getString(0), c.getString(1), c.getString(2), c.getString(3)));
+            emails.add(new Email(c.getString(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getString(5)));
         } while(c.moveToNext());
         c.close();
-        return quotas;
+        return emails;
     }
 
     public void insert(String... values) {

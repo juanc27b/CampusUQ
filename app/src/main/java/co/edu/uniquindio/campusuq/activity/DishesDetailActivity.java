@@ -1,20 +1,27 @@
 package co.edu.uniquindio.campusuq.activity;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import co.edu.uniquindio.campusuq.R;
@@ -23,7 +30,10 @@ import co.edu.uniquindio.campusuq.util.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.util.WebService;
 
 public class DishesDetailActivity extends MainActivity implements View.OnClickListener {
-    private TextView name, description, description_count, price;
+    private Intent intent;
+    private EditText name, description, price;
+    private TextView description_count;
+    private File imageFile;
     private ImageView image;
 
     public DishesDetailActivity() {
@@ -38,7 +48,7 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
         ViewStub viewStub = findViewById(R.id.layout_stub);
         viewStub.setLayoutResource(R.layout.activity_dishes_detail);
         viewStub.inflate();
-        Intent intent = getIntent();
+        intent = getIntent();
         name = findViewById(R.id.dish_detail_name);
         name.setText(intent.getStringExtra(DishesSQLiteController.columns[1]));
         String description_text = intent.getStringExtra(DishesSQLiteController.columns[2]);
@@ -60,9 +70,10 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
         });
         price = findViewById(R.id.dish_detail_price);
         price.setText(intent.getStringExtra(DishesSQLiteController.columns[3]));
-        File imgFile = new  File(intent.getStringExtra(DishesSQLiteController.columns[4]));
+        imageFile = new File(intent.getStringExtra(DishesSQLiteController.columns[4]));
         image = findViewById(R.id.dish_detail_image);
-        if(imgFile.exists()) image.setImageBitmap(BitmapFactory.decodeFile(imgFile.getAbsolutePath()));
+        if(imageFile.exists()) image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
+        else image.setImageResource(R.drawable.rectangle_gray);
         image.setOnClickListener(this);
         findViewById(R.id.dish_detail_ok).setOnClickListener(this);
     }
@@ -71,23 +82,29 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
     public void onClick(View view) {
         switch(view.getId()){
         case R.id.dish_detail_image:
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-            startActivityForResult(Intent.createChooser(intent, "Select Picture"), 0);
+            startActivityForResult(Intent.createChooser((new Intent(Intent.ACTION_GET_CONTENT)).setType("image/*"), "Select Picture"), 0);
             break;
         case R.id.dish_detail_ok:
+            String id = intent.getStringExtra(DishesSQLiteController.columns[0]);
             JSONObject json = new JSONObject();
             try {
-                String id = getIntent().getStringExtra(DishesSQLiteController.columns[0]);
                 if(id != null) json.put("UPDATE_ID", id);
                 json.put(DishesSQLiteController.columns[1], name.getText());
                 json.put(DishesSQLiteController.columns[2], description.getText());
                 json.put(DishesSQLiteController.columns[3], price.getText());
-            } catch (JSONException e) {
+                if(imageFile.exists()) {
+                    json.put(DishesSQLiteController.columns[4], imageFile.getName());
+                    byte[] imageBytes = new byte[(int) imageFile.length()];
+                    BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(imageFile));
+                    bufferedInputStream.read(imageBytes);
+                    bufferedInputStream.close();
+                    json.put("imageString", Base64.encodeToString(imageBytes, Base64.NO_WRAP));
+                }
+            } catch (JSONException | IOException e) {
                 e.printStackTrace();
             }
             WebBroadcastReceiver.scheduleJob(getApplicationContext(), WebService.ACTION_DISHES, WebService.METHOD_PUT, json.toString());
-            setResult(RESULT_OK, getIntent());
+            setResult(RESULT_OK, intent);
             finish();
             break;
         }
@@ -97,10 +114,18 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK) {
-            try {
-                image.setImageBitmap(MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData()));
-            } catch (IOException e) {
-                e.printStackTrace();
+            Uri uri = data.getData();
+            if(uri != null) {
+                String[] projection = {MediaStore.Images.Media.DATA}, selectionArgs = {DocumentsContract.getDocumentId(uri).split(":")[1]};
+                Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, MediaStore.Images.Media._ID+" = ?", selectionArgs, null);
+                if(cursor != null) {
+                    if(cursor.moveToFirst()) {
+                        imageFile = new File(cursor.getString(cursor.getColumnIndex(projection[0])));
+                        if(imageFile.exists()) image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
+                        else image.setImageResource(R.drawable.rectangle_gray);
+                    }
+                    cursor.close();
+                }
             }
         }
     }
