@@ -218,13 +218,15 @@ public class MainActivity extends AppCompatActivity
 
                 break;
             case R.id.nav_security_system:
-
+                intent = new Intent(MainActivity.this, AnnouncementsActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.security_system));
                 break;
             case R.id.nav_restaurant:
 
                 break;
             case R.id.nav_billboard_information:
-
+                intent = new Intent(MainActivity.this, AnnouncementsActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.billboard_information));
                 break;
             case R.id.nav_computer_rooms:
 

@@ -20,6 +20,8 @@ import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.NewsActivity;
+import co.edu.uniquindio.campusuq.vo.Announcement;
+import co.edu.uniquindio.campusuq.vo.AnnouncementLink;
 import co.edu.uniquindio.campusuq.vo.Contact;
 import co.edu.uniquindio.campusuq.vo.ContactCategory;
 import co.edu.uniquindio.campusuq.vo.Event;
@@ -51,6 +53,8 @@ public class WebService extends JobService {
     public static final String ACTION_CONTACTS = "co.edu.uniquindio.campusuq.ACTION_CONTACTS";
     public static final String ACTION_PROGRAMS = "co.edu.uniquindio.campusuq.ACTION_PROGRAMS";
     public static final String ACTION_CALENDAR = "co.edu.uniquindio.campusuq.ACTION_CALENDAR";
+    public static final String ACTION_INCIDENTS = "co.edu.uniquindio.campusuq.ACTION_INCIDENTS";
+    public static final String ACTION_COMMUNIQUES = "co.edu.uniquindio.campusuq.ACTION_COMMUNIQUES";
 
     public static final String METHOD_GET = "co.edu.uniquindio.campusuq.METHOD_GET";
     public static final String METHOD_POST = "co.edu.uniquindio.campusuq.METHOD_POST";
@@ -103,12 +107,20 @@ public class WebService extends JobService {
                 loadCalendar();
                 loadNews(ACTION_EVENTS);
                 loadNews(ACTION_NEWS);
+                loadAnnouncements(ACTION_INCIDENTS);
+                loadAnnouncements(ACTION_COMMUNIQUES);
                 break;
             case ACTION_EVENTS:
                 loadNews(ACTION_EVENTS);
                 break;
             case ACTION_NEWS:
                 loadNews(ACTION_NEWS);
+                break;
+            case ACTION_INCIDENTS:
+                loadAnnouncements(ACTION_INCIDENTS);
+                break;
+            case ACTION_COMMUNIQUES:
+                loadAnnouncements(ACTION_COMMUNIQUES);
                 break;
             default:
                 break;
@@ -472,6 +484,90 @@ public class WebService extends JobService {
         dbController.destroy();
 
         Intent intent = new Intent(PENDING_ACTION);
+        sendBroadcast(intent);
+
+    }
+
+    private void loadAnnouncements(String type) {
+
+        AnnouncementsSQLiteController dbController = new AnnouncementsSQLiteController(getApplicationContext(), 1);
+        String validRows = null;
+        String lastAnnouncementId = null;
+        boolean notify = true;
+
+        if (ACTION_INCIDENTS.equals(type)) {
+            validRows = "I";
+            lastAnnouncementId = "/incidentes";
+        } else {
+            validRows = "C";
+            lastAnnouncementId = "/comunicados";
+        }
+
+        // If the job has been cancelled, stop working; the job will be rescheduled.
+        if (jobCancelled)
+            return;
+
+        int inserted = 0;
+        if (Utilities.haveNetworkConnection(getApplicationContext())) {
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            ArrayList<Announcement> lastAnnouncements = dbController.select("1",
+                    AnnouncementsSQLiteController.CAMPOS_TABLA[1] + " = ?", new String[]{validRows});
+            if (lastAnnouncements.size() > 0) {
+                lastAnnouncementId += "/"+lastAnnouncements.get(0).get_ID();
+            } else {
+                notify = false;
+            }
+
+            ArrayList<String> IDs = new ArrayList<>();
+            ArrayList<Announcement> olds = dbController.select(null, null, null);
+            for (Announcement announcement : olds) {
+                IDs.add(announcement.get_ID());
+            }
+
+            ArrayList<Announcement> updated = AnnouncementsServiceController.getAnnouncements(lastAnnouncementId);
+            for (Announcement announcement : updated) {
+                boolean insert = true;
+                int index = IDs.indexOf(announcement.get_ID());
+                if (index != -1) {
+                    if (olds.get(index).getDate().compareTo(announcement.getDate()) < 0) {
+                        dbController.deleteLink(announcement.get_ID());
+                        dbController.delete(announcement.get_ID());
+                    } else {
+                        insert = false;
+                    }
+                    IDs.remove(index);
+                }
+                if (insert) {
+                    dbController.insert(announcement.get_ID(), announcement.getType(), announcement.getName(),
+                            announcement.getDate(), announcement.getDescription(), announcement.getRead());
+                    ArrayList<AnnouncementLink> links = AnnouncementsServiceController.getAnnouncementLinks(announcement.get_ID());
+                    for (AnnouncementLink link : links) {
+                        String imagePath = Utilities.saveImage(link.getLink(), getApplicationContext());
+                        if (imagePath != null) {
+                            link.setLink(imagePath);
+                        }
+                        dbController.insertLink(link.get_ID(), link.getAnnouncement_ID(), link.getType(), link.getLink());
+                    }
+                    inserted += 1;
+                    if (notify && inserted <= 5) {
+                        manager.notify(announcement.getName(), mNotificationId, buildNotification(type, announcement));
+                    }
+                }
+            }
+
+            if (updated.size() > 0) {
+                for (String ID : IDs) {
+                    dbController.delete(ID);
+                }
+            }
+
+        }
+
+        dbController.destroy();
+
+        Intent intent = new Intent(ACTION_INCIDENTS);
+        intent.putExtra("INSERTED", inserted);
         sendBroadcast(intent);
 
     }

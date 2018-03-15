@@ -87,6 +87,7 @@
 
     <string name="read_more">Leer más</string>
     <string name="news_detail">Detalle de noticia</string>
+    <string name="mark_as_read">Marcar como leído</string>
 
     <string name="contacts">contacto(s)</string>
     <string name="address">Dirección</string>

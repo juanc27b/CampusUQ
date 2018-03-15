@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -49,15 +47,6 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         super.addContent(savedInstanceState);
 
         super.setBackground(R.drawable.portrait_background, R.drawable.landscape_background);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         ViewStub stub = (ViewStub) findViewById(R.id.layout_stub);
         stub.setLayoutResource(R.layout.content_items);
@@ -162,11 +151,13 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         } else if (getString(R.string.lost_objects).equals(title)) {
 
         } else if (getString(R.string.security_system).equals(title)) {
-
+            intent = new Intent(ItemsActivity.this, AnnouncementsActivity.class);
+            intent.putExtra("CATEGORY", getString(R.string.security_system));
         } else if (getString(R.string.restaurant).equals(title)) {
 
         } else if (getString(R.string.billboard_information).equals(title)) {
-
+            intent = new Intent(ItemsActivity.this, AnnouncementsActivity.class);
+            intent.putExtra("CATEGORY", getString(R.string.billboard_information));
         } else if (getString(R.string.computer_rooms).equals(title)) {
 
         } else if (getString(R.string.parking_lots).equals(title)) {
