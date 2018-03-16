@@ -1,5 +1,6 @@
 package co.edu.uniquindio.campusuq.util;
 
+import android.content.Context;
 import android.util.Log;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -22,7 +23,7 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 
 public class AnnouncementsServiceController {
 
-    public static ArrayList<Announcement> getAnnouncements(String category) {
+    public static ArrayList<Announcement> getAnnouncements(Context context, String category) {
         String url = Utilities.URL_SERVICIO+"/anuncios";
         if (category != null) {
             url += category;
@@ -31,7 +32,7 @@ public class AnnouncementsServiceController {
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
         request.setHeader("Content-Type", "application/json; Charset=UTF-8");
-        request.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
+        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         try {
             HttpResponse resp = httpClient.execute(request);
             String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
@@ -49,13 +50,13 @@ public class AnnouncementsServiceController {
                 announcements.add(announcement);
             }
         } catch (Exception e) {
-            Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
+            Log.e(AnnouncementsServiceController.class.getSimpleName(), e.getMessage());
             return new ArrayList<>();
         }
         return announcements;
     }
 
-    public static ArrayList<AnnouncementLink> getAnnouncementLinks(String announcement) {
+    public static ArrayList<AnnouncementLink> getAnnouncementLinks(Context context, String announcement) {
         String url = Utilities.URL_SERVICIO+"/anuncio_enlaces";
         if (announcement != null) {
             url += "/" + announcement;
@@ -64,7 +65,7 @@ public class AnnouncementsServiceController {
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
         request.setHeader("Content-Type", "application/json; Charset=UTF-8");
-        request.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
+        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         try {
             HttpResponse resp = httpClient.execute(request);
             String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
@@ -80,7 +81,7 @@ public class AnnouncementsServiceController {
                 links.add(announcementLink);
             }
         } catch (Exception e) {
-            Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
+            Log.e(AnnouncementsServiceController.class.getSimpleName(), e.getMessage());
             return new ArrayList<>();
         }
         return links;

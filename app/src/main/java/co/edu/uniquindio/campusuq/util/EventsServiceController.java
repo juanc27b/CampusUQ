@@ -1,5 +1,6 @@
 package co.edu.uniquindio.campusuq.util;
 
+import android.content.Context;
 import android.util.Log;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -25,13 +26,13 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 
 public class EventsServiceController {
 
-    public static ArrayList<Event> getEvents() {
+    public static ArrayList<Event> getEvents(Context context) {
         String url = Utilities.URL_SERVICIO+"/eventos";
         ArrayList<Event> events = new ArrayList<>();
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
         request.setHeader("Content-Type", "application/json; Charset=UTF-8");
-        request.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
+        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         try {
             HttpResponse resp = httpClient.execute(request);
             String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
@@ -45,19 +46,19 @@ public class EventsServiceController {
                 events.add(event);
             }
         } catch (Exception e) {
-            Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
+            Log.e(EventsServiceController.class.getSimpleName(), e.getMessage());
             return new ArrayList<>();
         }
         return events;
     }
 
-    public static ArrayList<EventCategory> getEventCategories() {
+    public static ArrayList<EventCategory> getEventCategories(Context context) {
         String url = Utilities.URL_SERVICIO+"/evento_categorias";
         ArrayList<EventCategory> categories = new ArrayList<>();
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
         request.setHeader("Content-Type", "application/json; Charset=UTF-8");
-        request.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
+        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         try {
             HttpResponse resp = httpClient.execute(request);
             String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
@@ -72,19 +73,19 @@ public class EventsServiceController {
                 categories.add(category);
             }
         } catch (Exception e) {
-            Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
+            Log.e(EventsServiceController.class.getSimpleName(), e.getMessage());
             return new ArrayList<>();
         }
         return categories;
     }
 
-    public static ArrayList<EventPeriod> getEventPeriods() {
+    public static ArrayList<EventPeriod> getEventPeriods(Context context) {
         String url = Utilities.URL_SERVICIO+"/evento_periodos";
         ArrayList<EventPeriod> periods = new ArrayList<>();
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
         request.setHeader("Content-Type", "application/json; Charset=UTF-8");
-        request.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
+        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         try {
             HttpResponse resp = httpClient.execute(request);
             String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
@@ -98,19 +99,19 @@ public class EventsServiceController {
                 periods.add(period);
             }
         } catch (Exception e) {
-            Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
+            Log.e(EventsServiceController.class.getSimpleName(), e.getMessage());
             return new ArrayList<>();
         }
         return periods;
     }
 
-    public static ArrayList<EventDate> getEventDates() {
+    public static ArrayList<EventDate> getEventDates(Context context) {
         String url = Utilities.URL_SERVICIO+"/evento_fechas";
         ArrayList<EventDate> dates = new ArrayList<>();
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
         request.setHeader("Content-Type", "application/json; Charset=UTF-8");
-        request.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
+        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         try {
             HttpResponse resp = httpClient.execute(request);
             String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
@@ -131,13 +132,13 @@ public class EventsServiceController {
         return dates;
     }
 
-    public static ArrayList<EventRelation> getEventRelations() {
+    public static ArrayList<EventRelation> getEventRelations(Context context) {
         String url = Utilities.URL_SERVICIO+"/evento_relaciones";
         ArrayList<EventRelation> relations = new ArrayList<>();
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
         request.setHeader("Content-Type", "application/json; Charset=UTF-8");
-        request.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
+        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         try {
             HttpResponse resp = httpClient.execute(request);
             String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");

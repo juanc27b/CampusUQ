@@ -1,5 +1,6 @@
 package co.edu.uniquindio.campusuq.util;
 
+import android.content.Context;
 import android.util.Log;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -17,11 +18,11 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 
 class DishesServiceController {
 
-    static ArrayList<Dish> getDishes() {
+    static ArrayList<Dish> getDishes(Context context) {
         String url = Utilities.URL_SERVICIO+"/platos";
         HttpGet request = new HttpGet(url);
         request.setHeader("Content-Type", "application/json; Charset=UTF-8");
-        request.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
+        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         ArrayList<Dish> dishes = new ArrayList<>();
         try {
             JSONArray array = (new JSONObject(
@@ -38,21 +39,21 @@ class DishesServiceController {
                 ));
             }
         } catch(Exception e) {
-            Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
+            Log.e(DishesServiceController.class.getSimpleName(), e.getMessage());
             return new ArrayList<>();
         }
         return dishes;
     }
 
-    static String modifyDish(String json) {
+    static String modifyDish(Context context, String json) {
         HttpPost post = new HttpPost(Utilities.URL_SERVICIO+"/platos");
         post.setHeader("Content-Type", "application/json; Charset=UTF-8");
-        post.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
+        post.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         try {
             post.setEntity(new StringEntity(json));
             return EntityUtils.toString(HttpClientBuilder.create().build().execute(post).getEntity());
         } catch (Exception e) {
-            Log.e("ServicioRest", "Error! insercion de cupo "+e.getMessage());
+            Log.e(DishesServiceController.class.getSimpleName(), e.getMessage());
             return null;
         }
     }

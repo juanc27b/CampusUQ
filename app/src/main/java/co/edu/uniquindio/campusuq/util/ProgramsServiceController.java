@@ -1,5 +1,6 @@
 package co.edu.uniquindio.campusuq.util;
 
+import android.content.Context;
 import android.util.Log;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -23,13 +24,13 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 
 public class ProgramsServiceController {
 
-    public static ArrayList<Program> getPrograms() {
+    public static ArrayList<Program> getPrograms(Context context) {
         String url = Utilities.URL_SERVICIO+"/programas";
         ArrayList<Program> programs = new ArrayList<>();
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
         request.setHeader("Content-Type", "application/json; Charset=UTF-8");
-        request.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
+        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         try {
             HttpResponse resp = httpClient.execute(request);
             String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
@@ -60,19 +61,19 @@ public class ProgramsServiceController {
                 programs.add(program);
             }
         } catch (Exception e) {
-            Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
+            Log.e(ProgramsServiceController.class.getSimpleName(), e.getMessage());
             return new ArrayList<>();
         }
         return programs;
     }
 
-    public static ArrayList<ProgramCategory> getProgramCategories() {
+    public static ArrayList<ProgramCategory> getProgramCategories(Context context) {
         String url = Utilities.URL_SERVICIO+"/programa_categorias";
         ArrayList<ProgramCategory> categories = new ArrayList<>();
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
         request.setHeader("Content-Type", "application/json; Charset=UTF-8");
-        request.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
+        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         try {
             HttpResponse resp = httpClient.execute(request);
             String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
@@ -86,19 +87,19 @@ public class ProgramsServiceController {
                 categories.add(category);
             }
         } catch (Exception e) {
-            Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
+            Log.e(ProgramsServiceController.class.getSimpleName(), e.getMessage());
             return new ArrayList<>();
         }
         return categories;
     }
 
-    public static ArrayList<ProgramFaculty> getProgramFaculties() {
+    public static ArrayList<ProgramFaculty> getProgramFaculties(Context context) {
         String url = Utilities.URL_SERVICIO+"/programa_facultades";
         ArrayList<ProgramFaculty> faculties = new ArrayList<>();
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
         request.setHeader("Content-Type", "application/json; Charset=UTF-8");
-        request.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
+        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         try {
             HttpResponse resp = httpClient.execute(request);
             String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
@@ -112,7 +113,7 @@ public class ProgramsServiceController {
                 faculties.add(faculty);
             }
         } catch (Exception e) {
-            Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
+            Log.e(ProgramsServiceController.class.getSimpleName(), e.getMessage());
             return new ArrayList<>();
         }
         return faculties;

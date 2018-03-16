@@ -12,8 +12,6 @@ import android.content.Intent;
 
 public class StarterReceiver extends BroadcastReceiver {
 
-    public static boolean started = false;
-
     @Override
     public void onReceive(Context context, Intent intent) {
         scheduleAlarm(context);

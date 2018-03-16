@@ -26,9 +26,11 @@ import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.ItemsPresenter;
+import co.edu.uniquindio.campusuq.util.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.Item;
+import co.edu.uniquindio.campusuq.vo.User;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -132,6 +134,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent = null;
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -144,13 +147,26 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     onBackPressed();
                 }
+                return true;
             case R.id.action_change_language:
-
+                return true;
             case R.id.action_adjust_notifications:
-
+                return true;
             case R.id.action_delete_history:
-
-            case R.id.action_login_as_administrator:
+                return true;
+            case R.id.action_login:
+                User user = UsersPresenter.loadUser(MainActivity.this);
+                if (user != null) {
+                    if (user.getEmail().equals("campusuq@uniquindio.edu.co")) {
+                        intent = new Intent(MainActivity.this, LoginActivity.class);
+                        intent.putExtra("CATEGORY", getString(R.string.log_in));
+                    } else {
+                        intent = new Intent(MainActivity.this, UsersActivity.class);
+                        intent.putExtra("CATEGORY", getString(R.string.edit_account));
+                        intent.putExtra("USER", user);
+                    }
+                    MainActivity.this.startActivity(intent);
+                }
                 return true;
             default:
                 // If we got here, the user's action was not recognized.

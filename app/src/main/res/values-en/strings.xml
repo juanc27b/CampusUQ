@@ -101,13 +101,35 @@
     <string name="select_event">Select an event for see detailed dates</string>
     <string name="period">Period</string>
 
+    <string name="lost_objects_detail">Report Lost Object</string>
+    <string name="lost_objects_found">Report Found Object</string>
+    <string name="restaurant_detail">Change Restaurant Menu</string>
+
+    <string name="sign_up">Sign Up</string>
+    <string name="log_in">Log In</string>
+    <string name="log_out">Log Out</string>
+    <string name="edit_account">Edit Account</string>
+
+    <string name="login_sample_title">Login with your account</string>
+    <string name="login_campusuq">Login with your CampusUQ account</string>
+    <string name="login_institutional_mail">Login with your institutional mail account</string>
+    <string name="login_successful">Successful login</string>
+    <string name="login_wrong">Incorrect email or password</string>
+
+    <string name="user_name_invalid">The name must be between 3 and 50 characters</string>
+    <string name="user_email_invalid">The email must be between 7 and 70 characters</string>
+    <string name="user_phone_invalid">The phone must be less than 50 characters</string>
+    <string name="user_address_invalid">The address must be less than 100 characters</string>
+    <string name="user_document_invalid">The document must be less than 50 characters</string>
+    <string name="user_password_invalid">The password must be must be between 8 and 16 characters</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_change_language">Change language</string>
     <string name="action_adjust_notifications">Adjust notifications</string>
     <string name="action_delete_history">Delete history</string>
-    <string name="action_login_as_administrator">Login as administrator</string>
+    <string name="action_login">User account</string>
 
     <string name="loading_content">Loading content</string>
     <string name="please_wait">Please wait ...</string>
@@ -126,5 +148,21 @@
     <string name="radio_notification_description">Institutional Radio</string>
     <string name="radio_volume">Volume</string>
     <string name="radio_error">Unable to play at this time</string>
+
+    <string name="send">SEND</string>
+
+    <string name="user_detail_title">CONTACT INFORMATION</string>
+    <string name="user_detail_name">Name and Surname</string>
+    <string name="user_detail_name_hint">Write your name</string>
+    <string name="user_detail_email">Email</string>
+    <string name="user_detail_email_hint">Write yout email</string>
+    <string name="user_detail_phone">Cell Phone or Landline (Optional)</string>
+    <string name="user_detail_phone_hint">Write a contact phone (optional)</string>
+    <string name="user_detail_address">Address (Optional)</string>
+    <string name="user_detail_address_hint">Write a contact address (optional)</string>
+    <string name="user_detail_document">Document Number (Optional)</string>
+    <string name="user_detail_document_hint">Write an identification number (optional)</string>
+    <string name="user_detail_password">Password</string>
+    <string name="user_detail_password_hint">Enter a password between 8 and 16 characters</string>
 
 </resources>

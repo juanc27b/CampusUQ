@@ -1,5 +1,6 @@
 package co.edu.uniquindio.campusuq.util;
 
+import android.content.Context;
 import android.util.Log;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -17,12 +18,12 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 
 class ObjectsServiceController {
 
-    static ArrayList<LostObject> getObjects(String idObject) {
+    static ArrayList<LostObject> getObjects(Context context, String idObject) {
         String url = Utilities.URL_SERVICIO+"/objetos";
         if(idObject != null) url += idObject;
         HttpGet request = new HttpGet(url);
         request.setHeader("Content-Type", "application/json; Charset=UTF-8");
-        request.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
+        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         ArrayList<LostObject> lostObjects = new ArrayList<>();
         try {
             JSONArray array = (new JSONObject(
@@ -42,21 +43,21 @@ class ObjectsServiceController {
                 ));
             }
         } catch(Exception e) {
-            Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
+            Log.e(ObjectsServiceController.class.getSimpleName(), e.getMessage());
             return new ArrayList<>();
         }
         return lostObjects;
     }
 
-    static String modifyObject(String json) {
+    static String modifyObject(Context context, String json) {
         HttpPost post = new HttpPost(Utilities.URL_SERVICIO+"/objetos");
         post.setHeader("Content-Type", "application/json; Charset=UTF-8");
-        post.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
+        post.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         try {
             post.setEntity(new StringEntity(json));
             return EntityUtils.toString(HttpClientBuilder.create().build().execute(post).getEntity());
         } catch (Exception e) {
-            Log.e("ServicioRest", "Error! insercion de cupo "+e.getMessage());
+            Log.e(ObjectsServiceController.class.getSimpleName(), e.getMessage());
             return null;
         }
     }

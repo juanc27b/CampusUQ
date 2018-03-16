@@ -9,7 +9,9 @@ import android.widget.LinearLayout;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.StarterReceiver;
+import co.edu.uniquindio.campusuq.util.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.WebService;
+import co.edu.uniquindio.campusuq.vo.User;
 
 public class MenuActivity extends MainActivity {
 
@@ -70,11 +72,11 @@ public class MenuActivity extends MainActivity {
 
     public void loadContent() {
         WebService.PENDING_ACTION = WebService.ACTION_NONE;
-        if (!StarterReceiver.started) {
-            Log.i(MenuActivity.class.getSimpleName(), "Reactivando alarma");
+        User user = UsersPresenter.loadUser(getApplicationContext());
+        if (user == null) {
+            Log.i(MenuActivity.class.getSimpleName(), "Activando alarma");
             StarterReceiver.cancelAlarm(getApplicationContext());
             StarterReceiver.scheduleAlarm(getApplicationContext());
-            StarterReceiver.started = true;
         }
     }
 

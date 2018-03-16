@@ -155,4 +155,5 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
         super.onPause();
         unregisterReceiver(dishesReceiver);
     }
+
 }

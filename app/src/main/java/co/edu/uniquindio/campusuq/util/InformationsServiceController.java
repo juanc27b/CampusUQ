@@ -1,5 +1,6 @@
 package co.edu.uniquindio.campusuq.util;
 
+import android.content.Context;
 import android.util.Log;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -22,7 +23,7 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 
 public class InformationsServiceController {
 
-    public static ArrayList<Information> getInformations(String category) {
+    public static ArrayList<Information> getInformations(Context context, String category) {
         String url = Utilities.URL_SERVICIO+"/informaciones";
         if (category != null) {
             url += "/" + category;
@@ -31,7 +32,7 @@ public class InformationsServiceController {
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
         request.setHeader("Content-Type", "application/json; Charset=UTF-8");
-        request.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
+        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         try {
             HttpResponse resp = httpClient.execute(request);
             String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
@@ -47,19 +48,19 @@ public class InformationsServiceController {
                 informations.add(information);
             }
         } catch (Exception e) {
-            Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
+            Log.e(InformationsServiceController.class.getSimpleName(), e.getMessage());
             return new ArrayList<>();
         }
         return informations;
     }
 
-    public static ArrayList<InformationCategory> getInformationCategories() {
+    public static ArrayList<InformationCategory> getInformationCategories(Context context) {
         String url = Utilities.URL_SERVICIO+"/informacion_categorias";
         ArrayList<InformationCategory> categories = new ArrayList<>();
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
         request.setHeader("Content-Type", "application/json; Charset=UTF-8");
-        request.setHeader("Authorization", "6f8fd504c413e0d3845700c26dc6714f");
+        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         try {
             HttpResponse resp = httpClient.execute(request);
             String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
@@ -75,7 +76,7 @@ public class InformationsServiceController {
                 categories.add(category);
             }
         } catch (Exception e) {
-            Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
+            Log.e(InformationsServiceController.class.getSimpleName(), e.getMessage());
             return new ArrayList<>();
         }
         return categories;

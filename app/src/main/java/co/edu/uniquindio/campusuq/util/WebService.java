@@ -15,6 +15,9 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -26,22 +29,23 @@ import co.edu.uniquindio.campusuq.vo.Announcement;
 import co.edu.uniquindio.campusuq.vo.AnnouncementLink;
 import co.edu.uniquindio.campusuq.vo.Contact;
 import co.edu.uniquindio.campusuq.vo.ContactCategory;
+import co.edu.uniquindio.campusuq.vo.Dish;
 import co.edu.uniquindio.campusuq.vo.Event;
 import co.edu.uniquindio.campusuq.vo.EventCategory;
 import co.edu.uniquindio.campusuq.vo.EventDate;
 import co.edu.uniquindio.campusuq.vo.EventPeriod;
 import co.edu.uniquindio.campusuq.vo.EventRelation;
-import co.edu.uniquindio.campusuq.vo.Dish;
 import co.edu.uniquindio.campusuq.vo.Information;
 import co.edu.uniquindio.campusuq.vo.InformationCategory;
+import co.edu.uniquindio.campusuq.vo.LostObject;
 import co.edu.uniquindio.campusuq.vo.New;
 import co.edu.uniquindio.campusuq.vo.NewCategory;
 import co.edu.uniquindio.campusuq.vo.NewRelation;
-import co.edu.uniquindio.campusuq.vo.LostObject;
 import co.edu.uniquindio.campusuq.vo.Program;
 import co.edu.uniquindio.campusuq.vo.ProgramCategory;
 import co.edu.uniquindio.campusuq.vo.ProgramFaculty;
 import co.edu.uniquindio.campusuq.vo.Quota;
+import co.edu.uniquindio.campusuq.vo.User;
 
 /**
  * Created by Juan Camilo on 21/02/2018.
@@ -60,10 +64,10 @@ public class WebService extends JobService {
     public static final String ACTION_CALENDAR = "co.edu.uniquindio.campusuq.ACTION_CALENDAR";
     public static final String ACTION_INCIDENTS = "co.edu.uniquindio.campusuq.ACTION_INCIDENTS";
     public static final String ACTION_COMMUNIQUES = "co.edu.uniquindio.campusuq.ACTION_COMMUNIQUES";
-
     public static final String ACTION_OBJECTS = "co.edu.uniquindio.campusuq.ACTION_OBJECTS";
     public static final String ACTION_DISHES = "co.edu.uniquindio.campusuq.ACTION_DISHES";
     public static final String ACTION_QUOTAS = "co.edu.uniquindio.campusuq.ACTION_QUOTAS";
+    public static final String ACTION_USERS = "co.edu.uniquindio.campusuq.ACTION_USERS";
 
     public static final String METHOD_GET = "co.edu.uniquindio.campusuq.METHOD_GET";
     public static final String METHOD_POST = "co.edu.uniquindio.campusuq.METHOD_POST";
@@ -99,7 +103,27 @@ public class WebService extends JobService {
     private void startWorkOnNewThread(final JobParameters jobParameters) {
         new Thread(new Runnable() {
             public void run() {
-                doWork(jobParameters);
+                try {
+                    User user = UsersPresenter.loadUser(getApplicationContext());
+                    if (Utilities.haveNetworkConnection(getApplicationContext())) {
+                        if (user == null) {
+                            JSONObject json = new JSONObject();
+                            try {
+                                json.put(UsersSQLiteController.columns[2], "campusuq@uniquindio.edu.co");
+                                json.put(UsersSQLiteController.columns[6], "campusuq");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            loadUsers(METHOD_GET, json.toString());
+                        }
+                        doWork(jobParameters);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Exception in Job");
+                    e.printStackTrace();
+                    boolean needsReschedule = true;
+                    jobFinished(jobParameters, needsReschedule);
+                }
             }
         }).start();
     }
@@ -144,9 +168,16 @@ public class WebService extends JobService {
             case ACTION_QUOTAS:
                 loadQuotas(method, object);
                 break;
+            case ACTION_USERS:
+                loadUsers(method, object);
+                break;
             default:
                 break;
         }
+
+        // If the job has been cancelled, stop working; the job will be rescheduled.
+        if (jobCancelled)
+            return;
 
         Log.i(TAG, "Job finished!");
         isWorking = false;
@@ -273,6 +304,10 @@ public class WebService extends JobService {
 
     private void loadNews(String type) {
 
+        // If the job has been cancelled, stop working; the job will be rescheduled.
+        if (jobCancelled)
+            return;
+
         NewsSQLiteController dbController = new NewsSQLiteController(getApplicationContext(), 1);
         String validRows = null;
         String lastNewId = null;
@@ -301,14 +336,10 @@ public class WebService extends JobService {
             notify = false;
         }
 
-        // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled)
-            return;
-
         int inserted = 0;
         if (Utilities.haveNetworkConnection(getApplicationContext())) {
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            categories = NewsServiceController.getNewCategories();
+            categories = NewsServiceController.getNewCategories(getApplicationContext());
             for (NewCategory category: categories) {
                 ArrayList<NewCategory> oldCategories = dbController.selectCategory("1",
                         NewsSQLiteController.CAMPOS_CATEGORIA[0]+" = ?", new String[]{category.get_ID()});
@@ -321,7 +352,7 @@ public class WebService extends JobService {
             if (lastNews.size() > 0) {
                 lastNewId += "/"+lastNews.get(0).get_ID();
             }
-            ArrayList<New> updated = NewsServiceController.getNews(lastNewId);
+            ArrayList<New> updated = NewsServiceController.getNews(getApplicationContext(), lastNewId);
             for (New mNew : updated) {
                 String imagePath = Utilities.saveImage(mNew.getImage(), getApplicationContext());
                 if (imagePath != null) {
@@ -335,7 +366,7 @@ public class WebService extends JobService {
                 } else {
                     dbController.insert(mNew.get_ID(), mNew.getName(), mNew.getLink(), mNew.getImage(),
                             mNew.getSummary(), mNew.getContent(), mNew.getDate(), mNew.getAuthor());
-                    relations = NewsServiceController.getNewRelations(mNew.get_ID());
+                    relations = NewsServiceController.getNewRelations(getApplicationContext(), mNew.get_ID());
                     for (NewRelation relation : relations) {
                         dbController.insertRelation(relation.getCategory_ID(), relation.getNew_ID());
                     }
@@ -357,16 +388,17 @@ public class WebService extends JobService {
 
     private void loadInformations() {
 
+        // If the job has been cancelled, stop working; the job will be rescheduled.
+        if (jobCancelled)
+            return;
+
         InformationsSQLiteController dbController = new InformationsSQLiteController(getApplicationContext(), 1);
 
         if (Utilities.haveNetworkConnection(getApplicationContext())) {
             boolean updateInformations = false;
-            ArrayList<InformationCategory> updatedCategories = InformationsServiceController.getInformationCategories();
+            ArrayList<InformationCategory> updatedCategories =
+                    InformationsServiceController.getInformationCategories(getApplicationContext());
             for (InformationCategory category : updatedCategories) {
-                // If the job has been cancelled, stop working; the job will be rescheduled.
-                if (jobCancelled)
-                    return;
-
                 ArrayList<InformationCategory> oldCategories = dbController.selectCategory(
                         InformationsSQLiteController.CAMPOS_CATEGORIA[0] + " = ?", new String[]{category.get_ID()});
                 if (oldCategories.size() == 0) {
@@ -377,7 +409,8 @@ public class WebService extends JobService {
                     dbController.updateCategory(category.get_ID(), category.getName(), category.getLink(), category.getDate());
                 }
                 if (updateInformations){
-                    ArrayList<Information> updatedInformations = InformationsServiceController.getInformations(category.get_ID());
+                    ArrayList<Information> updatedInformations =
+                            InformationsServiceController.getInformations(getApplicationContext(), category.get_ID());
                     for (Information information : updatedInformations) {
                         ArrayList<Information> olds = dbController.select(
                                 InformationsSQLiteController.CAMPOS_TABLA[0]+" = ?", new String[]{information.get_ID()});
@@ -402,17 +435,21 @@ public class WebService extends JobService {
 
     private void loadContacts() {
 
+        // If the job has been cancelled, stop working; the job will be rescheduled.
+        if (jobCancelled)
+            return;
+
         ContactsSQLiteController dbController = new ContactsSQLiteController(getApplicationContext(), 1);
 
         ArrayList<ContactCategory> oldCategories = dbController.selectCategory(null, null);
         if (oldCategories.size() == 0 && Utilities.haveNetworkConnection(getApplicationContext())) {
 
-            ArrayList<ContactCategory> updatedCategories = ContactsServiceController.getContactCategories();
+            ArrayList<ContactCategory> updatedCategories = ContactsServiceController.getContactCategories(getApplicationContext());
             for (ContactCategory category : updatedCategories) {
                 dbController.insertCategory(category.get_ID(), category.getName(), category.getLink());
             }
 
-            ArrayList<Contact> updatedContacts = ContactsServiceController.getContacts();
+            ArrayList<Contact> updatedContacts = ContactsServiceController.getContacts(getApplicationContext());
             for (Contact contact : updatedContacts) {
                 dbController.insert(contact.get_ID(), contact.getCategory_ID(),
                         contact.getName(), contact.getAddress(), contact.getPhone(),
@@ -430,34 +467,30 @@ public class WebService extends JobService {
 
     private void loadPrograms() {
 
+        // If the job has been cancelled, stop working; the job will be rescheduled.
+        if (jobCancelled)
+            return;
+
         ProgramsSQLiteController dbController = new ProgramsSQLiteController(getApplicationContext(), 1);
 
         ArrayList<ProgramCategory> oldCategories = dbController.selectCategory(null, null);
         if (oldCategories.size() == 0 && Utilities.haveNetworkConnection(getApplicationContext())) {
 
-            ArrayList<ProgramCategory> updatedCategories = ProgramsServiceController.getProgramCategories();
+            ArrayList<ProgramCategory> updatedCategories = ProgramsServiceController.getProgramCategories(getApplicationContext());
             for (ProgramCategory category : updatedCategories) {
                 dbController.insertCategory(category.get_ID(), category.getName());
             }
 
-            ArrayList<ProgramFaculty> updatedFaculties = ProgramsServiceController.getProgramFaculties();
+            ArrayList<ProgramFaculty> updatedFaculties = ProgramsServiceController.getProgramFaculties(getApplicationContext());
             for (ProgramFaculty faculty : updatedFaculties) {
                 dbController.insertFaculty(faculty.get_ID(), faculty.getName());
             }
 
         }
 
-        // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled)
-            return;
-
         if (Utilities.haveNetworkConnection(getApplicationContext())) {
-            ArrayList<Program> updatedPrograms = ProgramsServiceController.getPrograms();
+            ArrayList<Program> updatedPrograms = ProgramsServiceController.getPrograms(getApplicationContext());
             for (Program program : updatedPrograms) {
-                // If the job has been cancelled, stop working; the job will be rescheduled.
-                if (jobCancelled)
-                    return;
-
                 ArrayList<Program> olds = dbController.select(
                         ProgramsSQLiteController.CAMPOS_TABLA[0]+" = ?", new String[]{program.get_ID()});
                 if (olds.size() == 0) {
@@ -491,12 +524,16 @@ public class WebService extends JobService {
 
     private void loadCalendar() {
 
+        // If the job has been cancelled, stop working; the job will be rescheduled.
+        if (jobCancelled)
+            return;
+
         EventsSQLiteController dbController = new EventsSQLiteController(getApplicationContext(), 1);
 
         ArrayList<EventDate> oldDates = dbController.selectDate(
                 EventsSQLiteController.CAMPOS_FECHA[1]+" = ?", new String[]{"fechasPub"});
         if (oldDates.size() > 0 && Utilities.haveNetworkConnection(getApplicationContext())) {
-            ArrayList<EventDate> updatedDates = EventsServiceController.getEventDates();
+            ArrayList<EventDate> updatedDates = EventsServiceController.getEventDates(getApplicationContext());
             for (EventDate date : updatedDates) {
                 if (date.getType().equals("fechasPub")) {
                     if (oldDates.get(0).getDate().compareTo(date.getDate()) < 0) {
@@ -511,34 +548,30 @@ public class WebService extends JobService {
             }
         }
 
-        // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled)
-            return;
-
         ArrayList<EventCategory> oldCategories = dbController.selectCategory(null, null);
         if (oldCategories.size() == 0 && Utilities.haveNetworkConnection(getApplicationContext())) {
 
-            ArrayList<EventCategory> updatedCategories = EventsServiceController.getEventCategories();
+            ArrayList<EventCategory> updatedCategories = EventsServiceController.getEventCategories(getApplicationContext());
             for (EventCategory category : updatedCategories) {
                 dbController.insertCategory(category.get_ID(), category.getAbbreviation(), category.getName());
             }
 
-            ArrayList<Event> updatedEvents = EventsServiceController.getEvents();
+            ArrayList<Event> updatedEvents = EventsServiceController.getEvents(getApplicationContext());
             for (Event event : updatedEvents) {
                 dbController.insert(event.get_ID(), event.getName());
             }
 
-            ArrayList<EventPeriod> updatedPeriods = EventsServiceController.getEventPeriods();
+            ArrayList<EventPeriod> updatedPeriods = EventsServiceController.getEventPeriods(getApplicationContext());
             for (EventPeriod period : updatedPeriods) {
                 dbController.insertPeriod(period.get_ID(), period.getName());
             }
 
-            ArrayList<EventDate> updatedDates = EventsServiceController.getEventDates();
+            ArrayList<EventDate> updatedDates = EventsServiceController.getEventDates(getApplicationContext());
             for (EventDate date : updatedDates) {
                 dbController.insertDate(date.get_ID(), date.getType(), date.getDate());
             }
 
-            ArrayList<EventRelation> updatedRelations = EventsServiceController.getEventRelations();
+            ArrayList<EventRelation> updatedRelations = EventsServiceController.getEventRelations(getApplicationContext());
             for (EventRelation relation : updatedRelations) {
                 dbController.insertRelation(relation.getCategory_ID(), relation.getEvent_ID(),
                         relation.getPeriod_ID(), relation.getDate_ID());
@@ -555,6 +588,10 @@ public class WebService extends JobService {
 
     private void loadAnnouncements(String type) {
 
+        // If the job has been cancelled, stop working; the job will be rescheduled.
+        if (jobCancelled)
+            return;
+
         AnnouncementsSQLiteController dbController = new AnnouncementsSQLiteController(getApplicationContext(), 1);
         String validRows = null;
         String lastAnnouncementId = null;
@@ -567,10 +604,6 @@ public class WebService extends JobService {
             validRows = "C";
             lastAnnouncementId = "/comunicados";
         }
-
-        // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled)
-            return;
 
         int inserted = 0;
         if (Utilities.haveNetworkConnection(getApplicationContext())) {
@@ -590,7 +623,8 @@ public class WebService extends JobService {
                 IDs.add(announcement.get_ID());
             }
 
-            ArrayList<Announcement> updated = AnnouncementsServiceController.getAnnouncements(lastAnnouncementId);
+            ArrayList<Announcement> updated =
+                    AnnouncementsServiceController.getAnnouncements(getApplicationContext(), lastAnnouncementId);
             for (Announcement announcement : updated) {
                 boolean insert = true;
                 int index = IDs.indexOf(announcement.get_ID());
@@ -606,7 +640,8 @@ public class WebService extends JobService {
                 if (insert) {
                     dbController.insert(announcement.get_ID(), announcement.getType(), announcement.getName(),
                             announcement.getDate(), announcement.getDescription(), announcement.getRead());
-                    ArrayList<AnnouncementLink> links = AnnouncementsServiceController.getAnnouncementLinks(announcement.get_ID());
+                    ArrayList<AnnouncementLink> links =
+                            AnnouncementsServiceController.getAnnouncementLinks(getApplicationContext(), announcement.get_ID());
                     for (AnnouncementLink link : links) {
                         String imagePath = Utilities.saveImage(link.getLink(), getApplicationContext());
                         if (imagePath != null) {
@@ -638,6 +673,10 @@ public class WebService extends JobService {
     }
 
     private void loadObjects(String method, String object) {
+        // If the job has been cancelled, stop working; the job will be rescheduled.
+        if (jobCancelled)
+            return;
+
         int inserted = 0;
         if(Utilities.haveNetworkConnection(getApplicationContext())) {
             ObjectsSQLiteController dbController = new ObjectsSQLiteController(getApplicationContext(), 1);
@@ -645,14 +684,14 @@ public class WebService extends JobService {
             case METHOD_POST:
             case METHOD_PUT:
             case METHOD_DELETE:
-                ObjectsServiceController.modifyObject(object);
+                ObjectsServiceController.modifyObject(getApplicationContext(), object);
             case METHOD_GET:
                 NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 boolean remove = false;
                 ArrayList<String> oldIDs = new ArrayList<>();
                 for(LostObject old : dbController.select(null, null, null)) oldIDs.add(old.get_ID());
                 String lastObjectId = oldIDs.size() > 0 ? "/"+oldIDs.get(0) : null;
-                for(LostObject lostObject : ObjectsServiceController.getObjects(lastObjectId)) {
+                for(LostObject lostObject : ObjectsServiceController.getObjects(getApplicationContext(), lastObjectId)) {
                     remove = true;
                     String imagePath = Utilities.saveImage(lostObject.getImage(), getApplicationContext());
                     if(imagePath != null) lostObject.setImage(imagePath);
@@ -665,9 +704,9 @@ public class WebService extends JobService {
                         );
                     } else {
                         dbController.update(
-                            lostObject.get_ID(), lostObject.getUserLost_ID(), lostObject.getName(), lostObject.getPlace(),
-                                lostObject.getDate(), lostObject.getDescription(), lostObject.getImage(),
-                                lostObject.getUserFound_ID(), lostObject.get_ID()
+                            lostObject.get_ID(), lostObject.getUserLost_ID(), lostObject.getName(),
+                                lostObject.getPlace(), lostObject.getDate(), lostObject.getDescription(),
+                                lostObject.getImage(), lostObject.getUserFound_ID(), lostObject.get_ID()
                         );
                         oldIDs.remove(index);
                     }
@@ -685,6 +724,10 @@ public class WebService extends JobService {
     }
 
     private void loadDishes(String method, String object) {
+        // If the job has been cancelled, stop working; the job will be rescheduled.
+        if (jobCancelled)
+            return;
+
         int inserted = 0;
         if(Utilities.haveNetworkConnection(getApplicationContext())) {
             DishesSQLiteController dbController = new DishesSQLiteController(getApplicationContext(), 1);
@@ -692,12 +735,12 @@ public class WebService extends JobService {
                 case METHOD_POST:
                 case METHOD_PUT:
                 case METHOD_DELETE:
-                    DishesServiceController.modifyDish(object);
+                    DishesServiceController.modifyDish(getApplicationContext(), object);
                 case METHOD_GET:
                     boolean remove = false;
                     ArrayList<String> oldIDs = new ArrayList<>();
                     for(Dish old : dbController.select(null, null, null)) oldIDs.add(old.get_ID());
-                    for(Dish dish : DishesServiceController.getDishes()) {
+                    for(Dish dish : DishesServiceController.getDishes(getApplicationContext())) {
                         remove = true;
                         String imagePath = Utilities.saveImage(dish.getImage(), getApplicationContext());
                         if(imagePath != null) dish.setImage(imagePath);
@@ -721,18 +764,22 @@ public class WebService extends JobService {
     }
 
     private void loadQuotas(String method, String object) {
+        // If the job has been cancelled, stop working; the job will be rescheduled.
+        if (jobCancelled)
+            return;
+
         if(Utilities.haveNetworkConnection(getApplicationContext())) {
             QuotasSQLiteController dbController = new QuotasSQLiteController(getApplicationContext(), 1);
             switch(method) {
                 case METHOD_POST:
                 case METHOD_PUT:
                 case METHOD_DELETE:
-                    QuotasServiceController.modifyQuota(object);
+                    QuotasServiceController.modifyQuota(getApplicationContext(), object);
                 case METHOD_GET:
                     boolean remove = false;
                     ArrayList<String> oldIDs = new ArrayList<>();
                     for (Quota old : dbController.select(null, null)) oldIDs.add(old.get_ID());
-                    for (Quota quota : QuotasServiceController.getQuotas()) {
+                    for (Quota quota : QuotasServiceController.getQuotas(getApplicationContext())) {
                         remove = true;
                         int index = oldIDs.indexOf(quota.get_ID());
                         if(index == -1) {
@@ -749,6 +796,36 @@ public class WebService extends JobService {
             dbController.destroy();
         }
         sendBroadcast(new Intent(ACTION_QUOTAS));
+    }
+
+    private void loadUsers(String method, String object) {
+        User user = null;
+        if(Utilities.haveNetworkConnection(getApplicationContext())) {
+            UsersSQLiteController dbController = new UsersSQLiteController(getApplicationContext(), 1);
+            switch(method) {
+                case METHOD_POST:
+                case METHOD_PUT:
+                    UsersServiceController.modifyUser(object);
+                case METHOD_DELETE:
+                    ArrayList<User> users = dbController.select(null, null);
+                    for (User u : users) {
+                        if (!u.getEmail().equals("campusuq@uniquindio.edu.co")) {
+                            dbController.delete(u.get_ID());
+                        }
+                    }
+                    break;
+                case METHOD_GET:
+                    user = UsersServiceController.login(object);
+                    if (user != null) {
+                        dbController.insert(user.get_ID(), user.getName(), user.getEmail(), user.getPhone(),
+                                user.getAddress(), user.getDocument(), user.getPassword(), user.getApiKey(),
+                                user.getAdministrator());
+                    }
+                    break;
+            }
+            dbController.destroy();
+        }
+        sendBroadcast(new Intent(ACTION_USERS).putExtra("USER", user));
     }
 
     @Override

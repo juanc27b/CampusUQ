@@ -101,13 +101,35 @@
     <string name="select_event">Seleccione un evento para ver fechas detalladas</string>
     <string name="period">Período</string>
 
+    <string name="lost_objects_detail">Reportar Objeto Perdido</string>
+    <string name="lost_objects_found">Reportar Objeto Encontrado</string>
+    <string name="restaurant_detail">Cambiar Menú Restaurante</string>
+
+    <string name="sign_up">Registrarse</string>
+    <string name="log_in">Iniciar Sesión</string>
+    <string name="log_out">Cerrar Sesión</string>
+    <string name="edit_account">Editar Cuenta</string>
+
+    <string name="login_sample_title">Ingresa con tu cuenta</string>
+    <string name="login_campusuq">Ingresa con tu cuenta de CampusUQ</string>
+    <string name="login_institutional_mail">Ingresa con tu cuenta del correo institucional</string>
+    <string name="login_successful">Inicio de sesión exitoso</string>
+    <string name="login_wrong">Correo o contraseña incorrectos</string>
+
+    <string name="user_name_invalid">El nombre debe tener entre 3 y 50 caracteres</string>
+    <string name="user_email_invalid">El correo debe tener entre 7 y 70 caracteres</string>
+    <string name="user_phone_invalid">El teléfono debe tener menos de 50 caracteres</string>
+    <string name="user_address_invalid">La dirección debe tener menos de 100 caracteres</string>
+    <string name="user_document_invalid">El documento debe tener menos de 50 caracteres</string>
+    <string name="user_password_invalid">La contraseña debe tener entre 8 y 16 caracteres</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_change_language">Cambiar idioma</string>
     <string name="action_adjust_notifications">Ajustar notificaciones</string>
     <string name="action_delete_history">Eliminar historial</string>
-    <string name="action_login_as_administrator">Ingresar como administrador</string>
+    <string name="action_login">Cuenta de usuario</string>
 
     <string name="loading_content">Cargando conteido</string>
     <string name="please_wait">Por favor espere ...</string>
@@ -126,5 +148,21 @@
     <string name="radio_notification_description">Emisora Institucional</string>
     <string name="radio_volume">Volumen</string>
     <string name="radio_error">No se puede reproducir en este momento</string>
+
+    <string name="send">ENVIAR</string>
+
+    <string name="user_detail_title">DATOS DE CONTACTO</string>
+    <string name="user_detail_name">Nombre y Apellidos</string>
+    <string name="user_detail_name_hint">Escribe tu nombre</string>
+    <string name="user_detail_email">Correo Electrónico</string>
+    <string name="user_detail_email_hint">Escribe tu correo electrónico</string>
+    <string name="user_detail_phone">Teléfono Celular o Fijo (Opcional)</string>
+    <string name="user_detail_phone_hint">Escribe un teléfono de contacto (opcional)</string>
+    <string name="user_detail_address">Dirección (Opcional)</string>
+    <string name="user_detail_address_hint">Escribe una dirección de contacto (opcional)</string>
+    <string name="user_detail_document">Número de Documento (Opcional)</string>
+    <string name="user_detail_document_hint">Escribe tu número de identificación (opcional)</string>
+    <string name="user_detail_password">Contraseña</string>
+    <string name="user_detail_password_hint">Escribe una contraseña de entre 8 y 16 caracteres</string>
 
 </resources>
