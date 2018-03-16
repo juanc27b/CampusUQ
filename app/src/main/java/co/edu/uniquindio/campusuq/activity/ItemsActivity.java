@@ -181,7 +181,6 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         } else if (getString(R.string.institutional_mail).equals(title)) {
             intent = new Intent(ItemsActivity.this, EmailsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.institutional_mail));
-
         } else if (getString(R.string.web_page).equals(title)) {
             intent = new Intent(ItemsActivity.this, WebActivity.class);
             intent.putExtra("URL", getString(R.string.web_page_url));

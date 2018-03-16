@@ -119,10 +119,14 @@ public class ItemsPresenter {
                     new Item(getColor(), R.drawable.ic_menu_computer_rooms, context.getString(R.string.computer_rooms), context.getString(R.string.computer_rooms_description)));
             stateItems.add(
                     new Item(getColor(), R.drawable.ic_menu_parking_lots, context.getString(R.string.parking_lots), context.getString(R.string.parking_lots_description)));
-            stateItems.add(new Item(getColor(), R.drawable.ic_menu_laboratories, context.getString(R.string.laboratories), context.getString(R.string.laboratories_description)));
-            stateItems.add(new Item(getColor(), R.drawable.ic_menu_studio_zones, context.getString(R.string.studio_zones), context.getString(R.string.studio_zones_description)));
-            stateItems.add(new Item(getColor(), R.drawable.ic_menu_cultural_and_sport, context.getString(R.string.cultural_and_sport), context.getString(R.string.cultural_and_sport_description)));
-            stateItems.add(new Item(getColor(), R.drawable.ic_menu_auditoriums, context.getString(R.string.auditoriums), context.getString(R.string.auditoriums_description)));
+            stateItems.add(
+                    new Item(getColor(), R.drawable.ic_menu_laboratories, context.getString(R.string.laboratories), context.getString(R.string.laboratories_description)));
+            stateItems.add(
+                    new Item(getColor(), R.drawable.ic_menu_studio_zones, context.getString(R.string.studio_zones), context.getString(R.string.studio_zones_description)));
+            stateItems.add(
+                    new Item(getColor(), R.drawable.ic_menu_cultural_and_sport, context.getString(R.string.cultural_and_sport), context.getString(R.string.cultural_and_sport_description)));
+            stateItems.add(
+                    new Item(getColor(), R.drawable.ic_menu_auditoriums, context.getString(R.string.auditoriums), context.getString(R.string.auditoriums_description)));
         }
         return stateItems;
     }

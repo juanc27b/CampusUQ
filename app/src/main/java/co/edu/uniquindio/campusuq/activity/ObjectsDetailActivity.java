@@ -99,7 +99,7 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
                 JSONObject json = new JSONObject();
                 try {
                     if(id != null) json.put("UPDATE_ID", id);
-                    json.put(ObjectsSQLiteController.columns[1], user_lost_ID);
+                    json.put(ObjectsSQLiteController.columns[1], userLost_ID);
                     json.put(ObjectsSQLiteController.columns[2], name.getText());
                     json.put(ObjectsSQLiteController.columns[3], place.getText());
                     json.put(ObjectsSQLiteController.columns[4], date.getText());
