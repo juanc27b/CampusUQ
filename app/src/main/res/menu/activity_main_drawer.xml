@@ -87,6 +87,22 @@
                 android:id="@+id/nav_parking_lots"
                 android:icon="@drawable/ic_menu_parking_lots"
                 android:title="@string/parking_lots" />
+            <item
+                android:id="@+id/nav_laboratories"
+                android:icon="@drawable/ic_menu_laboratories"
+                android:title="@string/laboratories" />
+            <item
+                android:id="@+id/nav_studio_zones"
+                android:icon="@drawable/ic_menu_studio_zones"
+                android:title="@string/studio_zones" />
+            <item
+                android:id="@+id/nav_cultural_and_sport"
+                android:icon="@drawable/ic_menu_cultural_and_sport"
+                android:title="@string/cultural_and_sport" />
+            <item
+                android:id="@+id/nav_auditoriums"
+                android:icon="@drawable/ic_menu_auditoriums"
+                android:title="@string/auditoriums" />
         </menu>
     </item>
 

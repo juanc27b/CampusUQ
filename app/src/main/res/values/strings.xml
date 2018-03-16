@@ -49,6 +49,14 @@
     <string name="computer_rooms_description">Consultar la disponibilidad de las salas e cómputo de la Universidad</string>
     <string name="parking_lots">Parqueaderos</string>
     <string name="parking_lots_description">Consultar la disponibilidad de los estacionamientos de la Universidad</string>
+    <string name="laboratories">Laboratorios</string>
+    <string name="laboratories_description">Consultar la disponibilidad de los laboratorios de la Universidad</string>
+    <string name="studio_zones">Zonas de estudio</string>
+    <string name="studio_zones_description">Consultar la disponibilidad de las zonas de estudio de la Universidad</string>
+    <string name="cultural_and_sport">Culturales y Deportivos</string>
+    <string name="cultural_and_sport_description">Consultar la disponibilidad de los espacios culturales y deportivos de la Universidad</string>
+    <string name="auditoriums">Auditorios</string>
+    <string name="auditoriums_description">Consultar la disponibilidad de los auditorios de la Universidad</string>
 
     <string name="communication_module">Comunicación</string>
     <string name="institutional_mail">Correo institucional</string>
@@ -103,12 +111,13 @@
     <string name="lost_objects_detail">Reportar Objeto Perdido</string>
     <string name="lost_objects_found">Reportar Objeto Encontrado</string>
     <string name="restaurant_detail">Cambiar Menú Restaurante</string>
+    <string name="quota_detail">Cambiar Cupo</string>
 
     <string name="sign_up">Registrarse</string>
     <string name="log_in">Iniciar Sesión</string>
     <string name="log_out">Cerrar Sesión</string>
     <string name="edit_account">Editar Cuenta</string>
-    
+
     <string name="login_sample_title">Ingresa con tu cuenta</string>
     <string name="login_campusuq">Ingresa con tu cuenta de CampusUQ</string>
     <string name="login_institutional_mail">Ingresa con tu cuenta del correo institucional</string>
@@ -221,11 +230,18 @@
     <string name="user_detail_document_hint">Escribe tu número de identificación (opcional)</string>
     <string name="user_detail_password">Contraseña</string>
     <string name="user_detail_password_hint">Escribe una contraseña de entre 8 y 16 caracteres</string>
-    
+
     <string name="quota_sample_name">Sala A</string>
     <string name="quota_sample_quota">24</string>
     <string name="quota_text">cupo(s)</string>
     <string name="quota_dialog_sample_name">Ajustar Cupos de Sala A</string>
+
+    <string name="quota_detail_title">DETALLES</string>
+    <string name="quota_detail_name">Nombre del Cupo</string>
+    <string name="quota_detail_name_hint">Escribe el nombre del cupo</string>
+    <string name="quota_detail_quota">Cupo</string>
+    <string name="quota_detail_quota_hint">Escribe el cupo</string>
+    <string name="quota_detail_ok">ENVIAR</string>
 
     <string name="dialog_sample_modify">Modificar ítem</string>
     <string name="dialog_sample_delete">Eliminar ítem</string>
@@ -271,5 +287,24 @@
     <string name="object_detail_description_count_limit">/120</string>
     <string name="object_detail_image">Imagen o Foto (Opcional)</string>
     <string name="object_detail_ok">ENVIAR</string>
-    
+
+    <string name="email_sample_icon_text">D</string>
+    <string name="email_sample_date">14 de Noviembre, 7:35 AM</string>
+    <string name="email_sample_from">donotreply uqvirtual</string>
+    <string name="email_sample_content">NOTICIAS acerca de modificaciones al …\nPara conocer las estrategias y …</string>
+
+    <string name="content_email_sample_name">NOTICIAS acerca de Modificaciones al Registro de Asignaturas</string>
+    <string name="content_email_sample_from"><![CDATA[donotreply uqvirtual <donotreply@uqvirtual.edu.co>]]></string>
+    <string name="content_email_sample_date">15 de enero de 2018, 17:54.</string>
+
+    <string name="email_detail_from">De:</string>
+    <string name="email_detail_from_hint">jcgonzalezi@uqvirtual.edu.co</string>
+    <string name="email_detail_to">Para:</string>
+    <string name="email_detail_to_hint">ezapata@uniquindio.edu.co</string>
+    <string name="email_detail_name">Asunto:</string>
+    <string name="email_detail_name_hint">Revisión entrevista</string>
+    <string name="email_detail_content">Correo:</string>
+    <string name="email_detail_content_hint">Buenos dias, …</string>
+    <string name="email_detail_ok">ENVIAR</string>
+
 </resources>

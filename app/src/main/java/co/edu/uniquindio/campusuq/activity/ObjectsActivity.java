@@ -92,8 +92,8 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         dbController.destroy();
 
         if(newActivity) {
-            adapter = new ObjectsAdapter(objects, ObjectsActivity.this);
-            layoutManager = new LinearLayoutManager(ObjectsActivity.this, LinearLayoutManager.VERTICAL, false);
+            adapter = new ObjectsAdapter(objects, this);
+            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
             RecyclerView recyclerView = findViewById(R.id.objects_recycler_view);
             recyclerView.setHasFixedSize(true);
             recyclerView.setAdapter(adapter);

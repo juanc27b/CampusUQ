@@ -58,8 +58,8 @@ public class DishesSQLiteController {
                 TextUtils.join("` = ?, `", columns)+"` = ? WHERE `"+columns[0]+"` = ?", values);
     }
 
-    public void delete(String id) {
-        db.execSQL("DELETE FROM `"+tablename+"` WHERE `"+columns[0]+"` = ?", new String[]{id});
+    public void delete(ArrayList<String> ids) {
+        db.execSQL("DELETE FROM `"+tablename+"` WHERE `"+columns[0]+"` IN("+TextUtils.join(", ", Collections.nCopies(ids.size(), "?"))+")", ids.toArray());
     }
 
     public void destroy() {

@@ -89,12 +89,12 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
         int scrollTo = oldDishes ? (newActivity ? 0 : dishes.size()-1) : (inserted != 0? inserted-1 : 0);
 
         DishesSQLiteController dbController = new DishesSQLiteController(getApplicationContext(), 1);
-        dishes = dbController.select(String.valueOf(inserted > 0 ? dishes.size()+inserted : dishes.size()+6), null, null);
+        dishes = dbController.select(String.valueOf(inserted > 0 ? dishes.size()+inserted : dishes.size()+12), null, null);
         dbController.destroy();
 
         if(newActivity) {
-            adapter = new DishesAdapter(dishes, DishesActivity.this);
-            layoutManager = new LinearLayoutManager(DishesActivity.this, LinearLayoutManager.VERTICAL, false);
+            adapter = new DishesAdapter(dishes, this);
+            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
             RecyclerView recyclerView = findViewById(R.id.dishes_recycler_view);
             recyclerView.setHasFixedSize(true);
             recyclerView.setAdapter(adapter);

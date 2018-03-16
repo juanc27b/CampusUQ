@@ -254,8 +254,25 @@ public class MainActivity extends AppCompatActivity
                 intent = new Intent(MainActivity.this, QuotasActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.parking_lots));
                 break;
+            case R.id.nav_laboratories:
+                intent = new Intent(MainActivity.this, QuotasActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.laboratories));
+                break;
+            case R.id.nav_studio_zones:
+                intent = new Intent(MainActivity.this, QuotasActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.studio_zones));
+                break;
+            case R.id.nav_cultural_and_sport:
+                intent = new Intent(MainActivity.this, QuotasActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.cultural_and_sport));
+                break;
+            case R.id.nav_auditoriums:
+                intent = new Intent(MainActivity.this, QuotasActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.auditoriums));
+                break;
             case R.id.nav_institutional_mail:
-
+                intent = new Intent(MainActivity.this, EmailsActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.institutional_mail));
                 break;
             case R.id.nav_web_page:
                 intent = new Intent(MainActivity.this, WebActivity.class);

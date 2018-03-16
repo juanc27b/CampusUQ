@@ -166,7 +166,21 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         } else if (getString(R.string.parking_lots).equals(title)) {
             intent = new Intent(ItemsActivity.this, QuotasActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.parking_lots));
+        } else if (getString(R.string.laboratories).equals(title)) {
+            intent = new Intent(ItemsActivity.this, QuotasActivity.class);
+            intent.putExtra("CATEGORY", getString(R.string.laboratories));
+        } else if (getString(R.string.studio_zones).equals(title)) {
+            intent = new Intent(ItemsActivity.this, QuotasActivity.class);
+            intent.putExtra("CATEGORY", getString(R.string.studio_zones));
+        } else if (getString(R.string.cultural_and_sport).equals(title)) {
+            intent = new Intent(ItemsActivity.this, QuotasActivity.class);
+            intent.putExtra("CATEGORY", getString(R.string.cultural_and_sport));
+        } else if (getString(R.string.auditoriums).equals(title)) {
+            intent = new Intent(ItemsActivity.this, QuotasActivity.class);
+            intent.putExtra("CATEGORY", getString(R.string.auditoriums));
         } else if (getString(R.string.institutional_mail).equals(title)) {
+            intent = new Intent(ItemsActivity.this, EmailsActivity.class);
+            intent.putExtra("CATEGORY", getString(R.string.institutional_mail));
 
         } else if (getString(R.string.web_page).equals(title)) {
             intent = new Intent(ItemsActivity.this, WebActivity.class);

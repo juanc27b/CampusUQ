@@ -29,12 +29,13 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
 
     public class ObjectViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+        private ImageView icon, image;
         private TextView name, place, date, description;
-        private ImageView image;
 
         ObjectViewHolder(View view) {
             super(view);
             view.findViewById(R.id.object_layout).setOnClickListener(this);
+            icon = view.findViewById(R.id.object_icon);
             name = view.findViewById(R.id.object_name);
             place = view.findViewById(R.id.object_place);
             date = view.findViewById(R.id.object_date);
@@ -45,11 +46,12 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
         }
 
         void bindItem(LostObject lostObject) {
+            icon.setImageResource(ItemsPresenter.getColor());
             name.setText(lostObject.getName());
             place.setText(lostObject.getPlace());
             date.setText(lostObject.getDate());
-            File imgFile = new  File(lostObject.getImage());
-            if(imgFile.exists()) image.setImageBitmap(BitmapFactory.decodeFile(imgFile.getAbsolutePath()));
+            File imageFile = new File(lostObject.getImage());
+            if(imageFile.exists()) image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
             else image.setImageResource(R.drawable.rectangle_gray);
             description.setText(lostObject.getDescription());
         }

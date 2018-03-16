@@ -67,6 +67,7 @@ public class WebService extends JobService {
     public static final String ACTION_OBJECTS = "co.edu.uniquindio.campusuq.ACTION_OBJECTS";
     public static final String ACTION_DISHES = "co.edu.uniquindio.campusuq.ACTION_DISHES";
     public static final String ACTION_QUOTAS = "co.edu.uniquindio.campusuq.ACTION_QUOTAS";
+    public static final String ACTION_EMAILS = "co.edu.uniquindio.campusuq.ACTION_EMAILS";
     public static final String ACTION_USERS = "co.edu.uniquindio.campusuq.ACTION_USERS";
 
     public static final String METHOD_GET = "co.edu.uniquindio.campusuq.METHOD_GET";
@@ -146,6 +147,7 @@ public class WebService extends JobService {
                 loadObjects(method, object);
                 loadDishes(method, object);
                 loadQuotas(method, object);
+                loadEmails(method, object);
                 break;
             case ACTION_EVENTS:
                 loadNews(ACTION_EVENTS);
@@ -167,6 +169,9 @@ public class WebService extends JobService {
                 break;
             case ACTION_QUOTAS:
                 loadQuotas(method, object);
+                break;
+            case ACTION_EMAILS:
+                loadEmails(method, object);
                 break;
             case ACTION_USERS:
                 loadUsers(method, object);
@@ -715,7 +720,7 @@ public class WebService extends JobService {
                         manager.notify(lostObject.getName(), mNotificationId, buildNotification(ACTION_OBJECTS, lostObject));
                     }
                 }
-                if(remove) for(String oldID : oldIDs) dbController.delete(oldID);
+                if(remove) dbController.delete(oldIDs);
                 break;
             }
             dbController.destroy();
@@ -755,7 +760,7 @@ public class WebService extends JobService {
                             oldIDs.remove(index);
                         }
                     }
-                    if(remove) for(String oldID : oldIDs) dbController.delete(oldID);
+                    if(remove) dbController.delete(oldIDs);
                     break;
             }
             dbController.destroy();
@@ -790,7 +795,7 @@ public class WebService extends JobService {
                             oldIDs.remove(index);
                         }
                     }
-                    if(remove) for(String oldID : oldIDs) dbController.delete(oldID);
+                    if(remove) dbController.delete(oldIDs);
                     break;
             }
             dbController.destroy();
@@ -826,6 +831,36 @@ public class WebService extends JobService {
             dbController.destroy();
         }
         sendBroadcast(new Intent(ACTION_USERS).putExtra("USER", user));
+    }
+
+    private void loadEmails(String method, String object) {
+        if(Utilities.haveNetworkConnection(getApplicationContext())) {
+            //EmailsSQLiteController dbController = new EmailsSQLiteController(getApplicationContext(), 1);
+            switch(method) {
+                case METHOD_POST:
+                case METHOD_PUT:
+                case METHOD_DELETE:
+                    //EmailsServiceController.modify(object);
+                case METHOD_GET:
+                    /*boolean remove = false;
+                    ArrayList<String> old_ids = new ArrayList<>();
+                    for(Email old : dbController.select(null, null, null)) old_ids.add(old.get_ID());
+                    for(Email email : EmailsServiceController.get(null)) {
+                        remove = true;
+                        int index = old_ids.indexOf(email.get_ID());
+                        if(index == -1) {
+                            dbController.insert();
+                        } else {
+                            dbController.update();
+                            old_ids.remove(index);
+                        }
+                    }
+                    if(remove) dbController.delete(old_ids);*/
+                    break;
+            }
+            //dbController.destroy();
+        }
+        sendBroadcast(new Intent(ACTION_EMAILS));
     }
 
     @Override
