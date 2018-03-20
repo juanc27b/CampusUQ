@@ -9,6 +9,7 @@ import android.widget.EditText;
 import co.edu.uniquindio.campusuq.R;
 
 public class EmailsDetailActivity extends MainActivity implements View.OnClickListener {
+
     private Intent intent;
     private EditText from, to, name, content;
 
@@ -20,15 +21,19 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
+
         super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+
         ViewStub viewStub = findViewById(R.id.layout_stub);
         viewStub.setLayoutResource(R.layout.activity_emails_detail);
         viewStub.inflate();
+
         intent = getIntent();
         from = findViewById(R.id.email_detail_from);
         to = findViewById(R.id.email_detail_to);
         name = findViewById(R.id.email_detail_name);
         content = findViewById(R.id.email_detail_content);
+
         findViewById(R.id.email_detail_ok).setOnClickListener(this);
     }
 
@@ -41,4 +46,5 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
             break;
         }
     }
+
 }

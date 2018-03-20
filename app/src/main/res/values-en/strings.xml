@@ -101,9 +101,10 @@
     <string name="select_event">Select an event for see detailed dates</string>
     <string name="period">Period</string>
 
-    <string name="lost_objects_detail">Report Lost Object</string>
-    <string name="lost_objects_found">Report Found Object</string>
+    <string name="report_incident">Report Incident</string>
+    <string name="billboard_detail">Change Billboard</string>
     <string name="restaurant_detail">Change Restaurant Menu</string>
+    <string name="quota_detail">Change Quota</string>
 
     <string name="sign_up">Sign Up</string>
     <string name="log_in">Log In</string>

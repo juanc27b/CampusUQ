@@ -19,9 +19,11 @@ import java.util.ArrayList;
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.ItemsAdapter;
 import co.edu.uniquindio.campusuq.util.ItemsPresenter;
+import co.edu.uniquindio.campusuq.util.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.Item;
+import co.edu.uniquindio.campusuq.vo.User;
 
 public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickItemListener {
 
@@ -179,8 +181,16 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
             intent = new Intent(ItemsActivity.this, QuotasActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.auditoriums));
         } else if (getString(R.string.institutional_mail).equals(title)) {
-            intent = new Intent(ItemsActivity.this, EmailsActivity.class);
-            intent.putExtra("CATEGORY", getString(R.string.institutional_mail));
+            User user = UsersPresenter.loadUser(ItemsActivity.this);
+            if (user != null) {
+                if (user.getEmail().equals("campusuq@uniquindio.edu.co")) {
+                    intent = new Intent(ItemsActivity.this, LoginActivity.class);
+                    intent.putExtra("CATEGORY", getString(R.string.log_in));
+                } else {
+                    intent = new Intent(ItemsActivity.this, EmailsActivity.class);
+                    intent.putExtra("CATEGORY", getString(R.string.institutional_mail));
+                }
+            }
         } else if (getString(R.string.web_page).equals(title)) {
             intent = new Intent(ItemsActivity.this, WebActivity.class);
             intent.putExtra("URL", getString(R.string.web_page_url));

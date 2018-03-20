@@ -101,9 +101,10 @@
     <string name="select_event">Seleccione un evento para ver fechas detalladas</string>
     <string name="period">Período</string>
 
-    <string name="lost_objects_detail">Reportar Objeto Perdido</string>
-    <string name="lost_objects_found">Reportar Objeto Encontrado</string>
+    <string name="report_incident">Reportar Incidente</string>
+    <string name="billboard_detail">Cambiar Cartelera</string>
     <string name="restaurant_detail">Cambiar Menú Restaurante</string>
+    <string name="quota_detail">Cambiar Cupo</string>
 
     <string name="sign_up">Registrarse</string>
     <string name="log_in">Iniciar Sesión</string>

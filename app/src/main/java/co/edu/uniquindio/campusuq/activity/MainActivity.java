@@ -271,8 +271,16 @@ public class MainActivity extends AppCompatActivity
                 intent.putExtra("CATEGORY", getString(R.string.auditoriums));
                 break;
             case R.id.nav_institutional_mail:
-                intent = new Intent(MainActivity.this, EmailsActivity.class);
-                intent.putExtra("CATEGORY", getString(R.string.institutional_mail));
+                User user = UsersPresenter.loadUser(MainActivity.this);
+                if (user != null) {
+                    if (user.getEmail().equals("campusuq@uniquindio.edu.co")) {
+                        intent = new Intent(MainActivity.this, LoginActivity.class);
+                        intent.putExtra("CATEGORY", getString(R.string.log_in));
+                    } else {
+                        intent = new Intent(MainActivity.this, EmailsActivity.class);
+                        intent.putExtra("CATEGORY", getString(R.string.institutional_mail));
+                    }
+                }
                 break;
             case R.id.nav_web_page:
                 intent = new Intent(MainActivity.this, WebActivity.class);

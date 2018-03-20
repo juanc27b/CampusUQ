@@ -62,7 +62,8 @@
                 android:layout_marginBottom="5dp"
                 android:textSize="15sp"
                 android:inputType="textEmailAddress"
-                android:hint="@string/user_detail_email_hint"/>
+                android:hint="@string/user_detail_email_hint"
+                android:enabled="false"/>
 
             <TextView
                 android:layout_width="wrap_content"

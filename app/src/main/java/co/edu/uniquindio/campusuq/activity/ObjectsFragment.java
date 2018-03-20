@@ -59,7 +59,7 @@ public class ObjectsFragment extends DialogFragment implements View.OnClickListe
         case R.id.dialog_ok:
             if(modify.isChecked()) {
                 Intent intent = new Intent(objectsActivity, ObjectsDetailActivity.class);
-                intent.putExtra("CATEGORY", getString(R.string.lost_objects_detail));
+                intent.putExtra("CATEGORY", getString(R.string.object_report_lost));
                 intent.putExtra(ObjectsSQLiteController.columns[0], object.get_ID());
                 intent.putExtra(ObjectsSQLiteController.columns[1], "1");
                 intent.putExtra(ObjectsSQLiteController.columns[2], object.getName());

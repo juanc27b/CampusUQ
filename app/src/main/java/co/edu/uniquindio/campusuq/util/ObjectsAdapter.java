@@ -1,5 +1,6 @@
 package co.edu.uniquindio.campusuq.util;
 
+import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,23 +15,28 @@ import java.util.ArrayList;
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.ObjectsActivity;
 import co.edu.uniquindio.campusuq.vo.LostObject;
+import co.edu.uniquindio.campusuq.vo.User;
 
 public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectViewHolder> {
 
-    public static final String DIALOG = "dialog", READED = "readed", FOUND = "found";
+    public static final String DIALOG = "dialog", READED = "readed", FOUND = "found", NOT_FOUND = "not_found", CONTACT = "contact";
 
     private ArrayList<LostObject> objects;
     private OnClickObjectListener listener;
+    private Context context;
+    private User user;
 
     public ObjectsAdapter(ArrayList<LostObject> objects, ObjectsActivity objectsActivity) {
         this.objects = objects;
         listener = objectsActivity;
+        context = objectsActivity.getApplicationContext();
+        user = UsersPresenter.loadUser(context);
     }
 
     public class ObjectViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ImageView icon, image;
-        private TextView name, place, date, description;
+        private TextView name, place, date, description, found;
 
         ObjectViewHolder(View view) {
             super(view);
@@ -42,7 +48,7 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
             image = view.findViewById(R.id.object_image);
             description = view.findViewById(R.id.object_description);
             view.findViewById(R.id.object_readed).setOnClickListener(this);
-            view.findViewById(R.id.object_found).setOnClickListener(this);
+            found = view.findViewById(R.id.object_found);
         }
 
         void bindItem(LostObject lostObject) {
@@ -54,6 +60,33 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
             if(imageFile.exists()) image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
             else image.setImageResource(R.drawable.rectangle_gray);
             description.setText(lostObject.getDescription());
+            if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
+                    lostObject.getUserFound_ID() != null && lostObject.getUserFound_ID().equals(user.get_ID())) {
+                found.setText(R.string.object_not_found);
+                found.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        listener.onObjectClick(getAdapterPosition(), NOT_FOUND);
+                    }
+                });
+            } else if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
+                    lostObject.getUserLost_ID().equals(user.get_ID()) && lostObject.getUserFound_ID() != null) {
+                found.setText(R.string.object_view_contact);
+                found.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        listener.onObjectClick(getAdapterPosition(), CONTACT);
+                    }
+                });
+            } else {
+                found.setText(R.string.object_report_found);
+                found.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        listener.onObjectClick(getAdapterPosition(), FOUND);
+                    }
+                });
+            }
         }
 
         @Override
@@ -62,9 +95,6 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
             switch(view.getId()) {
                 case R.id.object_readed:
                     action = READED;
-                    break;
-                case R.id.object_found:
-                    action = FOUND;
                     break;
                 default:
                     action = DIALOG;
@@ -89,6 +119,7 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
     }
 
     public void setObjects(ArrayList<LostObject> objects) {
+        user = UsersPresenter.loadUser(context);
         this.objects = objects;
         notifyDataSetChanged();
     }

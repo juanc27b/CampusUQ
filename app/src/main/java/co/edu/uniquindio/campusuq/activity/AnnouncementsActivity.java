@@ -7,11 +7,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -35,6 +35,8 @@ import co.edu.uniquindio.campusuq.vo.Announcement;
 
 public class AnnouncementsActivity extends MainActivity implements AnnouncementsAdapter.OnClickAnnouncementListener {
 
+    public static final int REQUEST_ANNOUNCEMENT_DETAIL = 1005;
+
     private RecyclerView mRecyclerView;
     private AnnouncementsAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -47,6 +49,9 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
 
     public CallbackManager callbackManager;
     public boolean loggedIn;
+
+    private FloatingActionButton fab;
+    private Button report;
 
     public AnnouncementsActivity() {
         this.announcements = new ArrayList<Announcement>();
@@ -88,23 +93,29 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
         stub.setLayoutResource(R.layout.content_announcements);
         View inflated = stub.inflate();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setVisibility(View.VISIBLE);
+        report = (Button) findViewById(R.id.report_incident);
+        report.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AnnouncementsActivity.this, AnnouncementsDetailActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.report_incident));
+                startActivityForResult(intent, REQUEST_ANNOUNCEMENT_DETAIL);
+            }
+        });
+
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(AnnouncementsActivity.this, AnnouncementsDetailActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.billboard_detail));
+                startActivityForResult(intent, REQUEST_ANNOUNCEMENT_DETAIL);
             }
         });
 
         String category = getIntent().getStringExtra("CATEGORY");
-        if (getString(R.string.billboard_information).equals(category)) {
-
-        } else {
-        }
-
         action = getString(R.string.security_system).equals(category) ? WebService.ACTION_INCIDENTS : WebService.ACTION_COMMUNIQUES;
+        changeConfiguration();
         loadAnnouncements(0);
 
     }
@@ -129,7 +140,18 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
             String category = intent.getStringExtra("CATEGORY");
             getSupportActionBar().setTitle(category);
             action = getString(R.string.security_system).equals(category) ? WebService.ACTION_INCIDENTS : WebService.ACTION_COMMUNIQUES;
+            changeConfiguration();
             loadAnnouncements(0);
+        }
+    }
+
+    public void changeConfiguration() {
+        if (WebService.ACTION_INCIDENTS.equals(action)) {
+            report.setVisibility(View.VISIBLE);
+            fab.setVisibility(View.GONE);
+        } else {
+            fab.setVisibility(View.VISIBLE);
+            report.setVisibility(View.GONE);
         }
     }
 
@@ -159,14 +181,19 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK){
-            Bundle bundle = data.getExtras();
-            String fbData = bundle.toString();
-            Toast.makeText(this, "Fb OK: "+fbData, Toast.LENGTH_SHORT).show();
+        if (requestCode == REQUEST_ANNOUNCEMENT_DETAIL) {
+            if(resultCode  == RESULT_OK && !progressDialog.isShowing()) progressDialog.show();
         } else {
-            Toast.makeText(this, "Fb Error: "+data.getExtras().toString(), Toast.LENGTH_SHORT).show();
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+            if(resultCode == RESULT_OK){
+                Bundle bundle = data.getExtras();
+                String fbData = bundle.toString();
+                Toast.makeText(this, "Fb OK: "+fbData, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Fb Error: "+data.getExtras().toString(), Toast.LENGTH_SHORT).show();
+            }
         }
+
     }
 
     private void loadAnnouncements(int inserted) {

@@ -28,7 +28,7 @@ public class ObjectsSQLiteController {
     static String createTable() {
         return "CREATE TABLE `"+tablename+"` (`"+columns[0]+"` INTEGER PRIMARY KEY, `"+columns[1]+"` INTEGER NOT NULL, `"+
                 TextUtils.join("` TEXT NOT NULL, `", Arrays.copyOfRange(columns, 2, columns.length-1))+
-                "` INTEGER NOT NULL, `"+columns[8]+"` TEXT NOT NULL )";
+                "` INTEGER, `"+columns[8]+"` TEXT NOT NULL )";
     }
 
     public ArrayList<LostObject> select(String limit, String selection, String[] selectionArgs) {
@@ -57,7 +57,7 @@ public class ObjectsSQLiteController {
                 TextUtils.join(", ", Collections.nCopies(columns.length, "?"))+")", values);
     }
 
-    void update(String... values) {
+    public void update(String... values) {
         db.execSQL("UPDATE `"+tablename+"` SET `"+
                 TextUtils.join("` = ?, `", Arrays.copyOfRange(columns, 0, columns.length-1))+
                 "` = ? WHERE `"+columns[0]+"` = ?", values);

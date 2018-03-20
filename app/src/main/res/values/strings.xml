@@ -108,8 +108,8 @@
     <string name="select_event">Seleccione un evento para ver fechas detalladas</string>
     <string name="period">Período</string>
 
-    <string name="lost_objects_detail">Reportar Objeto Perdido</string>
-    <string name="lost_objects_found">Reportar Objeto Encontrado</string>
+    <string name="report_incident">Reportar Incidente</string>
+    <string name="billboard_detail">Cambiar Cartelera</string>
     <string name="restaurant_detail">Cambiar Menú Restaurante</string>
     <string name="quota_detail">Cambiar Cupo</string>
 
@@ -231,6 +231,23 @@
     <string name="user_detail_password">Contraseña</string>
     <string name="user_detail_password_hint">Escribe una contraseña de entre 8 y 16 caracteres</string>
 
+    <string name="incident_detail_title">DETALLES DEL INCIDENTE</string>
+    <string name="incident_detail_name">Título del Incidente</string>
+    <string name="incident_detail_name_hint">Escribe el nombre del incidente</string>
+    <string name="incident_detail_description">Descripción del Incidente</string>
+    <string name="incident_detail_description_hint">Escribe una breve descripción de los acontecimientos ocurridos, lugar, fecha, y otros detalles pertinentes</string>
+    <string name="incident_detail_image">Imagenes y Videos del Incidente (Opcional)</string>
+
+    <string name="communique_detail_title">DETALLES DEL COMUNICADO</string>
+    <string name="communique_detail_name">Título del Comunicado</string>
+    <string name="communique_detail_name_hint">Escribe el nombre del comunicado</string>
+    <string name="communique_detail_description">Descripción del Comunicado</string>
+    <string name="communique_detail_description_hint">Escribe una breve descripción sobre la información, la clase de contenido, el público objetivo y otros detalles</string>
+    <string name="communique_detail_image">Imagenes o Fotos del Comunicado (Opcional)</string>
+
+    <string name="announcement_detail_sample_description_count">110</string>
+    <string name="announcement_detail_description_count_limit">/120</string>
+
     <string name="quota_sample_name">Sala A</string>
     <string name="quota_sample_quota">24</string>
     <string name="quota_text">cupo(s)</string>
@@ -264,7 +281,7 @@
     <string name="dish_detail_image">Imagen o Foto (Opcional)</string>
     <string name="dish_detail_ok">ENVIAR</string>
 
-    <string name="object_report">Reportar Objeto Perdido</string>
+    <string name="object_report_lost">Reportar Objeto Perdido</string>
     <string name="object_sample_name">Memoria USB 4GB</string>
     <string name="object_place">Lugar:</string>
     <string name="object_sample_place">Sala A de Computadores</string>
@@ -272,7 +289,9 @@
     <string name="object_sample_date">7 de Noviembre, 3:57 PM</string>
     <string name="object_sample_description">Memoria USB con capacidad de 4 GB Marca Kingston color negro y verde en el agarre</string>
     <string name="object_readed">Marcar como leído</string>
-    <string name="object_found">Encontrado</string>
+    <string name="object_report_found">Reportar Objeto Encontrado</string>
+    <string name="object_not_found">No Encontrado</string>
+    <string name="object_view_contact">Ver Contacto</string>
 
     <string name="object_detail_title">DETALLES DEL OBJETO PERDIDO</string>
     <string name="object_detail_name">Nombre del Objeto</string>

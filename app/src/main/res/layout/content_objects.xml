@@ -12,7 +12,7 @@
         android:id="@+id/object_report"
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:text="@string/object_report"
+        android:text="@string/object_report_lost"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:background="@drawable/round_green_filled_button"

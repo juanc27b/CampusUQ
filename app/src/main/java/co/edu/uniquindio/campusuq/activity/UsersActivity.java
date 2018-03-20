@@ -1,5 +1,6 @@
 package co.edu.uniquindio.campusuq.activity;
 
+import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import co.edu.uniquindio.campusuq.R;
+import co.edu.uniquindio.campusuq.util.EmailsPresenter;
 import co.edu.uniquindio.campusuq.util.UsersSQLiteController;
 import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.util.WebBroadcastReceiver;
@@ -29,9 +31,12 @@ public class UsersActivity extends MainActivity {
     private User user;
 
     private String category;
+    private EmailsPresenter emailsPresenter;
 
     public UsersActivity() {
         super.setHasSearch(false);
+
+        emailsPresenter = new EmailsPresenter(this);
     }
 
     @Override
@@ -125,19 +130,33 @@ public class UsersActivity extends MainActivity {
             phone.setText(user.getPhone());
             address.setText(user.getAddress());
             document.setText(user.getDocument());
-            logOut.setVisibility(View.VISIBLE);
-        } else {
-            logOut.setVisibility(View.GONE);
         }
 
         if (getString(R.string.sign_up).equals(category) || getString(R.string.edit_account).equals(category)) {
             passwordLayout.setVisibility(View.VISIBLE);
             send.setVisibility(View.VISIBLE);
             changeConfiguration(true);
+            email.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!emailsPresenter.isGooglePlayServicesAvailable()) {
+                        emailsPresenter.acquireGooglePlayServices(UsersActivity.this);
+                    } else {
+                        emailsPresenter.chooseAccount(UsersActivity.this);
+                    }
+                }
+            });
         } else {
             passwordLayout.setVisibility(View.GONE);
             send.setVisibility(View.GONE);
             changeConfiguration(false);
+            email.setOnClickListener(null);
+        }
+
+        if (getString(R.string.edit_account).equals(category)) {
+            logOut.setVisibility(View.VISIBLE);
+        } else {
+            logOut.setVisibility(View.GONE);
         }
     }
 
@@ -162,6 +181,41 @@ public class UsersActivity extends MainActivity {
         document.setCursorVisible(edit);
         document.setFocusable(edit);
         document.setFocusableInTouchMode(edit);
+    }
+
+    /**
+     * Called when an activity launched here (specifically, AccountPicker
+     * and authorization) exits, giving you the requestCode you started it with,
+     * the resultCode it returned, and any additional data from it.
+     * @param requestCode code indicating which activity result is incoming.
+     * @param resultCode code indicating the result of the incoming
+     *     activity result.
+     * @param data Intent (containing result data) returned by incoming
+     *     activity result.
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode) {
+            case EmailsPresenter.REQUEST_GOOGLE_PLAY_SERVICES:
+                if (resultCode != RESULT_OK) {
+                    Toast.makeText(this, "This app requires Google Play Services. Please install " +
+                            "Google Play Services on your device and relaunch this app.", Toast.LENGTH_SHORT).show();
+                } else {
+                    emailsPresenter.chooseAccount(UsersActivity.this);
+                }
+                break;
+            case EmailsPresenter.REQUEST_ACCOUNT_PICKER:
+                if (resultCode == RESULT_OK && data != null && data.getExtras() != null) {
+                    String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                    if (accountName != null) {
+                        email.setText(accountName);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
     }
 
 }

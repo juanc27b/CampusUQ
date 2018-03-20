@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +15,7 @@ import android.view.ViewStub;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.EmailsAdapter;
@@ -22,12 +24,15 @@ import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.util.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.Email;
+import pub.devrel.easypermissions.EasyPermissions;
 
-public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClickEmailListener {
+public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClickEmailListener, EasyPermissions.PermissionCallbacks {
+
     private ArrayList<Email> emails = new ArrayList<>();
     private boolean newActivity = true, oldEmails = true;
     private EmailsAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
+
     private IntentFilter emailsFilter = new IntentFilter(WebService.ACTION_EMAILS);
     private BroadcastReceiver emailsReceiver = new BroadcastReceiver() {
         @Override
@@ -38,8 +43,33 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
 
     public EmailsActivity() {
         super.setHasNavigationDrawerIcon(false);
-        emails.add(new Email("1", "NOTICIAS acerca de Modificaciones al Registro de Asignaturas", "donoreply uqvirtual", "", "14 de Noviembre, 7:35 AM", "NOTICIAS acerca de modificaciones al ...\nPara conocer las estrategias y ..."));//
-        emails.add(new Email("2", "", "Oficina Asesora de Comunicaciones", "", "05 de Noviembre, 12:48 PM", "Fwd: Entrega de Incentivos Programa ...\nAtentamente me permito informarles que ..."));//
+
+        //emails.add(new Email("1", "NOTICIAS acerca de Modificaciones al Registro de Asignaturas", "donoreply uqvirtual", "", "14 de Noviembre, 7:35 AM", "NOTICIAS acerca de modificaciones al ...\nPara conocer las estrategias y ...", null));
+        //emails.add(new Email("2", "", "Oficina Asesora de Comunicaciones", "", "05 de Noviembre, 12:48 PM", "Fwd: Entrega de Incentivos Programa ...\nAtentamente me permito informarles que ...", null));
+    }
+
+    @Override
+    public void addContent(Bundle savedInstanceState) {
+        super.addContent(savedInstanceState);
+
+        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+
+        ViewStub viewStub = findViewById(R.id.layout_stub);
+        viewStub.setLayoutResource(R.layout.content_emails);
+        viewStub.inflate();
+
+        FloatingActionButton insert = findViewById(R.id.fab);
+        insert.setVisibility(View.VISIBLE);
+        insert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(EmailsActivity.this, EmailsDetailActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.institutional_mail));
+                startActivityForResult(intent, 0);
+            }
+        });
+
+        loadEmails(0);
     }
 
     @Override
@@ -54,32 +84,17 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
         }
     }
 
-    @Override
-    public void addContent(Bundle savedInstanceState) {
-        super.addContent(savedInstanceState);
-        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
-        ViewStub viewStub = findViewById(R.id.layout_stub);
-        viewStub.setLayoutResource(R.layout.content_emails);
-        viewStub.inflate();
-        FloatingActionButton insert = findViewById(R.id.fab);
-        insert.setVisibility(View.VISIBLE);
-        insert.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(EmailsActivity.this, EmailsDetailActivity.class);
-                intent.putExtra("CATEGORY", getString(R.string.institutional_mail));
-                startActivityForResult(intent, 0);
-            }
-        });
-        loadEmails(0);
-    }
-
     private void loadEmails(int inserted) {
+
         if(!progressDialog.isShowing()) progressDialog.show();
+
         int scrollTo = oldEmails? (newActivity? 0 : emails.size()-1) : (inserted != 0? inserted-1 : 0);
-        /*EmailsSQLiteController dbController = new EmailsSQLiteController(getApplicationContext(), 1);
-        emails = dbController.select(String.valueOf(inserted > 0? emails.size()+inserted : emails.size()+6), null, null);
-        dbController.destroy();*/
+
+        EmailsSQLiteController dbController = new EmailsSQLiteController(getApplicationContext(), 1);
+        emails = dbController.select(String.valueOf(inserted > 0 ? emails.size()+inserted : emails.size()+6),
+                null, null);
+        dbController.destroy();
+
         if(newActivity) {
             adapter = new EmailsAdapter(emails, this);
             layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -96,7 +111,8 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
                             if(Utilities.haveNetworkConnection(EmailsActivity.this)) {
                                 oldEmails = false;
                                 progressDialog.show();
-                                WebBroadcastReceiver.scheduleJob(getApplicationContext(), WebService.ACTION_EMAILS, WebService.METHOD_GET, null);
+                                WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                                        WebService.ACTION_EMAILS, WebService.METHOD_GET, null);
                             } else {
                                 Toast.makeText(EmailsActivity.this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
                             }
@@ -112,7 +128,9 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
             adapter.setEmails(emails);
             layoutManager.scrollToPosition(scrollTo);
         }
+
         if(progressDialog.isShowing() && emails.size() > 0) progressDialog.dismiss();
+
     }
 
     @Override
@@ -129,10 +147,61 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
         startActivity(intent);
     }
 
+    /**
+     * Called when an activity launched here (specifically, AccountPicker
+     * and authorization) exits, giving you the requestCode you started it with,
+     * the resultCode it returned, and any additional data from it.
+     * @param requestCode code indicating which activity result is incoming.
+     * @param resultCode code indicating the result of the incoming
+     *     activity result.
+     * @param data Intent (containing result data) returned by incoming
+     *     activity result.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode  == RESULT_OK && !progressDialog.isShowing()) progressDialog.show();
+    }
+
+    /**
+     * Respond to requests for permissions at runtime for API 23 and above.
+     * @param requestCode The request code passed in
+     *     requestPermissions(android.app.Activity, String, int, String[])
+     * @param permissions The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions
+     *     which is either PERMISSION_GRANTED or PERMISSION_DENIED. Never null.
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(
+                requestCode, permissions, grantResults, this);
+    }
+
+    /**
+     * Callback for when a permission is granted using the EasyPermissions
+     * library.
+     * @param requestCode The request code associated with the requested
+     *         permission
+     * @param list The requested permission list. Never null.
+     */
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> list) {
+        // Do nothing.
+    }
+
+    /**
+     * Callback for when a permission is denied using the EasyPermissions
+     * library.
+     * @param requestCode The request code associated with the requested
+     *         permission
+     * @param list The requested permission list. Never null.
+     */
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> list) {
+        // Do nothing.
     }
 
     @Override
@@ -146,4 +215,5 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
         super.onPause();
         unregisterReceiver(emailsReceiver);
     }
+
 }

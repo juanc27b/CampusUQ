@@ -17,10 +17,12 @@ import java.util.ArrayList;
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.ObjectsAdapter;
 import co.edu.uniquindio.campusuq.util.ObjectsSQLiteController;
+import co.edu.uniquindio.campusuq.util.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.util.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.LostObject;
+import co.edu.uniquindio.campusuq.vo.User;
 
 public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnClickObjectListener {
 
@@ -54,15 +56,22 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         findViewById(R.id.object_report).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ObjectsActivity.this, ObjectsDetailActivity.class);
-                intent.putExtra("CATEGORY", getString(R.string.lost_objects_detail));
-                intent.putExtra(ObjectsSQLiteController.columns[1], "1");
-                intent.putExtra(ObjectsSQLiteController.columns[2], "");
-                intent.putExtra(ObjectsSQLiteController.columns[3], "");
-                intent.putExtra(ObjectsSQLiteController.columns[4], "");
-                intent.putExtra(ObjectsSQLiteController.columns[5], "");
-                intent.putExtra(ObjectsSQLiteController.columns[6], "");
-                startActivityForResult(intent, 0);
+                User user = UsersPresenter.loadUser(ObjectsActivity.this);
+                if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co")) {
+                    Intent intent = new Intent(ObjectsActivity.this, ObjectsDetailActivity.class);
+                    intent.putExtra("CATEGORY", getString(R.string.object_report_lost));
+                    intent.putExtra(ObjectsSQLiteController.columns[1], user.get_ID());
+                    intent.putExtra(ObjectsSQLiteController.columns[2], "");
+                    intent.putExtra(ObjectsSQLiteController.columns[3], "");
+                    intent.putExtra(ObjectsSQLiteController.columns[4], "");
+                    intent.putExtra(ObjectsSQLiteController.columns[5], "");
+                    intent.putExtra(ObjectsSQLiteController.columns[6], "");
+                    startActivityForResult(intent, 0);
+                } else {
+                    Intent intent = new Intent(ObjectsActivity.this, LoginActivity.class);
+                    intent.putExtra("CATEGORY", getString(R.string.log_in));
+                    ObjectsActivity.this.startActivity(intent);
+                }
             }
         });
 
@@ -78,6 +87,8 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                 return;
             }
             Toast.makeText(this, "No se ha encontrado el objeto: "+query, Toast.LENGTH_SHORT).show();
+        } else if (adapter != null) {
+            loadObjects(0);
         }
     }
 
@@ -88,7 +99,21 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         int scrollTo = oldObjects ? (newActivity ? 0 : objects.size()-1) : (inserted != 0 ? inserted-1 : 0);
 
         ObjectsSQLiteController dbController = new ObjectsSQLiteController(getApplicationContext(), 1);
-        objects = dbController.select(String.valueOf(inserted > 0 ? objects.size()+inserted : objects.size()+3), "`"+ObjectsSQLiteController.columns[8]+"` = 'N'", null);
+        String limit = String.valueOf(inserted > 0 ? objects.size()+inserted : objects.size()+3);
+
+        User user = UsersPresenter.loadUser(this);
+        if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co")) {
+            objects = new ArrayList<>();
+            objects.addAll(dbController.select(limit,
+                    "`"+ObjectsSQLiteController.columns[1]+"` = "+user.get_ID(), null));
+            objects.addAll(dbController.select(limit, "`"+ObjectsSQLiteController.columns[1]+"` != "+user.get_ID()+
+                    " AND `"+ObjectsSQLiteController.columns[7]+"` IS NULL"+
+                    " AND `"+ObjectsSQLiteController.columns[8]+"` = 'N'", null));
+        } else {
+            objects = dbController.select(limit, "`"+ObjectsSQLiteController.columns[7]+"` IS NULL"+
+                    " AND `"+ObjectsSQLiteController.columns[8]+"` = 'N'", null);
+        }
+
         dbController.destroy();
 
         if(newActivity) {
@@ -130,22 +155,59 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
 
     @Override
     public void onObjectClick(int index, String action) {
+        User user = UsersPresenter.loadUser(this);;
+        LostObject object = objects.get(index);;
+        ObjectsSQLiteController dbController = new ObjectsSQLiteController(getApplicationContext(), 1);
         switch(action) {
             case ObjectsAdapter.DIALOG:
-                ObjectsFragment.newInstance(index).show(getSupportFragmentManager(), null);
+                if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
+                        object.getUserLost_ID().equals(user.get_ID())) {
+                    ObjectsFragment.newInstance(index).show(getSupportFragmentManager(), null);
+                }
                 break;
             case ObjectsAdapter.READED:
-                LostObject object = objects.get(index);
-                ObjectsSQLiteController dbController = new ObjectsSQLiteController(getApplicationContext(), 1);
                 dbController.readed(object.get_ID());
-                dbController.destroy();
                 loadObjects(0);
                 break;
             case ObjectsAdapter.FOUND:
+                if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co")) {
+                    dbController.update(
+                            object.get_ID(), object.getUserLost_ID(), object.getName(),
+                            object.getPlace(), object.getDate(), object.getDescription(),
+                            object.getImage(), user.get_ID(), object.get_ID()
+                    );
+                    loadObjects(0);
+                } else {
+                    Intent intent = new Intent(ObjectsActivity.this, LoginActivity.class);
+                    intent.putExtra("CATEGORY", getString(R.string.log_in));
+                    ObjectsActivity.this.startActivity(intent);
+                }
+                break;
+            case ObjectsAdapter.NOT_FOUND:
+                if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
+                        object.getUserFound_ID() != null && object.getUserFound_ID().equals(user.get_ID())) {
+                    object = objects.get(index);
+                    dbController.update(
+                            object.get_ID(), object.getUserLost_ID(), object.getName(),
+                            object.getPlace(), object.getDate(), object.getDescription(),
+                            object.getImage(), null, object.get_ID()
+                    );
+                    loadObjects(0);
+                }
+                break;
+            case ObjectsAdapter.CONTACT:
+                if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
+                        object.getUserLost_ID().equals(user.get_ID()) && object.getUserFound_ID() != null) {
+                    Intent intent = new Intent(ObjectsActivity.this, UsersActivity.class);
+                    intent.putExtra("CATEGORY", getString(R.string.object_view_contact));
+                    intent.putExtra("USER", user);
+                    ObjectsActivity.this.startActivity(intent);
+                }
                 break;
             default:
                 break;
         }
+        dbController.destroy();
     }
 
     public LostObject getObject(int index) {

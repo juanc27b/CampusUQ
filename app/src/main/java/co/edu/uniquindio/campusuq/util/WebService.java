@@ -30,6 +30,7 @@ import co.edu.uniquindio.campusuq.vo.AnnouncementLink;
 import co.edu.uniquindio.campusuq.vo.Contact;
 import co.edu.uniquindio.campusuq.vo.ContactCategory;
 import co.edu.uniquindio.campusuq.vo.Dish;
+import co.edu.uniquindio.campusuq.vo.Email;
 import co.edu.uniquindio.campusuq.vo.Event;
 import co.edu.uniquindio.campusuq.vo.EventCategory;
 import co.edu.uniquindio.campusuq.vo.EventDate;
@@ -834,33 +835,39 @@ public class WebService extends JobService {
     }
 
     private void loadEmails(String method, String object) {
+        // If the job has been cancelled, stop working; the job will be rescheduled.
+        if (jobCancelled)
+            return;
+
+        int inserted = 0;
         if(Utilities.haveNetworkConnection(getApplicationContext())) {
-            //EmailsSQLiteController dbController = new EmailsSQLiteController(getApplicationContext(), 1);
+            EmailsSQLiteController dbController = new EmailsSQLiteController(getApplicationContext(), 1);
             switch(method) {
                 case METHOD_POST:
                 case METHOD_PUT:
                 case METHOD_DELETE:
                     //EmailsServiceController.modify(object);
                 case METHOD_GET:
-                    /*boolean remove = false;
-                    ArrayList<String> old_ids = new ArrayList<>();
-                    for(Email old : dbController.select(null, null, null)) old_ids.add(old.get_ID());
-                    for(Email email : EmailsServiceController.get(null)) {
-                        remove = true;
-                        int index = old_ids.indexOf(email.get_ID());
-                        if(index == -1) {
-                            dbController.insert();
-                        } else {
-                            dbController.update();
-                            old_ids.remove(index);
+                    User user = UsersPresenter.loadUser(getApplicationContext());
+                    if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co")) {
+                        ArrayList<String> oldIDs = new ArrayList<>();
+                        ArrayList<Email> oldEmails = dbController.select("50", null, null);
+                        for(Email old : oldEmails) oldIDs.add(old.get_ID());
+                        for(Email email : EmailsServiceController.getEmails(getApplicationContext(),
+                                oldEmails.get(0) != null ? oldEmails.get(0).getHistoryID() : null)) {
+                            int index = oldIDs.indexOf(email.get_ID());
+                            if(index == -1) {
+                                dbController.insert(email.get_ID(), email.getName(), email.getFrom(), email.getTo(),
+                                        email.getDate(), email.getContent(), ""+email.getHistoryID());
+                                inserted ++;
+                            }
                         }
                     }
-                    if(remove) dbController.delete(old_ids);*/
                     break;
             }
-            //dbController.destroy();
+            dbController.destroy();
         }
-        sendBroadcast(new Intent(ACTION_EMAILS));
+        sendBroadcast(new Intent(ACTION_EMAILS).putExtra("INSERTED", inserted));
     }
 
     @Override

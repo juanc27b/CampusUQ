@@ -92,16 +92,17 @@
             android:orientation="horizontal"
             android:layout_marginTop="10dp">
 
-            <Button
+            <TextView
                 android:id="@+id/announcement_read_button"
-                android:layout_width="150dp"
-                android:layout_height="30dp"
-                android:background="@drawable/round_green_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:gravity="center"
+                android:padding="10dp"
                 android:text="@string/mark_as_read"
-                android:textAllCaps="false"
                 android:textColor="@color/colorPrimary"
-                android:textSize="15sp"/>
+                android:textSize="15sp"
+                android:background="@drawable/round_green_button"/>
 
             <ImageView
                 android:id="@+id/announcement_facebook_button"

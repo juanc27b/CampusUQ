@@ -4,7 +4,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -36,7 +35,7 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
         public TextView date;
         public TextView name;
         public TextView description;
-        public Button read;
+        public TextView read;
         public ImageView facebook;
         public ImageView twitter;
         public ImageView whatsapp;
@@ -50,7 +49,7 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
             date = (TextView) announcementView.findViewById(R.id.announcement_date);
             name = (TextView) announcementView.findViewById(R.id.announcement_name);
             description = (TextView) announcementView.findViewById(R.id.announcement_description);
-            read = (Button) announcementView.findViewById(R.id.announcement_read_button);
+            read = (TextView) announcementView.findViewById(R.id.announcement_read_button);
             read.setOnClickListener(this);
             facebook = (ImageView) announcementView.findViewById(R.id.announcement_facebook_button);
             facebook.setOnClickListener(this);

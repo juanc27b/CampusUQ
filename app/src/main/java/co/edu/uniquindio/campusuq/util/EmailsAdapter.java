@@ -13,6 +13,7 @@ import co.edu.uniquindio.campusuq.activity.EmailsActivity;
 import co.edu.uniquindio.campusuq.vo.Email;
 
 public class EmailsAdapter extends RecyclerView.Adapter<EmailsAdapter.EmailViewHolder> {
+
     private ArrayList<Email> emails;
     private OnClickEmailListener listener;
 
@@ -22,6 +23,7 @@ public class EmailsAdapter extends RecyclerView.Adapter<EmailsAdapter.EmailViewH
     }
 
     public class EmailViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
         TextView icon, date, from, content;
 
         EmailViewHolder(View view) {
@@ -62,12 +64,13 @@ public class EmailsAdapter extends RecyclerView.Adapter<EmailsAdapter.EmailViewH
         return emails.size();
     }
 
-    public interface OnClickEmailListener {
-        void onEmailClick(int index);
-    }
-
     public void setEmails(ArrayList<Email> emails) {
         this.emails = emails;
         notifyDataSetChanged();
     }
+
+    public interface OnClickEmailListener {
+        void onEmailClick(int index);
+    }
+
 }
