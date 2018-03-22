@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,7 +14,6 @@ import android.view.ViewStub;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.EmailsAdapter;
@@ -24,9 +22,8 @@ import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.util.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.Email;
-import pub.devrel.easypermissions.EasyPermissions;
 
-public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClickEmailListener, EasyPermissions.PermissionCallbacks {
+public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClickEmailListener {
 
     private ArrayList<Email> emails = new ArrayList<>();
     private boolean newActivity = true, oldEmails = true;
@@ -43,9 +40,6 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
 
     public EmailsActivity() {
         super.setHasNavigationDrawerIcon(false);
-
-        //emails.add(new Email("1", "NOTICIAS acerca de Modificaciones al Registro de Asignaturas", "donoreply uqvirtual", "", "14 de Noviembre, 7:35 AM", "NOTICIAS acerca de modificaciones al ...\nPara conocer las estrategias y ...", null));
-        //emails.add(new Email("2", "", "Oficina Asesora de Comunicaciones", "", "05 de Noviembre, 12:48 PM", "Fwd: Entrega de Incentivos Programa ...\nAtentamente me permito informarles que ...", null));
     }
 
     @Override
@@ -138,70 +132,11 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
         Email email = emails.get(index);
         Intent intent = new Intent(this, EmailsContentActivity.class);
         intent.putExtra("CATEGORY", getString(R.string.institutional_mail));
-        intent.putExtra(EmailsSQLiteController.columns[0], email.get_ID());
         intent.putExtra(EmailsSQLiteController.columns[1], email.getName());
         intent.putExtra(EmailsSQLiteController.columns[2], email.getFrom());
-        intent.putExtra(EmailsSQLiteController.columns[3], email.getTo());
         intent.putExtra(EmailsSQLiteController.columns[4], email.getDate());
         intent.putExtra(EmailsSQLiteController.columns[5], email.getContent());
         startActivity(intent);
-    }
-
-    /**
-     * Called when an activity launched here (specifically, AccountPicker
-     * and authorization) exits, giving you the requestCode you started it with,
-     * the resultCode it returned, and any additional data from it.
-     * @param requestCode code indicating which activity result is incoming.
-     * @param resultCode code indicating the result of the incoming
-     *     activity result.
-     * @param data Intent (containing result data) returned by incoming
-     *     activity result.
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode  == RESULT_OK && !progressDialog.isShowing()) progressDialog.show();
-    }
-
-    /**
-     * Respond to requests for permissions at runtime for API 23 and above.
-     * @param requestCode The request code passed in
-     *     requestPermissions(android.app.Activity, String, int, String[])
-     * @param permissions The requested permissions. Never null.
-     * @param grantResults The grant results for the corresponding permissions
-     *     which is either PERMISSION_GRANTED or PERMISSION_DENIED. Never null.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        EasyPermissions.onRequestPermissionsResult(
-                requestCode, permissions, grantResults, this);
-    }
-
-    /**
-     * Callback for when a permission is granted using the EasyPermissions
-     * library.
-     * @param requestCode The request code associated with the requested
-     *         permission
-     * @param list The requested permission list. Never null.
-     */
-    @Override
-    public void onPermissionsGranted(int requestCode, List<String> list) {
-        // Do nothing.
-    }
-
-    /**
-     * Callback for when a permission is denied using the EasyPermissions
-     * library.
-     * @param requestCode The request code associated with the requested
-     *         permission
-     * @param list The requested permission list. Never null.
-     */
-    @Override
-    public void onPermissionsDenied(int requestCode, List<String> list) {
-        // Do nothing.
     }
 
     @Override

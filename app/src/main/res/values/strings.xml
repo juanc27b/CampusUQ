@@ -123,6 +123,8 @@
     <string name="login_institutional_mail">Ingresa con tu cuenta del correo institucional</string>
     <string name="login_successful">Inicio de sesión exitoso</string>
     <string name="login_wrong">Correo o contraseña incorrectos</string>
+    <string name="registration_succesful">Registro exitoso</string>
+    <string name="registration_wrong">Datos inválidos</string>
 
     <string name="user_name_invalid">El nombre debe tener entre 3 y 50 caracteres</string>
     <string name="user_email_invalid">El correo debe tener entre 7 y 70 caracteres</string>
@@ -130,6 +132,7 @@
     <string name="user_address_invalid">La dirección debe tener menos de 100 caracteres</string>
     <string name="user_document_invalid">El documento debe tener menos de 50 caracteres</string>
     <string name="user_password_invalid">La contraseña debe tener entre 8 y 16 caracteres</string>
+    <string name="user_account_invalid">Solo se admiten correos institucionales</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -317,13 +320,21 @@
     <string name="content_email_sample_date">15 de enero de 2018, 17:54.</string>
 
     <string name="email_detail_from">De:</string>
-    <string name="email_detail_from_hint">jcgonzalezi@uqvirtual.edu.co</string>
+    <string name="email_detail_from_hint">Correo institucional</string>
     <string name="email_detail_to">Para:</string>
-    <string name="email_detail_to_hint">ezapata@uniquindio.edu.co</string>
+    <string name="email_detail_to_hint">Escribe el destinatario</string>
     <string name="email_detail_name">Asunto:</string>
-    <string name="email_detail_name_hint">Revisión entrevista</string>
+    <string name="email_detail_name_hint">Escribe el asunto</string>
     <string name="email_detail_content">Correo:</string>
-    <string name="email_detail_content_hint">Buenos dias, …</string>
+    <string name="email_detail_content_hint">Escribe el contenido</string>
     <string name="email_detail_ok">ENVIAR</string>
+
+    <string name="email_successful_sending">Envío exitoso</string>
+    <string name="email_failed_sending">Envío fallido</string>
+
+    <string name="email_from_invalid">Debe iniciar sesión</string>
+    <string name="email_to_invalid">Debe haber un destinatario válido</string>
+    <string name="email_name_invalid">Debe escribirse un asunto</string>
+    <string name="email_content_invalid">Debe escribirse un contenido</string>
 
 </resources>

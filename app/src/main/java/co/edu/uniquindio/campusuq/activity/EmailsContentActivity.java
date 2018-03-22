@@ -16,6 +16,8 @@ import co.edu.uniquindio.campusuq.util.EmailsSQLiteController;
 
 public class EmailsContentActivity extends MainActivity {
 
+    private TextView name, icon, from, date;
+
     public WebView webView;
     public WebSettings webSettings;
 
@@ -35,9 +37,16 @@ public class EmailsContentActivity extends MainActivity {
         viewStub.inflate();
 
         Intent intent = getIntent();
-        ((TextView) findViewById(R.id.content_email_name)).setText(intent.getStringExtra(EmailsSQLiteController.columns[1]));
-        ((TextView) findViewById(R.id.content_email_from)).setText(intent.getStringExtra(EmailsSQLiteController.columns[2]));
-        ((TextView) findViewById(R.id.content_email_date)).setText(intent.getStringExtra(EmailsSQLiteController.columns[4]));
+
+        name = findViewById(R.id.content_email_name);
+        icon = findViewById(R.id.content_email_icon);
+        from = findViewById(R.id.content_email_from);
+        date = findViewById(R.id.content_email_date);
+
+        name.setText(intent.getStringExtra(EmailsSQLiteController.columns[1]));
+        icon.setText(name.getText().subSequence(0, 1).toString().toUpperCase());
+        from.setText(intent.getStringExtra(EmailsSQLiteController.columns[2]));
+        date.setText(intent.getStringExtra(EmailsSQLiteController.columns[4]));
 
         webView = findViewById(R.id.webview_email_content);
 
@@ -58,9 +67,7 @@ public class EmailsContentActivity extends MainActivity {
             }
         });
 
-        String link = "";
-        webView.loadDataWithBaseURL(link,
-                intent.getStringExtra(EmailsSQLiteController.columns[5]), "text/html", null, null);
+        webView.loadData(intent.getStringExtra(EmailsSQLiteController.columns[5]), "text/html", null);
 
     }
 

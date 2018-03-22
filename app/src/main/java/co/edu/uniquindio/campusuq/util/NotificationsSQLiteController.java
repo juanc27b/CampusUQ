@@ -5,60 +5,59 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import co.edu.uniquindio.campusuq.vo.Email;
+import co.edu.uniquindio.campusuq.vo.Notification;
 
-public class EmailsSQLiteController {
+/**
+ * Created by Juan Camilo on 22/03/2018.
+ */
 
-    private static final String tablename = "Correo";
-    public static final String columns[] = {"_ID", "Nombre", "De", "Para", "Fecha", "Contenido", "History_ID"};
+public class NotificationsSQLiteController {
+
+    private static final String tablename = "Notificacion";
+    public static final String columns[] = {"_ID", "Nombre", "Activada"};
 
     private SQLiteHelper usdbh;
     private SQLiteDatabase db;
 
-    public EmailsSQLiteController(Context context, int version) {
+    public NotificationsSQLiteController(Context context, int version) {
         usdbh = new SQLiteHelper(context, Utilities.NOMBRE_BD , null, version);
         db = usdbh.getWritableDatabase();
     }
 
     static String createTable() {
-        return "CREATE TABLE `"+tablename+"`(`"+columns[0]+"` TEXT PRIMARY KEY, `"+
-                TextUtils.join("` TEXT NOT NULL, `", Arrays.copyOfRange(columns, 1, columns.length))+
-                "` TEXT NOT NULL)";
+        return "CREATE TABLE `"+tablename+"` (`"+columns[0]+"` INTEGER PRIMARY KEY, `"+
+                columns[1]+"` TEXT NOT NULL UNIQUE, `"+columns[2]+"` TEXT NOT NULL )";
     }
 
-    public ArrayList<Email> select(String limit, String selection, String[] selectionArgs) {
-        ArrayList<Email> emails = new ArrayList<>();
+    public ArrayList<Notification> select(String limit, String selection, String[] selectionArgs) {
+        ArrayList<Notification> notifications = new ArrayList<>();
         Cursor c = db.query(tablename, columns, selection, selectionArgs,
-                null, null, columns[4]+" DESC", limit);
+                null, null, columns[0]+" ASC", limit);
         if(c.moveToFirst()) do {
-            emails.add(new Email(
+            notifications.add(new Notification(
                     c.getString(0),
                     c.getString(1),
-                    c.getString(2),
-                    c.getString(3),
-                    c.getString(4),
-                    c.getString(5),
-                    new BigInteger(c.getString(6))
+                    c.getString(2)
             ));
         } while(c.moveToNext());
         c.close();
-        return emails;
+        return notifications;
     }
 
     public void insert(String... values) {
         db.execSQL("INSERT INTO `"+tablename+"`(`"+
-                TextUtils.join("`, `", columns)+"`) VALUES("+
+                TextUtils.join("`, `", columns)+"`) VALUES ("+
                 TextUtils.join(", ", Collections.nCopies(columns.length, "?"))+")", values);
     }
 
-    void update(String... values) {
+    public void update(String... values) {
         db.execSQL("UPDATE `"+tablename+"` SET `"+
-                TextUtils.join("` = ?, `", columns)+"` = ? WHERE `"+columns[0]+"` = ?", values);
+                TextUtils.join("` = ?, `", Arrays.copyOfRange(columns, 0, columns.length))+
+                "` = ? WHERE `"+columns[0]+"` = ?", values);
     }
 
     public void delete(ArrayList<String> ids) {

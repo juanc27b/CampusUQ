@@ -19,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
@@ -78,6 +79,10 @@ public class WebService extends JobService {
 
     public static String PENDING_ACTION = ACTION_NONE;
 
+    public static final String[] NOTIFICATIONS =
+            { "Events", "News", "Academic Calendar", "Lost Objects",
+            "Security System", "Billboard Information", "Institutional Mail" };
+
     private static final int mNotificationId = 1;
 
     private static final String TAG = WebService.class.getSimpleName();
@@ -107,6 +112,8 @@ public class WebService extends JobService {
             public void run() {
                 try {
                     User user = UsersPresenter.loadUser(getApplicationContext());
+                    ArrayList<co.edu.uniquindio.campusuq.vo.Notification> notifications =
+                            NotificationsPresenter.loadNotifications(getApplicationContext());
                     if (Utilities.haveNetworkConnection(getApplicationContext())) {
                         if (user == null) {
                             JSONObject json = new JSONObject();
@@ -117,6 +124,9 @@ public class WebService extends JobService {
                                 e.printStackTrace();
                             }
                             loadUsers(METHOD_GET, json.toString());
+                        }
+                        if (notifications.size() < NOTIFICATIONS.length) {
+                            NotificationsPresenter.insertNotifications(getApplicationContext());
                         }
                         doWork(jobParameters);
                     }
@@ -317,7 +327,9 @@ public class WebService extends JobService {
         NewsSQLiteController dbController = new NewsSQLiteController(getApplicationContext(), 1);
         String validRows = null;
         String lastNewId = null;
-        boolean notify = true;
+        boolean notify = ACTION_EVENTS.equals(type) ?
+                NotificationsPresenter.getNotification(getApplicationContext(), "0").getActivated().equals("S") :
+                NotificationsPresenter.getNotification(getApplicationContext(), "1").getActivated().equals("S");
 
         String events = "";
         ArrayList<NewCategory> categories = dbController.selectCategory(null,
@@ -601,7 +613,9 @@ public class WebService extends JobService {
         AnnouncementsSQLiteController dbController = new AnnouncementsSQLiteController(getApplicationContext(), 1);
         String validRows = null;
         String lastAnnouncementId = null;
-        boolean notify = true;
+        boolean notify = ACTION_INCIDENTS.equals(type) ?
+                NotificationsPresenter.getNotification(getApplicationContext(), "4").getActivated().equals("S") :
+                NotificationsPresenter.getNotification(getApplicationContext(), "5").getActivated().equals("S");;
 
         if (ACTION_INCIDENTS.equals(type)) {
             validRows = "I";
@@ -811,7 +825,20 @@ public class WebService extends JobService {
             switch(method) {
                 case METHOD_POST:
                 case METHOD_PUT:
-                    UsersServiceController.modifyUser(object);
+                    String respStr = UsersServiceController.modifyUser(object);
+                    try {
+                        JSONObject jsonResp = new JSONObject(respStr);
+                        int estado = jsonResp.getInt("estado");
+                        if (estado == 5) {
+                            user = UsersPresenter.loadUser(getApplicationContext());
+                        } else {
+                            Log.e(TAG, jsonResp.getString("mensaje"));
+                            break;
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, respStr);
+                        break;
+                    }
                 case METHOD_DELETE:
                     ArrayList<User> users = dbController.select(null, null);
                     for (User u : users) {
@@ -846,7 +873,19 @@ public class WebService extends JobService {
                 case METHOD_POST:
                 case METHOD_PUT:
                 case METHOD_DELETE:
-                    //EmailsServiceController.modify(object);
+                    try {
+                        JSONObject jsonEmail = new JSONObject(object);
+                        String name = jsonEmail.getString(EmailsSQLiteController.columns[1]);
+                        String from = jsonEmail.getString(EmailsSQLiteController.columns[2]);
+                        String to = jsonEmail.getString(EmailsSQLiteController.columns[3]);
+                        String date = jsonEmail.getString(EmailsSQLiteController.columns[4]);
+                        String content = jsonEmail.getString(EmailsSQLiteController.columns[5]);
+                        Email email = new Email("0", name, from, to, date, content, new BigInteger("0"));
+                        inserted = EmailsServiceController.sendEmail(getApplicationContext(), email) ? 1 : 0;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
                 case METHOD_GET:
                     User user = UsersPresenter.loadUser(getApplicationContext());
                     if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co")) {
@@ -854,7 +893,7 @@ public class WebService extends JobService {
                         ArrayList<Email> oldEmails = dbController.select("50", null, null);
                         for(Email old : oldEmails) oldIDs.add(old.get_ID());
                         for(Email email : EmailsServiceController.getEmails(getApplicationContext(),
-                                oldEmails.get(0) != null ? oldEmails.get(0).getHistoryID() : null)) {
+                                oldEmails.size() > 0 ? oldEmails.get(0).getHistoryID() : null)) {
                             int index = oldIDs.indexOf(email.get_ID());
                             if(index == -1) {
                                 dbController.insert(email.get_ID(), email.getName(), email.getFrom(), email.getTo(),

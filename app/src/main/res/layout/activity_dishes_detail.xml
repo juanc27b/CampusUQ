@@ -60,6 +60,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
+                android:inputType="textMultiLine"
                 android:maxLength="120"
                 android:hint="@string/dish_detail_description_hint"/>
 

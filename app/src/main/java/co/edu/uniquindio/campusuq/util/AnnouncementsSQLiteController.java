@@ -160,6 +160,10 @@ public class AnnouncementsSQLiteController {
         db.execSQL(builder.toString());
     }
 
+    public void unreadAll() {
+        db.execSQL("UPDATE `"+NOMBRE_TABLA+"` SET `"+CAMPOS_TABLA[5]+"` = 'N'");
+    }
+
     public void destroy() {
         usdbh.close();
     }

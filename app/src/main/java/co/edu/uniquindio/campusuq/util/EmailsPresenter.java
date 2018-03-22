@@ -4,16 +4,17 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 
-import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.gmail.GmailScopes;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
-import co.edu.uniquindio.campusuq.activity.UsersActivity;
+import co.edu.uniquindio.campusuq.activity.MainActivity;
+import co.edu.uniquindio.campusuq.vo.Email;
 import co.edu.uniquindio.campusuq.vo.User;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -21,16 +22,16 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class EmailsPresenter {
 
     public static final int REQUEST_ACCOUNT_PICKER = 1000;
-    public static final int REQUEST_GOOGLE_PLAY_SERVICES = 1001;
-    public static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1002;
+    public static final int REQUEST_AUTHORIZATION = 1001;
+    public static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
+    public static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 
-    private static final String[] SCOPES = { GmailScopes.GMAIL_READONLY, GmailScopes.GMAIL_SEND };
+    public static final String[] SCOPES = { GmailScopes.GMAIL_READONLY, GmailScopes.GMAIL_SEND };
 
     private Context context;
 
     public EmailsPresenter(Context context) {
         this.context = context;
-
     }
 
     public GoogleAccountCredential getCredential() {
@@ -54,12 +55,11 @@ public class EmailsPresenter {
      * is granted.
      */
     @AfterPermissionGranted(REQUEST_PERMISSION_GET_ACCOUNTS)
-    public void chooseAccount(UsersActivity activity) {
+    public void chooseAccount(MainActivity activity) {
         if (EasyPermissions.hasPermissions(context, Manifest.permission.GET_ACCOUNTS)) {
             activity.startActivityForResult(
-                    AccountPicker.newChooseAccountIntent(null, null,
-                            new String[]{"uqvirtual.edu.co", "uniquindio.edu.co"},
-                            false, null, null, null, null),
+                    GoogleAccountCredential.usingOAuth2(context, Arrays.asList(SCOPES))
+                            .setBackOff(new ExponentialBackOff()).newChooseAccountIntent(),
                     REQUEST_ACCOUNT_PICKER);
         } else {
             // Request the GET_ACCOUNTS permission via a user dialog
@@ -88,7 +88,7 @@ public class EmailsPresenter {
      * Attempt to resolve a missing, out-of-date, invalid or disabled Google
      * Play Services installation via a user dialog, if possible.
      */
-    public void acquireGooglePlayServices(UsersActivity activity) {
+    public void acquireGooglePlayServices(MainActivity activity) {
         GoogleApiAvailability apiAvailability =
                 GoogleApiAvailability.getInstance();
         final int connectionStatusCode =
@@ -104,13 +104,21 @@ public class EmailsPresenter {
      * @param connectionStatusCode code describing the presence (or lack of)
      *     Google Play Services on this device.
      */
-    private void showGooglePlayServicesAvailabilityErrorDialog(final int connectionStatusCode, UsersActivity activity) {
+    public void showGooglePlayServicesAvailabilityErrorDialog(final int connectionStatusCode, MainActivity activity) {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         Dialog dialog = apiAvailability.getErrorDialog(
                 activity,
                 connectionStatusCode,
                 REQUEST_GOOGLE_PLAY_SERVICES);
         dialog.show();
+    }
+
+    public void deleteEmails() {
+        EmailsSQLiteController dbController = new EmailsSQLiteController(context, 1);
+        ArrayList<String> oldIDs = new ArrayList<>();
+        for(Email old : dbController.select(null, null, null)) oldIDs.add(old.get_ID());
+        dbController.delete(oldIDs);
+        dbController.destroy();
     }
 
 }

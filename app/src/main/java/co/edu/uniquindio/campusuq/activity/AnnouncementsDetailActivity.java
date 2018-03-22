@@ -28,7 +28,6 @@ import java.io.IOException;
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.AnnouncementsPresenter;
 import co.edu.uniquindio.campusuq.util.AnnouncementsSQLiteController;
-import co.edu.uniquindio.campusuq.util.ObjectsSQLiteController;
 import co.edu.uniquindio.campusuq.util.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.Announcement;
@@ -89,10 +88,10 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
             public void afterTextChanged(Editable editable) {}
         });
 
-        imageFile = new File(intent.getStringExtra(ObjectsSQLiteController.columns[6]));
+        //imageFile = new File(intent.getStringExtra(ObjectsSQLiteController.columns[6]));
         image = findViewById(R.id.announcement_detail_image);
-        if(imageFile.exists()) image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
-        else image.setImageResource(R.drawable.rectangle_gray);
+        //if(imageFile.exists()) image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
+        //else image.setImageResource(R.drawable.rectangle_gray);
         image.setOnClickListener(this);
 
         //findViewById(R.id.announcement_detail_ok).setOnClickListener(this);

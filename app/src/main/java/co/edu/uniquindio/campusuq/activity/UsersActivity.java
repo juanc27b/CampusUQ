@@ -1,8 +1,13 @@
 package co.edu.uniquindio.campusuq.activity;
 
 import android.accounts.AccountManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
@@ -14,6 +19,8 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.EmailsPresenter;
 import co.edu.uniquindio.campusuq.util.UsersSQLiteController;
@@ -21,17 +28,33 @@ import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.util.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.User;
+import pub.devrel.easypermissions.EasyPermissions;
 
-public class UsersActivity extends MainActivity {
+public class UsersActivity extends MainActivity implements EasyPermissions.PermissionCallbacks {
 
-    private EditText name, email, phone, address, document, password;
-    private TextView logOut;
+    private EditText name, phone, address, document, password;
+    private TextView email, logOut;
     private LinearLayout passwordLayout;
     private Button send;
     private User user;
 
     private String category;
     private EmailsPresenter emailsPresenter;
+
+    private IntentFilter usersFilter = new IntentFilter(WebService.ACTION_USERS);
+    private BroadcastReceiver usersReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            User user = intent.getParcelableExtra("USER");
+            if (user == null) {
+                Toast.makeText(context, context.getString(R.string.registration_wrong), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, context.getString(R.string.registration_succesful), Toast.LENGTH_SHORT).show();
+                finish();
+            }
+            if(progressDialog.isShowing()) progressDialog.dismiss();
+        }
+    };
 
     public UsersActivity() {
         super.setHasSearch(false);
@@ -82,15 +105,14 @@ public class UsersActivity extends MainActivity {
                         json.put(UsersSQLiteController.columns[3], phone.getText());
                         json.put(UsersSQLiteController.columns[4], address.getText());
                         json.put(UsersSQLiteController.columns[5], document.getText());
-                        if (password.getText().length() > 0) {
-                            json.put(UsersSQLiteController.columns[6], password.getText());
-                        }
+                        if (password.getText().length() > 0) json.put(UsersSQLiteController.columns[6], password.getText());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    Log.i(UsersActivity.class.getSimpleName(), json.toString());
+                    progressDialog.show();
                     WebBroadcastReceiver.scheduleJob(getApplicationContext(),
                             WebService.ACTION_USERS, WebService.METHOD_POST, json.toString());
-                    finish();
                 } else {
                     Toast.makeText(UsersActivity.this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
                 }
@@ -101,6 +123,7 @@ public class UsersActivity extends MainActivity {
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                emailsPresenter.deleteEmails();
                 WebBroadcastReceiver.scheduleJob(getApplicationContext(),
                         WebService.ACTION_USERS, WebService.METHOD_DELETE, null);
                 finish();
@@ -139,7 +162,9 @@ public class UsersActivity extends MainActivity {
             email.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (!emailsPresenter.isGooglePlayServicesAvailable()) {
+                    if (!Utilities.haveNetworkConnection(UsersActivity.this)) {
+                        Toast.makeText(UsersActivity.this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                    } else if (!emailsPresenter.isGooglePlayServicesAvailable()) {
                         emailsPresenter.acquireGooglePlayServices(UsersActivity.this);
                     } else {
                         emailsPresenter.chooseAccount(UsersActivity.this);
@@ -183,6 +208,18 @@ public class UsersActivity extends MainActivity {
         document.setFocusableInTouchMode(edit);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(usersReceiver, usersFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(usersReceiver);
+    }
+
     /**
      * Called when an activity launched here (specifically, AccountPicker
      * and authorization) exits, giving you the requestCode you started it with,
@@ -209,13 +246,58 @@ public class UsersActivity extends MainActivity {
                 if (resultCode == RESULT_OK && data != null && data.getExtras() != null) {
                     String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                     if (accountName != null) {
-                        email.setText(accountName);
+                        if (accountName.endsWith("@uqvirtual.edu.co") || accountName.endsWith("@uniquindio.edu.co")) {
+                            email.setText(accountName);
+                        } else {
+                            Toast.makeText(this, getString(R.string.user_account_invalid), Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
                 break;
             default:
                 break;
         }
+    }
+
+    /**
+     * Respond to requests for permissions at runtime for API 23 and above.
+     * @param requestCode The request code passed in
+     *     requestPermissions(android.app.Activity, String, int, String[])
+     * @param permissions The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions
+     *     which is either PERMISSION_GRANTED or PERMISSION_DENIED. Never null.
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(
+                requestCode, permissions, grantResults, this);
+    }
+
+    /**
+     * Callback for when a permission is granted using the EasyPermissions
+     * library.
+     * @param requestCode The request code associated with the requested
+     *         permission
+     * @param list The requested permission list. Never null.
+     */
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> list) {
+        // Do nothing.
+    }
+
+    /**
+     * Callback for when a permission is denied using the EasyPermissions
+     * library.
+     * @param requestCode The request code associated with the requested
+     *         permission
+     * @param list The requested permission list. Never null.
+     */
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> list) {
+        // Do nothing.
     }
 
 }

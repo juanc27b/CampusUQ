@@ -67,6 +67,10 @@ public class ObjectsSQLiteController {
         db.execSQL("UPDATE `"+tablename+"` SET `"+columns[8]+"` = 'S' WHERE `"+columns[0]+"` = ?", values);
     }
 
+    public void unreadAll() {
+        db.execSQL("UPDATE `"+tablename+"` SET `"+columns[8]+"` = 'N'");
+    }
+
     public void delete(ArrayList<String> ids) {
         db.execSQL("DELETE FROM `"+tablename+"` WHERE `"+columns[0]+"` IN("+TextUtils.join(", ", Collections.nCopies(ids.size(), "?"))+")", ids.toArray());
     }

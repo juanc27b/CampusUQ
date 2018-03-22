@@ -116,6 +116,8 @@
     <string name="login_institutional_mail">Ingresa con tu cuenta del correo institucional</string>
     <string name="login_successful">Inicio de sesión exitoso</string>
     <string name="login_wrong">Correo o contraseña incorrectos</string>
+    <string name="registration_succesful">Registro exitoso</string>
+    <string name="registration_wrong">Datos inválidos</string>
 
     <string name="user_name_invalid">El nombre debe tener entre 3 y 50 caracteres</string>
     <string name="user_email_invalid">El correo debe tener entre 7 y 70 caracteres</string>

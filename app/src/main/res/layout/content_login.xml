@@ -58,12 +58,11 @@
                     android:adjustViewBounds="true"
                     android:scaleType="centerInside"/>
 
-                <EditText
+                <TextView
                     android:id="@+id/user_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
-                    android:inputType="textEmailAddress"
                     android:hint="@string/user_detail_email"
                     android:padding="10dp"
                     android:background="@drawable/rectangle_white"/>

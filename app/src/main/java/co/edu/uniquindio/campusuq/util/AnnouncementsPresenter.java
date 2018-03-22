@@ -61,4 +61,10 @@ public class AnnouncementsPresenter {
         return links;
     }
 
+    public void deleteHistory(Context context) {
+        AnnouncementsSQLiteController dbController = new AnnouncementsSQLiteController(context, 1);
+        dbController.unreadAll();
+        dbController.destroy();
+    }
+
 }

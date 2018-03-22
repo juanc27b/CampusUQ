@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        progressDialog = Utilities.getProgressDialog(MainActivity.this);
+        progressDialog = Utilities.getProgressDialog(MainActivity.this, true);
 
         addContent(savedInstanceState);
 
@@ -153,6 +153,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.action_adjust_notifications:
                 return true;
             case R.id.action_delete_history:
+                Utilities.deleteHistory(MainActivity.this);
                 return true;
             case R.id.action_login:
                 User user = UsersPresenter.loadUser(MainActivity.this);

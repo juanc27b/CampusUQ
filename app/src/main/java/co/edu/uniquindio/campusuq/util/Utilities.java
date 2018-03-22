@@ -60,12 +60,12 @@ public class Utilities {
         return isConnected;
     }
 
-    public static ProgressDialog getProgressDialog(Context context) {
+    public static ProgressDialog getProgressDialog(Context context, boolean cancelable) {
         ProgressDialog pDialog = new ProgressDialog(context);
         pDialog.setTitle(context.getString(R.string.loading_content));
         pDialog.setMessage(context.getString(R.string.please_wait));
         pDialog.setIndeterminate(false);
-        pDialog.setCancelable(true);
+        pDialog.setCancelable(cancelable);
         pDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
@@ -126,6 +126,11 @@ public class Utilities {
 
         return imagePath;
 
+    }
+
+    public static void deleteHistory(Context context) {
+        new ObjectsPresenter().deleteHistory(context);
+        new AnnouncementsPresenter().deleteHistory(context);
     }
 
 }

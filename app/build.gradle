@@ -53,4 +53,5 @@ dependencies {
     implementation('com.google.apis:google-api-services-gmail:v1-rev82-1.23.0') {
         exclude group: 'org.apache.httpcomponents'
     }
+    implementation 'javax.mail:javax.mail-api:1.5.3'
 }
