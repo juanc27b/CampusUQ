@@ -122,7 +122,7 @@ public class AnnouncementsSQLiteController {
     }
 
     public void unreadAll() {
-        db.execSQL("UPDATE `"+NOMBRE_TABLA+"` SET `"+CAMPOS_TABLA[5]+"` = 'N'");
+        db.execSQL("UPDATE `"+tablename+"` SET `"+columns[5]+"` = 'N'");
     }
 
     public void destroy() {

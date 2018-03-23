@@ -869,7 +869,7 @@ public class WebService extends JobIntentService {
                         String to = jsonEmail.getString(EmailsSQLiteController.columns[3]);
                         String date = jsonEmail.getString(EmailsSQLiteController.columns[4]);
                         String content = jsonEmail.getString(EmailsSQLiteController.columns[6]);
-                        Email email = new Email("0", name, from, to, date, "", content, new BigInteger("0"));
+                        Email email = new Email(0, name, from, to, date, "", content, new BigInteger("0"));
                         inserted = EmailsServiceController.sendEmail(getApplicationContext(), email) ? 1 : 0;
                     } catch (Exception e) {
                         if (e instanceof UserRecoverableAuthIOException) {
