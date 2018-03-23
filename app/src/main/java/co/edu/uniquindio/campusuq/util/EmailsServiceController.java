@@ -1,10 +1,10 @@
 package co.edu.uniquindio.campusuq.util;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -49,7 +49,8 @@ import co.edu.uniquindio.campusuq.vo.Email;
  */
 public class EmailsServiceController {
 
-    public static ArrayList<Email> getEmails(Context context, BigInteger startHistoryID) {
+    public static ArrayList<Email> getEmails(Context context, BigInteger startHistoryID)
+            throws UserRecoverableAuthIOException {
         ArrayList<Email> emails = new ArrayList<>();
         Gmail mService = null;
         EmailsPresenter emailsPresenter = new EmailsPresenter(context);
@@ -63,7 +64,7 @@ public class EmailsServiceController {
                 .build();
 
         try {
-            String user = credential.getSelectedAccountName();
+            String user = "me";
             List<Message> messages = new ArrayList<>();
             boolean reSync = true;
 
@@ -113,7 +114,7 @@ public class EmailsServiceController {
 
             for (Message message : messages) {
                 if (message.getPayload() != null) {
-                    String subject = "", from = "", to = "", date = "", content = "";
+                    String subject = "", from = "", to = "", date = "", snippet = "", content = "";
                     List<MessagePartHeader> headers = message.getPayload().getHeaders();
                     for (MessagePartHeader header : headers) {
                         String name = header.getName();
@@ -135,24 +136,27 @@ public class EmailsServiceController {
                                 break;
                         }
                     }
+                    snippet = message.getSnippet() != null ? message.getSnippet() : "";
                     String mimeType = message.getPayload().getMimeType();
                     if (mimeType != null && mimeType.startsWith("text")) {
                         byte[] emailBytes = Base64.decodeBase64(message.getPayload().getBody().getData());
-                        content += StringEscapeUtils.unescapeHtml4(new String(emailBytes, "UTF-8"));
+                        if (emailBytes != null) {
+                            content += StringEscapeUtils.unescapeHtml4(new String(emailBytes, "UTF-8"));
+                        }
                     }
                     content = addParts(content, message.getPayload().getParts());
 
-                    Email email = new Email(message.getId(), subject, from, to, date, content, message.getHistoryId());
+                    Email email = new Email(message.getId(), subject, from, to, date, snippet, content, message.getHistoryId());
                     emails.add(email);
                 }
             }
         } catch (Exception e) {
-            if (e.getMessage() != null) {
-                Log.e(EmailsServiceController.class.getSimpleName(), e.getMessage());
+            if (e instanceof UserRecoverableAuthIOException) {
+                throw (UserRecoverableAuthIOException) e;
             } else {
                 e.printStackTrace();
+                return new ArrayList<>();
             }
-            return new ArrayList<>();
         }
         return emails;
     }
@@ -181,7 +185,9 @@ public class EmailsServiceController {
                 String mimeType = part.getMimeType();
                 if (mimeType != null && mimeType.startsWith("text")) {
                     byte[] emailBytes = Base64.decodeBase64(part.getBody().getData());
-                    content += StringEscapeUtils.unescapeHtml4(new String(emailBytes, "UTF-8"));
+                    if (emailBytes != null) {
+                        content += StringEscapeUtils.unescapeHtml4(new String(emailBytes, "UTF-8"));
+                    }
                 }
                 content = addParts(content, part.getParts());
             }
@@ -189,7 +195,8 @@ public class EmailsServiceController {
         return content;
     }
 
-    public static boolean sendEmail(Context context, Email email) {
+    public static boolean sendEmail(Context context, Email email)
+            throws UserRecoverableAuthIOException {
         boolean success = true;
 
         Gmail mService = null;
@@ -204,15 +211,15 @@ public class EmailsServiceController {
                 .build();
 
         try {
-            String user = credential.getSelectedAccountName();
+            String user = "me";
             MimeMessage mimeMessage = createEmail(email.getTo(), email.getFrom(), email.getName(), email.getContent());
             Message message = sendMessage(mService, user, mimeMessage);
             success = message != null;
         } catch (Exception e) {
-            success = false;
-            if (e.getMessage() != null) {
-                Log.e(EmailsServiceController.class.getSimpleName(), e.getMessage());
+            if (e instanceof UserRecoverableAuthIOException) {
+                throw (UserRecoverableAuthIOException) e;
             } else {
+                success = false;
                 e.printStackTrace();
             }
         }

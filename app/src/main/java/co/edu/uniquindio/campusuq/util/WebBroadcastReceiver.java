@@ -1,13 +1,8 @@
 package co.edu.uniquindio.campusuq.util;
 
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.PersistableBundle;
-import android.util.Log;
 
 /**
  * Created by Juan Camilo on 21/02/2018.
@@ -33,6 +28,12 @@ public class WebBroadcastReceiver extends BroadcastReceiver {
     }
 
     public static void scheduleJob(Context context, String action, String method, String object) {
+        Intent intent = new Intent(context, WebService.class);
+        intent.putExtra("ACTION", action);
+        intent.putExtra("METHOD", method);
+        intent.putExtra("OBJECT", object);
+        WebService.enqueueWork(context, intent);
+        /*
         PersistableBundle extras = new PersistableBundle();
         extras.putString("ACTION", action);
         extras.putString("METHOD", method);
@@ -53,6 +54,7 @@ public class WebBroadcastReceiver extends BroadcastReceiver {
         } else {
             Log.i(WebBroadcastReceiver.class.getSimpleName(), "Job not scheduled");
         }
+        */
     }
 
 }

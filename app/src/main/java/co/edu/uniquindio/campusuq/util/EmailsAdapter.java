@@ -40,7 +40,7 @@ public class EmailsAdapter extends RecyclerView.Adapter<EmailsAdapter.EmailViewH
             icon.setBackgroundResource(ItemsPresenter.getColor());
             date.setText(email.getDate());
             from.setText(email.getFrom());
-            content.setText(email.getContent());
+            content.setText(email.getSnippet());
         }
 
         @Override

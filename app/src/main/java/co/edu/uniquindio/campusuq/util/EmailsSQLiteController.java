@@ -15,7 +15,7 @@ import co.edu.uniquindio.campusuq.vo.Email;
 public class EmailsSQLiteController {
 
     private static final String tablename = "Correo";
-    public static final String columns[] = {"_ID", "Nombre", "De", "Para", "Fecha", "Contenido", "History_ID"};
+    public static final String columns[] = {"_ID", "Nombre", "De", "Para", "Fecha", "Retazo", "Contenido", "History_ID"};
 
     private SQLiteHelper usdbh;
     private SQLiteDatabase db;
@@ -43,7 +43,8 @@ public class EmailsSQLiteController {
                     c.getString(3),
                     c.getString(4),
                     c.getString(5),
-                    new BigInteger(c.getString(6))
+                    c.getString(6),
+                    new BigInteger(c.getString(7))
             ));
         } while(c.moveToNext());
         c.close();

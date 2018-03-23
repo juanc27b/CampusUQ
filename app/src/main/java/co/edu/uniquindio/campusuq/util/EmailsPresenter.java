@@ -1,6 +1,7 @@
 package co.edu.uniquindio.campusuq.util;
 
 import android.Manifest;
+import android.accounts.Account;
 import android.app.Dialog;
 import android.content.Context;
 
@@ -29,18 +30,23 @@ public class EmailsPresenter {
     public static final String[] SCOPES = { GmailScopes.GMAIL_READONLY, GmailScopes.GMAIL_SEND };
 
     private Context context;
+    public static GoogleAccountCredential mCredential;
 
     public EmailsPresenter(Context context) {
         this.context = context;
     }
 
     public GoogleAccountCredential getCredential() {
-        GoogleAccountCredential mCredential;
-        mCredential = GoogleAccountCredential.usingOAuth2(
-                context, Arrays.asList(SCOPES))
-                .setBackOff(new ExponentialBackOff());
+        if (mCredential == null) {
+            mCredential = GoogleAccountCredential.usingOAuth2(
+                    context, Arrays.asList(SCOPES))
+                    .setBackOff(new ExponentialBackOff());
+        }
         User user = UsersPresenter.loadUser(context);
-        mCredential.setSelectedAccountName(user.getEmail());
+        if (mCredential.getSelectedAccount() == null ||
+                !mCredential.getSelectedAccount().name.equals(user.getEmail())) {
+            mCredential.setSelectedAccount(new Account(user.getEmail(), context.getPackageName()));
+        }
         return mCredential;
     }
 
@@ -58,8 +64,7 @@ public class EmailsPresenter {
     public void chooseAccount(MainActivity activity) {
         if (EasyPermissions.hasPermissions(context, Manifest.permission.GET_ACCOUNTS)) {
             activity.startActivityForResult(
-                    GoogleAccountCredential.usingOAuth2(context, Arrays.asList(SCOPES))
-                            .setBackOff(new ExponentialBackOff()).newChooseAccountIntent(),
+                    getCredential().newChooseAccountIntent(),
                     REQUEST_ACCOUNT_PICKER);
         } else {
             // Request the GET_ACCOUNTS permission via a user dialog

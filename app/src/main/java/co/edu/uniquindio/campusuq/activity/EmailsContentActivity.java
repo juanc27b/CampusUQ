@@ -67,7 +67,7 @@ public class EmailsContentActivity extends MainActivity {
             }
         });
 
-        webView.loadData(intent.getStringExtra(EmailsSQLiteController.columns[5]), "text/html", null);
+        webView.loadData(intent.getStringExtra(EmailsSQLiteController.columns[6]), "text/html", null);
 
     }
 

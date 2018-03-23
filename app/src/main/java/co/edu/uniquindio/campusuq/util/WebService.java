@@ -4,16 +4,18 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.job.JobParameters;
-import android.app.job.JobService;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.v4.app.JobIntentService;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
+
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,7 +55,7 @@ import co.edu.uniquindio.campusuq.vo.User;
  * Created by Juan Camilo on 21/02/2018.
  */
 
-public class WebService extends JobService {
+public class WebService extends JobIntentService {
 
     public static final String ACTION_NONE = "co.edu.uniquindio.campusuq.ACTION_NONE";
     public static final String ACTION_ALL = "co.edu.uniquindio.campusuq.ACTION_ALL";
@@ -89,62 +91,56 @@ public class WebService extends JobService {
     boolean isWorking = false;
     boolean jobCancelled = false;
 
+    /**
+     * Convenience method for enqueuing work in to this service.
+     */
+    public static void enqueueWork(Context context, Intent work) {
+        enqueueWork(context, WebService.class, WebBroadcastReceiver.JOB_ID, work);
+    }
+
     @Override
-    public boolean onStartJob(JobParameters params) {
+    protected void onHandleWork(@NonNull Intent intent) {
         Log.i(TAG, "Job started!");
         isWorking = true;
-        // We need 'jobParameters' so we can call 'jobFinished'
-        startWorkOnNewThread(params); // Services do NOT run on a separate thread
+        jobCancelled = false;
+        try {
+            User user = UsersPresenter.loadUser(getApplicationContext());
+            ArrayList<co.edu.uniquindio.campusuq.vo.Notification> notifications =
+                    NotificationsPresenter.loadNotifications(getApplicationContext());
+            if (Utilities.haveNetworkConnection(getApplicationContext())) {
+                if (user == null) {
+                    JSONObject json = new JSONObject();
+                    try {
+                        json.put(UsersSQLiteController.columns[2], "campusuq@uniquindio.edu.co");
+                        json.put(UsersSQLiteController.columns[6], "campusuq");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    loadUsers(METHOD_GET, json.toString());
+                }
+                if (notifications.size() < NOTIFICATIONS.length) {
+                    NotificationsPresenter.insertNotifications(getApplicationContext());
+                }
+                doWork(intent);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in Job");
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public boolean onStopCurrentWork() {
+        Log.i(TAG, "Job cancelled before being completed.");
+        jobCancelled = true;
         return isWorking;
     }
 
-    @Override
-    public boolean onStopJob(JobParameters params) {
-        Log.i(TAG, "Job cancelled before being completed.");
-        jobCancelled = true;
-        boolean needsReschedule = isWorking;
-        jobFinished(params, needsReschedule);
-        return needsReschedule;
-    }
-
-    private void startWorkOnNewThread(final JobParameters jobParameters) {
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    User user = UsersPresenter.loadUser(getApplicationContext());
-                    ArrayList<co.edu.uniquindio.campusuq.vo.Notification> notifications =
-                            NotificationsPresenter.loadNotifications(getApplicationContext());
-                    if (Utilities.haveNetworkConnection(getApplicationContext())) {
-                        if (user == null) {
-                            JSONObject json = new JSONObject();
-                            try {
-                                json.put(UsersSQLiteController.columns[2], "campusuq@uniquindio.edu.co");
-                                json.put(UsersSQLiteController.columns[6], "campusuq");
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            loadUsers(METHOD_GET, json.toString());
-                        }
-                        if (notifications.size() < NOTIFICATIONS.length) {
-                            NotificationsPresenter.insertNotifications(getApplicationContext());
-                        }
-                        doWork(jobParameters);
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "Exception in Job");
-                    e.printStackTrace();
-                    boolean needsReschedule = true;
-                    jobFinished(jobParameters, needsReschedule);
-                }
-            }
-        }).start();
-    }
-
-    private void doWork(JobParameters params) {
+    private void doWork(Intent intent) {
         Log.i(TAG, "entrando a doWork");
-        String action = params.getExtras().getString("ACTION");
-        String method = params.getExtras().getString("METHOD");
-        String object = params.getExtras().getString("OBJECT");
+        String action = intent.getStringExtra("ACTION");
+        String method = intent.getStringExtra("METHOD");
+        String object = intent.getStringExtra("OBJECT");
         switch (action) {
             case ACTION_ALL:
                 loadInformations();
@@ -197,8 +193,6 @@ public class WebService extends JobService {
 
         Log.i(TAG, "Job finished!");
         isWorking = false;
-        boolean needsReschedule = false;
-        jobFinished(params, needsReschedule);
     }
 
     private Notification buildNotification(String type, Object object) {
@@ -866,6 +860,7 @@ public class WebService extends JobService {
         if (jobCancelled)
             return;
 
+        Intent intent = null;
         int inserted = 0;
         if(Utilities.haveNetworkConnection(getApplicationContext())) {
             EmailsSQLiteController dbController = new EmailsSQLiteController(getApplicationContext(), 1);
@@ -879,11 +874,15 @@ public class WebService extends JobService {
                         String from = jsonEmail.getString(EmailsSQLiteController.columns[2]);
                         String to = jsonEmail.getString(EmailsSQLiteController.columns[3]);
                         String date = jsonEmail.getString(EmailsSQLiteController.columns[4]);
-                        String content = jsonEmail.getString(EmailsSQLiteController.columns[5]);
-                        Email email = new Email("0", name, from, to, date, content, new BigInteger("0"));
+                        String content = jsonEmail.getString(EmailsSQLiteController.columns[6]);
+                        Email email = new Email("0", name, from, to, date, "", content, new BigInteger("0"));
                         inserted = EmailsServiceController.sendEmail(getApplicationContext(), email) ? 1 : 0;
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        if (e instanceof UserRecoverableAuthIOException) {
+                            intent = ((UserRecoverableAuthIOException) e).getIntent();
+                        } else {
+                            e.printStackTrace();
+                        }
                     }
                     break;
                 case METHOD_GET:
@@ -892,21 +891,25 @@ public class WebService extends JobService {
                         ArrayList<String> oldIDs = new ArrayList<>();
                         ArrayList<Email> oldEmails = dbController.select("50", null, null);
                         for(Email old : oldEmails) oldIDs.add(old.get_ID());
-                        for(Email email : EmailsServiceController.getEmails(getApplicationContext(),
-                                oldEmails.size() > 0 ? oldEmails.get(0).getHistoryID() : null)) {
-                            int index = oldIDs.indexOf(email.get_ID());
-                            if(index == -1) {
-                                dbController.insert(email.get_ID(), email.getName(), email.getFrom(), email.getTo(),
-                                        email.getDate(), email.getContent(), ""+email.getHistoryID());
-                                inserted ++;
+                        try {
+                            for(Email email : EmailsServiceController.getEmails(getApplicationContext(),
+                                    oldEmails.size() > 0 ? oldEmails.get(0).getHistoryID() : null)) {
+                                int index = oldIDs.indexOf(email.get_ID());
+                                if(index == -1) {
+                                    dbController.insert(email.get_ID(), email.getName(), email.getFrom(), email.getTo(),
+                                            email.getDate(), email.getSnippet(), email.getContent(), ""+email.getHistoryID());
+                                    inserted ++;
+                                }
                             }
+                        } catch (UserRecoverableAuthIOException e) {
+                            intent = e.getIntent();
                         }
                     }
                     break;
             }
             dbController.destroy();
         }
-        sendBroadcast(new Intent(ACTION_EMAILS).putExtra("INSERTED", inserted));
+        sendBroadcast(new Intent(ACTION_EMAILS).putExtra("INSERTED", inserted).putExtra("INTENT", intent));
     }
 
     @Override

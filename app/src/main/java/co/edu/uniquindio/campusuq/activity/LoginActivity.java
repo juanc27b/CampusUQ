@@ -1,12 +1,10 @@
 package co.edu.uniquindio.campusuq.activity;
 
 import android.accounts.AccountManager;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -16,20 +14,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.gmail.Gmail;
-import com.google.api.services.gmail.model.ListMessagesResponse;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.List;
 
 import co.edu.uniquindio.campusuq.R;
@@ -193,17 +180,10 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
                     if (accountName != null) {
                         if (accountName.endsWith("@uqvirtual.edu.co") || accountName.endsWith("@uniquindio.edu.co")) {
                             email.setText(accountName);
-                            new MakeRequestTask(emailsPresenter.getCredential().setSelectedAccountName(accountName)).execute();
                         } else {
                             Toast.makeText(this, getString(R.string.user_account_invalid), Toast.LENGTH_SHORT).show();
                         }
                     }
-                }
-                break;
-            case EmailsPresenter.REQUEST_AUTHORIZATION:
-                if (resultCode != RESULT_OK) {
-                    email.setText("");
-                    Toast.makeText(this, "Authorization is required for get emails", Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
@@ -250,91 +230,6 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
     @Override
     public void onPermissionsDenied(int requestCode, List<String> list) {
         // Do nothing.
-    }
-
-    /**
-     * An asynchronous task that handles the Gmail API call.
-     * Placing the API calls in their own task ensures the UI stays responsive.
-     */
-    private class MakeRequestTask extends AsyncTask<Void, Void, Void> {
-
-        private GoogleAccountCredential credential;
-        private Gmail mService = null;
-        private Exception mLastError = null;
-        private ProgressDialog pDialog;
-
-        MakeRequestTask(GoogleAccountCredential credential) {
-            pDialog = Utilities.getProgressDialog(LoginActivity.this, false);
-            this.credential = credential;
-            HttpTransport transport = AndroidHttp.newCompatibleTransport();
-            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-            mService = new Gmail.Builder(
-                    transport, jsonFactory, credential)
-                    .setApplicationName(getString(R.string.app_name))
-                    .build();
-        }
-
-        /**
-         * Background task to call Gmail API.
-         * @param voids no parameters needed for this task.
-         */
-        @Override
-        protected Void doInBackground(Void... voids) {
-            try {
-                getDataFromApi();
-            } catch (Exception e) {
-                mLastError = e;
-                cancel(true);
-            }
-            return null;
-        }
-
-        /**
-         * Fetch a list of Gmail labels attached to the specified account.
-         * @return List of Strings labels.
-         * @throws IOException
-         */
-        private void getDataFromApi() throws IOException {
-            // Get the labels in the user's account.
-            String user = credential.getSelectedAccountName();
-            ListMessagesResponse response = mService.users().messages().list(user).execute();
-        }
-
-
-        @Override
-        protected void onPreExecute() {
-            pDialog.show();
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            pDialog.dismiss();
-        }
-
-        @Override
-        protected void onCancelled() {
-            pDialog.dismiss();
-            if (mLastError != null) {
-                if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
-                    email.setText("");
-                    emailsPresenter.showGooglePlayServicesAvailabilityErrorDialog(
-                            ((GooglePlayServicesAvailabilityIOException) mLastError)
-                                    .getConnectionStatusCode(), LoginActivity.this);
-                } else if (mLastError instanceof UserRecoverableAuthIOException) {
-                    startActivityForResult(
-                            ((UserRecoverableAuthIOException) mLastError).getIntent(),
-                            EmailsPresenter.REQUEST_AUTHORIZATION);
-                } else {
-                    email.setText("");
-                    Toast.makeText(LoginActivity.this, "The following error occurred:\n"
-                            + mLastError.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                email.setText("");
-                Toast.makeText(LoginActivity.this, "Request cancelled.", Toast.LENGTH_SHORT).show();
-            }
-        }
-
     }
 
 }

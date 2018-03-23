@@ -109,7 +109,6 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    Log.i(UsersActivity.class.getSimpleName(), json.toString());
                     progressDialog.show();
                     WebBroadcastReceiver.scheduleJob(getApplicationContext(),
                             WebService.ACTION_USERS, WebService.METHOD_POST, json.toString());
