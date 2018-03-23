@@ -104,7 +104,7 @@
     <string name="report_incident">Report Incident</string>
     <string name="billboard_detail">Change Billboard</string>
     <string name="restaurant_detail">Change Restaurant Menu</string>
-    <string name="quota_detail">Change Quota</string>
+    <string name="quota_detail">Change/Insert Quota</string>
 
     <string name="sign_up">Sign Up</string>
     <string name="log_in">Log In</string>

@@ -28,21 +28,26 @@ public class DishesAdapter extends RecyclerView.Adapter<DishesAdapter.DishViewHo
     public class DishViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ImageView image;
-        private TextView name, description, price;
+        private TextView name;
+        private TextView description;
+        private TextView price;
 
         DishViewHolder(View view) {
             super(view);
-            view.findViewById(R.id.dish_layout).setOnClickListener(this);
+
             image = view.findViewById(R.id.dish_image);
             name = view.findViewById(R.id.dish_name);
             description = view.findViewById(R.id.dish_description);
             price = view.findViewById(R.id.dish_price);
+
+            view.findViewById(R.id.dish_layout).setOnClickListener(this);
         }
 
         void bindItem(Dish dish) {
             File imageFile = new File(dish.getImage());
-            if(imageFile.exists()) image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
+            if (imageFile.exists()) image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
             else image.setImageResource(R.drawable.rectangle_gray);
+
             name.setText(dish.getName());
             description.setText(dish.getDescription());
             price.setText("$ "+dish.getPrice());
@@ -56,7 +61,8 @@ public class DishesAdapter extends RecyclerView.Adapter<DishesAdapter.DishViewHo
 
     @Override
     public DishViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new DishViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.dish_detail, parent, false));
+        return new DishViewHolder(LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.dish_detail, parent, false));
     }
 
     @Override

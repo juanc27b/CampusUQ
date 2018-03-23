@@ -19,7 +19,11 @@ import co.edu.uniquindio.campusuq.vo.User;
 
 public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectViewHolder> {
 
-    public static final String DIALOG = "dialog", READED = "readed", FOUND = "found", NOT_FOUND = "not_found", CONTACT = "contact";
+    public static final String DIALOG    = "dialog";
+    public static final String READED    = "readed";
+    public static final String FOUND     = "found";
+    public static final String NOT_FOUND = "not_found";
+    public static final String CONTACT   = "contact";
 
     private ArrayList<LostObject> objects;
     private OnClickObjectListener listener;
@@ -35,20 +39,27 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
 
     public class ObjectViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private ImageView icon, image;
-        private TextView name, place, date, description, found;
+        private ImageView icon;
+        private TextView name;
+        private TextView place;
+        private TextView date;
+        private ImageView image;
+        private TextView description;
+        private TextView found;
 
         ObjectViewHolder(View view) {
             super(view);
-            view.findViewById(R.id.object_layout).setOnClickListener(this);
+
             icon = view.findViewById(R.id.object_icon);
             name = view.findViewById(R.id.object_name);
             place = view.findViewById(R.id.object_place);
             date = view.findViewById(R.id.object_date);
             image = view.findViewById(R.id.object_image);
             description = view.findViewById(R.id.object_description);
-            view.findViewById(R.id.object_readed).setOnClickListener(this);
             found = view.findViewById(R.id.object_found);
+
+            view.findViewById(R.id.object_layout).setOnClickListener(this);
+            view.findViewById(R.id.object_readed).setOnClickListener(this);
         }
 
         void bindItem(LostObject lostObject) {
@@ -57,11 +68,11 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
             place.setText(lostObject.getPlace());
             date.setText(lostObject.getDate());
             File imageFile = new File(lostObject.getImage());
-            if(imageFile.exists()) image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
+            if (imageFile.exists()) image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
             else image.setImageResource(R.drawable.rectangle_gray);
             description.setText(lostObject.getDescription());
             if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
-                    lostObject.getUserFound_ID() != null && lostObject.getUserFound_ID().equals(user.get_ID())) {
+                    lostObject.getUserFound_ID() != null && lostObject.getUserFound_ID() == user.get_ID()) {
                 found.setText(R.string.object_not_found);
                 found.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -70,7 +81,7 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
                     }
                 });
             } else if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
-                    lostObject.getUserLost_ID().equals(user.get_ID()) && lostObject.getUserFound_ID() != null) {
+                    lostObject.getUserLost_ID() == user.get_ID() && lostObject.getUserFound_ID() != null) {
                 found.setText(R.string.object_view_contact);
                 found.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -92,12 +103,13 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
         @Override
         public void onClick(View view) {
             String action;
-            switch(view.getId()) {
+            switch (view.getId()) {
                 case R.id.object_readed:
                     action = READED;
                     break;
                 default:
                     action = DIALOG;
+                    break;
             }
             listener.onObjectClick(getAdapterPosition(), action);
         }
@@ -105,7 +117,8 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
 
     @Override
     public ObjectViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ObjectViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.object_detail, parent, false));
+        return new ObjectViewHolder(LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.object_detail, parent, false));
     }
 
     @Override

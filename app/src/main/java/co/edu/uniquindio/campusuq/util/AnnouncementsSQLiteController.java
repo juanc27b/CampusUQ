@@ -3,8 +3,11 @@ package co.edu.uniquindio.campusuq.util;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 import co.edu.uniquindio.campusuq.vo.Announcement;
 import co.edu.uniquindio.campusuq.vo.AnnouncementLink;
@@ -15,11 +18,12 @@ import co.edu.uniquindio.campusuq.vo.AnnouncementLink;
 
 public class AnnouncementsSQLiteController {
 
-    public static final String NOMBRE_TABLA = "Anuncio";
-    public static final String CAMPOS_TABLA[] = new String[]{"_ID", "Tipo", "Nombre", "Fecha", "Descripcion", "Leido"};
+    private static final String tablename = "Anuncio";
+    public static final String columns[] =
+            {"_ID", "Usuario_ID", "Tipo", "Nombre", "Fecha", "Descripcion", "Leido"};
 
-    public static final String NOMBRE_ENLACE = "Anuncio_Enlace";
-    public static final String CAMPOS_ENLACE[] = new String[]{"_ID", "Anuncio_ID", "Tipo", "Enlace"};
+    private static final String linkTablename = "Anuncio_Enlace";
+    public static final String linkColumns[] = {"_ID", "Anuncio_ID", "Tipo", "Enlace"};
 
     private SQLiteHelper usdbh;
     private SQLiteDatabase db;
@@ -29,135 +33,92 @@ public class AnnouncementsSQLiteController {
         db = usdbh.getWritableDatabase();
     }
 
-    public static String createTable(){
-        String crearTabla = "CREATE TABLE ? ( ? INTEGER PRIMARY KEY, ? TEXT NOT NULL, " +
-                "? TEXT NOT NULL, ? TEXT NOT NULL, ? TEXT NOT NULL, ? TEXT NOT NULL )";
-        StringBuilder builder = new StringBuilder(crearTabla);
-        builder.replace(builder.indexOf("?"), crearTabla.indexOf("?") + 1, NOMBRE_TABLA);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[0]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[1]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[2]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[3]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[4]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[5]);
-        return builder.toString();
+    static String createTable(){
+        return "CREATE TABLE `"+tablename+"`(`"+
+                columns[0]+"` INTEGER PRIMARY KEY, `"+
+                columns[1]+"` INTEGER NOT NULL, `"+
+                columns[2]+"` TEXT NOT NULL, `"+
+                columns[3]+"` TEXT NOT NULL, `"+
+                columns[4]+"` TEXT NOT NULL, `"+
+                columns[5]+"` TEXT NOT NULL, `"+
+                columns[6]+"` TEXT NOT NULL)";
     }
 
     public ArrayList<Announcement> select(String limit, String selection, String[] selectionArgs) {
         ArrayList<Announcement> announcements = new ArrayList<>();
-        Cursor c = db.query(NOMBRE_TABLA, CAMPOS_TABLA, selection, selectionArgs,
-                null, null, CAMPOS_TABLA[3]+" DESC", limit);
-        if (c.moveToFirst()) {
-            do {
-                String id = c.getString(0);
-                String type = c.getString(1);
-                String name = c.getString(2);
-                String date = c.getString(3);
-                String description = c.getString(4);
-                String read = c.getString(5);
-                Announcement announcement = new Announcement(id, type, name, date, description, read);
-                announcements.add(announcement);
-            } while (c.moveToNext());
-        }
+        Cursor c = db.query(tablename, columns, selection, selectionArgs, null,
+                null, '`'+columns[4]+"` DESC", limit);
+        if (c.moveToFirst()) do {
+            announcements.add(new Announcement(
+                    c.getInt(0),
+                    c.getInt(1),
+                    c.getString(2),
+                    c.getString(3),
+                    c.getString(4),
+                    c.getString(5),
+                    c.getString(6)
+            ));
+        } while (c.moveToNext());
         c.close();
         return announcements;
     }
 
-    public void insert(String... campos) {
-        String insertar = "INSERT INTO ? (?,?,?,?,?,?) VALUES (?,?,?,?,?,?)";
-        StringBuilder builder = new StringBuilder(insertar);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, NOMBRE_TABLA);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[0]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[1]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[2]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[3]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[4]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[5]);
-        db.execSQL(builder.toString(), new String[] {
-                campos[0],
-                campos[1],
-                campos[2],
-                campos[3],
-                campos[4],
-                campos[5]
-        });
+    public void insert(Object... values) {
+        db.execSQL("INSERT INTO `"+tablename+"`(`"+
+                TextUtils.join("`, `", columns)+"`) VALUES("+
+                TextUtils.join(", ", Collections.nCopies(columns.length, "?"))+")", values);
     }
 
-    public void update(boolean all, String... campos) {
-        String update = "UPDATE "+NOMBRE_TABLA+" SET ?=? WHERE ? = ?";
-        StringBuilder builder = new StringBuilder(update);
-        int offset = builder.indexOf("?");
-        builder.replace(offset, offset+1, CAMPOS_TABLA[5]);
-        if (!all) {
-            offset = builder.indexOf("?", offset)+8;
-            builder.replace(offset, offset+1, CAMPOS_TABLA[0]);
-        }
-        db.execSQL(builder.toString(), campos);
+    public void update(Object... values) {
+        db.execSQL("UPDATE `"+tablename+"` SET `"+
+                TextUtils.join("` = ?, `", Arrays.copyOfRange(columns, 0, columns.length-1))+
+                "` = ? WHERE `"+columns[0]+"` = ?", values);
     }
 
-    public void delete(String id) {
-        StringBuilder builder = new StringBuilder("DELETE FROM ? WHERE ? = '?'");
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, NOMBRE_TABLA);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[0]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, id);
-        db.execSQL(builder.toString());
+    public void readed(Object... ids) {
+        db.execSQL("UPDATE `"+tablename+"` SET `"+columns[6]+"` = 'S' WHERE `"+columns[0]+"` IN("+
+                TextUtils.join(", ", Collections.nCopies(ids.length, "?"))+")", ids);
     }
 
-    public static String createLinkTable(){
-        String crearTabla = "CREATE TABLE ? ( ? INTEGER PRIMARY KEY, ? INTEGER NOT NULL, " +
-                "? TEXT NOT NULL, ? TEXT NOT NULL UNIQUE, FOREIGN KEY (?) REFERENCES ? (?)  )";
-        StringBuilder builder = new StringBuilder(crearTabla);
-        builder.replace(builder.indexOf("?"), crearTabla.indexOf("?") + 1, NOMBRE_ENLACE);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_ENLACE[0]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_ENLACE[1]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_ENLACE[2]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_ENLACE[3]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_ENLACE[1]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, NOMBRE_TABLA);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[0]);
-        return builder.toString();
+    public void delete(Object... ids) {
+        db.execSQL("DELETE FROM `"+tablename+"` WHERE `"+columns[0]+"` IN("+
+                TextUtils.join(", ", Collections.nCopies(ids.length, "?"))+")", ids);
+    }
+
+    static String createLinkTable(){
+        return "CREATE TABLE `"+linkTablename+"`(`"+
+                linkColumns[0]+"` INTEGER PRIMARY KEY, `"+
+                linkColumns[1]+"` INTEGER NOT NULL, `"+
+                linkColumns[2]+"` TEXT NOT NULL, `"+
+                linkColumns[3]+"` TEXT NOT NULL UNIQUE, "+
+                "FOREIGN KEY(`"+linkColumns[1]+"`) REFERENCES `"+tablename+"`(`"+columns[0]+"`))";
     }
 
     public ArrayList<AnnouncementLink> selectLink(String selection, String[] selectionArgs) {
         ArrayList<AnnouncementLink> links = new ArrayList<>();
-        Cursor c = db.query(NOMBRE_ENLACE, CAMPOS_ENLACE, selection, selectionArgs,
-                null, null, CAMPOS_ENLACE[0]+" ASC");
-        if (c.moveToFirst()) {
-            do {
-                String id = c.getString(0);
-                String announcementId = c.getString(1);
-                String type = c.getString(2);
-                String link = c.getString(3);
-                AnnouncementLink announcementLink = new AnnouncementLink(id, announcementId, type, link);
-                links.add(announcementLink);
-            } while (c.moveToNext());
-        }
+        Cursor c = db.query(linkTablename, linkColumns, selection, selectionArgs, null,
+                null, '`'+linkColumns[0]+"` ASC");
+        if (c.moveToFirst()) do {
+            links.add(new AnnouncementLink(
+                    c.getInt(0),
+                    c.getInt(1),
+                    c.getString(2),
+                    c.getString(3)
+            ));
+        } while (c.moveToNext());
         c.close();
         return links;
     }
 
-    public void insertLink(String... campos) {
-        String insertar = "INSERT INTO ? (?,?,?,?) VALUES (?,?,?,?)";
-        StringBuilder builder = new StringBuilder(insertar);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, NOMBRE_ENLACE);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_ENLACE[0]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_ENLACE[1]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_ENLACE[2]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_ENLACE[3]);
-        db.execSQL(builder.toString(), new String[] {
-                campos[0],
-                campos[1],
-                campos[2],
-                campos[3]
-        });
+    public void insertLink(Object... values) {
+        db.execSQL("INSERT INTO `"+linkTablename+"`(`"+
+                TextUtils.join("`, `", linkColumns)+"`) VALUES("+
+                TextUtils.join(", ", Collections.nCopies(linkColumns.length, "?"))+")", values);
     }
 
-    public void deleteLink(String announcementId) {
-        StringBuilder builder = new StringBuilder("DELETE FROM ? WHERE ? = '?'");
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, NOMBRE_ENLACE);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_ENLACE[1]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, announcementId);
-        db.execSQL(builder.toString());
+    public void deleteLink(Object... announcementIds) {
+        db.execSQL("DELETE FROM `"+linkTablename+"` WHERE `"+linkColumns[1]+"` IN("+
+                TextUtils.join(", ", Collections.nCopies(announcementIds.length, "?"))+")", announcementIds);
     }
 
     public void unreadAll() {

@@ -3,7 +3,6 @@ package co.edu.uniquindio.campusuq.util;
 import android.content.Context;
 import android.util.Log;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -20,7 +19,7 @@ class ObjectsServiceController {
 
     static ArrayList<LostObject> getObjects(Context context, String idObject) {
         String url = Utilities.URL_SERVICIO+"/objetos";
-        if(idObject != null) url += idObject;
+        if (idObject != null) url += idObject;
         HttpGet request = new HttpGet(url);
         request.setHeader("Content-Type", "application/json; Charset=UTF-8");
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
@@ -32,17 +31,18 @@ class ObjectsServiceController {
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 lostObjects.add(new LostObject(
-                    StringEscapeUtils.unescapeHtml4(object.getString(ObjectsSQLiteController.columns[0])),
-                    StringEscapeUtils.unescapeHtml4(object.getString(ObjectsSQLiteController.columns[1])),
-                    StringEscapeUtils.unescapeHtml4(object.getString(ObjectsSQLiteController.columns[2])),
-                    StringEscapeUtils.unescapeHtml4(object.getString(ObjectsSQLiteController.columns[3])),
-                    StringEscapeUtils.unescapeHtml4(object.getString(ObjectsSQLiteController.columns[4])),
-                    StringEscapeUtils.unescapeHtml4(object.getString(ObjectsSQLiteController.columns[5])),
-                    StringEscapeUtils.unescapeHtml4(object.getString(ObjectsSQLiteController.columns[6])),
-                    StringEscapeUtils.unescapeHtml4(object.getString(ObjectsSQLiteController.columns[7]))
+                        object.getInt(ObjectsSQLiteController.columns[0]),
+                        object.getInt(ObjectsSQLiteController.columns[1]),
+                        object.getString(ObjectsSQLiteController.columns[2]),
+                        object.getString(ObjectsSQLiteController.columns[3]),
+                        object.getString(ObjectsSQLiteController.columns[4]),
+                        object.getString(ObjectsSQLiteController.columns[5]),
+                        object.getString(ObjectsSQLiteController.columns[6]),
+                        object.isNull(ObjectsSQLiteController.columns[7]) ? null : object.getInt(ObjectsSQLiteController.columns[7]),
+                        "N"
                 ));
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             Log.e(ObjectsServiceController.class.getSimpleName(), e.getMessage());
             return new ArrayList<>();
         }

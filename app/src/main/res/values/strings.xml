@@ -111,7 +111,7 @@
     <string name="report_incident">Reportar Incidente</string>
     <string name="billboard_detail">Cambiar Cartelera</string>
     <string name="restaurant_detail">Cambiar Menú Restaurante</string>
-    <string name="quota_detail">Cambiar Cupo</string>
+    <string name="quota_detail">Cambiar/Insertar Cupo</string>
 
     <string name="sign_up">Registrarse</string>
     <string name="log_in">Iniciar Sesión</string>
@@ -143,8 +143,9 @@
     <string name="action_login">Cuenta de usuario</string>
 
     <string name="loading_content">Cargando conteido</string>
-    <string name="please_wait">Por favor espere ...</string>
+    <string name="please_wait">Por favor espere …</string>
     <string name="no_internet">No hay conexión a internet</string>
+    <string name="empty_string">No puede haber campos vacios</string>
 
     <string name="change_to_mapview">Cambiar a vista de mapa</string>
     <string name="change_to_streetview">Cambiar a vista de calle</string>
@@ -234,12 +235,18 @@
     <string name="user_detail_password">Contraseña</string>
     <string name="user_detail_password_hint">Escribe una contraseña de entre 8 y 16 caracteres</string>
 
+    <string name="announcement_image_description">Imagen del anuncio</string>
+    <string name="announcement_sample_date">5 de Septiembre, 2:10 PM</string>
+    <string name="announcement_sample_name">Notas Cálculo Integral G1</string>
+    <string name="announcement_sample_description">Notas del curso de cálculo integral grupo 1 periodo 2018-2 para ingeniería de sistemas</string>
+
     <string name="incident_detail_title">DETALLES DEL INCIDENTE</string>
     <string name="incident_detail_name">Título del Incidente</string>
     <string name="incident_detail_name_hint">Escribe el nombre del incidente</string>
     <string name="incident_detail_description">Descripción del Incidente</string>
     <string name="incident_detail_description_hint">Escribe una breve descripción de los acontecimientos ocurridos, lugar, fecha, y otros detalles pertinentes</string>
     <string name="incident_detail_image">Imagenes y Videos del Incidente (Opcional)</string>
+    <string name="incident_detail_image_description">Imagenes y videos del incidente o comunicado</string>
 
     <string name="communique_detail_title">DETALLES DEL COMUNICADO</string>
     <string name="communique_detail_name">Título del Comunicado</string>
@@ -249,7 +256,8 @@
     <string name="communique_detail_image">Imagenes o Fotos del Comunicado (Opcional)</string>
 
     <string name="announcement_detail_sample_description_count">110</string>
-    <string name="announcement_detail_description_count_limit">/120</string>
+    <string name="announcement_detail_description_count_separator">/</string>
+    <string name="announcement_detail_description_count_limit">500</string>
 
     <string name="quota_sample_name">Sala A</string>
     <string name="quota_sample_quota">24</string>
@@ -278,18 +286,22 @@
     <string name="dish_detail_description">Descripción</string>
     <string name="dish_detail_description_hint">Escribe una breve descripción de la comida pra informar mejor al consumidor y brindar un mejor servicio</string>
     <string name="dish_detail_sample_description_count">110</string>
-    <string name="dish_detail_description_count_limit">/120</string>
+    <string name="dish_detail_description_count_separator">/</string>
+    <string name="dish_detail_description_count_limit">250</string>
     <string name="dish_detail_price">Precio</string>
     <string name="dish_detail_price_hint">Asígnale un precio al plato</string>
     <string name="dish_detail_image">Imagen o Foto (Opcional)</string>
+    <string name="dish_detail_image_description">Imagen o foto del plato</string>
     <string name="dish_detail_ok">ENVIAR</string>
 
     <string name="object_report_lost">Reportar Objeto Perdido</string>
+    <string name="object_icon_description">Icono del objeto perdido</string>
     <string name="object_sample_name">Memoria USB 4GB</string>
     <string name="object_place">Lugar:</string>
     <string name="object_sample_place">Sala A de Computadores</string>
     <string name="object_date">Fecha y Hora:</string>
     <string name="object_sample_date">7 de Noviembre, 3:57 PM</string>
+    <string name="object_image_description">Imagen del objeto perdido</string>
     <string name="object_sample_description">Memoria USB con capacidad de 4 GB Marca Kingston color negro y verde en el agarre</string>
     <string name="object_readed">Marcar como leído</string>
     <string name="object_report_found">Reportar Objeto Encontrado</string>
@@ -302,12 +314,14 @@
     <string name="object_detail_place">Lugar y Dirección</string>
     <string name="object_detail_place_hint">Escribe el lugar en donde perdiste el objeto</string>
     <string name="object_detail_date">Fecha y Hora</string>
-    <string name="object_detail_date_hint">Escribe la fecha y hora aprox. de la pérdida</string>
+    <string name="object_detail_date_hint">Formato: AAAA/MM/DD HH:MM:SS</string>
     <string name="object_detail_description">Descripción</string>
     <string name="object_detail_description_hint">Escribe una breve descripción de la apariencia del objeto que perdiste para ayudar a los demás a identificarlo</string>
     <string name="object_detail_sample_description_count">110</string>
-    <string name="object_detail_description_count_limit">/120</string>
+    <string name="object_detail_description_count_separator">/</string>
+    <string name="object_detail_description_count_limit">500</string>
     <string name="object_detail_image">Imagen o Foto (Opcional)</string>
+    <string name="object_detail_image_description">Imagen o foto del objeto perdido</string>
     <string name="object_detail_ok">ENVIAR</string>
 
     <string name="email_sample_icon_text">D</string>
@@ -336,5 +350,11 @@
     <string name="email_to_invalid">Debe haber un destinatario válido</string>
     <string name="email_name_invalid">Debe escribirse un asunto</string>
     <string name="email_content_invalid">Debe escribirse un contenido</string>
+
+    <string name="notifications_text">Ajustes de notificaciones</string>
+
+    <string name="ic_facebook_description">icono de facebook</string>
+    <string name="ic_twitter_description">icono de twitter</string>
+    <string name="ic_whatsapp_description">icono de whatsapp</string>
 
 </resources>

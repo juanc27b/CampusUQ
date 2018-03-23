@@ -24,41 +24,43 @@ public class QuotasSQLiteController {
     }
 
     static String createTable() {
-        return "CREATE TABLE `"+tablename+"` (`"+
+        return "CREATE TABLE `"+tablename+"`(`"+
                 columns[0]+"` INTEGER PRIMARY KEY, `"+
                 columns[1]+"` TEXT NOT NULL, `"+
                 columns[2]+"` TEXT NOT NULL UNIQUE, `"+
-                columns[3]+"` TEXT NOT NULL )";
+                columns[3]+"` INTEGER NOT NULL)";
     }
 
     public ArrayList<Quota> select(String selection, String[] selectionArgs) {
         ArrayList<Quota> quotas = new ArrayList<>();
-        Cursor c = db.query(tablename, columns, selection, selectionArgs, null, null, columns[0]+" ASC");
-        if(c.moveToFirst()) do {
+        Cursor c = db.query(tablename, columns, selection, selectionArgs, null,
+                null, '`'+columns[0]+"` ASC");
+        if (c.moveToFirst()) do {
             quotas.add(new Quota(
-                    c.getString(0),
+                    c.getInt(0),
                     c.getString(1),
                     c.getString(2),
-                    c.getString(3)
+                    c.getInt(3)
             ));
-        } while(c.moveToNext());
+        } while (c.moveToNext());
         c.close();
         return quotas;
     }
 
-    public void insert(String... values) {
+    public void insert(Object... values) {
         db.execSQL("INSERT INTO `"+tablename+"`(`"+
-                TextUtils.join("`, `", columns)+"`) VALUES ("+
+                TextUtils.join("`, `", columns)+"`) VALUES("+
                 TextUtils.join(", ", Collections.nCopies(columns.length, "?"))+")", values);
     }
 
-    void update(String... values) {
+    void update(Object... values) {
         db.execSQL("UPDATE `"+tablename+"` SET `"+
                 TextUtils.join("` = ?, `", columns)+"` = ? WHERE `"+columns[0]+"` = ?", values);
     }
 
-    public void delete(ArrayList<String> ids) {
-        db.execSQL("DELETE FROM `"+tablename+"` WHERE `"+columns[0]+"` IN("+TextUtils.join(", ", Collections.nCopies(ids.size(), "?"))+")", ids.toArray());
+    public void delete(Object... ids) {
+        db.execSQL("DELETE FROM `"+tablename+"` WHERE `"+columns[0]+"` IN("+
+                TextUtils.join(", ", Collections.nCopies(ids.length, "?"))+")", ids);
     }
 
     public void destroy() {

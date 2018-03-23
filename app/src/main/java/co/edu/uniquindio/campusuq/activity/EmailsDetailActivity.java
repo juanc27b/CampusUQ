@@ -62,7 +62,6 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-
         super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
 
         ViewStub viewStub = findViewById(R.id.layout_stub);

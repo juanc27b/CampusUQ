@@ -3,7 +3,6 @@ package co.edu.uniquindio.campusuq.util;
 import android.content.Context;
 import android.util.Log;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -28,17 +27,17 @@ class DishesServiceController {
             JSONArray array = (new JSONObject(
                     EntityUtils.toString(HttpClientBuilder.create().build().execute(request).getEntity(), "UTF-8")))
                     .getJSONArray("datos");
-            for(int i = 0; i < array.length(); i++) {
+            for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 dishes.add(new Dish(
-                    StringEscapeUtils.unescapeHtml4(object.getString(DishesSQLiteController.columns[0])),
-                    StringEscapeUtils.unescapeHtml4(object.getString(DishesSQLiteController.columns[1])),
-                    StringEscapeUtils.unescapeHtml4(object.getString(DishesSQLiteController.columns[2])),
-                    StringEscapeUtils.unescapeHtml4(object.getString(DishesSQLiteController.columns[3])),
-                    StringEscapeUtils.unescapeHtml4(object.getString(DishesSQLiteController.columns[4]))
+                    object.getInt(DishesSQLiteController.columns[0]),
+                    object.getString(DishesSQLiteController.columns[1]),
+                    object.getString(DishesSQLiteController.columns[2]),
+                    object.getInt(DishesSQLiteController.columns[3]),
+                    object.getString(DishesSQLiteController.columns[4])
                 ));
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             Log.e(DishesServiceController.class.getSimpleName(), e.getMessage());
             return new ArrayList<>();
         }

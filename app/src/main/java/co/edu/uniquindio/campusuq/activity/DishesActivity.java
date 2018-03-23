@@ -23,12 +23,13 @@ import co.edu.uniquindio.campusuq.util.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.Dish;
 
-public class DishesActivity extends MainActivity implements DishesAdapter.OnClickDishListener {
+public class DishesActivity extends MainActivity implements DishesAdapter.OnClickDishListener, View.OnClickListener {
 
     private ArrayList<Dish> dishes = new ArrayList<>();
-    private boolean newActivity = true, oldDishes = true;
+    private boolean newActivity = true;
     private DishesAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
+    private boolean oldDishes = true;
 
     private IntentFilter dishesFilter = new IntentFilter(WebService.ACTION_DISHES);
     private BroadcastReceiver dishesReceiver = new BroadcastReceiver() {
@@ -43,38 +44,10 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
     }
 
     @Override
-    public void addContent(Bundle savedInstanceState) {
-        super.addContent(savedInstanceState);
-
-        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
-
-        ViewStub viewStub = findViewById(R.id.layout_stub);
-        viewStub.setLayoutResource(R.layout.content_dishes);
-        viewStub.inflate();
-
-        FloatingActionButton insert = findViewById(R.id.fab);
-        insert.setVisibility(View.VISIBLE);
-        insert.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(DishesActivity.this, DishesDetailActivity.class);
-                intent.putExtra("CATEGORY", getString(R.string.restaurant_detail));
-                intent.putExtra(DishesSQLiteController.columns[1], "");
-                intent.putExtra(DishesSQLiteController.columns[2], "");
-                intent.putExtra(DishesSQLiteController.columns[3], "");
-                intent.putExtra(DishesSQLiteController.columns[4], "");
-                startActivityForResult(intent, 0);
-            }
-        });
-
-        loadDishes(0);
-    }
-
-    @Override
     public void handleIntent(Intent intent) {
-        if(Intent.ACTION_SEARCH.equals(intent.getAction())) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            for(Dish dish : dishes) if(dish.getName().toLowerCase().contains(query.trim().toLowerCase())) {
+            for (Dish dish : dishes) if (dish.getName().toLowerCase().contains(query.trim().toLowerCase())) {
                 layoutManager.scrollToPosition(dishes.indexOf(dish));
                 return;
             }
@@ -82,19 +55,37 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
         }
     }
 
+    @Override
+    public void addContent(Bundle savedInstanceState) {
+        super.addContent(savedInstanceState);
+        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+
+        ViewStub viewStub = findViewById(R.id.layout_stub);
+        viewStub.setLayoutResource(R.layout.content_dishes);
+        viewStub.inflate();
+        FloatingActionButton insert = findViewById(R.id.fab);
+
+        insert.setOnClickListener(this);
+        insert.setVisibility(View.VISIBLE);
+
+        loadDishes(0);
+    }
+
     private void loadDishes(int inserted) {
 
-        if(!progressDialog.isShowing()) progressDialog.show();
+        if (!progressDialog.isShowing()) progressDialog.show();
 
-        int scrollTo = oldDishes ? (newActivity ? 0 : dishes.size()-1) : (inserted != 0? inserted-1 : 0);
+        int scrollTo = oldDishes ? (newActivity ? 0 : dishes.size()-1) : (inserted != 0 ? inserted-1 : 0);
 
         DishesSQLiteController dbController = new DishesSQLiteController(getApplicationContext(), 1);
         dishes = dbController.select(String.valueOf(inserted > 0 ? dishes.size()+inserted : dishes.size()+12), null, null);
         dbController.destroy();
 
-        if(newActivity) {
+        if (newActivity) {
+            newActivity = false;
             adapter = new DishesAdapter(dishes, this);
             layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+
             RecyclerView recyclerView = findViewById(R.id.dishes_recycler_view);
             recyclerView.setHasFixedSize(true);
             recyclerView.setAdapter(adapter);
@@ -103,29 +94,30 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
-                    if(newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                        if(!recyclerView.canScrollVertically(-1)) {
-                            if(Utilities.haveNetworkConnection(DishesActivity.this)) {
+                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                        if (!recyclerView.canScrollVertically(-1)) {
+                            if (Utilities.haveNetworkConnection(DishesActivity.this)) {
                                 oldDishes = false;
                                 progressDialog.show();
-                                WebBroadcastReceiver.scheduleJob(getApplicationContext(), WebService.ACTION_DISHES, WebService.METHOD_GET, null);
+                                WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                                        WebService.ACTION_DISHES, WebService.METHOD_GET, null);
                             } else {
-                                Toast.makeText(DishesActivity.this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(DishesActivity.this,
+                                        getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
                             }
-                        } else if(!recyclerView.canScrollVertically(1)) {
+                        } else if (!recyclerView.canScrollVertically(1)) {
                             oldDishes = true;
                             loadDishes(0);
                         }
                     }
                 }
             });
-            newActivity = false;
         } else {
             adapter.setDishes(dishes);
             layoutManager.scrollToPosition(scrollTo);
         }
 
-        if(progressDialog.isShowing() && dishes.size() > 0) progressDialog.dismiss();
+        if (progressDialog.isShowing() && dishes.size() > 0) progressDialog.dismiss();
 
     }
 
@@ -139,9 +131,27 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
     }
 
     @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.fab: {
+                Intent intent = new Intent(this, DishesDetailActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.restaurant_detail));
+                intent.putExtra(DishesSQLiteController.columns[1], "");
+                intent.putExtra(DishesSQLiteController.columns[2], "");
+                intent.putExtra(DishesSQLiteController.columns[3], "");
+                intent.putExtra(DishesSQLiteController.columns[4], "");
+                startActivityForResult(intent, 0);
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode  == RESULT_OK && !progressDialog.isShowing()) progressDialog.show();
+        if (resultCode  == RESULT_OK && !progressDialog.isShowing()) progressDialog.show();
     }
 
     @Override

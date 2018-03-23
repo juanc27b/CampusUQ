@@ -30,9 +30,10 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClickEmailListener, EasyPermissions.PermissionCallbacks {
 
     private ArrayList<Email> emails = new ArrayList<>();
-    private boolean newActivity = true, oldEmails = true;
+    private boolean newActivity = true;
     private EmailsAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
+    private boolean oldEmails = true;
 
     private IntentFilter emailsFilter = new IntentFilter(WebService.ACTION_EMAILS);
     private BroadcastReceiver emailsReceiver = new BroadcastReceiver() {
@@ -56,7 +57,6 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-
         super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
 
         ViewStub viewStub = findViewById(R.id.layout_stub);
@@ -91,18 +91,20 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
 
     private void loadEmails(int inserted) {
 
-        if(!progressDialog.isShowing()) progressDialog.show();
+        if (!progressDialog.isShowing()) progressDialog.show();
 
-        int scrollTo = oldEmails? (newActivity? 0 : emails.size()-1) : (inserted != 0? inserted-1 : 0);
+        int scrollTo = oldEmails ? (newActivity ? 0 : emails.size()-1) : (inserted != 0 ? inserted-1 : 0);
 
         EmailsSQLiteController dbController = new EmailsSQLiteController(getApplicationContext(), 1);
         emails = dbController.select(String.valueOf(inserted > 0 ? emails.size()+inserted : emails.size()+6),
                 null, null);
         dbController.destroy();
 
-        if(newActivity) {
+        if (newActivity) {
+            newActivity = false;
             adapter = new EmailsAdapter(emails, this);
             layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+
             RecyclerView recyclerView = findViewById(R.id.emails_recycler_view);
             recyclerView.setHasFixedSize(true);
             recyclerView.setAdapter(adapter);
@@ -111,24 +113,24 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
-                    if(newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                        if(!recyclerView.canScrollVertically(-1)) {
-                            if(Utilities.haveNetworkConnection(EmailsActivity.this)) {
+                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                        if (!recyclerView.canScrollVertically(-1)) {
+                            if (Utilities.haveNetworkConnection(EmailsActivity.this)) {
                                 oldEmails = false;
                                 progressDialog.show();
                                 WebBroadcastReceiver.scheduleJob(getApplicationContext(),
                                         WebService.ACTION_EMAILS, WebService.METHOD_GET, null);
                             } else {
-                                Toast.makeText(EmailsActivity.this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(EmailsActivity.this,
+                                        getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
                             }
-                        } else if(!recyclerView.canScrollVertically(1)) {
+                        } else if (!recyclerView.canScrollVertically(1)) {
                             oldEmails = true;
                             loadEmails(0);
                         }
                     }
                 }
             });
-            newActivity = false;
         } else {
             adapter.setEmails(emails);
             layoutManager.scrollToPosition(scrollTo);

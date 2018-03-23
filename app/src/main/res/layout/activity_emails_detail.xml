@@ -21,16 +21,16 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
                 android:text="@string/email_detail_from"
                 android:textSize="12sp"
-                android:textColor="@color/colorPrimary"
-                android:layout_marginStart="4dp"/>
+                android:textColor="@color/colorPrimary"/>
 
             <TextView
                 android:id="@+id/email_detail_from"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="10dp"
                 android:textSize="15sp"
                 android:hint="@string/email_detail_from_hint"
                 style="@android:style/Widget.EditText"/>
@@ -38,16 +38,16 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
                 android:text="@string/email_detail_to"
                 android:textSize="12sp"
-                android:textColor="@color/colorPrimary"
-                android:layout_marginStart="4dp"/>
+                android:textColor="@color/colorPrimary"/>
 
             <EditText
                 android:id="@+id/email_detail_to"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="10dp"
                 android:textSize="15sp"
                 android:inputType="textEmailAddress"
                 android:hint="@string/email_detail_to_hint"/>
@@ -55,16 +55,16 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
                 android:text="@string/email_detail_name"
                 android:textSize="12sp"
-                android:textColor="@color/colorPrimary"
-                android:layout_marginStart="4dp"/>
+                android:textColor="@color/colorPrimary"/>
 
             <EditText
                 android:id="@+id/email_detail_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="10dp"
                 android:textSize="15sp"
                 android:inputType="text"
                 android:hint="@string/email_detail_name_hint"
@@ -73,10 +73,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
                 android:text="@string/email_detail_content"
                 android:textSize="12sp"
-                android:textColor="@color/colorPrimary"
-                android:layout_marginStart="4dp"/>
+                android:textColor="@color/colorPrimary"/>
 
             <EditText
                 android:id="@+id/email_detail_content"

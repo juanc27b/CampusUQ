@@ -31,7 +31,7 @@ public class UsersServiceController {
             String respStr = EntityUtils.toString(respose.getEntity());
             JSONObject jsonResp = new JSONObject(respStr);
             JSONObject jsonUser = jsonResp.getJSONObject("usuario");
-            String _ID = jsonUser.getString("_ID");
+            int _ID = jsonUser.getInt("_ID");
             String name = jsonUser.getString("Nombre");
             String email = jsonUser.getString("Correo");
             String phone = jsonUser.getString("Telefono");
