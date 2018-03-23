@@ -2,23 +2,23 @@ package co.edu.uniquindio.campusuq.vo;
 
 public class Quota {
 
-    private String _ID;
+    private int _ID;
     private String type;
     private String name;
-    private String quota;
+    private int quota;
 
-    public Quota(String _ID, String type, String name, String quota) {
+    public Quota(int _ID, String type, String name, int quota) {
         this._ID = _ID;
         this.type = type;
         this.name = name;
         this.quota = quota;
     }
 
-    public String get_ID() {
+    public int get_ID() {
         return _ID;
     }
 
-    public void set_ID(String _ID) {
+    public void set_ID(int _ID) {
         this._ID = _ID;
     }
 
@@ -38,11 +38,11 @@ public class Quota {
         this.name = name;
     }
 
-    public String getQuota() {
+    public int getQuota() {
         return quota;
     }
 
-    public void setQuota(String quota) {
+    public void setQuota(int quota) {
         this.quota = quota;
     }
 

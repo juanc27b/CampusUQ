@@ -240,7 +240,7 @@ public class WebService extends JobService {
                         .setSubText(announcement.getDescription());
                 AnnouncementsSQLiteController dbController = new AnnouncementsSQLiteController(getApplicationContext(), 1);
                 ArrayList<AnnouncementLink> links = dbController.selectLink(
-                        AnnouncementsSQLiteController.CAMPOS_ENLACE[1] + " = ?", new String[]{announcement.get_ID()});
+                        AnnouncementsSQLiteController.linkColumns[1] + " = ?", new String[]{String.valueOf(announcement.get_ID())});
                 dbController.destroy();
                 file = links.size() > 0 ? new File(links.get(0).getLink()) : new File("");
                 break;
@@ -616,14 +616,14 @@ public class WebService extends JobService {
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
             ArrayList<Announcement> lastAnnouncements = dbController.select("1",
-                    AnnouncementsSQLiteController.CAMPOS_TABLA[1] + " = ?", new String[]{validRows});
+                    AnnouncementsSQLiteController.columns[1] + " = ?", new String[]{validRows});
             if (lastAnnouncements.size() > 0) {
                 lastAnnouncementId += "/"+lastAnnouncements.get(0).get_ID();
             } else {
                 notify = false;
             }
 
-            ArrayList<String> IDs = new ArrayList<>();
+            ArrayList<Integer> IDs = new ArrayList<>();
             ArrayList<Announcement> olds = dbController.select(null, null, null);
             for (Announcement announcement : olds) {
                 IDs.add(announcement.get_ID());
@@ -644,10 +644,10 @@ public class WebService extends JobService {
                     IDs.remove(index);
                 }
                 if (insert) {
-                    dbController.insert(announcement.get_ID(), announcement.getType(), announcement.getName(),
-                            announcement.getDate(), announcement.getDescription(), announcement.getRead());
+                    dbController.insert(announcement.get_ID(), announcement.getUser_ID(), announcement.getType(),
+                            announcement.getName(), announcement.getDate(), announcement.getDescription(), announcement.getRead());
                     ArrayList<AnnouncementLink> links =
-                            AnnouncementsServiceController.getAnnouncementLinks(getApplicationContext(), announcement.get_ID());
+                            AnnouncementsServiceController.getAnnouncementLinks(getApplicationContext(), String.valueOf(announcement.get_ID()));
                     for (AnnouncementLink link : links) {
                         String imagePath = Utilities.saveImage(link.getLink(), getApplicationContext());
                         if (imagePath != null) {
@@ -662,11 +662,7 @@ public class WebService extends JobService {
                 }
             }
 
-            if (updated.size() > 0) {
-                for (String ID : IDs) {
-                    dbController.delete(ID);
-                }
-            }
+            if (updated.size() > 0) dbController.delete(IDs.toArray());
 
         }
 
@@ -684,9 +680,9 @@ public class WebService extends JobService {
             return;
 
         int inserted = 0;
-        if(Utilities.haveNetworkConnection(getApplicationContext())) {
+        if (Utilities.haveNetworkConnection(getApplicationContext())) {
             ObjectsSQLiteController dbController = new ObjectsSQLiteController(getApplicationContext(), 1);
-            switch(method) {
+            switch (method) {
             case METHOD_POST:
             case METHOD_PUT:
             case METHOD_DELETE:
@@ -694,26 +690,24 @@ public class WebService extends JobService {
             case METHOD_GET:
                 NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 boolean remove = false;
-                ArrayList<String> oldIDs = new ArrayList<>();
-                for(LostObject old : dbController.select(null, null, null)) oldIDs.add(old.get_ID());
+                ArrayList<Integer> oldIDs = new ArrayList<>();
+                for (LostObject old : dbController.select(null, null, null)) oldIDs.add(old.get_ID());
                 String lastObjectId = oldIDs.size() > 0 ? "/"+oldIDs.get(0) : null;
-                for(LostObject lostObject : ObjectsServiceController.getObjects(getApplicationContext(), lastObjectId)) {
+                for (LostObject lostObject : ObjectsServiceController.getObjects(getApplicationContext(), lastObjectId)) {
                     remove = true;
                     String imagePath = Utilities.saveImage(lostObject.getImage(), getApplicationContext());
-                    if(imagePath != null) lostObject.setImage(imagePath);
+                    if (imagePath != null) lostObject.setImage(imagePath);
                     int index = oldIDs.indexOf(lostObject.get_ID());
-                    if(index == -1) {
+                    if (index == -1) {
                         dbController.insert(
                             lostObject.get_ID(), lostObject.getUserLost_ID(), lostObject.getName(),
                                 lostObject.getPlace(), lostObject.getDate(), lostObject.getDescription(),
-                                lostObject.getImage(), lostObject.getUserFound_ID(), "N"
-                        );
+                                lostObject.getImage(), lostObject.getUserFound_ID(), lostObject.getReaded());
                     } else {
                         dbController.update(
                             lostObject.get_ID(), lostObject.getUserLost_ID(), lostObject.getName(),
                                 lostObject.getPlace(), lostObject.getDate(), lostObject.getDescription(),
-                                lostObject.getImage(), lostObject.getUserFound_ID(), lostObject.get_ID()
-                        );
+                                lostObject.getImage(), lostObject.getUserFound_ID(), lostObject.get_ID());
                         oldIDs.remove(index);
                     }
                     inserted ++;
@@ -721,7 +715,7 @@ public class WebService extends JobService {
                         manager.notify(lostObject.getName(), mNotificationId, buildNotification(ACTION_OBJECTS, lostObject));
                     }
                 }
-                if(remove) dbController.delete(oldIDs);
+                if (remove) dbController.delete(oldIDs.toArray());
                 break;
             }
             dbController.destroy();
@@ -735,23 +729,23 @@ public class WebService extends JobService {
             return;
 
         int inserted = 0;
-        if(Utilities.haveNetworkConnection(getApplicationContext())) {
+        if (Utilities.haveNetworkConnection(getApplicationContext())) {
             DishesSQLiteController dbController = new DishesSQLiteController(getApplicationContext(), 1);
-            switch(method) {
+            switch (method) {
                 case METHOD_POST:
                 case METHOD_PUT:
                 case METHOD_DELETE:
                     DishesServiceController.modifyDish(getApplicationContext(), object);
                 case METHOD_GET:
                     boolean remove = false;
-                    ArrayList<String> oldIDs = new ArrayList<>();
-                    for(Dish old : dbController.select(null, null, null)) oldIDs.add(old.get_ID());
-                    for(Dish dish : DishesServiceController.getDishes(getApplicationContext())) {
+                    ArrayList<Integer> oldIDs = new ArrayList<>();
+                    for (Dish old : dbController.select(null, null, null)) oldIDs.add(old.get_ID());
+                    for (Dish dish : DishesServiceController.getDishes(getApplicationContext())) {
                         remove = true;
                         String imagePath = Utilities.saveImage(dish.getImage(), getApplicationContext());
-                        if(imagePath != null) dish.setImage(imagePath);
+                        if (imagePath != null) dish.setImage(imagePath);
                         int index = oldIDs.indexOf(dish.get_ID());
-                        if(index == -1) {
+                        if (index == -1) {
                             dbController.insert(dish.get_ID(), dish.getName(), dish.getDescription(),
                                     dish.getPrice(), dish.getImage());
                             inserted ++;
@@ -761,7 +755,7 @@ public class WebService extends JobService {
                             oldIDs.remove(index);
                         }
                     }
-                    if(remove) dbController.delete(oldIDs);
+                    if (remove) dbController.delete(oldIDs.toArray());
                     break;
             }
             dbController.destroy();
@@ -774,21 +768,21 @@ public class WebService extends JobService {
         if (jobCancelled)
             return;
 
-        if(Utilities.haveNetworkConnection(getApplicationContext())) {
+        if (Utilities.haveNetworkConnection(getApplicationContext())) {
             QuotasSQLiteController dbController = new QuotasSQLiteController(getApplicationContext(), 1);
-            switch(method) {
+            switch (method) {
                 case METHOD_POST:
                 case METHOD_PUT:
                 case METHOD_DELETE:
                     QuotasServiceController.modifyQuota(getApplicationContext(), object);
                 case METHOD_GET:
                     boolean remove = false;
-                    ArrayList<String> oldIDs = new ArrayList<>();
+                    ArrayList<Integer> oldIDs = new ArrayList<>();
                     for (Quota old : dbController.select(null, null)) oldIDs.add(old.get_ID());
                     for (Quota quota : QuotasServiceController.getQuotas(getApplicationContext())) {
                         remove = true;
                         int index = oldIDs.indexOf(quota.get_ID());
-                        if(index == -1) {
+                        if (index == -1) {
                             dbController.insert(quota.get_ID(), quota.getType(), quota.getName(), quota.getQuota());
                         } else {
                             dbController.update(quota.get_ID(), quota.getType(), quota.getName(),
@@ -796,7 +790,7 @@ public class WebService extends JobService {
                             oldIDs.remove(index);
                         }
                     }
-                    if(remove) dbController.delete(oldIDs);
+                    if (remove) dbController.delete(oldIDs.toArray());
                     break;
             }
             dbController.destroy();
@@ -806,9 +800,9 @@ public class WebService extends JobService {
 
     private void loadUsers(String method, String object) {
         User user = null;
-        if(Utilities.haveNetworkConnection(getApplicationContext())) {
+        if (Utilities.haveNetworkConnection(getApplicationContext())) {
             UsersSQLiteController dbController = new UsersSQLiteController(getApplicationContext(), 1);
-            switch(method) {
+            switch (method) {
                 case METHOD_POST:
                 case METHOD_PUT:
                     UsersServiceController.modifyUser(object);
@@ -840,7 +834,7 @@ public class WebService extends JobService {
             return;
 
         int inserted = 0;
-        if(Utilities.haveNetworkConnection(getApplicationContext())) {
+        if (Utilities.haveNetworkConnection(getApplicationContext())) {
             EmailsSQLiteController dbController = new EmailsSQLiteController(getApplicationContext(), 1);
             switch(method) {
                 case METHOD_POST:
@@ -850,13 +844,13 @@ public class WebService extends JobService {
                 case METHOD_GET:
                     User user = UsersPresenter.loadUser(getApplicationContext());
                     if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co")) {
-                        ArrayList<String> oldIDs = new ArrayList<>();
+                        ArrayList<Integer> oldIDs = new ArrayList<>();
                         ArrayList<Email> oldEmails = dbController.select("50", null, null);
-                        for(Email old : oldEmails) oldIDs.add(old.get_ID());
-                        for(Email email : EmailsServiceController.getEmails(getApplicationContext(),
+                        for (Email old : oldEmails) oldIDs.add(old.get_ID());
+                        for (Email email : EmailsServiceController.getEmails(getApplicationContext(),
                                 oldEmails.get(0) != null ? oldEmails.get(0).getHistoryID() : null)) {
                             int index = oldIDs.indexOf(email.get_ID());
-                            if(index == -1) {
+                            if (index == -1) {
                                 dbController.insert(email.get_ID(), email.getName(), email.getFrom(), email.getTo(),
                                         email.getDate(), email.getContent(), ""+email.getHistoryID());
                                 inserted ++;

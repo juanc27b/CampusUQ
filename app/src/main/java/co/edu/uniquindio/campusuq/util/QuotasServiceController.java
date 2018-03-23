@@ -3,7 +3,6 @@ package co.edu.uniquindio.campusuq.util;
 import android.content.Context;
 import android.util.Log;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -31,13 +30,13 @@ class QuotasServiceController {
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 quotas.add(new Quota(
-                    StringEscapeUtils.unescapeHtml4(object.getString(QuotasSQLiteController.columns[0])),
-                    StringEscapeUtils.unescapeHtml4(object.getString(QuotasSQLiteController.columns[1])),
-                    StringEscapeUtils.unescapeHtml4(object.getString(QuotasSQLiteController.columns[2])),
-                    StringEscapeUtils.unescapeHtml4(object.getString(QuotasSQLiteController.columns[3]))
+                    object.getInt(QuotasSQLiteController.columns[0]),
+                    object.getString(QuotasSQLiteController.columns[1]),
+                    object.getString(QuotasSQLiteController.columns[2]),
+                    object.getInt(QuotasSQLiteController.columns[3])
                 ));
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             Log.e(QuotasServiceController.class.getSimpleName(), e.getMessage());
             return new ArrayList<>();
         }

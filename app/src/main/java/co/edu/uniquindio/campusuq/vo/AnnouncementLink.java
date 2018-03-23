@@ -6,31 +6,31 @@ package co.edu.uniquindio.campusuq.vo;
 
 public class AnnouncementLink {
 
-    private String _ID;
-    private String announcement_ID;
+    private int _ID;
+    private int announcement_ID;
     private String type;
     private String link;
 
-    public AnnouncementLink(String _ID, String announcement_ID, String type, String link) {
+    public AnnouncementLink(int _ID, int announcement_ID, String type, String link) {
         this._ID = _ID;
         this.announcement_ID = announcement_ID;
         this.type = type;
         this.link = link;
     }
 
-    public String get_ID() {
+    public int get_ID() {
         return _ID;
     }
 
-    public void set_ID(String _ID) {
+    public void set_ID(int _ID) {
         this._ID = _ID;
     }
 
-    public String getAnnouncement_ID() {
+    public int getAnnouncement_ID() {
         return announcement_ID;
     }
 
-    public void setAnnouncement_ID(String announcement_ID) {
+    public void setAnnouncement_ID(int announcement_ID) {
         this.announcement_ID = announcement_ID;
     }
 

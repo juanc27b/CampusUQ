@@ -1,13 +1,13 @@
 package co.edu.uniquindio.campusuq.vo;
 
 public class Dish {
-    private String _ID;
+    private int _ID;
     private String name;
     private String description;
-    private String price;
+    private int price;
     private String image;
 
-    public Dish(String _ID, String name, String description, String price, String image) {
+    public Dish(int _ID, String name, String description, int price, String image) {
         this._ID = _ID;
         this.name = name;
         this.description = description;
@@ -15,11 +15,11 @@ public class Dish {
         this.image = image;
     }
 
-    public String get_ID() {
+    public int get_ID() {
         return _ID;
     }
 
-    public void set_ID(String _ID) {
+    public void set_ID(int _ID) {
         this._ID = _ID;
     }
 
@@ -39,11 +39,11 @@ public class Dish {
         this.description = description;
     }
 
-    public String getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 

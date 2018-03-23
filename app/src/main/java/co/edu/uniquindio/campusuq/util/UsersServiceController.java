@@ -2,7 +2,6 @@ package co.edu.uniquindio.campusuq.util;
 
 import android.util.Log;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 
 import co.edu.uniquindio.campusuq.vo.User;
@@ -32,15 +31,15 @@ public class UsersServiceController {
             String respStr = EntityUtils.toString(respose.getEntity());
             JSONObject jsonResp = new JSONObject(respStr);
             JSONObject jsonUser = jsonResp.getJSONObject("usuario");
-            String _ID = StringEscapeUtils.unescapeHtml4(jsonUser.getString("_ID"));
-            String name = StringEscapeUtils.unescapeHtml4(jsonUser.getString("Nombre"));
-            String email = StringEscapeUtils.unescapeHtml4(jsonUser.getString("Correo"));
-            String phone = StringEscapeUtils.unescapeHtml4(jsonUser.getString("Telefono"));
-            String address = StringEscapeUtils.unescapeHtml4(jsonUser.getString("Direccion"));
-            String document = StringEscapeUtils.unescapeHtml4(jsonUser.getString("Documento"));
-            String password = StringEscapeUtils.unescapeHtml4(jsonUser.getString("Contrasena"));
-            String apiKey = StringEscapeUtils.unescapeHtml4(jsonUser.getString("Clave_Api"));
-            String administrator = StringEscapeUtils.unescapeHtml4(jsonUser.getString("Administrador"));
+            int _ID = jsonUser.getInt("_ID");
+            String name = jsonUser.getString("Nombre");
+            String email = jsonUser.getString("Correo");
+            String phone = jsonUser.getString("Telefono");
+            String address = jsonUser.getString("Direccion");
+            String document = jsonUser.getString("Documento");
+            String password = jsonUser.getString("Contrasena");
+            String apiKey = jsonUser.getString("Clave_Api");
+            String administrator = jsonUser.getString("Administrador");
             user = new User(_ID, name, email, phone, address, document, password, apiKey, administrator);
         } catch (Exception e) {
             Log.e(UsersServiceController.class.getSimpleName(), e.getMessage());

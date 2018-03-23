@@ -26,52 +26,63 @@ public class ObjectsSQLiteController {
     }
 
     static String createTable() {
-        return "CREATE TABLE `"+tablename+"` (`"+columns[0]+"` INTEGER PRIMARY KEY, `"+columns[1]+"` INTEGER NOT NULL, `"+
-                TextUtils.join("` TEXT NOT NULL, `", Arrays.copyOfRange(columns, 2, columns.length-1))+
-                "` INTEGER, `"+columns[8]+"` TEXT NOT NULL )";
+        return "CREATE TABLE `"+tablename+"`(`"+
+                columns[0]+"` INTEGER PRIMARY KEY, `"+
+                columns[1]+"` INTEGER NOT NULL, `"+
+                columns[2]+"` TEXT NOT NULL, `"+
+                columns[3]+"` TEXT NOT NULL, `"+
+                columns[4]+"` TEXT NOT NULL, `"+
+                columns[5]+"` TEXT NOT NULL, `"+
+                columns[6]+"` TEXT NOT NULL, `"+
+                columns[7]+"` INTEGER, `"+
+                columns[8]+"` TEXT NOT NULL)";
     }
 
     public ArrayList<LostObject> select(String limit, String selection, String[] selectionArgs) {
         ArrayList<LostObject> objects = new ArrayList<>();
-        Cursor c = db.query(tablename, columns, selection, selectionArgs,
-                null, null, columns[4]+" DESC", limit);
-        if(c.moveToFirst()) do {
+        Cursor c = db.query(tablename, columns, selection, selectionArgs, null,
+                null, '`'+columns[4]+"` DESC", limit);
+        if (c.moveToFirst()) do {
             objects.add(new LostObject(
-                    c.getString(0),
-                    c.getString(1),
+                    c.getInt(0),
+                    c.getInt(1),
                     c.getString(2),
                     c.getString(3),
                     c.getString(4),
                     c.getString(5),
                     c.getString(6),
-                    c.getString(7)
+                    c.isNull(7) ? null : c.getInt(7),
+                    c.getString(8)
             ));
-        } while(c.moveToNext());
+        } while (c.moveToNext());
         c.close();
         return objects;
     }
 
-    public void insert(String... values) {
+    public void insert(Object... values) {
         db.execSQL("INSERT INTO `"+tablename+"`(`"+
-                TextUtils.join("`, `", columns)+"`) VALUES ("+
+                TextUtils.join("`, `", columns)+"`) VALUES("+
                 TextUtils.join(", ", Collections.nCopies(columns.length, "?"))+")", values);
     }
 
-    public void update(String... values) {
+    public void update(Object... values) {
         db.execSQL("UPDATE `"+tablename+"` SET `"+
                 TextUtils.join("` = ?, `", Arrays.copyOfRange(columns, 0, columns.length-1))+
                 "` = ? WHERE `"+columns[0]+"` = ?", values);
     }
 
-    public void readed(String... values) {
-        db.execSQL("UPDATE `"+tablename+"` SET `"+columns[8]+"` = 'S' WHERE `"+columns[0]+"` = ?", values);
+    public void readed(Object... ids) {
+        db.execSQL("UPDATE `"+tablename+"` SET `"+columns[8]+"` = 'S' WHERE `"+columns[0]+"` IN("+
+                TextUtils.join(", ", Collections.nCopies(ids.length, "?"))+")", ids);
     }
 
-    public void delete(ArrayList<String> ids) {
-        db.execSQL("DELETE FROM `"+tablename+"` WHERE `"+columns[0]+"` IN("+TextUtils.join(", ", Collections.nCopies(ids.size(), "?"))+")", ids.toArray());
+    public void delete(Object... ids) {
+        db.execSQL("DELETE FROM `"+tablename+"` WHERE `"+columns[0]+"` IN("+
+                TextUtils.join(", ", Collections.nCopies(ids.length, "?"))+")", ids);
     }
 
     public void destroy() {
         usdbh.close();
     }
+
 }

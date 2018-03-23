@@ -32,37 +32,39 @@ public class QuotasAdapter extends RecyclerView.Adapter<QuotasAdapter.QuotaViewH
 
         QuotaViewHolder(View view) {
             super(view);
-            LinearLayout layout;
-            layout = view.findViewById(R.id.quota_layout);
-            layout.setOnClickListener(this);
-            layout.setOnLongClickListener(this);
+
             icon = view.findViewById(R.id.quota_icon);
             name = view.findViewById(R.id.quota_name);
             quota = view.findViewById(R.id.quota_quota);
+
+            LinearLayout layout = view.findViewById(R.id.quota_layout);
+            layout.setOnClickListener(this);
+            layout.setOnLongClickListener(this);
         }
 
         void bindItem(Quota q) {
-            icon.setImageResource(q.getQuota().equals("0")? R.drawable.circle_gray : R.drawable.circle_green);
+            icon.setImageResource(q.getQuota() != 0 ? R.drawable.circle_green : R.drawable.circle_gray);
             name.setText(q.getName());
             name.setTextSize(q.getType().equals("S")? 20 : 15);
-            quota.setText(q.getQuota());
+            quota.setText(String.valueOf(q.getQuota()));
         }
 
         @Override
         public void onClick(View view) {
-            listener.onQuotaClick(false, getAdapterPosition());
+            listener.onQuotaClick(true, getAdapterPosition());
         }
 
         @Override
         public boolean onLongClick(View view) {
-            listener.onQuotaClick(true, getAdapterPosition());
+            listener.onQuotaClick(false, getAdapterPosition());
             return true;
         }
     }
 
     @Override
     public QuotaViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new QuotaViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.quota_detail, parent, false));
+        return new QuotaViewHolder(LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.quota_detail, parent, false));
     }
 
     @Override
@@ -81,7 +83,7 @@ public class QuotasAdapter extends RecyclerView.Adapter<QuotasAdapter.QuotaViewH
     }
 
     public interface OnClickQuotaListener {
-        void onQuotaClick(boolean long_click, int index);
+        void onQuotaClick(boolean fragment_quotas, int index);
     }
 
 }

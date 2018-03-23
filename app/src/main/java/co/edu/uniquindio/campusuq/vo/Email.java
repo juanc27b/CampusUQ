@@ -4,7 +4,7 @@ import java.math.BigInteger;
 
 public class Email {
 
-    private String _ID;
+    private int _ID;
     private String name;
     private String from;
     private String to;
@@ -12,7 +12,7 @@ public class Email {
     private String content;
     private BigInteger historyID;
 
-    public Email(String _ID, String name, String from, String to, String date, String content, BigInteger historyID) {
+    public Email(int _ID, String name, String from, String to, String date, String content, BigInteger historyID) {
         this._ID = _ID;
         this.name = name;
         this.from = from;
@@ -22,11 +22,11 @@ public class Email {
         this.historyID = historyID;
     }
 
-    public String get_ID() {
+    public int get_ID() {
         return _ID;
     }
 
-    public void set_ID(String _ID) {
+    public void set_ID(int _ID) {
         this._ID = _ID;
     }
 

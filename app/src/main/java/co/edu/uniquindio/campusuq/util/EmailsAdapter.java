@@ -24,15 +24,20 @@ public class EmailsAdapter extends RecyclerView.Adapter<EmailsAdapter.EmailViewH
 
     public class EmailViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView icon, date, from, content;
+        private TextView icon;
+        private TextView date;
+        private TextView from;
+        private TextView content;
 
         EmailViewHolder(View view) {
             super(view);
-            view.findViewById(R.id.email_layout).setOnClickListener(this);
+
             icon = view.findViewById(R.id.email_icon);
             date = view.findViewById(R.id.email_date);
             from = view.findViewById(R.id.email_from);
             content = view.findViewById(R.id.email_content);
+
+            view.findViewById(R.id.email_layout).setOnClickListener(this);
         }
 
         void bindItem(Email email) {
@@ -51,7 +56,8 @@ public class EmailsAdapter extends RecyclerView.Adapter<EmailsAdapter.EmailViewH
 
     @Override
     public EmailViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new EmailViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.email_detail, parent, false));
+        return new EmailViewHolder(LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.email_detail, parent, false));
     }
 
     @Override

@@ -3,7 +3,6 @@ package co.edu.uniquindio.campusuq.util;
 import android.content.Context;
 import android.util.Log;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -11,8 +10,6 @@ import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.vo.Announcement;
 import co.edu.uniquindio.campusuq.vo.AnnouncementLink;
-import cz.msebera.android.httpclient.HttpResponse;
-import cz.msebera.android.httpclient.client.HttpClient;
 import cz.msebera.android.httpclient.client.methods.HttpGet;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 import cz.msebera.android.httpclient.util.EntityUtils;
@@ -25,29 +22,26 @@ public class AnnouncementsServiceController {
 
     public static ArrayList<Announcement> getAnnouncements(Context context, String category) {
         String url = Utilities.URL_SERVICIO+"/anuncios";
-        if (category != null) {
-            url += category;
-        }
-        ArrayList<Announcement> announcements = new ArrayList<>();
-        HttpClient httpClient = HttpClientBuilder.create().build();
+        if (category != null)  url += category;
         HttpGet request = new HttpGet(url);
         request.setHeader("Content-Type", "application/json; Charset=UTF-8");
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
+        ArrayList<Announcement> announcements = new ArrayList<>();
         try {
-            HttpResponse resp = httpClient.execute(request);
-            String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
-            JSONObject json = new JSONObject(respStr);
-            JSONArray array = json.getJSONArray("datos");
+            JSONArray array = (new JSONObject(
+                    EntityUtils.toString(HttpClientBuilder.create().build().execute(request).getEntity(), "UTF-8")))
+                    .getJSONArray("datos");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                String _ID = StringEscapeUtils.unescapeHtml4(object.getString("_ID"));
-                String type = StringEscapeUtils.unescapeHtml4(object.getString("Tipo"));
-                String name = StringEscapeUtils.unescapeHtml4(object.getString("Nombre"));
-                String date = StringEscapeUtils.unescapeHtml4(object.getString("Fecha"));
-                String description = StringEscapeUtils.unescapeHtml4(object.getString("Descripcion"));
-                String read = "N";
-                Announcement announcement = new Announcement(_ID, type, name, date, description, read);
-                announcements.add(announcement);
+                announcements.add(new Announcement(
+                        object.getInt(AnnouncementsSQLiteController.columns[0]),
+                        object.getInt(AnnouncementsSQLiteController.columns[1]),
+                        object.getString(AnnouncementsSQLiteController.columns[2]),
+                        object.getString(AnnouncementsSQLiteController.columns[3]),
+                        object.getString(AnnouncementsSQLiteController.columns[4]),
+                        object.getString(AnnouncementsSQLiteController.columns[5]),
+                        "N"
+                ));
             }
         } catch (Exception e) {
             Log.e(AnnouncementsServiceController.class.getSimpleName(), e.getMessage());
@@ -58,27 +52,23 @@ public class AnnouncementsServiceController {
 
     public static ArrayList<AnnouncementLink> getAnnouncementLinks(Context context, String announcement) {
         String url = Utilities.URL_SERVICIO+"/anuncio_enlaces";
-        if (announcement != null) {
-            url += "/" + announcement;
-        }
-        ArrayList<AnnouncementLink> links = new ArrayList<>();
-        HttpClient httpClient = HttpClientBuilder.create().build();
+        if (announcement != null)  url += "/" + announcement;
         HttpGet request = new HttpGet(url);
         request.setHeader("Content-Type", "application/json; Charset=UTF-8");
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
+        ArrayList<AnnouncementLink> links = new ArrayList<>();
         try {
-            HttpResponse resp = httpClient.execute(request);
-            String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
-            JSONObject json = new JSONObject(respStr);
-            JSONArray array = json.getJSONArray("datos");
+            JSONArray array = (new JSONObject(
+                    EntityUtils.toString(HttpClientBuilder.create().build().execute(request).getEntity(), "UTF-8")))
+                    .getJSONArray("datos");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                String _ID = StringEscapeUtils.unescapeHtml4(object.getString("_ID"));
-                String announcement_ID = StringEscapeUtils.unescapeHtml4(object.getString("Anuncio_ID"));
-                String type = StringEscapeUtils.unescapeHtml4(object.getString("Tipo"));
-                String link = StringEscapeUtils.unescapeHtml4(object.getString("Enlace"));
-                AnnouncementLink announcementLink = new AnnouncementLink(_ID, announcement_ID, type, link);
-                links.add(announcementLink);
+                links.add(new AnnouncementLink(
+                        object.getInt(AnnouncementsSQLiteController.linkColumns[0]),
+                        object.getInt(AnnouncementsSQLiteController.linkColumns[1]),
+                        object.getString(AnnouncementsSQLiteController.linkColumns[2]),
+                        object.getString(AnnouncementsSQLiteController.linkColumns[3])
+                ));
             }
         } catch (Exception e) {
             Log.e(AnnouncementsServiceController.class.getSimpleName(), e.getMessage());

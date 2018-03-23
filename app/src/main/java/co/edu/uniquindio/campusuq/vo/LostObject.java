@@ -2,16 +2,17 @@ package co.edu.uniquindio.campusuq.vo;
 
 public class LostObject {
 
-    private String _ID;
-    private String userLost_ID;
+    private int _ID;
+    private int userLost_ID;
     private String name;
     private String place;
     private String date;
     private String description;
     private String image;
-    private String userFound_ID;
+    private Integer userFound_ID;
+    private String readed;
 
-    public LostObject(String _ID, String userLost_ID, String name, String place, String date, String description, String image, String userFound_ID) {
+    public LostObject(int _ID, int userLost_ID, String name, String place, String date, String description, String image, Integer userFound_ID, String readed) {
         this._ID = _ID;
         this.userLost_ID = userLost_ID;
         this.name = name;
@@ -20,21 +21,22 @@ public class LostObject {
         this.description = description;
         this.image = image;
         this.userFound_ID = userFound_ID;
+        this.readed = readed;
     }
 
-    public String get_ID() {
+    public int get_ID() {
         return _ID;
     }
 
-    public void set_ID(String _ID) {
+    public void set_ID(int _ID) {
         this._ID = _ID;
     }
 
-    public String getUserLost_ID() {
+    public int getUserLost_ID() {
         return userLost_ID;
     }
 
-    public void setUserLost_ID(String userLost_ID) {
+    public void setUserLost_ID(int userLost_ID) {
         this.userLost_ID = userLost_ID;
     }
 
@@ -78,12 +80,20 @@ public class LostObject {
         this.image = image;
     }
 
-    public String getUserFound_ID() {
+    public Integer getUserFound_ID() {
         return userFound_ID;
     }
 
-    public void setUserFound_ID(String userFound_ID) {
+    public void setUserFound_ID(Integer userFound_ID) {
         this.userFound_ID = userFound_ID;
+    }
+
+    public String getReaded() {
+        return readed;
+    }
+
+    public void setReaded(String readed) {
+        this.readed = readed;
     }
 
 }

@@ -6,15 +6,17 @@ package co.edu.uniquindio.campusuq.vo;
 
 public class Announcement {
 
-    private String _ID;
+    private int _ID;
+    private int user_ID;
     private String type;
     private String name;
     private String date;
     private String description;
     private String read;
 
-    public Announcement(String _ID, String type, String name, String date, String description, String read) {
+    public Announcement(int _ID, int user_ID, String type, String name, String date, String description, String read) {
         this._ID = _ID;
+        this.user_ID = user_ID;
         this.type = type;
         this.name = name;
         this.date = date;
@@ -22,12 +24,20 @@ public class Announcement {
         this.read = read;
     }
 
-    public String get_ID() {
+    public int get_ID() {
         return _ID;
     }
 
-    public void set_ID(String _ID) {
+    public void set_ID(int _ID) {
         this._ID = _ID;
+    }
+
+    public int getUser_ID() {
+        return user_ID;
+    }
+
+    public void setUser_ID(int user_ID) {
+        this.user_ID = user_ID;
     }
 
     public String getType() {

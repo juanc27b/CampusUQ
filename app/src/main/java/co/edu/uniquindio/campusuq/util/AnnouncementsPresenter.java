@@ -14,19 +14,12 @@ import co.edu.uniquindio.campusuq.vo.AnnouncementLink;
 public class AnnouncementsPresenter {
 
     public ArrayList<Announcement> loadAnnouncements(String type, Context context, int limit) {
-        ArrayList<Announcement> announcements = new ArrayList<>();
+        String validRows = WebService.ACTION_INCIDENTS.equals(type) ? "I" : "C";
 
         AnnouncementsSQLiteController dbController = new AnnouncementsSQLiteController(context, 1);
-        String validRows = null;
 
-        if (WebService.ACTION_INCIDENTS.equals(type)) {
-            validRows = "I";
-        } else {
-            validRows = "C";
-        }
-
-        announcements = dbController.select(""+limit,
-                AnnouncementsSQLiteController.CAMPOS_TABLA[1] + " = ?", new String[]{validRows});
+        ArrayList<Announcement> announcements = dbController.select(String.valueOf(limit),
+                '`'+AnnouncementsSQLiteController.columns[2]+"` = ?", new String[]{validRows});
 
         dbController.destroy();
 
@@ -34,27 +27,21 @@ public class AnnouncementsPresenter {
     }
 
     public Announcement getAnnouncementByID(String _ID, Context context) {
-        Announcement announcement = null;
-
         AnnouncementsSQLiteController dbController = new AnnouncementsSQLiteController(context, 1);
 
         ArrayList<Announcement> announcements = dbController.select("1",
-                AnnouncementsSQLiteController.CAMPOS_TABLA[0] + " = ?", new String[]{_ID});
-
-        announcement = announcements.get(0);
+                '`'+AnnouncementsSQLiteController.columns[0]+"` = ?", new String[]{_ID});
 
         dbController.destroy();
 
-        return announcement;
+        return announcements.get(0);
     }
 
     public ArrayList<AnnouncementLink> getAnnouncementLinks(String _ID, Context context) {
-        ArrayList<AnnouncementLink>links = new ArrayList<>();
-
         AnnouncementsSQLiteController dbController = new AnnouncementsSQLiteController(context, 1);
 
-        links = dbController.selectLink(
-                AnnouncementsSQLiteController.CAMPOS_ENLACE[1] + " = ?", new String[]{_ID});
+        ArrayList<AnnouncementLink> links = dbController.selectLink(
+                '`'+AnnouncementsSQLiteController.linkColumns[1]+"` = ?", new String[]{_ID});
 
         dbController.destroy();
 
