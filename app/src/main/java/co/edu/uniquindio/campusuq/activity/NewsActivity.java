@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,8 +21,12 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
+import com.twitter.sdk.android.core.Twitter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.NewsAdapter;
@@ -45,6 +50,7 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
 
     public CallbackManager callbackManager;
     public boolean loggedIn;
+    public ShareDialog shareDialog;
 
     public NewsActivity() {
         this.news = new ArrayList<New>();
@@ -62,7 +68,6 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
         AppEventsLogger.activateApp(this);
 
         callbackManager = CallbackManager.Factory.create();
-
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -77,8 +82,10 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                 // App code
             }
         });
-
         loggedIn = AccessToken.getCurrentAccessToken() == null;
+        shareDialog = new ShareDialog(this);
+
+        Twitter.initialize(this);
 
         super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
 
@@ -131,8 +138,17 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                 NewsActivity.this.startActivity(intent);
                 break;
             case "facebook":
-                Toast.makeText(this, "Facebook clicked: "+pos, Toast.LENGTH_SHORT).show();
-                //LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends"));
+                if (!loggedIn) {
+                    LoginManager.getInstance().logInWithReadPermissions(this,
+                            Arrays.asList("public_profile", "user_friends"));
+                } else if (ShareDialog.canShow(ShareLinkContent.class)) {
+                    ShareLinkContent content = new ShareLinkContent.Builder()
+                            .setContentTitle(news.get(pos).getName())
+                            .setContentUrl(Uri.parse(news.get(pos).getLink()))
+                            .setContentDescription(news.get(pos).getSummary())
+                            .build();
+                    shareDialog.show(content);
+                }
                 break;
             case "twitter":
                 Toast.makeText(this, "Twitter clicked: "+pos, Toast.LENGTH_SHORT).show();
@@ -150,7 +166,7 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK){
+        if (resultCode == RESULT_OK){
             Bundle bundle = data.getExtras();
             String fbData = bundle.toString();
             Toast.makeText(this, "Fb OK: "+fbData, Toast.LENGTH_SHORT).show();

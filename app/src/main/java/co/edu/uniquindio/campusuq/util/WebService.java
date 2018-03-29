@@ -26,6 +26,7 @@ import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.AnnouncementsActivity;
+import co.edu.uniquindio.campusuq.activity.EmailsActivity;
 import co.edu.uniquindio.campusuq.activity.NewsActivity;
 import co.edu.uniquindio.campusuq.activity.ObjectsActivity;
 import co.edu.uniquindio.campusuq.vo.Announcement;
@@ -143,18 +144,32 @@ public class WebService extends JobIntentService {
         String object = intent.getStringExtra("OBJECT");
         switch (action) {
             case ACTION_ALL:
+                int progress = 0;
+                Intent menuIntent = new Intent(ACTION_ALL);
                 loadInformations();
+                sendBroadcast(menuIntent.putExtra("PROGRESS", progress += 10));
                 loadContacts();
+                sendBroadcast(menuIntent.putExtra("PROGRESS", progress += 10));
                 loadPrograms();
+                sendBroadcast(menuIntent.putExtra("PROGRESS", progress += 10));
                 loadCalendar();
+                sendBroadcast(menuIntent.putExtra("PROGRESS", progress += 10));
                 loadNews(ACTION_EVENTS);
+                sendBroadcast(menuIntent.putExtra("PROGRESS", progress += 10));
                 loadNews(ACTION_NEWS);
+                sendBroadcast(menuIntent.putExtra("PROGRESS", progress += 10));
                 loadAnnouncements(ACTION_INCIDENTS);
+                sendBroadcast(menuIntent.putExtra("PROGRESS", progress += 10));
                 loadAnnouncements(ACTION_COMMUNIQUES);
+                sendBroadcast(menuIntent.putExtra("PROGRESS", progress += 10));
                 loadObjects(method, object);
+                sendBroadcast(menuIntent.putExtra("PROGRESS", progress += 10));
                 loadDishes(method, object);
+                sendBroadcast(menuIntent.putExtra("PROGRESS", progress += 10));
                 loadQuotas(method, object);
+                sendBroadcast(menuIntent.putExtra("PROGRESS", progress += 10));
                 loadEmails(method, object);
+                sendBroadcast(menuIntent.putExtra("PROGRESS", progress + 10));
                 break;
             case ACTION_EVENTS:
                 loadNews(ACTION_EVENTS);
@@ -248,6 +263,14 @@ public class WebService extends JobIntentService {
                 dbController.destroy();
                 file = links.size() > 0 ? new File(links.get(0).getLink()) : new File("");
                 break;
+            case ACTION_EMAILS:
+                Email email = (Email) object;
+                builder
+                        .setContentTitle(getString(R.string.app_name)+" - "+getString(R.string.institutional_mail))
+                        .setContentText(email.getName())
+                        .setSubText(email.getSnippet());
+                file = new File("");
+                break;
             default:
                 break;
         }
@@ -303,6 +326,13 @@ public class WebService extends JobIntentService {
                 stackBuilder.addParentStack(AnnouncementsActivity.class);
                 stackBuilder.editIntentAt(0).putExtra("CATEGORY", getString(R.string.app_title_menu));
                 stackBuilder.editIntentAt(1).putExtra("CATEGORY", getString(R.string.state_module));
+                break;
+            case ACTION_EMAILS:
+                resultIntent = new Intent(getApplicationContext(), EmailsActivity.class);
+                resultIntent.putExtra("CATEGORY", getString(R.string.institutional_mail));
+                stackBuilder.addParentStack(EmailsActivity.class);
+                stackBuilder.editIntentAt(0).putExtra("CATEGORY", getString(R.string.app_title_menu));
+                stackBuilder.editIntentAt(1).putExtra("CATEGORY", getString(R.string.communication_module));
                 break;
             default:
                 break;
@@ -696,6 +726,8 @@ public class WebService extends JobIntentService {
             case METHOD_DELETE:
                 ObjectsServiceController.modifyObject(getApplicationContext(), object);
             case METHOD_GET:
+                boolean notify = NotificationsPresenter.getNotification(getApplicationContext(), "3")
+                        .getActivated().equals("S");
                 NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 boolean remove = false;
                 ArrayList<Integer> oldIDs = new ArrayList<>();
@@ -719,7 +751,7 @@ public class WebService extends JobIntentService {
                         oldIDs.remove(index);
                     }
                     inserted ++;
-                    if (lastObjectId != null && inserted <= 5) {
+                    if (notify && lastObjectId != null && inserted <= 5) {
                         manager.notify(lostObject.getName(), mNotificationId, buildNotification(ACTION_OBJECTS, lostObject));
                     }
                 }
@@ -869,7 +901,7 @@ public class WebService extends JobIntentService {
                         String to = jsonEmail.getString(EmailsSQLiteController.columns[3]);
                         String date = jsonEmail.getString(EmailsSQLiteController.columns[4]);
                         String content = jsonEmail.getString(EmailsSQLiteController.columns[6]);
-                        Email email = new Email(0, name, from, to, date, "", content, new BigInteger("0"));
+                        Email email = new Email("0", name, from, to, date, "", content, new BigInteger("0"));
                         inserted = EmailsServiceController.sendEmail(getApplicationContext(), email) ? 1 : 0;
                     } catch (Exception e) {
                         if (e instanceof UserRecoverableAuthIOException) {
@@ -880,19 +912,27 @@ public class WebService extends JobIntentService {
                     }
                     break;
                 case METHOD_GET:
+                    boolean notify = NotificationsPresenter.getNotification(getApplicationContext(), "6")
+                            .getActivated().equals("S");
+                    NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                     User user = UsersPresenter.loadUser(getApplicationContext());
                     if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co")) {
-                        ArrayList<Integer> oldIDs = new ArrayList<>();
+                        ArrayList<String> oldIDs = new ArrayList<>();
                         ArrayList<Email> oldEmails = dbController.select("50", null, null);
                         for (Email old : oldEmails) oldIDs.add(old.get_ID());
                         try {
-                            for (Email email : EmailsServiceController.getEmails(getApplicationContext(),
-                                    oldEmails.size() > 0 ? oldEmails.get(0).getHistoryID() : null)) {
+                            ArrayList<Email> emails = EmailsServiceController.getEmails(getApplicationContext(),
+                                    oldEmails.size() > 0 ? oldEmails.get(0).getHistoryID() : null);
+                            notify = emails.size() > 0 && notify;
+                            for (Email email : emails) {
                                 int index = oldIDs.indexOf(email.get_ID());
                                 if (index == -1) {
                                     dbController.insert(email.get_ID(), email.getName(), email.getFrom(), email.getTo(),
                                             email.getDate(), email.getSnippet(), email.getContent(), ""+email.getHistoryID());
                                     inserted ++;
+                                    if (notify && inserted <= 5) {
+                                        manager.notify(email.getName(), mNotificationId, buildNotification(ACTION_EMAILS, email));
+                                    }
                                 }
                             }
                         } catch (UserRecoverableAuthIOException e) {

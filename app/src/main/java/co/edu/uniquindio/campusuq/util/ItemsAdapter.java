@@ -61,7 +61,9 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
 
         @Override
         public void onClick(View v) {
+            v.setEnabled(false);
             listener.onItemClick(getAdapterPosition());
+            v.setEnabled(true);
         }
 
     }

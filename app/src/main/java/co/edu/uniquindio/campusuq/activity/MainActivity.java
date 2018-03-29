@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Utilities.getLanguage(this);
         setContentView(R.layout.activity_main);
 
         // Get the intent, verify the action and get the query
@@ -134,13 +135,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent = null;
+
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
-            case android.R.id.home:
+            case android.R.id.home: {
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                 if (hasNavigationDrawerIcon) {
                     drawer.openDrawer(GravityCompat.START);
@@ -148,16 +149,30 @@ public class MainActivity extends AppCompatActivity
                     onBackPressed();
                 }
                 return true;
-            case R.id.action_change_language:
+            }
+            case R.id.action_change_language: {
+                Utilities.changeLanguage(MainActivity.this);
+                Intent intent = new Intent(MainActivity.this, StartActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                        Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
                 return true;
-            case R.id.action_adjust_notifications:
+            }
+            case R.id.action_adjust_notifications: {
+                Intent intent = new Intent(MainActivity.this, NotificationsActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.log_in));
+                MainActivity.this.startActivity(intent);
                 return true;
-            case R.id.action_delete_history:
+            }
+            case R.id.action_delete_history: {
                 Utilities.deleteHistory(MainActivity.this);
                 return true;
-            case R.id.action_login:
+            }
+            case R.id.action_login: {
                 User user = UsersPresenter.loadUser(MainActivity.this);
                 if (user != null) {
+                    Intent intent = null;
                     if (user.getEmail().equals("campusuq@uniquindio.edu.co")) {
                         intent = new Intent(MainActivity.this, LoginActivity.class);
                         intent.putExtra("CATEGORY", getString(R.string.log_in));
@@ -169,6 +184,7 @@ public class MainActivity extends AppCompatActivity
                     MainActivity.this.startActivity(intent);
                 }
                 return true;
+            }
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
@@ -261,7 +277,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_studio_zones:
                 intent = new Intent(MainActivity.this, QuotasActivity.class);
-                intent.putExtra("CATEGORY", getString(R.string.studio_zones));
+                intent.putExtra("CATEGORY", getString(R.string.study_areas));
                 break;
             case R.id.nav_cultural_and_sport:
                 intent = new Intent(MainActivity.this, QuotasActivity.class);

@@ -11,80 +11,92 @@
 
     <string name="information_module">Information</string>
     <string name="events">Events</string>
-    <string name="events_description"></string>
+    <string name="events_description">See and share the events of the University of Quindio</string>
     <string name="news">News</string>
-    <string name="news_description"></string>
+    <string name="news_description">See and share the news of the University of Quindio</string>
     <string name="institution">Institution</string>
-    <string name="institution_description"></string>
+    <string name="institution_description">See the mission, vision, quality policy, strategic axes and symbols of the UQ</string>
     <string name="directory">Phone directory</string>
-    <string name="directory_description"></string>
+    <string name="directory_description">See contact information of the dependencies and officials of the UQ</string>
     <string name="academic_offer">Academic offer</string>
-    <string name="academic_offer_description"></string>
+    <string name="academic_offer_description">Consult the occupational profile and the curriculum of the programs</string>
     <string name="academic_calendar">Academic calendar</string>
-    <string name="academic_calendar_description"></string>
+    <string name="academic_calendar_description">See the schedule of the academic events of the University</string>
     <string name="employment_exchange">Employment exchange</string>
-    <string name="employment_exchange_description"></string>
+    <string name="employment_exchange_description">Enter the job portal of the University of Quindio</string>
     <string name="institutional_welfare">Institutional welfare</string>
-    <string name="institutional_welfare_description"></string>
+    <string name="institutional_welfare_description">Consult the offer of sports and cultural courses of the UQ</string>
 
     <string name="services_module">Services</string>
     <string name="university_map">University map</string>
-    <string name="university_map_description"></string>
+    <string name="university_map_description">Orient yourself within the University through a map with indications</string>
     <string name="library_services">Library services</string>
-    <string name="library_services_description"></string>
+    <string name="library_services_description">Access the digital repository, the public catalog and the databases</string>
     <string name="radio">Institutional radio</string>
-    <string name="radio_description"></string>
+    <string name="radio_description">Listen to the radio of the University "La UFM Stereo" 102.1 FM</string>
     <string name="pqrsd_system">Claims and complaints</string>
-    <string name="pqrsd_system_description"></string>
+    <string name="pqrsd_system_description">Make requests, complaints, and claims to the University</string>
     <string name="lost_objects">Lost lostObjects</string>
-    <string name="lost_objects_description"></string>
+    <string name="lost_objects_description">Consult and report lost objects within the University</string>
     <string name="security_system">Security system</string>
-    <string name="security_system_description"></string>
+    <string name="security_system_description">Consult and report emergencies, thefts and other incidents</string>
 
     <string name="state_module">State</string>
     <string name="restaurant">Restaurant menu</string>
-    <string name="restaurant_description"></string>
+    <string name="restaurant_description">See the menu of the University restaurant, details and prices</string>
     <string name="billboard_information">Billboard information</string>
-    <string name="billboard_information_description"></string>
+    <string name="billboard_information_description">See and share information published on the billboard</string>
     <string name="computer_rooms">Computer rooms</string>
-    <string name="computer_rooms_description"></string>
+    <string name="computer_rooms_description">Check the availability of the University\'s computer rooms</string>
     <string name="parking_lots">Parking lots</string>
-    <string name="parking_lots_description"></string>
+    <string name="parking_lots_description">Check the availability of the parking lots of the University</string>
+    <string name="laboratories">Laboratories</string>
+    <string name="laboratories_description">Check the availability of the laboratories of the University</string>
+    <string name="study_areas">Zonas de estudio</string>
+    <string name="study_areas_description">Check the availability of the study areas of the University</string>
+    <string name="cultural_and_sport">Cultural and sport</string>
+    <string name="cultural_and_sport_description">Check the availability of cultural and sports spaces of the University</string>
+    <string name="auditoriums">Auditoriums</string>
+    <string name="auditoriums_description">Check the availability of the auditoriums of the University</string>
 
     <string name="communication_module">Communication</string>
     <string name="institutional_mail">Institutional mail</string>
-    <string name="institutional_mail_description"></string>
+    <string name="institutional_mail_description">Read and write emails from the institutional email account</string>
     <string name="web_page">Web page</string>
-    <string name="web_page_description"></string>
+    <string name="web_page_description">Enter the website of the University of Quindio</string>
     <string name="ecotic">Ecotic</string>
-    <string name="ecotic_description"></string>
+    <string name="ecotic_description">Enter the ECOTIC system of the University of Quindio</string>
 
     <string name="mission_vision">Mission and vision</string>
-    <string name="mission_vision_description"></string>
+    <string name="mission_vision_description">See the current mission and vision of the University of Quindio</string>
     <string name="quality_policy">Quality policy</string>
-    <string name="quality_policy_description"></string>
+    <string name="quality_policy_description">See the quality policy of the University of Quindio</string>
     <string name="axes_pillars_objectives">Strategic axes, pillars and objectives</string>
-    <string name="axes_pillars_objectives_description"></string>
+    <string name="axes_pillars_objectives_description">See the strategic axes, pillars and objectives of the University of Quindio</string>
+    <string name="organization_chart">Organization chart</string>
+    <string name="organization_chart_description">See the organizational structure of the University of Quindio</string>
+    <string name="normativity">Normativity</string>
+    <string name="normativity_description">See the statutes, agreements, regulations and decrees of the University of Quindio</string>
     <string name="symbols">Symbols</string>
-    <string name="symbols_description"></string>
+    <string name="symbols_description">Historical review, logo, anthem, flag and stamp of the University of Quindio</string>
 
     <string name="digital_repository">Digital repository</string>
-    <string name="digital_repository_description"></string>
+    <string name="digital_repository_description">Search articles, e-books, books, electronic journals and other digital content</string>
     <string name="public_catalog">Public catalog</string>
-    <string name="public_catalog_description"></string>
+    <string name="public_catalog_description">Consult the bibliographic material available in the libraries</string>
     <string name="databases">Databases</string>
-    <string name="databases_description"></string>
+    <string name="databases_description">Search digital resources in the different databases offered by the university</string>
 
     <string name="history">History</string>
-    <string name="history_description"></string>
+    <string name="history_description">Read the detailed history of the program</string>
     <string name="program_mission_vision">Program mission and vision</string>
-    <string name="program_mission_vision_description"></string>
+    <string name="program_mission_vision_description">Read the specific mission and vision of the program</string>
     <string name="curriculum">Curriculum</string>
-    <string name="curriculum_description"></string>
+    <string name="curriculum_description">See the subjects, credits and requirements per semester of the program</string>
     <string name="profiles">Professional and occupational profile</string>
-    <string name="profiles_description"></string>
+    <string name="profiles_description">Read the description of the skills obtained when graduate of this program</string>
     <string name="program_contact">Additional information</string>
-    <string name="program_contact_description"></string>
+    <string name="program_contact_description">See contact information, qualified registration, hours of service, etc.</string>
 
     <string name="read_more">Read more</string>
     <string name="news_detail">News detail</string>
@@ -125,6 +137,7 @@
     <string name="user_address_invalid">The address must be less than 100 characters</string>
     <string name="user_document_invalid">The document must be less than 50 characters</string>
     <string name="user_password_invalid">The password must be must be between 8 and 16 characters</string>
+    <string name="user_account_invalid">Only institutional emails are allowed</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -135,8 +148,11 @@
     <string name="action_login">User account</string>
 
     <string name="loading_content">Loading content</string>
-    <string name="please_wait">Please wait ...</string>
+    <string name="please_wait">Please wait …</string>
     <string name="no_internet">There isn\'t internet connection</string>
+    <string name="empty_string">There cannot be empty fields</string>
+    <string name="downloading_data">Downloading data</string>
+    <string name="wait_to">Wait to have a better experience</string>
 
     <string name="change_to_mapview">Change to map view</string>
     <string name="change_to_streetview">Change to street view</string>
@@ -167,5 +183,127 @@
     <string name="user_detail_document_hint">Write an identification number (optional)</string>
     <string name="user_detail_password">Password</string>
     <string name="user_detail_password_hint">Enter a password between 8 and 16 characters</string>
+
+    <string name="announcement_image_description">Announcement image</string>
+    <string name="announcement_sample_date">September 5, 2:10 PM</string>
+    <string name="announcement_sample_name">Integral Calculus Notes G1</string>
+    <string name="announcement_sample_description">Notes of the integral calculation course group 1 period 2018–2 for systems engineering</string>
+
+    <string name="incident_detail_title">DETALLES DEL INCIDENTE</string>
+    <string name="incident_detail_name">Título del Incidente</string>
+    <string name="incident_detail_name_hint">Escribe el nombre del incidente</string>
+    <string name="incident_detail_description">Descripción del Incidente</string>
+    <string name="incident_detail_description_hint">Escribe una breve descripción de los acontecimientos ocurridos, lugar, fecha, y otros detalles pertinentes</string>
+    <string name="incident_detail_image">Imagenes y Videos del Incidente (Opcional)</string>
+    <string name="incident_detail_image_description">Imagenes y videos del incidente o comunicado</string>
+
+    <string name="communique_detail_title">DETALLES DEL COMUNICADO</string>
+    <string name="communique_detail_name">Título del Comunicado</string>
+    <string name="communique_detail_name_hint">Escribe el nombre del comunicado</string>
+    <string name="communique_detail_description">Descripción del Comunicado</string>
+    <string name="communique_detail_description_hint">Escribe una breve descripción sobre la información, la clase de contenido, el público objetivo y otros detalles</string>
+    <string name="communique_detail_image">Imagenes o Fotos del Comunicado (Opcional)</string>
+
+    <string name="announcement_detail_sample_description_count">110</string>
+    <string name="announcement_detail_description_count_separator">/</string>
+    <string name="announcement_detail_description_count_limit">500</string>
+
+    <string name="quota_sample_name">Sala A</string>
+    <string name="quota_sample_quota">24</string>
+    <string name="quota_text">cupo(s)</string>
+    <string name="quota_dialog_sample_name">Ajustar Cupos de Sala A</string>
+
+    <string name="quota_detail_title">DETALLES</string>
+    <string name="quota_detail_name">Nombre del Cupo</string>
+    <string name="quota_detail_name_hint">Escribe el nombre del cupo</string>
+    <string name="quota_detail_quota">Cupo</string>
+    <string name="quota_detail_quota_hint">Escribe el cupo</string>
+    <string name="quota_detail_ok">ENVIAR</string>
+
+    <string name="dialog_sample_modify">Modificar ítem</string>
+    <string name="dialog_sample_delete">Eliminar ítem</string>
+    <string name="dialog_ok">ACEPTAR</string>
+    <string name="dialog_cancel">CANCELAR</string>
+
+    <string name="dish_sample_name">Desayuno Uniquindiano</string>
+    <string name="dish_sample_description">Plato para las jornadas de mañana que incluye un sandwich de jamon con huevo</string>
+    <string name="dish_sample_price">$ 7.500</string>
+
+    <string name="dish_detail_title">DETALLES</string>
+    <string name="dish_detail_name">Nombre</string>
+    <string name="dish_detail_name_hint">Escribe el nombre del plato</string>
+    <string name="dish_detail_description">Descripción</string>
+    <string name="dish_detail_description_hint">Escribe una breve descripción de la comida pra informar mejor al consumidor y brindar un mejor servicio</string>
+    <string name="dish_detail_sample_description_count">110</string>
+    <string name="dish_detail_description_count_separator">/</string>
+    <string name="dish_detail_description_count_limit">250</string>
+    <string name="dish_detail_price">Precio</string>
+    <string name="dish_detail_price_hint">Asígnale un precio al plato</string>
+    <string name="dish_detail_image">Imagen o Foto (Opcional)</string>
+    <string name="dish_detail_image_description">Imagen o foto del plato</string>
+    <string name="dish_detail_ok">ENVIAR</string>
+
+    <string name="object_report_lost">Reportar Objeto Perdido</string>
+    <string name="object_icon_description">Icono del objeto perdido</string>
+    <string name="object_sample_name">Memoria USB 4GB</string>
+    <string name="object_place">Lugar:</string>
+    <string name="object_sample_place">Sala A de Computadores</string>
+    <string name="object_date">Fecha y Hora:</string>
+    <string name="object_sample_date">7 de Noviembre, 3:57 PM</string>
+    <string name="object_image_description">Imagen del objeto perdido</string>
+    <string name="object_sample_description">Memoria USB con capacidad de 4 GB Marca Kingston color negro y verde en el agarre</string>
+    <string name="object_readed">Marcar como leído</string>
+    <string name="object_report_found">Reportar Objeto Encontrado</string>
+    <string name="object_not_found">No Encontrado</string>
+    <string name="object_view_contact">Ver Contacto</string>
+
+    <string name="object_detail_title">DETALLES DEL OBJETO PERDIDO</string>
+    <string name="object_detail_name">Nombre del Objeto</string>
+    <string name="object_detail_name_hint">Escribe el nombre del objeto</string>
+    <string name="object_detail_place">Lugar y Dirección</string>
+    <string name="object_detail_place_hint">Escribe el lugar en donde perdiste el objeto</string>
+    <string name="object_detail_date">Fecha y Hora</string>
+    <string name="object_detail_date_hint">Formato: AAAA/MM/DD HH:MM:SS</string>
+    <string name="object_detail_description">Descripción</string>
+    <string name="object_detail_description_hint">Escribe una breve descripción de la apariencia del objeto que perdiste para ayudar a los demás a identificarlo</string>
+    <string name="object_detail_sample_description_count">110</string>
+    <string name="object_detail_description_count_separator">/</string>
+    <string name="object_detail_description_count_limit">500</string>
+    <string name="object_detail_image">Imagen o Foto (Opcional)</string>
+    <string name="object_detail_image_description">Imagen o foto del objeto perdido</string>
+    <string name="object_detail_ok">ENVIAR</string>
+
+    <string name="email_sample_icon_text">D</string>
+    <string name="email_sample_date">14 de Noviembre, 7:35 AM</string>
+    <string name="email_sample_from">donotreply uqvirtual</string>
+    <string name="email_sample_content">NOTICIAS acerca de modificaciones al …\nPara conocer las estrategias y …</string>
+
+    <string name="content_email_sample_name">NOTICIAS acerca de Modificaciones al Registro de Asignaturas</string>
+    <string name="content_email_sample_from"><![CDATA[donotreply uqvirtual <donotreply@uqvirtual.edu.co>]]></string>
+    <string name="content_email_sample_date">15 de enero de 2018, 17:54.</string>
+
+    <string name="email_detail_from">De:</string>
+    <string name="email_detail_from_hint">Correo institucional</string>
+    <string name="email_detail_to">Para:</string>
+    <string name="email_detail_to_hint">Escribe el destinatario</string>
+    <string name="email_detail_name">Asunto:</string>
+    <string name="email_detail_name_hint">Escribe el asunto</string>
+    <string name="email_detail_content">Correo:</string>
+    <string name="email_detail_content_hint">Escribe el contenido</string>
+    <string name="email_detail_ok">ENVIAR</string>
+
+    <string name="email_successful_sending">Envío exitoso</string>
+    <string name="email_failed_sending">Envío fallido</string>
+
+    <string name="email_from_invalid">Debe iniciar sesión</string>
+    <string name="email_to_invalid">Debe haber un destinatario válido</string>
+    <string name="email_name_invalid">Debe escribirse un asunto</string>
+    <string name="email_content_invalid">Debe escribirse un contenido</string>
+
+    <string name="notifications_text">Ajustes de notificaciones</string>
+
+    <string name="ic_facebook_description">icono de facebook</string>
+    <string name="ic_twitter_description">icono de twitter</string>
+    <string name="ic_whatsapp_description">icono de whatsapp</string>
 
 </resources>

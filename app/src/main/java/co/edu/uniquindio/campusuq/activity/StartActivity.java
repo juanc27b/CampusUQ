@@ -43,7 +43,7 @@ public class StartActivity extends AppCompatActivity {
                 Intent intent = new Intent(StartActivity.this, MenuActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.app_title_menu));
                 StartActivity.this.startActivity(intent);
-                //finish();
+                finish();
             }
 
             @Override

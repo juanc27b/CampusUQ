@@ -171,9 +171,9 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         } else if (getString(R.string.laboratories).equals(title)) {
             intent = new Intent(ItemsActivity.this, QuotasActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.laboratories));
-        } else if (getString(R.string.studio_zones).equals(title)) {
+        } else if (getString(R.string.study_areas).equals(title)) {
             intent = new Intent(ItemsActivity.this, QuotasActivity.class);
-            intent.putExtra("CATEGORY", getString(R.string.studio_zones));
+            intent.putExtra("CATEGORY", getString(R.string.study_areas));
         } else if (getString(R.string.cultural_and_sport).equals(title)) {
             intent = new Intent(ItemsActivity.this, QuotasActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.cultural_and_sport));
@@ -212,6 +212,14 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
             intent.putExtra("CATEGORY", getString(R.string.axes_pillars_objectives));
             intent.putExtra("LINK",
                     getString(R.string.pdf_viewer).replaceAll("URL", getString(R.string.axes_pillars_objectives_url)));
+        } else if (getString(R.string.organization_chart).equals(title)) {
+            intent = new Intent(ItemsActivity.this, WebContentActivity.class);
+            intent.putExtra("CATEGORY", getString(R.string.organization_chart));
+            intent.putExtra("LINK",
+                    getString(R.string.pdf_viewer).replaceAll("URL", getString(R.string.organization_chart_url)));
+        } else if (getString(R.string.normativity).equals(title)) {
+            intent = new Intent(ItemsActivity.this, WebActivity.class);
+            intent.putExtra("URL", getString(R.string.normativity_url));
         } else if (getString(R.string.symbols).equals(title)) {
             WebService.PENDING_ACTION = WebService.ACTION_SYMBOLS;
             loadInformations(getString(R.string.symbols), ItemsActivity.this);

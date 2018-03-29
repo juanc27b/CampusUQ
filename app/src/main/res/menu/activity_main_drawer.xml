@@ -94,7 +94,7 @@
             <item
                 android:id="@+id/nav_studio_zones"
                 android:icon="@drawable/ic_menu_studio_zones"
-                android:title="@string/studio_zones" />
+                android:title="@string/study_areas" />
             <item
                 android:id="@+id/nav_cultural_and_sport"
                 android:icon="@drawable/ic_menu_cultural_and_sport"

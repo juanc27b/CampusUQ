@@ -46,14 +46,14 @@
     <string name="billboard_information">Información de cartelera</string>
     <string name="billboard_information_description">Ver y compartir la información publicada en cartelera</string>
     <string name="computer_rooms">Salas de cómputo</string>
-    <string name="computer_rooms_description">Consultar la disponibilidad de las salas e cómputo de la Universidad</string>
+    <string name="computer_rooms_description">Consultar la disponibilidad de las salas de cómputo de la Universidad</string>
     <string name="parking_lots">Parqueaderos</string>
     <string name="parking_lots_description">Consultar la disponibilidad de los estacionamientos de la Universidad</string>
     <string name="laboratories">Laboratorios</string>
     <string name="laboratories_description">Consultar la disponibilidad de los laboratorios de la Universidad</string>
-    <string name="studio_zones">Zonas de estudio</string>
-    <string name="studio_zones_description">Consultar la disponibilidad de las zonas de estudio de la Universidad</string>
-    <string name="cultural_and_sport">Culturales y Deportivos</string>
+    <string name="study_areas">Zonas de estudio</string>
+    <string name="study_areas_description">Consultar la disponibilidad de las zonas de estudio de la Universidad</string>
+    <string name="cultural_and_sport">Culturales y deportivos</string>
     <string name="cultural_and_sport_description">Consultar la disponibilidad de los espacios culturales y deportivos de la Universidad</string>
     <string name="auditoriums">Auditorios</string>
     <string name="auditoriums_description">Consultar la disponibilidad de los auditorios de la Universidad</string>
@@ -72,6 +72,10 @@
     <string name="quality_policy_description">Ver la política de calidad de la Universidad del Quindío</string>
     <string name="axes_pillars_objectives">Ejes estratégicos, pilares y objetivos</string>
     <string name="axes_pillars_objectives_description">Ver los ejes estratégicos, pilares y objetivos de la Universidad del Quindío</string>
+    <string name="organization_chart">Organigrama</string>
+    <string name="organization_chart_description">Ver la estructura organizacional de la Universidad del Quindío</string>
+    <string name="normativity">Normatividad</string>
+    <string name="normativity_description">Ver los estatutos, acuerdos, reglamentos y decretos de la Universidad del Quindío</string>
     <string name="symbols">Símbolos</string>
     <string name="symbols_description">Reseña histórica, logotipo, himno, bandera y estampilla de la Universidad del Quindío</string>
 
@@ -123,7 +127,7 @@
     <string name="login_institutional_mail">Ingresa con tu cuenta del correo institucional</string>
     <string name="login_successful">Inicio de sesión exitoso</string>
     <string name="login_wrong">Correo o contraseña incorrectos</string>
-    <string name="registration_succesful">Registro exitoso</string>
+    <string name="registration_successful">Registro exitoso</string>
     <string name="registration_wrong">Datos inválidos</string>
 
     <string name="user_name_invalid">El nombre debe tener entre 3 y 50 caracteres</string>
@@ -146,6 +150,8 @@
     <string name="please_wait">Por favor espere …</string>
     <string name="no_internet">No hay conexión a internet</string>
     <string name="empty_string">No puede haber campos vacios</string>
+    <string name="downloading_data">Descargando datos</string>
+    <string name="wait_to">Espera para tener una mejor experiencia</string>
 
     <string name="change_to_mapview">Cambiar a vista de mapa</string>
     <string name="change_to_streetview">Cambiar a vista de calle</string>
@@ -206,6 +212,9 @@
     <string name="facebook_app_id">291424651384761</string>
     <string name="fb_login_protocol_scheme">fb291424651384761</string>
 
+    <string name="com.twitter.sdk.android.CONSUMER_KEY">8kJV0FPVtPMNrLbx2STy9U5ea</string>
+    <string name="com.twitter.sdk.android.CONSUMER_SECRET">nwizCryvWRx8fkVX59ycRQA3RGbFTzSQFq44JPc4ySDupAiFHJ</string>
+
     <string name="web_page_url">https://www.uniquindio.edu.co/</string>
     <string name="employment_exchange_url">http://trabajando.uniquindio.edu.co/</string>
     <string name="digital_repository_url">https://bdigital.uniquindio.edu.co/</string>
@@ -213,10 +222,12 @@
     <string name="databases_url">https://www.uniquindio.edu.co/biblioteca/publicaciones/bases_de_datos_pub</string>
     <string name="pqrsd_system_url">https://uniquindio.sysaidit.com/SubmitSR.jsp?accountId=uniquindio</string>
     <string name="ecotic_url">https://ecotic.uniquindio.edu.co/ecotic/#!/home</string>
+    <string name="normativity_url">https://www.uniquindio.edu.co/documentos.php?id=685</string>
 
     <string name="mission_vision_url">http://campus-uq.000webhostapp.com/files/mision_vision.pdf</string>
     <string name="quality_policy_url">http://campus-uq.000webhostapp.com/files/politica_calidad.pdf</string>
     <string name="axes_pillars_objectives_url">http://campus-uq.000webhostapp.com/files/ejes_pilares_objetivos.pdf</string>
+    <string name="organization_chart_url">http://campus-uq.000webhostapp.com/files/organigrama.pdf</string>
     <string name="pdf_viewer">http://campus-uq.000webhostapp.com/pdf/web/viewer.html?file=URL</string>
 
     <string name="send">ENVIAR</string>
@@ -238,7 +249,7 @@
     <string name="announcement_image_description">Imagen del anuncio</string>
     <string name="announcement_sample_date">5 de Septiembre, 2:10 PM</string>
     <string name="announcement_sample_name">Notas Cálculo Integral G1</string>
-    <string name="announcement_sample_description">Notas del curso de cálculo integral grupo 1 periodo 2018-2 para ingeniería de sistemas</string>
+    <string name="announcement_sample_description">Notas del curso de cálculo integral grupo 1 periodo 2018–2 para ingeniería de sistemas</string>
 
     <string name="incident_detail_title">DETALLES DEL INCIDENTE</string>
     <string name="incident_detail_name">Título del Incidente</string>

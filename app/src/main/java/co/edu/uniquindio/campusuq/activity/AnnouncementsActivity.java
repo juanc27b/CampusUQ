@@ -15,6 +15,7 @@ import android.view.ViewStub;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -22,8 +23,11 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.AnnouncementsAdapter;
@@ -42,6 +46,8 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
     private Button report;
     private FloatingActionButton fab;
     private CallbackManager callbackManager;
+    public boolean loggedIn;
+    public ShareDialog shareDialog;
     private ArrayList<Announcement> announcements = new ArrayList<>();
     private AnnouncementsPresenter announcementsPresenter = new AnnouncementsPresenter();
     private boolean newActivity = true;
@@ -101,7 +107,6 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
         AppEventsLogger.activateApp(this);
 
         callbackManager = CallbackManager.Factory.create();
-
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -115,6 +120,8 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
             public void onError(FacebookException exception) {
             }
         });
+        loggedIn = AccessToken.getCurrentAccessToken() == null;
+        shareDialog = new ShareDialog(this);
 
         loadAnnouncements(0);
 
@@ -192,8 +199,16 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
                 break;
             }
             case "facebook":
-                Toast.makeText(this, "Facebook clicked: "+index, Toast.LENGTH_SHORT).show();
-                //LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends"));
+                if (!loggedIn) {
+                    LoginManager.getInstance().logInWithReadPermissions(this,
+                            Arrays.asList("public_profile", "user_friends"));
+                } else if (ShareDialog.canShow(ShareLinkContent.class)) {
+                    ShareLinkContent content = new ShareLinkContent.Builder()
+                            .setContentTitle(announcements.get(index).getName())
+                            .setContentDescription(announcements.get(index).getDescription())
+                            .build();
+                    shareDialog.show(content);
+                }
                 break;
             case "twitter":
                 Toast.makeText(this, "Twitter clicked: "+index, Toast.LENGTH_SHORT).show();

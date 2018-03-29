@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
@@ -49,7 +48,7 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
             if (user == null) {
                 Toast.makeText(context, context.getString(R.string.registration_wrong), Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(context, context.getString(R.string.registration_succesful), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.registration_successful), Toast.LENGTH_SHORT).show();
                 finish();
             }
             if(progressDialog.isShowing()) progressDialog.dismiss();

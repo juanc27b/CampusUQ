@@ -122,7 +122,7 @@ public class ItemsPresenter {
             stateItems.add(
                     new Item(getColor(), R.drawable.ic_menu_laboratories, context.getString(R.string.laboratories), context.getString(R.string.laboratories_description)));
             stateItems.add(
-                    new Item(getColor(), R.drawable.ic_menu_studio_zones, context.getString(R.string.studio_zones), context.getString(R.string.studio_zones_description)));
+                    new Item(getColor(), R.drawable.ic_menu_studio_zones, context.getString(R.string.study_areas), context.getString(R.string.study_areas_description)));
             stateItems.add(
                     new Item(getColor(), R.drawable.ic_menu_cultural_and_sport, context.getString(R.string.cultural_and_sport), context.getString(R.string.cultural_and_sport_description)));
             stateItems.add(
@@ -153,6 +153,10 @@ public class ItemsPresenter {
                     new Item(getColor(), R.drawable.ic_quality_policy, context.getString(R.string.quality_policy), context.getString(R.string.quality_policy_description)));
             institutionItems.add(
                     new Item(getColor(), R.drawable.ic_axes_pillars_objectives, context.getString(R.string.axes_pillars_objectives), context.getString(R.string.axes_pillars_objectives_description)));
+            institutionItems.add(
+                    new Item(getColor(), R.drawable.ic_organization_chart, context.getString(R.string.organization_chart), context.getString(R.string.organization_chart_description)));
+            institutionItems.add(
+                    new Item(getColor(), R.drawable.ic_normativity, context.getString(R.string.normativity), context.getString(R.string.normativity_description)));
             institutionItems.add(
                     new Item(getColor(), R.drawable.ic_symbols, context.getString(R.string.symbols), context.getString(R.string.symbols_description)));
         }

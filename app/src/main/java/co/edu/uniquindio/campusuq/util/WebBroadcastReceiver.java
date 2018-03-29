@@ -3,6 +3,7 @@ package co.edu.uniquindio.campusuq.util;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 /**
  * Created by Juan Camilo on 21/02/2018.
@@ -33,28 +34,7 @@ public class WebBroadcastReceiver extends BroadcastReceiver {
         intent.putExtra("METHOD", method);
         intent.putExtra("OBJECT", object);
         WebService.enqueueWork(context, intent);
-        /*
-        PersistableBundle extras = new PersistableBundle();
-        extras.putString("ACTION", action);
-        extras.putString("METHOD", method);
-        extras.putString("OBJECT", object);
-        ComponentName serviceComponent = new ComponentName(context, WebService.class);
-        JobInfo jobInfo = new JobInfo.Builder(JOB_ID, serviceComponent)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setRequiresDeviceIdle(false)
-                .setRequiresCharging(false)
-                .setMinimumLatency(0)
-                .setOverrideDeadline(0)
-                .setExtras(extras)
-                .build();
-        JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        int resultCode = jobScheduler.schedule(jobInfo);
-        if (resultCode == JobScheduler.RESULT_SUCCESS) {
-            Log.i(WebBroadcastReceiver.class.getSimpleName(), "Job scheduled!");
-        } else {
-            Log.i(WebBroadcastReceiver.class.getSimpleName(), "Job not scheduled");
-        }
-        */
+        Log.i(WebBroadcastReceiver.class.getSimpleName(), "Job scheduled!");
     }
 
 }

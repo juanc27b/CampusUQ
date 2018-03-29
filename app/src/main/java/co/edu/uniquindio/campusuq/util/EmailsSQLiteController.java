@@ -25,13 +25,15 @@ public class EmailsSQLiteController {
     }
 
     static String createTable() {
-        return "CREATE TABLE `"+tablename+"`(`"+
-                columns[0]+"` INTEGER PRIMARY KEY, `"+
+        return "CREATE TABLE `"+tablename+"` (`"+
+                columns[0]+"` TEXT PRIMARY KEY, `"+
                 columns[1]+"` TEXT NOT NULL, `"+
                 columns[2]+"` TEXT NOT NULL, `"+
                 columns[3]+"` TEXT NOT NULL, `"+
                 columns[4]+"` TEXT NOT NULL, `"+
-                columns[5]+"` TEXT NOT NULL)";
+                columns[5]+"` TEXT NOT NULL, `"+
+                columns[6]+"` TEXT NOT NULL, `"+
+                columns[7]+"` TEXT NOT NULL )";
     }
 
     public ArrayList<Email> select(String limit, String selection, String[] selectionArgs) {
@@ -40,7 +42,7 @@ public class EmailsSQLiteController {
                 null, '`'+columns[4]+"` DESC", limit);
         if (c.moveToFirst()) do {
             emails.add(new Email(
-                    c.getInt(0),
+                    c.getString(0),
                     c.getString(1),
                     c.getString(2),
                     c.getString(3),

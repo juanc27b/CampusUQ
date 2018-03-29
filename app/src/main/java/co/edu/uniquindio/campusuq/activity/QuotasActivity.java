@@ -58,7 +58,7 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
             if (category.equals(getString(R.string.computer_rooms))) type = new String[]{"S"};
             else if (category.equals(getString(R.string.parking_lots))) type = new String[]{"P"};
             else if (category.equals(getString(R.string.laboratories))) type = new String[]{"L"};
-            else if (category.equals(getString(R.string.studio_zones))) type = new String[]{"E"};
+            else if (category.equals(getString(R.string.study_areas))) type = new String[]{"E"};
             else if (category.equals(getString(R.string.cultural_and_sport))) type = new String[]{"C"};
             else if (category.equals(getString(R.string.auditoriums))) type = new String[]{"A"};
             else type = new String[]{""};

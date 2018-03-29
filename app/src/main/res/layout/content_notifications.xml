@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="10dp">
 
     <TextView
         android:layout_width="wrap_content"
@@ -11,37 +12,6 @@
         android:layout_margin="10dp"
         android:text="@string/notifications_text"
         android:textSize="12sp"/>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:gravity="center_vertical">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/ic_menu_news"
-            android:contentDescription="@string/news_description" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="10dp"
-            android:text="@string/news"
-            android:textSize="15sp"
-            android:textColor="@android:color/black"/>
-
-        <Switch
-            android:id="@+id/notifications_news"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:thumbTint="@color/colorPrimary"/>
-
-    </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -85,20 +55,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
-            android:src="@drawable/ic_menu_academic_calendar"
-            android:contentDescription="@string/academic_calendar_description" />
+            android:src="@drawable/ic_menu_news"
+            android:contentDescription="@string/news_description" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="10dp"
-            android:text="@string/academic_calendar"
+            android:text="@string/news"
             android:textSize="15sp"
             android:textColor="@android:color/black"/>
 
         <Switch
-            android:id="@+id/notifications_academic_calendar"
+            android:id="@+id/notifications_news"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:thumbTint="@color/colorPrimary"/>
@@ -116,20 +86,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
-            android:src="@drawable/ic_menu_radio"
-            android:contentDescription="@string/radio_description" />
+            android:src="@drawable/ic_menu_academic_calendar"
+            android:contentDescription="@string/academic_calendar_description" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="10dp"
-            android:text="@string/radio"
+            android:text="@string/academic_calendar"
             android:textSize="15sp"
             android:textColor="@android:color/black"/>
 
         <Switch
-            android:id="@+id/notifications_radio"
+            android:id="@+id/notifications_academic_calendar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:thumbTint="@color/colorPrimary"/>

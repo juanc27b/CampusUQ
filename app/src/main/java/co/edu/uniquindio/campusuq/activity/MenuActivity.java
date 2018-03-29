@@ -1,6 +1,9 @@
 package co.edu.uniquindio.campusuq.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,10 +13,23 @@ import android.widget.LinearLayout;
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.StarterReceiver;
 import co.edu.uniquindio.campusuq.util.UsersPresenter;
+import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.User;
 
 public class MenuActivity extends MainActivity {
+
+    private IntentFilter menuFilter = new IntentFilter(WebService.ACTION_ALL);
+    private BroadcastReceiver menuReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (progressDialog.isShowing()) {
+                int progress = intent.getIntExtra("PROGRESS", 0);
+                progressDialog.setProgress(progress);
+                if (progress == 120) progressDialog.dismiss();
+            }
+        }
+    };
 
     public MenuActivity() {
         super.setHasSearch(false);
@@ -66,6 +82,8 @@ public class MenuActivity extends MainActivity {
             }
         });
 
+        progressDialog = Utilities.getProgressDialog(MenuActivity.this, false);
+
         loadContent();
 
     }
@@ -75,9 +93,22 @@ public class MenuActivity extends MainActivity {
         User user = UsersPresenter.loadUser(getApplicationContext());
         if (user == null) {
             Log.i(MenuActivity.class.getSimpleName(), "Activando alarma");
+            if (!progressDialog.isShowing()) progressDialog.show();
             StarterReceiver.cancelAlarm(getApplicationContext());
             StarterReceiver.scheduleAlarm(getApplicationContext());
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(menuReceiver, menuFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(menuReceiver);
     }
 
 }

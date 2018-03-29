@@ -3,16 +3,21 @@ package co.edu.uniquindio.campusuq.util;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Base64;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import java.io.File;
@@ -22,6 +27,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
 
@@ -33,6 +39,12 @@ public class Utilities {
 
     public final static String URL_SERVICIO = "https://campus-uq.000webhostapp.com";
     public static final String NOMBRE_BD = "Campus_UQ";
+
+    public final static String PREFERENCES = "preferences";
+    public final static String PREFERENCE_LANGUAGE = "language_preferences";
+    public final static String LANGUAGE_ES = "es";
+    public final static String LANGUAGE_EN = "en";
+
 
     public static void getKeyHash(Context context) {
         try {
@@ -60,12 +72,20 @@ public class Utilities {
         return isConnected;
     }
 
-    public static ProgressDialog getProgressDialog(Context context, boolean cancelable) {
+    public static ProgressDialog getProgressDialog(Context context, boolean vertical) {
         ProgressDialog pDialog = new ProgressDialog(context);
-        pDialog.setTitle(context.getString(R.string.loading_content));
-        pDialog.setMessage(context.getString(R.string.please_wait));
+        if (vertical) {
+            pDialog.setTitle(context.getString(R.string.loading_content));
+            pDialog.setMessage(context.getString(R.string.please_wait));
+        } else {
+            pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            pDialog.setTitle(context.getString(R.string.downloading_data));
+            pDialog.setMessage(context.getString(R.string.wait_to));
+            pDialog.setMax(120);
+            pDialog.setProgress(0);
+        }
         pDialog.setIndeterminate(false);
-        pDialog.setCancelable(cancelable);
+        pDialog.setCancelable(true);
         pDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
@@ -131,6 +151,36 @@ public class Utilities {
     public static void deleteHistory(Context context) {
         new ObjectsPresenter().deleteHistory(context);
         new AnnouncementsPresenter().deleteHistory(context);
+    }
+
+    public static void changeLanguage(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFERENCES, context.MODE_PRIVATE);
+        String language = prefs.getString(PREFERENCE_LANGUAGE, LANGUAGE_ES);
+        if(language.equals(LANGUAGE_ES)) {
+            language = LANGUAGE_EN;
+        } else if(language.equals(LANGUAGE_EN)) {
+            language = LANGUAGE_ES;
+        }
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(PREFERENCE_LANGUAGE, language);
+        editor.commit();
+        getLanguage(context);
+    }
+
+    public static void getLanguage(Context context){
+        SharedPreferences prefs = context.getSharedPreferences(PREFERENCES, context.MODE_PRIVATE);
+        String language = prefs.getString(PREFERENCE_LANGUAGE, LANGUAGE_ES);
+        Locale locale = new Locale(language);
+        Locale.setDefault(locale);
+        Resources resources = context.getResources();
+        Configuration configuration = resources.getConfiguration();
+        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+        configuration.setLocale(locale);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            context.createConfigurationContext(configuration);
+        } else {
+            resources.updateConfiguration(configuration, displayMetrics);
+        }
     }
 
 }
