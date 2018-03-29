@@ -11,7 +11,7 @@
     android:layout_margin="5dp"
     card_view:cardBackgroundColor="#ffffff"
     card_view:cardCornerRadius="10dp"
-    tools:context="co.edu.uniquindio.campusuq.activity.NewsActivity">
+    tools:context="co.edu.uniquindio.campusuq.news.NewsActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

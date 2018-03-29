@@ -154,6 +154,8 @@
     <string name="empty_string">There cannot be empty fields</string>
     <string name="downloading_data">Downloading data</string>
     <string name="wait_to">Wait to have a better experience</string>
+    <string name="no_administrator">Only administrators can upload, modify or delete</string>
+    <string name="no_propietary">Only the owner or an administrator can modify or delete</string>
 
     <string name="change_to_mapview">Change to map view</string>
     <string name="change_to_streetview">Change to street view</string>
@@ -263,8 +265,10 @@
     <string name="object_detail_name_hint">Escribe el nombre del objeto</string>
     <string name="object_detail_place">Lugar y Dirección</string>
     <string name="object_detail_place_hint">Escribe el lugar en donde perdiste el objeto</string>
-    <string name="object_detail_date">Fecha y Hora</string>
-    <string name="object_detail_date_hint">Formato: AAAA/MM/DD HH:MM:SS</string>
+    <string name="object_detail_date">Fecha</string>
+    <string name="object_detail_date_hint">yyyy-MM-dd</string>
+    <string name="object_detail_time">Hora</string>
+    <string name="object_detail_time_hint">HH:mm:ss</string>
     <string name="object_detail_description">Descripción</string>
     <string name="object_detail_description_hint">Escribe una breve descripción de la apariencia del objeto que perdiste para ayudar a los demás a identificarlo</string>
     <string name="object_detail_sample_description_count">110</string>

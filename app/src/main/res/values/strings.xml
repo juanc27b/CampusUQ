@@ -259,15 +259,15 @@
     <string name="incident_detail_name_hint">Escribe el nombre del incidente</string>
     <string name="incident_detail_description">Descripción del Incidente</string>
     <string name="incident_detail_description_hint">Escribe una breve descripción de los acontecimientos ocurridos, lugar, fecha, y otros detalles pertinentes</string>
-    <string name="incident_detail_image">Imagenes y Videos del Incidente (Opcional)</string>
-    <string name="incident_detail_image_description">Imagenes y videos del incidente o comunicado</string>
+    <string name="incident_detail_image">Imágenes y Videos del Incidente (Opcional)</string>
+    <string name="incident_detail_image_description">Imágenes y videos del incidente o comunicado</string>
 
     <string name="communique_detail_title">DETALLES DEL COMUNICADO</string>
     <string name="communique_detail_name">Título del Comunicado</string>
     <string name="communique_detail_name_hint">Escribe el nombre del comunicado</string>
     <string name="communique_detail_description">Descripción del Comunicado</string>
     <string name="communique_detail_description_hint">Escribe una breve descripción sobre la información, la clase de contenido, el público objetivo y otros detalles</string>
-    <string name="communique_detail_image">Imagenes o Fotos del Comunicado (Opcional)</string>
+    <string name="communique_detail_image">Imágenes o Fotos del Comunicado (Opcional)</string>
 
     <string name="announcement_detail_sample_description_count">110</string>
     <string name="announcement_detail_description_count_separator">/</string>

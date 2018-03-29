@@ -22,7 +22,6 @@ import com.google.api.client.util.IOUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.MessageDigest;
@@ -30,6 +29,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
+import co.edu.uniquindio.campusuq.announcements.AnnouncementsPresenter;
+import co.edu.uniquindio.campusuq.objects.ObjectsPresenter;
+import co.edu.uniquindio.campusuq.web.WebService;
 
 /**
  * Created by Juan Camilo on 8/02/2018.
@@ -40,10 +42,10 @@ public class Utilities {
     public final static String URL_SERVICIO = "https://campus-uq.000webhostapp.com";
     public static final String NOMBRE_BD = "Campus_UQ";
 
-    public final static String PREFERENCES = "preferences";
-    public final static String PREFERENCE_LANGUAGE = "language_preferences";
-    public final static String LANGUAGE_ES = "es";
-    public final static String LANGUAGE_EN = "en";
+    private final static String PREFERENCES = "preferences";
+    private final static String PREFERENCE_LANGUAGE = "language_preferences";
+    private final static String LANGUAGE_ES = "es";
+    private final static String LANGUAGE_EN = "en";
 
 
     public static void getKeyHash(Context context) {
@@ -68,8 +70,7 @@ public class Utilities {
     public static boolean haveNetworkConnection(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null && activeNetwork.isConnected();
-        return isConnected;
+        return activeNetwork != null && activeNetwork.isConnected();
     }
 
     public static ProgressDialog getProgressDialog(Context context, boolean vertical) {
@@ -81,7 +82,7 @@ public class Utilities {
             pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             pDialog.setTitle(context.getString(R.string.downloading_data));
             pDialog.setMessage(context.getString(R.string.wait_to));
-            pDialog.setMax(120);
+            pDialog.setMax(12);
             pDialog.setProgress(0);
         }
         pDialog.setIndeterminate(false);
@@ -95,7 +96,7 @@ public class Utilities {
         return pDialog;
     }
 
-    static String saveImage(String spec, String path, Context context) {
+    public static String saveImage(String spec, String path, Context context) {
         String imagePath = null;
 
         if (spec != null) try {
@@ -127,7 +128,7 @@ public class Utilities {
     }
 
     public static void changeLanguage(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(PREFERENCES, context.MODE_PRIVATE);
+        SharedPreferences prefs = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
         String language = prefs.getString(PREFERENCE_LANGUAGE, LANGUAGE_ES);
         if(language.equals(LANGUAGE_ES)) {
             language = LANGUAGE_EN;
@@ -141,7 +142,7 @@ public class Utilities {
     }
 
     public static void getLanguage(Context context){
-        SharedPreferences prefs = context.getSharedPreferences(PREFERENCES, context.MODE_PRIVATE);
+        SharedPreferences prefs = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
         String language = prefs.getString(PREFERENCE_LANGUAGE, LANGUAGE_ES);
         Locale locale = new Locale(language);
         Locale.setDefault(locale);

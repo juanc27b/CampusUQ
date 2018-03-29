@@ -6,7 +6,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    tools:context="co.edu.uniquindio.campusuq.activity.QuotasFragment">
+    tools:context="co.edu.uniquindio.campusuq.quotas.QuotasFragment">
 
     <TextView
         android:id="@+id/quota_dialog_name"

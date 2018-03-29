@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10dp"
-    tools:context="co.edu.uniquindio.campusuq.activity.WebContentActivity">
+    tools:context="co.edu.uniquindio.campusuq.web.WebContentActivity">
 
     <WebView
         android:id="@+id/webview_content"

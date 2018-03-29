@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    tools:context="co.edu.uniquindio.campusuq.activity.DishesActivity"
+    tools:context="co.edu.uniquindio.campusuq.dishes.DishesActivity"
     card_view:cardCornerRadius="10dp">
 
     <LinearLayout

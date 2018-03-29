@@ -63,7 +63,7 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.ItemsActivity"
+            android:name=".items.ItemsActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:parentActivityName=".activity.MenuActivity"
@@ -81,14 +81,14 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.NewsActivity"
+            android:name=".news.NewsActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.ItemsActivity"
+            android:parentActivityName=".items.ItemsActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ItemsActivity" />
+                android:value=".items.ItemsActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -99,14 +99,14 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.NewsContentActivity"
+            android:name=".news.NewsContentActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.NewsActivity"
+            android:parentActivityName=".news.NewsActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.NewsActivity" />
+                android:value=".news.NewsActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -117,14 +117,14 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.WebContentActivity"
+            android:name=".web.WebContentActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.ItemsActivity"
+            android:parentActivityName=".items.ItemsActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ItemsActivity" />
+                android:value=".items.ItemsActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -135,24 +135,24 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.WebActivity"
+            android:name=".web.WebActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.ItemsActivity"
+            android:parentActivityName=".items.ItemsActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ItemsActivity" />
+                android:value=".items.ItemsActivity" />
         </activity>
         <activity
-            android:name=".activity.CalendarActivity"
+            android:name=".events.CalendarActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.ItemsActivity"
+            android:parentActivityName=".items.ItemsActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ItemsActivity" />
+                android:value=".items.ItemsActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -163,14 +163,14 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.CalendarDetailActivity"
+            android:name=".events.CalendarDetailActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.CalendarActivity"
+            android:parentActivityName=".events.CalendarActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.CalendarActivity" />
+                android:value=".events.CalendarActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -181,14 +181,14 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.AnnouncementsActivity"
+            android:name=".announcements.AnnouncementsActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.ItemsActivity"
+            android:parentActivityName=".items.ItemsActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ItemsActivity" />
+                android:value=".items.ItemsActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -199,14 +199,14 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.AnnouncementsDetailActivity"
+            android:name=".announcements.AnnouncementsDetailActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.AnnouncementsActivity"
+            android:parentActivityName=".announcements.AnnouncementsActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.AnnouncementsActivity" />
+                android:value=".announcements.AnnouncementsActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -217,7 +217,7 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.UsersActivity"
+            android:name=".users.UsersActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:parentActivityName=".activity.MainActivity"
@@ -235,7 +235,7 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.LoginActivity"
+            android:name=".users.LoginActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:parentActivityName=".activity.MainActivity"
@@ -253,7 +253,7 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.NotificationsActivity"
+            android:name=".notifications.NotificationsActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:parentActivityName=".activity.MainActivity"
@@ -276,19 +276,19 @@
             android:value="true" />
 
         <service
-            android:name=".util.WebService"
+            android:name=".web.WebService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <receiver
-            android:name=".util.WebBroadcastReceiver"
+            android:name=".web.WebBroadcastReceiver"
             android:process=":remote">
             <intent-filter>
                 <action android:name="co.edu.uniquindio.campusuq.ACTION_START_WEB_SERVICE" />
                 <action android:name="co.edu.uniquindio.campusuq.ACTION_STOP_WEB_SERVICE" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".util.StarterReceiver">
+        <receiver android:name=".web.StarterReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.TIMEZONE_CHANGED" />
@@ -340,11 +340,11 @@
             android:name=".activity.MapsActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.ItemsActivity"
+            android:parentActivityName=".items.ItemsActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ItemsActivity" />
+                android:value=".items.ItemsActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -355,14 +355,14 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.RadioActivity"
+            android:name=".radio.RadioActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.ItemsActivity"
+            android:parentActivityName=".items.ItemsActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ItemsActivity" />
+                android:value=".items.ItemsActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -374,7 +374,7 @@
         </activity>
 
         <service
-            android:name=".util.MediaPlaybackService"
+            android:name=".radio.MediaPlaybackService"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
@@ -391,14 +391,14 @@
         </receiver>
 
         <activity
-            android:name=".activity.QuotasActivity"
+            android:name=".quotas.QuotasActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.ItemsActivity"
+            android:parentActivityName=".items.ItemsActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ItemsActivity" />
+                android:value=".items.ItemsActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -409,14 +409,14 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.QuotasDetailActivity"
+            android:name=".quotas.QuotasDetailActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.QuotasActivity"
+            android:parentActivityName=".quotas.QuotasActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.QuotasActivity" />
+                android:value=".quotas.QuotasActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -427,14 +427,14 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.DishesActivity"
+            android:name=".dishes.DishesActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.ItemsActivity"
+            android:parentActivityName=".items.ItemsActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ItemsActivity" />
+                android:value=".items.ItemsActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -445,14 +445,14 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.DishesDetailActivity"
+            android:name=".dishes.DishesDetailActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.DishesActivity"
+            android:parentActivityName=".dishes.DishesActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.DishesActivity" />
+                android:value=".dishes.DishesActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -463,14 +463,14 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.ObjectsActivity"
+            android:name=".objects.ObjectsActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.ItemsActivity"
+            android:parentActivityName=".items.ItemsActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ItemsActivity" />
+                android:value=".items.ItemsActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -481,14 +481,14 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.ObjectsDetailActivity"
+            android:name=".objects.ObjectsDetailActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.ObjectsActivity"
+            android:parentActivityName=".objects.ObjectsActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ObjectsActivity" />
+                android:value=".objects.ObjectsActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -499,14 +499,14 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.EmailsActivity"
+            android:name=".emails.EmailsActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.ItemsActivity"
+            android:parentActivityName=".items.ItemsActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ItemsActivity" />
+                android:value=".items.ItemsActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -517,14 +517,14 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.EmailsContentActivity"
+            android:name=".emails.EmailsContentActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.EmailsActivity"
+            android:parentActivityName=".emails.EmailsActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.EmailsActivity" />
+                android:value=".emails.EmailsActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -535,14 +535,14 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".activity.EmailsDetailActivity"
+            android:name=".emails.EmailsDetailActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.EmailsActivity"
+            android:parentActivityName=".emails.EmailsActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.EmailsActivity" />
+                android:value=".emails.EmailsActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />

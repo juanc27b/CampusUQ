@@ -4,6 +4,19 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import co.edu.uniquindio.campusuq.announcements.AnnouncementsSQLiteController;
+import co.edu.uniquindio.campusuq.contacts.ContactsSQLiteController;
+import co.edu.uniquindio.campusuq.dishes.DishesSQLiteController;
+import co.edu.uniquindio.campusuq.emails.EmailsSQLiteController;
+import co.edu.uniquindio.campusuq.events.EventsSQLiteController;
+import co.edu.uniquindio.campusuq.informations.InformationsSQLiteController;
+import co.edu.uniquindio.campusuq.news.NewsSQLiteController;
+import co.edu.uniquindio.campusuq.notifications.NotificationsSQLiteController;
+import co.edu.uniquindio.campusuq.objects.ObjectsSQLiteController;
+import co.edu.uniquindio.campusuq.programs.ProgramsSQLiteController;
+import co.edu.uniquindio.campusuq.quotas.QuotasSQLiteController;
+import co.edu.uniquindio.campusuq.users.UsersSQLiteController;
+
 /**
  * Created by Juan Camilo on 13/02/2018.
  */

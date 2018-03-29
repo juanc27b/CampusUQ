@@ -25,12 +25,25 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
-import co.edu.uniquindio.campusuq.util.ItemsPresenter;
-import co.edu.uniquindio.campusuq.util.UsersPresenter;
+import co.edu.uniquindio.campusuq.announcements.AnnouncementsActivity;
+import co.edu.uniquindio.campusuq.dishes.DishesActivity;
+import co.edu.uniquindio.campusuq.emails.EmailsActivity;
+import co.edu.uniquindio.campusuq.items.ItemsActivity;
+import co.edu.uniquindio.campusuq.news.NewsActivity;
+import co.edu.uniquindio.campusuq.notifications.NotificationsActivity;
+import co.edu.uniquindio.campusuq.objects.ObjectsActivity;
+import co.edu.uniquindio.campusuq.quotas.QuotasActivity;
+import co.edu.uniquindio.campusuq.radio.RadioActivity;
+import co.edu.uniquindio.campusuq.users.LoginActivity;
+import co.edu.uniquindio.campusuq.users.UsersActivity;
+import co.edu.uniquindio.campusuq.items.ItemsPresenter;
+import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
-import co.edu.uniquindio.campusuq.util.WebService;
-import co.edu.uniquindio.campusuq.vo.Item;
-import co.edu.uniquindio.campusuq.vo.User;
+import co.edu.uniquindio.campusuq.web.WebActivity;
+import co.edu.uniquindio.campusuq.web.WebContentActivity;
+import co.edu.uniquindio.campusuq.web.WebService;
+import co.edu.uniquindio.campusuq.items.Item;
+import co.edu.uniquindio.campusuq.users.User;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {

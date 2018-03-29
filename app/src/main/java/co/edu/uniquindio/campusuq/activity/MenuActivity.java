@@ -11,11 +11,12 @@ import android.view.ViewStub;
 import android.widget.LinearLayout;
 
 import co.edu.uniquindio.campusuq.R;
-import co.edu.uniquindio.campusuq.util.StarterReceiver;
-import co.edu.uniquindio.campusuq.util.UsersPresenter;
+import co.edu.uniquindio.campusuq.items.ItemsActivity;
+import co.edu.uniquindio.campusuq.web.StarterReceiver;
+import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
-import co.edu.uniquindio.campusuq.util.WebService;
-import co.edu.uniquindio.campusuq.vo.User;
+import co.edu.uniquindio.campusuq.web.WebService;
+import co.edu.uniquindio.campusuq.users.User;
 
 public class MenuActivity extends MainActivity {
 

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10dp"
-    tools:context="co.edu.uniquindio.campusuq.activity.CalendarActivity">
+    tools:context="co.edu.uniquindio.campusuq.events.CalendarActivity">
 
     <TextView
         android:id="@+id/event_detail_text"

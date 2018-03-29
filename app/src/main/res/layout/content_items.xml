@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10dp"
-    tools:context="co.edu.uniquindio.campusuq.activity.ItemsActivity">
+    tools:context="co.edu.uniquindio.campusuq.items.ItemsActivity">
 
     <TextView
         android:id="@+id/message_text"

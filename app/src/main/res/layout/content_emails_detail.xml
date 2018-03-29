@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp"
-    tools:context="co.edu.uniquindio.campusuq.activity.EmailsContentActivity">
+    tools:context="co.edu.uniquindio.campusuq.emails.EmailsContentActivity">
 
     <LinearLayout
             android:orientation="vertical"
