@@ -24,7 +24,8 @@ public class QuotasAdapter extends RecyclerView.Adapter<QuotasAdapter.QuotaViewH
         listener = quotasActivity;
     }
 
-    public class QuotaViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    public class QuotaViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+            View.OnLongClickListener {
 
         private ImageView icon;
         private TextView name;
@@ -43,7 +44,8 @@ public class QuotasAdapter extends RecyclerView.Adapter<QuotasAdapter.QuotaViewH
         }
 
         void bindItem(Quota q) {
-            icon.setImageResource(q.getQuota() != 0 ? R.drawable.circle_green : R.drawable.circle_gray);
+            icon.setImageResource(q.getQuota() != 0 ? R.drawable.circle_green :
+                    R.drawable.circle_gray);
             name.setText(q.getName());
             name.setTextSize(q.getType().equals("S")? 20 : 15);
             quota.setText(String.valueOf(q.getQuota()));

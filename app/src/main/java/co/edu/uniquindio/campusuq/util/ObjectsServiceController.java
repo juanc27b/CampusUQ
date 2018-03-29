@@ -13,21 +13,21 @@ import cz.msebera.android.httpclient.client.methods.HttpGet;
 import cz.msebera.android.httpclient.client.methods.HttpPost;
 import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
+import cz.msebera.android.httpclient.protocol.HTTP;
 import cz.msebera.android.httpclient.util.EntityUtils;
 
 class ObjectsServiceController {
 
+    private static final String _OBJECTS = "/objetos";
+
     static ArrayList<LostObject> getObjects(Context context, String idObject) {
-        String url = Utilities.URL_SERVICIO+"/objetos";
-        if (idObject != null) url += idObject;
-        HttpGet request = new HttpGet(url);
-        request.setHeader("Content-Type", "application/json; Charset=UTF-8");
+        HttpGet request = new HttpGet(Utilities.URL_SERVICIO+_OBJECTS+idObject);
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         ArrayList<LostObject> lostObjects = new ArrayList<>();
+
         try {
-            JSONArray array = (new JSONObject(
-                    EntityUtils.toString(HttpClientBuilder.create().build().execute(request).getEntity(), "UTF-8")))
-                    .getJSONArray("datos");
+            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
+                    .execute(request).getEntity())).getJSONArray("datos");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 lostObjects.add(new LostObject(
@@ -38,24 +38,26 @@ class ObjectsServiceController {
                         object.getString(ObjectsSQLiteController.columns[4]),
                         object.getString(ObjectsSQLiteController.columns[5]),
                         object.getString(ObjectsSQLiteController.columns[6]),
-                        object.isNull(ObjectsSQLiteController.columns[7]) ? null : object.getInt(ObjectsSQLiteController.columns[7]),
-                        "N"
-                ));
+                        object.isNull(ObjectsSQLiteController.columns[7]) ? null :
+                                object.getInt(ObjectsSQLiteController.columns[7]),
+                        "N"));
             }
         } catch (Exception e) {
             Log.e(ObjectsServiceController.class.getSimpleName(), e.getMessage());
-            return new ArrayList<>();
         }
+
         return lostObjects;
     }
 
     static String modifyObject(Context context, String json) {
-        HttpPost post = new HttpPost(Utilities.URL_SERVICIO+"/objetos");
-        post.setHeader("Content-Type", "application/json; Charset=UTF-8");
+        HttpPost post = new HttpPost(Utilities.URL_SERVICIO+_OBJECTS);
         post.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
+        post.setHeader(HTTP.CONTENT_TYPE, "application/json");
+        post.setEntity(new StringEntity(json, "UTF-8"));
+
         try {
-            post.setEntity(new StringEntity(json));
-            return EntityUtils.toString(HttpClientBuilder.create().build().execute(post).getEntity());
+            return new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
+                    .execute(post).getEntity())).getString("mensaje");
         } catch (Exception e) {
             Log.e(ObjectsServiceController.class.getSimpleName(), e.getMessage());
             return null;

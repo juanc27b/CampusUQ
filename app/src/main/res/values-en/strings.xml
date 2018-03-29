@@ -104,7 +104,8 @@
     <string name="report_incident">Report Incident</string>
     <string name="billboard_detail">Change Billboard</string>
     <string name="restaurant_detail">Change Restaurant Menu</string>
-    <string name="quota_detail">Change/Insert Quota</string>
+    <string name="quota_detail_insert">Insert Quota</string>
+    <string name="quota_detail_modify">Modify Quota</string>
 
     <string name="sign_up">Sign Up</string>
     <string name="log_in">Log In</string>
@@ -135,7 +136,7 @@
     <string name="action_login">User account</string>
 
     <string name="loading_content">Loading content</string>
-    <string name="please_wait">Please wait ...</string>
+    <string name="please_wait">Please wait …</string>
     <string name="no_internet">There isn\'t internet connection</string>
 
     <string name="change_to_mapview">Change to map view</string>

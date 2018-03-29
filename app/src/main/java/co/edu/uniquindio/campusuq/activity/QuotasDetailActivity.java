@@ -18,9 +18,11 @@ import co.edu.uniquindio.campusuq.util.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.util.WebService;
 
 public class QuotasDetailActivity extends MainActivity implements View.OnClickListener {
+
     private Intent intent;
-    private Integer _ID;
-    private EditText name, quota;
+    private String _ID;
+    private EditText name;
+    private EditText quota;
 
     public QuotasDetailActivity() {
         super.setHasNavigationDrawerIcon(false);
@@ -28,19 +30,10 @@ public class QuotasDetailActivity extends MainActivity implements View.OnClickLi
     }
 
     @Override
-    public void handleIntent(Intent intent) {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(intent.getStringExtra("CATEGORY"));
-            this.intent = intent;
-            setQuota();
-        }
-    }
-
-    @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+        super.setBackground(R.drawable.portrait_normal_background,
+                R.drawable.landscape_normal_background);
 
         ViewStub viewStub = findViewById(R.id.layout_stub);
         viewStub.setLayoutResource(R.layout.activity_quotas_detail);
@@ -54,8 +47,18 @@ public class QuotasDetailActivity extends MainActivity implements View.OnClickLi
         findViewById(R.id.quota_detail_ok).setOnClickListener(this);
     }
 
+    @Override
+    public void handleIntent(Intent intent) {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(intent.getStringExtra("CATEGORY"));
+            this.intent = intent;
+            setQuota();
+        }
+    }
+
     private void setQuota() {
-        _ID = (Integer) intent.getSerializableExtra(QuotasSQLiteController.columns[0]);
+        _ID = intent.getStringExtra(QuotasSQLiteController.columns[0]);
         name.setText(intent.getStringExtra(QuotasSQLiteController.columns[2]));
         quota.setText(intent.getStringExtra(QuotasSQLiteController.columns[3]));
     }
@@ -69,24 +72,29 @@ public class QuotasDetailActivity extends MainActivity implements View.OnClickLi
                         JSONObject json = new JSONObject();
                         try {
                             if (_ID != null) json.put("UPDATE_ID", _ID);
-                            json.put(QuotasSQLiteController.columns[1], intent.getStringExtra(QuotasSQLiteController.columns[1]));
+                            json.put(QuotasSQLiteController.columns[1],
+                                    intent.getStringExtra(QuotasSQLiteController.columns[1]));
                             json.put(QuotasSQLiteController.columns[2], name.getText());
                             json.put(QuotasSQLiteController.columns[3], quota.getText());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        WebBroadcastReceiver.scheduleJob(getApplicationContext(), WebService.ACTION_QUOTAS, WebService.METHOD_POST, json.toString());
+                        WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                                WebService.ACTION_QUOTAS, WebService.METHOD_POST, json.toString());
                         setResult(RESULT_OK, intent);
                         finish();
                     } else {
-                        Toast.makeText(QuotasDetailActivity.this, getString(R.string.empty_string), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.empty_string),
+                                Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(QuotasDetailActivity.this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.no_internet),
+                            Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
                 break;
         }
     }
+
 }

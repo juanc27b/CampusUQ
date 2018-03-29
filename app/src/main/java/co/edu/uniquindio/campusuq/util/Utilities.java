@@ -6,8 +6,6 @@ import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -15,11 +13,13 @@ import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
 
+import com.google.api.client.util.IOUtils;
+
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -75,62 +75,35 @@ public class Utilities {
         return pDialog;
     }
 
-    public static String saveImage(String url, Context context) {
-
+    static String saveImage(String spec, String path, Context context) {
         String imagePath = null;
-        InputStream is = null;
 
-        try {
-            URL ImageUrl = new URL(url);
+        if (spec != null) try {
+            URLConnection connection = new URL(spec).openConnection();
+            connection.connect();
 
-            HttpURLConnection conn = (HttpURLConnection) ImageUrl.openConnection();
-            conn.setDoInput(true);
-            conn.connect();
-            is = conn.getInputStream();
-
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.RGB_565;
-            Bitmap bmImg = BitmapFactory.decodeStream(is, null, options);
-
-            String path = ImageUrl.getPath();
-            String idStr = path.substring(path.lastIndexOf('/') + 1);
-            File filepath = Environment.getExternalStorageDirectory();
-            File dir = new File(filepath.getAbsolutePath() + "/CampusUQ/Media/Images");
+            File dir = new File(Environment.getExternalStorageDirectory()
+                    .getAbsolutePath()+"/CampusUQ/Media/Images"+path);
             dir.mkdirs();
+            File file = new File(dir, spec.substring(spec.lastIndexOf('/')+1));
+            FileOutputStream output = new FileOutputStream(file);
 
-            File file = new File(dir, idStr);
-            if (file.exists()) {
-                file = new File(dir, "new_"+idStr);
-            }
-            FileOutputStream fos = new FileOutputStream(file);
-            bmImg.compress(Bitmap.CompressFormat.JPEG, 75, fos);
-            fos.flush();
-            fos.close();
+            IOUtils.copy(connection.getInputStream(), output);
+            output.close();
 
             imagePath = file.getPath();
-            MediaScannerConnection.scanFile(context,
-                    new String[]{imagePath},
-                    new String[]{"image/jpeg"}, null);
-
+            MediaScannerConnection.scanFile(context, new String[]{imagePath}, null,
+                    null);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
         }
 
         return imagePath;
-
     }
 
     public static void deleteHistory(Context context) {
-        new ObjectsPresenter().deleteHistory(context);
-        new AnnouncementsPresenter().deleteHistory(context);
+        ObjectsPresenter.deleteHistory(context);
+        AnnouncementsPresenter.deleteHistory(context);
     }
 
 }

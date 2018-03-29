@@ -28,7 +28,8 @@ public class ObjectsFragment extends DialogFragment implements View.OnClickListe
 
     private ObjectsActivity objectsActivity;
     private LostObject object;
-    private RadioButton modify, delete;
+    private RadioButton modify;
+    private RadioButton delete;
 
     public static ObjectsFragment newInstance(int index) {
         Bundle args = new Bundle();
@@ -43,16 +44,22 @@ public class ObjectsFragment extends DialogFragment implements View.OnClickListe
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         objectsActivity = (ObjectsActivity) getActivity();
         assert objectsActivity != null;
-        @SuppressLint("InflateParams") View view = objectsActivity.getLayoutInflater().inflate(R.layout.fragment_dialog, null);
+
+        @SuppressLint("InflateParams") View view = objectsActivity.getLayoutInflater()
+                .inflate(R.layout.fragment_dialog, null);
+
         Bundle args = getArguments();
         assert args != null;
+
         object = objectsActivity.getObject(args.getInt(INDEX));
         ((TextView) view.findViewById(R.id.dialog_name)).setText(object.getName());
         modify = view.findViewById(R.id.dialog_modify);
         delete = view.findViewById(R.id.dialog_delete);
+
         view.findViewById(R.id.dialog_cancel).setOnClickListener(this);
         view.findViewById(R.id.dialog_ok).setOnClickListener(this);
-        return (new AlertDialog.Builder(objectsActivity)).setView(view).create();
+
+        return new AlertDialog.Builder(objectsActivity).setView(view).create();
     }
 
     @Override
@@ -63,14 +70,18 @@ public class ObjectsFragment extends DialogFragment implements View.OnClickListe
                     if (modify.isChecked()) {
                         Intent intent = new Intent(objectsActivity, ObjectsDetailActivity.class);
                         intent.putExtra("CATEGORY", getString(R.string.object_report_lost));
-                        intent.putExtra(ObjectsSQLiteController.columns[0], (Integer) object.get_ID());
-                        intent.putExtra(ObjectsSQLiteController.columns[1], object.getUserLost_ID());
+                        intent.putExtra(ObjectsSQLiteController.columns[0],
+                                ""+object.get_ID());
+                        intent.putExtra(ObjectsSQLiteController.columns[1],
+                                object.getUserLost_ID());
                         intent.putExtra(ObjectsSQLiteController.columns[2], object.getName());
                         intent.putExtra(ObjectsSQLiteController.columns[3], object.getPlace());
                         intent.putExtra(ObjectsSQLiteController.columns[4], object.getDate());
-                        intent.putExtra(ObjectsSQLiteController.columns[5], object.getDescription());
+                        intent.putExtra(ObjectsSQLiteController.columns[5],
+                                object.getDescription());
                         intent.putExtra(ObjectsSQLiteController.columns[6], object.getImage());
-                        intent.putExtra(ObjectsSQLiteController.columns[7], object.getUserFound_ID());
+                        intent.putExtra(ObjectsSQLiteController.columns[7],
+                                object.getUserFound_ID());
                         objectsActivity.startActivityForResult(intent, 0);
                     } else if (delete.isChecked()) {
                         JSONObject json = new JSONObject();
@@ -79,11 +90,14 @@ public class ObjectsFragment extends DialogFragment implements View.OnClickListe
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        WebBroadcastReceiver.scheduleJob(objectsActivity.getApplicationContext(), WebService.ACTION_OBJECTS, WebService.METHOD_DELETE, json.toString());
+                        WebBroadcastReceiver.scheduleJob(objectsActivity.getApplicationContext(),
+                                WebService.ACTION_OBJECTS, WebService.METHOD_DELETE,
+                                json.toString());
                         objectsActivity.progressDialog.show();
                     }
                 } else {
-                    Toast.makeText(objectsActivity, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(objectsActivity, getString(R.string.no_internet),
+                            Toast.LENGTH_SHORT).show();
                 }
                 // Tanto ok como cancel cierran el dialogo, por eso aqui no hay break
             case R.id.dialog_cancel:

@@ -12,6 +12,11 @@ import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import co.edu.uniquindio.campusuq.R;
 
 public class NewsContentActivity extends MainActivity {
@@ -48,7 +53,14 @@ public class NewsContentActivity extends MainActivity {
         newTitle = (TextView) findViewById(R.id.content_new_title);
         newTitle.setText(title);
         newDate = (TextView) findViewById(R.id.content_new_date);
-        newDate.setText(date);
+        try {
+            Date d = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(date);
+            newDate.setText(String.format("%s\n%s",
+                    DateFormat.getDateInstance(DateFormat.MEDIUM).format(d),
+                    DateFormat.getTimeInstance(DateFormat.SHORT).format(d)));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         newAuthor = (TextView) findViewById(R.id.content_new_author);
         newAuthor.setText(author);
 

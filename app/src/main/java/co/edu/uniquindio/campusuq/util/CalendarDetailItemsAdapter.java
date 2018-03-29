@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -28,28 +29,33 @@ public class CalendarDetailItemsAdapter extends RecyclerView.Adapter<CalendarDet
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
-    public static class CalendarDetailItemViewHolder extends RecyclerView.ViewHolder {
+    static class CalendarDetailItemViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
-        public LinearLayout endLayout;
-        public TextView period;
-        public TextView start;
-        public TextView end;
+        private ImageView start_flag;
+        private LinearLayout endLayout;
+        private TextView period;
+        private TextView start;
+        private TextView end;
 
-        public CalendarDetailItemViewHolder(View itemView) {
+        CalendarDetailItemViewHolder(View itemView) {
             super(itemView);
-            endLayout = (LinearLayout) itemView.findViewById(R.id.end_date_layout);
-            period = (TextView) itemView.findViewById(R.id.calendar_event_period);
-            start = (TextView) itemView.findViewById(R.id.calendar_event_start);
-            end = (TextView) itemView.findViewById(R.id.calendar_event_end);
+
+            start_flag = itemView.findViewById(R.id.calendar_event_start_flag);
+            endLayout = itemView.findViewById(R.id.end_date_layout);
+            period = itemView.findViewById(R.id.calendar_event_period);
+            start = itemView.findViewById(R.id.calendar_event_start);
+            end = itemView.findViewById(R.id.calendar_event_end);
         }
 
-        public void bindItem(CalendarDetailItem i) {
+        void bindItem(CalendarDetailItem i) {
             period.setText(i.getPeriod());
             start.setText(i.getStart());
             if (i.getEnd() != null) {
+                start_flag.setImageResource(R.drawable.green_flag);
                 endLayout.setVisibility(View.VISIBLE);
                 end.setText(i.getEnd());
             } else {
+                start_flag.setImageResource(R.drawable.yellow_flag);
                 endLayout.setVisibility(View.GONE);
             }
         }
@@ -58,15 +64,9 @@ public class CalendarDetailItemsAdapter extends RecyclerView.Adapter<CalendarDet
 
     // Create new views (invoked by the layout manager)
     @Override
-    public CalendarDetailItemsAdapter.CalendarDetailItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // create a new view
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.calendar_detail, parent, false);
-        // set the view's size, margins, paddings and layout parameters
-        //...
-        CalendarDetailItemsAdapter.CalendarDetailItemViewHolder itemVH =
-                new CalendarDetailItemsAdapter.CalendarDetailItemViewHolder(itemView);
-        return itemVH;
+    public CalendarDetailItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new CalendarDetailItemViewHolder(LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.calendar_detail, parent, false));
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -74,8 +74,7 @@ public class CalendarDetailItemsAdapter extends RecyclerView.Adapter<CalendarDet
     public void onBindViewHolder(CalendarDetailItemsAdapter.CalendarDetailItemViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        CalendarDetailItem item = mItems.get(position);
-        holder.bindItem(item);
+        holder.bindItem(mItems.get(position));
 
     }
 

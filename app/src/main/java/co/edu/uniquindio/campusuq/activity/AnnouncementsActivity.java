@@ -29,12 +29,16 @@ import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.AnnouncementsAdapter;
 import co.edu.uniquindio.campusuq.util.AnnouncementsPresenter;
 import co.edu.uniquindio.campusuq.util.AnnouncementsSQLiteController;
+import co.edu.uniquindio.campusuq.util.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.util.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.Announcement;
+import co.edu.uniquindio.campusuq.vo.AnnouncementLink;
+import co.edu.uniquindio.campusuq.vo.User;
 
-public class AnnouncementsActivity extends MainActivity implements AnnouncementsAdapter.OnClickAnnouncementListener, View.OnClickListener {
+public class AnnouncementsActivity extends MainActivity implements
+        AnnouncementsAdapter.OnClickAnnouncementListener, View.OnClickListener {
 
     public static final int REQUEST_ANNOUNCEMENT_DETAIL = 1005;
 
@@ -43,7 +47,6 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
     private FloatingActionButton fab;
     private CallbackManager callbackManager;
     private ArrayList<Announcement> announcements = new ArrayList<>();
-    private AnnouncementsPresenter announcementsPresenter = new AnnouncementsPresenter();
     private boolean newActivity = true;
     private AnnouncementsAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -54,6 +57,8 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
         @Override
         public void onReceive(Context context, Intent intent) {
             loadAnnouncements(intent.getIntExtra("INSERTED", 0));
+            String response = intent.getStringExtra("RESPONSE");
+            if (response != null) Toast.makeText(context, response, Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -62,30 +67,10 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
     }
 
     @Override
-    public void handleIntent(Intent intent) {
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            for (Announcement announcement : announcements) if (announcement.getName().toLowerCase().contains(query.trim().toLowerCase())) {
-                layoutManager.scrollToPosition(announcements.indexOf(announcement));
-                return;
-            }
-            Toast.makeText(this, "No se ha encontrado el anuncio: "+query, Toast.LENGTH_SHORT).show();
-        } else {
-            String category = intent.getStringExtra("CATEGORY");
-            action = getString(R.string.security_system).equals(category) ? WebService.ACTION_INCIDENTS : WebService.ACTION_COMMUNIQUES;
-            ActionBar actionBar = getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.setTitle(category);
-                changeConfiguration();
-                loadAnnouncements(0);
-            }
-        }
-    }
-
-    @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+        super.setBackground(R.drawable.portrait_normal_background,
+                R.drawable.landscape_normal_background);
 
         ViewStub viewStub = findViewById(R.id.layout_stub);
         viewStub.setLayoutResource(R.layout.content_announcements);
@@ -102,22 +87,43 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
 
         callbackManager = CallbackManager.Factory.create();
 
-        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        LoginManager.getInstance().registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
             @Override
-            public void onSuccess(LoginResult loginResult) {
-            }
+            public void onSuccess(LoginResult loginResult) {}
 
             @Override
-            public void onCancel() {
-            }
+            public void onCancel() {}
 
             @Override
-            public void onError(FacebookException exception) {
-            }
+            public void onError(FacebookException exception) {}
         });
 
         loadAnnouncements(0);
+    }
 
+    @Override
+    public void handleIntent(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            for (Announcement announcement : announcements)
+                if (announcement.getName().toLowerCase().contains(query.trim().toLowerCase())) {
+                layoutManager.scrollToPosition(announcements.indexOf(announcement));
+                return;
+            }
+            Toast.makeText(this, "No se ha encontrado el anuncio: "+query,
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            String category = intent.getStringExtra("CATEGORY");
+            action = getString(R.string.security_system).equals(category) ?
+                    WebService.ACTION_INCIDENTS : WebService.ACTION_COMMUNIQUES;
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setTitle(category);
+                changeConfiguration();
+                loadAnnouncements(0);
+            }
+        }
     }
 
     public void changeConfiguration() {
@@ -126,7 +132,9 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
             report.setVisibility(View.VISIBLE);
         } else {
             report.setVisibility(View.GONE);
-            fab.setVisibility(View.VISIBLE);
+            User user = UsersPresenter.loadUser(this);
+            fab.setVisibility(user != null && user.getAdministrator().equals("S") ?
+                    View.VISIBLE : View.GONE);
         }
     }
 
@@ -134,14 +142,26 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
 
         if (!progressDialog.isShowing()) progressDialog.show();
 
-        int scrollTo = oldAnnouncements ? (newActivity ? 0 : announcements.size()-1) : (inserted != 0 ? inserted-1 : 0);
+        int scrollTo = oldAnnouncements ? (newActivity ? 0 : announcements.size()-1) :
+                (inserted != 0 ? inserted-1 : 0);
 
-        announcements = announcementsPresenter.loadAnnouncements(action, this, inserted > 0 ? announcements.size()+inserted : announcements.size()+3);
+        announcements = AnnouncementsPresenter.loadAnnouncements(action, this,
+                inserted > 0 ? announcements.size()+inserted : announcements.size()+3);
+
+        ArrayList<String> announcement_IDs = new ArrayList<>();
+        for (Announcement announcement : announcements)
+            announcement_IDs.add(String.valueOf(announcement.get_ID()));
+
+        ArrayList<AnnouncementLink> announcementsLinks = AnnouncementsPresenter
+                .getAnnouncementsLinks(this,
+                        announcement_IDs.toArray(new String[announcement_IDs.size()]));
 
         if (newActivity) {
             newActivity = false;
-            adapter = new AnnouncementsAdapter(announcements, this);
-            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+            adapter = new AnnouncementsAdapter(announcements, announcementsLinks,
+                    this);
+            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,
+                    false);
 
             RecyclerView recyclerView = findViewById(R.id.announcements_recycler_view);
             recyclerView.setHasFixedSize(true);
@@ -153,7 +173,8 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
                     super.onScrollStateChanged(recyclerView, newState);
                     if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
                         if (!recyclerView.canScrollVertically(-1)) {
-                            if (Utilities.haveNetworkConnection(AnnouncementsActivity.this)) {
+                            if (Utilities
+                                    .haveNetworkConnection(AnnouncementsActivity.this)) {
                                 oldAnnouncements = false;
                                 progressDialog.show();
                                 WebBroadcastReceiver.scheduleJob(getApplicationContext(),
@@ -170,7 +191,7 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
                 }
             });
         } else {
-            adapter.setAnnouncements(announcements);
+            adapter.setAnnouncements(announcements, announcementsLinks);
             layoutManager.scrollToPosition(scrollTo);
         }
 
@@ -181,25 +202,42 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
     @Override
     public void onAnnouncementClick(int index, String action) {
         switch (action) {
-            case "notice":
-                AnnouncementsFragment.newInstance(index).show(getSupportFragmentManager(), null);
+            case AnnouncementsAdapter.ANNOUNCEMENT:
+                User user = UsersPresenter.loadUser(this);
+                if (user != null && user.getAdministrator().equals("S")) {
+                    AnnouncementsFragment.newInstance(index, this.action)
+                            .show(getSupportFragmentManager(), null);
+                } else if (user != null && WebService.ACTION_INCIDENTS.equals(action)) {
+                    if (user.get_ID() == announcements.get(index).getUser_ID()) {
+                        AnnouncementsFragment.newInstance(index, this.action)
+                                .show(getSupportFragmentManager(), null);
+                    } else {
+                        Toast.makeText(this, getString(R.string.no_propietary),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(this, getString(R.string.no_administrator),
+                            Toast.LENGTH_SHORT).show();
+                }
                 break;
-            case "read": {
-                AnnouncementsSQLiteController dbController = new AnnouncementsSQLiteController(getApplicationContext(), 1);
-                dbController.readed(announcements.get(index).get_ID());
-                dbController.destroy();
+            case AnnouncementsAdapter.READ: {
+                AnnouncementsPresenter
+                        .readed(getApplicationContext(), announcements.get(index).get_ID());
                 loadAnnouncements(0);
                 break;
             }
-            case "facebook":
-                Toast.makeText(this, "Facebook clicked: "+index, Toast.LENGTH_SHORT).show();
+            case AnnouncementsAdapter.FACEBOOK:
+                Toast.makeText(this, "Facebook clicked: "+index, Toast.LENGTH_SHORT)
+                        .show();
                 //LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends"));
                 break;
-            case "twitter":
-                Toast.makeText(this, "Twitter clicked: "+index, Toast.LENGTH_SHORT).show();
+            case AnnouncementsAdapter.TWITTER:
+                Toast.makeText(this, "Twitter clicked: "+index, Toast.LENGTH_SHORT)
+                        .show();
                 break;
-            case "whatsapp":
-                Toast.makeText(this, "Whatsapp clicked: "+index, Toast.LENGTH_SHORT).show();
+            case AnnouncementsAdapter.WHATSAPP:
+                Toast.makeText(this, "Whatsapp clicked: "+index, Toast.LENGTH_SHORT)
+                        .show();
                 break;
             default:
                 Toast.makeText(this, "Undefined: "+index, Toast.LENGTH_SHORT).show();
@@ -213,17 +251,23 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.report_incident: {
-                Intent intent = new Intent(this, AnnouncementsDetailActivity.class);
-                intent.putExtra("CATEGORY", getString(R.string.report_incident));
-                startActivityForResult(intent, REQUEST_ANNOUNCEMENT_DETAIL);
-                break;
-            }
+        int id = view.getId();
+        switch (id) {
+            case R.id.report_incident:
             case R.id.fab: {
-                Intent intent = new Intent(this, AnnouncementsDetailActivity.class);
-                intent.putExtra("CATEGORY", getString(R.string.billboard_detail));
-                startActivityForResult(intent, REQUEST_ANNOUNCEMENT_DETAIL);
+                User user = UsersPresenter.loadUser(this);
+                if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co")) {
+                    Intent intent =
+                            new Intent(this, AnnouncementsDetailActivity.class);
+                    intent.putExtra("CATEGORY", getString(id == R.id.report_incident ?
+                            R.string.report_incident : R.string.billboard_detail));
+                    intent.putExtra(AnnouncementsSQLiteController.columns[1], user.get_ID());
+                    startActivityForResult(intent, REQUEST_ANNOUNCEMENT_DETAIL);
+                } else {
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    intent.putExtra("CATEGORY", getString(R.string.log_in));
+                    startActivity(intent);
+                }
                 break;
             }
             default:
@@ -245,7 +289,8 @@ public class AnnouncementsActivity extends MainActivity implements Announcements
                     String fbData = bundle.toString();
                     Toast.makeText(this, "Fb OK: "+fbData, Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(this, "Fb Error: "+data.getExtras().toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Fb Error: "+data.getExtras().toString(),
+                            Toast.LENGTH_SHORT).show();
                 }
                 break;
         }

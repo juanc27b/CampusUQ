@@ -146,7 +146,7 @@ public class EmailsServiceController {
                     }
                     content = addParts(content, message.getPayload().getParts());
 
-                    Email email = new Email(Integer.parseInt(message.getId()), subject, from, to, date, snippet, content, message.getHistoryId());
+                    Email email = new Email(message.getId(), subject, from, to, date, snippet, content, message.getHistoryId());
                     emails.add(email);
                 }
             }

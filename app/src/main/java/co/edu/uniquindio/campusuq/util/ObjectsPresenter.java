@@ -8,7 +8,7 @@ import android.content.Context;
 
 public class ObjectsPresenter {
 
-    public void deleteHistory(Context context) {
+    public static void deleteHistory(Context context) {
         ObjectsSQLiteController dbController = new ObjectsSQLiteController(context, 1);
         dbController.unreadAll();
         dbController.destroy();

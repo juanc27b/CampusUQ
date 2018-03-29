@@ -13,43 +13,44 @@ import cz.msebera.android.httpclient.client.methods.HttpGet;
 import cz.msebera.android.httpclient.client.methods.HttpPost;
 import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
+import cz.msebera.android.httpclient.protocol.HTTP;
 import cz.msebera.android.httpclient.util.EntityUtils;
 
 class QuotasServiceController {
 
+    private static final String _QUOTAS = "/cupos";
+
     static ArrayList<Quota> getQuotas(Context context) {
-        String url = Utilities.URL_SERVICIO+"/cupos";
-        HttpGet request = new HttpGet(url);
-        request.setHeader("Content-Type", "application/json; Charset=UTF-8");
+        HttpGet request = new HttpGet(Utilities.URL_SERVICIO+_QUOTAS);
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         ArrayList<Quota> quotas = new ArrayList<>();
+
         try {
-            JSONArray array = (new JSONObject(
-                    EntityUtils.toString(HttpClientBuilder.create().build().execute(request).getEntity(), "UTF-8")))
-                    .getJSONArray("datos");
+            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
+                    .execute(request).getEntity())).getJSONArray("datos");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                quotas.add(new Quota(
-                    object.getInt(QuotasSQLiteController.columns[0]),
-                    object.getString(QuotasSQLiteController.columns[1]),
-                    object.getString(QuotasSQLiteController.columns[2]),
-                    object.getInt(QuotasSQLiteController.columns[3])
-                ));
+                quotas.add(new Quota(object.getInt(QuotasSQLiteController.columns[0]),
+                        object.getString(QuotasSQLiteController.columns[1]),
+                        object.getString(QuotasSQLiteController.columns[2]),
+                        object.getInt(QuotasSQLiteController.columns[3])));
             }
         } catch (Exception e) {
             Log.e(QuotasServiceController.class.getSimpleName(), e.getMessage());
-            return new ArrayList<>();
         }
+
         return quotas;
     }
 
     static String modifyQuota(Context context, String json) {
-        HttpPost post = new HttpPost(Utilities.URL_SERVICIO+"/cupos");
-        post.setHeader("Content-Type", "application/json; Charset=UTF-8");
+        HttpPost post = new HttpPost(Utilities.URL_SERVICIO+_QUOTAS);
         post.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
+        post.setHeader(HTTP.CONTENT_TYPE, "application/json");
+        post.setEntity(new StringEntity(json, "UTF-8"));
+
         try {
-            post.setEntity(new StringEntity(json));
-            return EntityUtils.toString(HttpClientBuilder.create().build().execute(post).getEntity());
+            return new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
+                    .execute(post).getEntity())).getString("mensaje");
         } catch (Exception e) {
             Log.e(QuotasServiceController.class.getSimpleName(), e.getMessage());
             return null;
