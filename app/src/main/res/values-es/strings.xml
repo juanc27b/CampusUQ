@@ -116,7 +116,8 @@
     <string name="report_incident">Reportar Incidente</string>
     <string name="billboard_detail">Cambiar Cartelera</string>
     <string name="restaurant_detail">Cambiar Menú Restaurante</string>
-    <string name="quota_detail">Cambiar/Insertar Cupo</string>
+    <string name="quota_detail_insert">Insertar Cupo</string>
+    <string name="quota_detail_modify">Modificar Cupo</string>
 
     <string name="sign_up">Registrarse</string>
     <string name="log_in">Iniciar Sesión</string>

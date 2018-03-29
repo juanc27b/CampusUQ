@@ -18,7 +18,10 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.EmailsPresenter;
@@ -103,7 +106,9 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
                 json.put(EmailsSQLiteController.columns[1], name.getText());
                 json.put(EmailsSQLiteController.columns[2], from.getText());
                 json.put(EmailsSQLiteController.columns[3], to.getText());
-                json.put(EmailsSQLiteController.columns[4], "date");
+                json.put(EmailsSQLiteController.columns[4], DateFormat
+                        .getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, Locale.US)
+                        .format(Calendar.getInstance().getTime()));
                 json.put(EmailsSQLiteController.columns[6], content.getText());
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -112,7 +117,8 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
             WebBroadcastReceiver.scheduleJob(getApplicationContext(),
                     WebService.ACTION_EMAILS, WebService.METHOD_POST, json.toString());
         } else {
-            Toast.makeText(EmailsDetailActivity.this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT)
+                    .show();
         }
     }
 

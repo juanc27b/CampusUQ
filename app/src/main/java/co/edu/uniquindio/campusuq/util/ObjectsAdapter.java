@@ -67,10 +67,15 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
             name.setText(lostObject.getName());
             place.setText(lostObject.getPlace());
             date.setText(lostObject.getDate());
-            File imageFile = new File(lostObject.getImage());
-            if (imageFile.exists()) image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
+
+            // Se concatena una cadena vacia para evitar el caso File(null)
+            File imageFile = new File(""+lostObject.getImage());
+            if (imageFile.exists())
+                image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
             else image.setImageResource(R.drawable.rectangle_gray);
+
             description.setText(lostObject.getDescription());
+
             if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
                     lostObject.getUserFound_ID() != null && lostObject.getUserFound_ID() == user.get_ID()) {
                 found.setText(R.string.object_not_found);
@@ -104,12 +109,8 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
         public void onClick(View view) {
             String action;
             switch (view.getId()) {
-                case R.id.object_readed:
-                    action = READED;
-                    break;
-                default:
-                    action = DIALOG;
-                    break;
+                case R.id.object_readed: action = READED; break;
+                default                : action = DIALOG; break;
             }
             listener.onObjectClick(getAdapterPosition(), action);
         }

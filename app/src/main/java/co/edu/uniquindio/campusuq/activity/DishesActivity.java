@@ -17,13 +17,17 @@ import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.DishesAdapter;
+import co.edu.uniquindio.campusuq.util.DishesPresenter;
 import co.edu.uniquindio.campusuq.util.DishesSQLiteController;
+import co.edu.uniquindio.campusuq.util.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.util.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.Dish;
+import co.edu.uniquindio.campusuq.vo.User;
 
-public class DishesActivity extends MainActivity implements DishesAdapter.OnClickDishListener, View.OnClickListener {
+public class DishesActivity extends MainActivity implements DishesAdapter.OnClickDishListener,
+        View.OnClickListener {
 
     private ArrayList<Dish> dishes = new ArrayList<>();
     private boolean newActivity = true;
@@ -36,6 +40,8 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
         @Override
         public void onReceive(Context context, Intent intent) {
             loadDishes(intent.getIntExtra("INSERTED", 0));
+            String response = intent.getStringExtra("RESPONSE");
+            if (response != null) Toast.makeText(context, response, Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -44,21 +50,10 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
     }
 
     @Override
-    public void handleIntent(Intent intent) {
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            for (Dish dish : dishes) if (dish.getName().toLowerCase().contains(query.trim().toLowerCase())) {
-                layoutManager.scrollToPosition(dishes.indexOf(dish));
-                return;
-            }
-            Toast.makeText(this, "No se ha encontrado el plato: "+query, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+        super.setBackground(R.drawable.portrait_normal_background,
+                R.drawable.landscape_normal_background);
 
         ViewStub viewStub = findViewById(R.id.layout_stub);
         viewStub.setLayoutResource(R.layout.content_dishes);
@@ -66,25 +61,41 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
         FloatingActionButton insert = findViewById(R.id.fab);
 
         insert.setOnClickListener(this);
-        insert.setVisibility(View.VISIBLE);
+        User user = UsersPresenter.loadUser(this);
+        if (user != null && user.getAdministrator().equals("S")) insert.setVisibility(View.VISIBLE);
 
         loadDishes(0);
+    }
+
+    @Override
+    public void handleIntent(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            for (Dish dish : dishes)
+                if (dish.getName().toLowerCase().contains(query.trim().toLowerCase())) {
+                layoutManager.scrollToPosition(dishes.indexOf(dish));
+                return;
+            }
+            Toast.makeText(this, "No se ha encontrado el plato: "+query,
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void loadDishes(int inserted) {
 
         if (!progressDialog.isShowing()) progressDialog.show();
 
-        int scrollTo = oldDishes ? (newActivity ? 0 : dishes.size()-1) : (inserted != 0 ? inserted-1 : 0);
+        int scrollTo = oldDishes ? (newActivity ? 0 : dishes.size()-1) :
+                (inserted > 0 ? inserted-1 : 0);
 
-        DishesSQLiteController dbController = new DishesSQLiteController(getApplicationContext(), 1);
-        dishes = dbController.select(String.valueOf(inserted > 0 ? dishes.size()+inserted : dishes.size()+12), null, null);
-        dbController.destroy();
+        dishes = DishesPresenter.loadDishes(getApplicationContext(),
+                inserted > 0 ? dishes.size()+inserted : dishes.size()+12);
 
         if (newActivity) {
             newActivity = false;
             adapter = new DishesAdapter(dishes, this);
-            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,
+                    false);
 
             RecyclerView recyclerView = findViewById(R.id.dishes_recycler_view);
             recyclerView.setHasFixedSize(true);
@@ -100,7 +111,8 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
                                 oldDishes = false;
                                 progressDialog.show();
                                 WebBroadcastReceiver.scheduleJob(getApplicationContext(),
-                                        WebService.ACTION_DISHES, WebService.METHOD_GET, null);
+                                        WebService.ACTION_DISHES, WebService.METHOD_GET,
+                                        null);
                             } else {
                                 Toast.makeText(DishesActivity.this,
                                         getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
@@ -123,7 +135,11 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
 
     @Override
     public void onDishClick(int index) {
-        DishesFragment.newInstance(index).show(getSupportFragmentManager(), null);
+        User user = UsersPresenter.loadUser(this);
+        if (user != null && user.getAdministrator().equals("S")) DishesFragment.newInstance(index)
+                .show(getSupportFragmentManager(), null);
+        else Toast.makeText(this, getString(R.string.no_administrator),
+                Toast.LENGTH_SHORT).show();
     }
 
     public Dish getDish(int index) {
@@ -136,10 +152,6 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
             case R.id.fab: {
                 Intent intent = new Intent(this, DishesDetailActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.restaurant_detail));
-                intent.putExtra(DishesSQLiteController.columns[1], "");
-                intent.putExtra(DishesSQLiteController.columns[2], "");
-                intent.putExtra(DishesSQLiteController.columns[3], "");
-                intent.putExtra(DishesSQLiteController.columns[4], "");
                 startActivityForResult(intent, 0);
                 break;
             }

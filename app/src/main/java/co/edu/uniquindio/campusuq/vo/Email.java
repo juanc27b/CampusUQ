@@ -13,7 +13,8 @@ public class Email {
     private String content;
     private BigInteger historyID;
 
-    public Email(String _ID, String name, String from, String to, String date, String snippet, String content, BigInteger historyID) {
+    public Email(String _ID, String name, String from, String to, String date, String snippet,
+                 String content, BigInteger historyID) {
         this._ID = _ID;
         this.name = name;
         this.from = from;

@@ -115,7 +115,8 @@
     <string name="report_incident">Reportar Incidente</string>
     <string name="billboard_detail">Cambiar Cartelera</string>
     <string name="restaurant_detail">Cambiar Menú Restaurante</string>
-    <string name="quota_detail">Cambiar/Insertar Cupo</string>
+    <string name="quota_detail_insert">Insertar Cupo</string>
+    <string name="quota_detail_modify">Modificar Cupo</string>
 
     <string name="sign_up">Registrarse</string>
     <string name="log_in">Iniciar Sesión</string>
@@ -152,6 +153,8 @@
     <string name="empty_string">No puede haber campos vacios</string>
     <string name="downloading_data">Descargando datos</string>
     <string name="wait_to">Espera para tener una mejor experiencia</string>
+    <string name="no_administrator">Solo administradores pueden subir, modificar o eliminar</string>
+    <string name="no_propietary">Solo el propietario o un administrador pueden modificar o eliminar</string>
 
     <string name="change_to_mapview">Cambiar a vista de mapa</string>
     <string name="change_to_streetview">Cambiar a vista de calle</string>
@@ -324,8 +327,10 @@
     <string name="object_detail_name_hint">Escribe el nombre del objeto</string>
     <string name="object_detail_place">Lugar y Dirección</string>
     <string name="object_detail_place_hint">Escribe el lugar en donde perdiste el objeto</string>
-    <string name="object_detail_date">Fecha y Hora</string>
-    <string name="object_detail_date_hint">Formato: AAAA/MM/DD HH:MM:SS</string>
+    <string name="object_detail_date">Fecha</string>
+    <string name="object_detail_date_hint">yyyy-MM-dd</string>
+    <string name="object_detail_time">Hora</string>
+    <string name="object_detail_time_hint">HH:mm:ss</string>
     <string name="object_detail_description">Descripción</string>
     <string name="object_detail_description_hint">Escribe una breve descripción de la apariencia del objeto que perdiste para ayudar a los demás a identificarlo</string>
     <string name="object_detail_sample_description_count">110</string>

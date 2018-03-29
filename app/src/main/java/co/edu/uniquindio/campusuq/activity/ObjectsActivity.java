@@ -25,7 +25,8 @@ import co.edu.uniquindio.campusuq.util.WebService;
 import co.edu.uniquindio.campusuq.vo.LostObject;
 import co.edu.uniquindio.campusuq.vo.User;
 
-public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnClickObjectListener, View.OnClickListener {
+public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnClickObjectListener,
+        View.OnClickListener {
 
     private ArrayList<LostObject> objects = new ArrayList<>();
     private boolean newActivity = true;
@@ -38,6 +39,8 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         @Override
         public void onReceive(Context context, Intent intent) {
             loadObjects(intent.getIntExtra("INSERTED", 0));
+            String response = intent.getStringExtra("RESPONSE");
+            if (response != null) Toast.makeText(context, response, Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -46,27 +49,10 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
     }
 
     @Override
-    public void handleIntent(Intent intent) {
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            for (LostObject object : objects) if (object.getName().toLowerCase().contains(query.trim().toLowerCase())) {
-                layoutManager.scrollToPosition(objects.indexOf(object));
-                return;
-            }
-            Toast.makeText(this, "No se ha encontrado el objeto: "+query, Toast.LENGTH_SHORT).show();
-        } else {
-            ActionBar actionBar = getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.setTitle(intent.getStringExtra("CATEGORY"));
-                loadObjects(0);
-            }
-        }
-    }
-
-    @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+        super.setBackground(R.drawable.portrait_normal_background,
+                R.drawable.landscape_normal_background);
 
         ViewStub viewStub = findViewById(R.id.layout_stub);
         viewStub.setLayoutResource(R.layout.content_objects);
@@ -77,26 +63,51 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         loadObjects(0);
     }
 
+    @Override
+    public void handleIntent(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            for (LostObject object : objects)
+                if (object.getName().toLowerCase().contains(query.trim().toLowerCase())) {
+                    layoutManager.scrollToPosition(objects.indexOf(object));
+                    return;
+                }
+            Toast.makeText(this, "No se ha encontrado el objeto: "+query,
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setTitle(intent.getStringExtra("CATEGORY"));
+                loadObjects(0);
+            }
+        }
+    }
+
     private void loadObjects(int inserted) {
 
         if (!progressDialog.isShowing()) progressDialog.show();
 
-        int scrollTo = oldObjects ? (newActivity ? 0 : objects.size()-1) : (inserted != 0 ? inserted-1 : 0);
+        int scrollTo = oldObjects ? (newActivity ? 0 : objects.size()-1) :
+                (inserted != 0 ? inserted-1 : 0);
 
-        ObjectsSQLiteController dbController = new ObjectsSQLiteController(getApplicationContext(), 1);
+        ObjectsSQLiteController dbController =
+                new ObjectsSQLiteController(getApplicationContext(), 1);
         String limit = String.valueOf(inserted > 0 ? objects.size()+inserted : objects.size()+3);
 
         User user = UsersPresenter.loadUser(this);
         if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co")) {
             objects = new ArrayList<>();
             objects.addAll(dbController.select(limit,
-                    "`"+ObjectsSQLiteController.columns[1]+"` = "+user.get_ID(), null));
-            objects.addAll(dbController.select(limit, "`"+ObjectsSQLiteController.columns[1]+"` != "+user.get_ID()+
-                    " AND `"+ObjectsSQLiteController.columns[7]+"` IS NULL"+
-                    " AND `"+ObjectsSQLiteController.columns[8]+"` = 'N'", null));
+                    ObjectsSQLiteController.columns[1]+" = "+user.get_ID(),
+                    null));
+            objects.addAll(dbController.select(limit,
+                    ObjectsSQLiteController.columns[1]+" != "+user.get_ID()+
+                    " AND "+ObjectsSQLiteController.columns[7]+" IS NULL"+
+                    " AND "+ObjectsSQLiteController.columns[8]+" = 'N'", null));
         } else {
-            objects = dbController.select(limit, "`"+ObjectsSQLiteController.columns[7]+"` IS NULL"+
-                    " AND `"+ObjectsSQLiteController.columns[8]+"` = 'N'", null);
+            objects = dbController.select(limit,
+                    ObjectsSQLiteController.columns[7]+" IS NULL"+
+                    " AND "+ObjectsSQLiteController.columns[8]+" = 'N'", null);
         }
 
         dbController.destroy();
@@ -104,7 +115,8 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         if (newActivity) {
             newActivity = false;
             adapter = new ObjectsAdapter(objects, this);
-            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,
+                    false);
 
             RecyclerView recyclerView = findViewById(R.id.objects_recycler_view);
             recyclerView.setHasFixedSize(true);
@@ -120,7 +132,8 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                                 oldObjects = false;
                                 progressDialog.show();
                                 WebBroadcastReceiver.scheduleJob(getApplicationContext(),
-                                        WebService.ACTION_OBJECTS, WebService.METHOD_GET, null);
+                                        WebService.ACTION_OBJECTS, WebService.METHOD_GET,
+                                        null);
                             } else {
                                 Toast.makeText(ObjectsActivity.this,
                                         getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
@@ -145,11 +158,13 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
     public void onObjectClick(int index, String action) {
         User user = UsersPresenter.loadUser(this);
         LostObject object = objects.get(index);
-        ObjectsSQLiteController dbController = new ObjectsSQLiteController(getApplicationContext(), 1);
+        ObjectsSQLiteController dbController =
+                new ObjectsSQLiteController(getApplicationContext(), 1);
         switch (action) {
             case ObjectsAdapter.DIALOG:
                 if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
-                        object.getUserLost_ID() == user.get_ID()) {
+                        (user.getAdministrator().equals("S") ||
+                                object.getUserLost_ID() == user.get_ID())) {
                     ObjectsFragment.newInstance(index).show(getSupportFragmentManager(), null);
                 }
                 break;
@@ -166,14 +181,15 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                     );
                     loadObjects(0);
                 } else {
-                    Intent intent = new Intent(ObjectsActivity.this, LoginActivity.class);
+                    Intent intent = new Intent(this, LoginActivity.class);
                     intent.putExtra("CATEGORY", getString(R.string.log_in));
                     ObjectsActivity.this.startActivity(intent);
                 }
                 break;
             case ObjectsAdapter.NOT_FOUND:
                 if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
-                        object.getUserFound_ID() != null && object.getUserFound_ID() == user.get_ID()) {
+                        object.getUserFound_ID() != null &&
+                        object.getUserFound_ID() == user.get_ID()) {
                     object = objects.get(index);
                     dbController.update(
                             object.get_ID(), object.getUserLost_ID(), object.getName(),
@@ -185,8 +201,9 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                 break;
             case ObjectsAdapter.CONTACT:
                 if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
-                        object.getUserLost_ID() == user.get_ID() && object.getUserFound_ID() != null) {
-                    Intent intent = new Intent(ObjectsActivity.this, UsersActivity.class);
+                        object.getUserLost_ID() == user.get_ID() &&
+                        object.getUserFound_ID() != null) {
+                    Intent intent = new Intent(this, UsersActivity.class);
                     intent.putExtra("CATEGORY", getString(R.string.object_view_contact));
                     intent.putExtra("USER", user);
                     ObjectsActivity.this.startActivity(intent);
@@ -211,16 +228,11 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                     Intent intent = new Intent(this, ObjectsDetailActivity.class);
                     intent.putExtra("CATEGORY", getString(R.string.object_report_lost));
                     intent.putExtra(ObjectsSQLiteController.columns[1], user.get_ID());
-                    intent.putExtra(ObjectsSQLiteController.columns[2], "");
-                    intent.putExtra(ObjectsSQLiteController.columns[3], "");
-                    intent.putExtra(ObjectsSQLiteController.columns[4], "");
-                    intent.putExtra(ObjectsSQLiteController.columns[5], "");
-                    intent.putExtra(ObjectsSQLiteController.columns[6], "");
                     startActivityForResult(intent, 0);
                 } else {
                     Intent intent = new Intent(this, LoginActivity.class);
                     intent.putExtra("CATEGORY", getString(R.string.log_in));
-                    ObjectsActivity.this.startActivity(intent);
+                    startActivity(intent);
                 }
                 break;
             }

@@ -12,7 +12,8 @@ public class LostObject {
     private Integer userFound_ID;
     private String readed;
 
-    public LostObject(int _ID, int userLost_ID, String name, String place, String date, String description, String image, Integer userFound_ID, String readed) {
+    public LostObject(int _ID, int userLost_ID, String name, String place, String date,
+                      String description, String image, Integer userFound_ID, String readed) {
         this._ID = _ID;
         this.userLost_ID = userLost_ID;
         this.name = name;

@@ -14,7 +14,8 @@ public class Announcement {
     private String description;
     private String read;
 
-    public Announcement(int _ID, int user_ID, String type, String name, String date, String description, String read) {
+    public Announcement(int _ID, int user_ID, String type, String name, String date,
+                        String description, String read) {
         this._ID = _ID;
         this.user_ID = user_ID;
         this.type = type;

@@ -28,7 +28,8 @@ public class DishesFragment extends DialogFragment implements View.OnClickListen
 
     private DishesActivity dishesActivity;
     private Dish dish;
-    private RadioButton modify, delete;
+    private RadioButton modify;
+    private RadioButton delete;
 
     public static DishesFragment newInstance(int index) {
         Bundle args = new Bundle();
@@ -43,16 +44,22 @@ public class DishesFragment extends DialogFragment implements View.OnClickListen
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         dishesActivity = (DishesActivity) getActivity();
         assert dishesActivity != null;
-        @SuppressLint("InflateParams") View view = dishesActivity.getLayoutInflater().inflate(R.layout.fragment_dialog, null);
+
+        @SuppressLint("InflateParams") View view = dishesActivity.getLayoutInflater()
+                .inflate(R.layout.fragment_dialog, null);
+
         Bundle args = getArguments();
         assert args != null;
+
         dish = dishesActivity.getDish(args.getInt(INDEX));
         ((TextView) view.findViewById(R.id.dialog_name)).setText(dish.getName());
         modify = view.findViewById(R.id.dialog_modify);
         delete = view.findViewById(R.id.dialog_delete);
+
         view.findViewById(R.id.dialog_cancel).setOnClickListener(this);
         view.findViewById(R.id.dialog_ok).setOnClickListener(this);
-        return (new AlertDialog.Builder(dishesActivity)).setView(view).create();
+
+        return new AlertDialog.Builder(dishesActivity).setView(view).create();
     }
 
     @Override
@@ -63,10 +70,11 @@ public class DishesFragment extends DialogFragment implements View.OnClickListen
                     if (modify.isChecked()) {
                         Intent intent = new Intent(dishesActivity, DishesDetailActivity.class);
                         intent.putExtra("CATEGORY", getString(R.string.restaurant_detail));
-                        intent.putExtra(DishesSQLiteController.columns[0], (Integer) dish.get_ID());
+                        intent.putExtra(DishesSQLiteController.columns[0], ""+dish.get_ID());
                         intent.putExtra(DishesSQLiteController.columns[1], dish.getName());
                         intent.putExtra(DishesSQLiteController.columns[2], dish.getDescription());
-                        intent.putExtra(DishesSQLiteController.columns[3], String.valueOf(dish.getPrice()));
+                        intent.putExtra(DishesSQLiteController.columns[3],
+                                ""+dish.getPrice());
                         intent.putExtra(DishesSQLiteController.columns[4], dish.getImage());
                         dishesActivity.startActivityForResult(intent, 0);
                     } else if (delete.isChecked()) {
@@ -76,11 +84,14 @@ public class DishesFragment extends DialogFragment implements View.OnClickListen
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        WebBroadcastReceiver.scheduleJob(dishesActivity.getApplicationContext(), WebService.ACTION_DISHES, WebService.METHOD_DELETE, json.toString());
+                        WebBroadcastReceiver.scheduleJob(dishesActivity.getApplicationContext(),
+                                WebService.ACTION_DISHES, WebService.METHOD_DELETE,
+                                json.toString());
                         dishesActivity.progressDialog.show();
                     }
                 } else {
-                    Toast.makeText(dishesActivity, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(dishesActivity, getString(R.string.no_internet),
+                            Toast.LENGTH_SHORT).show();
                 }
                 // Tanto ok como cancel cierran el dialogo, por eso aqui no hay break
             case R.id.dialog_cancel:

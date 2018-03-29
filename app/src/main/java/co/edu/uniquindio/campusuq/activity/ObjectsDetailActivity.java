@@ -1,5 +1,7 @@
 package co.edu.uniquindio.campusuq.activity;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
@@ -13,9 +15,11 @@ import android.text.TextWatcher;
 import android.util.Base64;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -25,6 +29,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.ObjectsSQLiteController;
@@ -35,11 +41,15 @@ import co.edu.uniquindio.campusuq.util.WebService;
 public class ObjectsDetailActivity extends MainActivity implements View.OnClickListener {
 
     private Intent intent;
-    private Integer _ID;
-    private EditText name, place, date, description;
+    private String _ID;
+    private EditText name;
+    private EditText place;
+    private EditText date;
+    private EditText time;
+    private EditText description;
     private TextView descriptionCount;
-    private File imageFile;
     private ImageView image;
+    private File imageFile;
 
     public ObjectsDetailActivity() {
         super.setHasNavigationDrawerIcon(false);
@@ -47,19 +57,10 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
     }
 
     @Override
-    public void handleIntent(Intent intent) {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(intent.getStringExtra("CATEGORY"));
-            this.intent = intent;
-            setObject();
-        }
-    }
-
-    @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+        super.setBackground(R.drawable.portrait_normal_background,
+                R.drawable.landscape_normal_background);
 
         ViewStub viewStub = findViewById(R.id.layout_stub);
         viewStub.setLayoutResource(R.layout.activity_objects_detail);
@@ -69,11 +70,14 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
         name = findViewById(R.id.object_detail_name);
         place = findViewById(R.id.object_detail_place);
         date = findViewById(R.id.object_detail_date);
+        time = findViewById(R.id.object_detail_time);
         description = findViewById(R.id.object_detail_description);
         descriptionCount = findViewById(R.id.object_detail_description_count);
         image = findViewById(R.id.object_detail_image);
         setObject();
 
+        date.setOnClickListener(this);
+        time.setOnClickListener(this);
         description.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
@@ -90,57 +94,108 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
         findViewById(R.id.object_detail_ok).setOnClickListener(this);
     }
 
+    @Override
+    public void handleIntent(Intent intent) {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(intent.getStringExtra("CATEGORY"));
+            this.intent = intent;
+            setObject();
+        }
+    }
+
     private void setObject() {
-        _ID = (Integer) intent.getSerializableExtra(ObjectsSQLiteController.columns[0]);
+        _ID = intent.getStringExtra(ObjectsSQLiteController.columns[0]);
         name.setText(intent.getStringExtra(ObjectsSQLiteController.columns[2]));
         place.setText(intent.getStringExtra(ObjectsSQLiteController.columns[3]));
-        date.setText(intent.getStringExtra(ObjectsSQLiteController.columns[4]));
-        String descriptionText = intent.getStringExtra(ObjectsSQLiteController.columns[5]);
-        description.setText(descriptionText);
-        descriptionCount.setText(String.valueOf(descriptionText.length()));
+        String dateTime = intent.getStringExtra(ObjectsSQLiteController.columns[4]);
+        if (dateTime != null && dateTime.length() >= 19) {
+            date.setText(dateTime.substring(0, 10));
+            time.setText(dateTime.substring(11, 19));
+        }
+        description.setText(intent.getStringExtra(ObjectsSQLiteController.columns[5]));
+        descriptionCount.setText(String.valueOf(description.getText().length()));
 
-        imageFile = new File(intent.getStringExtra(ObjectsSQLiteController.columns[6]));
-        if (imageFile.exists()) image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
+        // Se concatena una cadena vacia para evitar el caso File(null)
+        imageFile =
+                new File(""+intent.getStringExtra(ObjectsSQLiteController.columns[6]));
+        if (imageFile.exists())
+            image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
         else image.setImageResource(R.drawable.rectangle_gray);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.object_detail_date: {
+                Calendar calendar = Calendar.getInstance();
+                new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                        date.setText(String.format(Locale.US, "%04d-%02d-%02d", year,
+                                month+1, day));
+                    }
+                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)).show();
+                break;
+            }
+            case R.id.object_detail_time: {
+                Calendar calendar = Calendar.getInstance();
+                new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                        time.setText(String.format(Locale.US, "%02d:%02d:00", hour, minute));
+                    }
+                }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE),
+                        false).show();
+                break;
+            }
             case R.id.object_detail_image:
-                startActivityForResult(Intent.createChooser((new Intent(Intent.ACTION_GET_CONTENT)).setType("image/*"), "Select Picture"), 0);
+                startActivityForResult(Intent.createChooser(new Intent(Intent.ACTION_GET_CONTENT)
+                        .setType("image/*"), "Select Picture"), 0);
                 break;
             case R.id.object_detail_ok:
                 if (Utilities.haveNetworkConnection(ObjectsDetailActivity.this)) {
-                    if (name.getText().length() != 0 && place.getText().length() != 0 && date.getText().length() != 0 && description.getText().length() != 0) {
+                    if (name.getText().length() != 0 && place.getText().length() != 0 &&
+                            date.getText().length() != 0 && time.getText().length() != 0 &&
+                            description.getText().length() != 0) {
                         JSONObject json = new JSONObject();
                         try {
                             if (_ID != null) json.put("UPDATE_ID", _ID);
-                            json.put(ObjectsSQLiteController.columns[1], intent.getIntExtra(ObjectsSQLiteController.columns[1], 0));
+                            json.put(ObjectsSQLiteController.columns[1], intent.getIntExtra(
+                                    ObjectsSQLiteController.columns[1],
+                                    0));
                             json.put(ObjectsSQLiteController.columns[2], name.getText());
                             json.put(ObjectsSQLiteController.columns[3], place.getText());
-                            json.put(ObjectsSQLiteController.columns[4], date.getText());
+                            json.put(ObjectsSQLiteController.columns[4],
+                                    date.getText()+"T"+time.getText());
                             json.put(ObjectsSQLiteController.columns[5], description.getText());
-                            json.put(ObjectsSQLiteController.columns[7], intent.getSerializableExtra(ObjectsSQLiteController.columns[7]));
+                            json.put(ObjectsSQLiteController.columns[7], intent
+                                    .getSerializableExtra(ObjectsSQLiteController.columns[7]));
                             if (imageFile.exists()) {
                                 json.put(ObjectsSQLiteController.columns[6], imageFile.getName());
                                 byte[] imageBytes = new byte[(int) imageFile.length()];
-                                BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(imageFile));
+                                BufferedInputStream bufferedInputStream =
+                                        new BufferedInputStream(new FileInputStream(imageFile));
                                 bufferedInputStream.read(imageBytes);
                                 bufferedInputStream.close();
-                                json.put("imageString", Base64.encodeToString(imageBytes, Base64.NO_WRAP));
+                                json.put("imageString",
+                                        Base64.encodeToString(imageBytes, Base64.NO_WRAP));
                             }
                         } catch (JSONException | IOException e) {
                             e.printStackTrace();
                         }
-                        WebBroadcastReceiver.scheduleJob(getApplicationContext(), WebService.ACTION_OBJECTS, WebService.METHOD_POST, json.toString());
+                        WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                                WebService.ACTION_OBJECTS, WebService.METHOD_POST, json.toString());
                         setResult(RESULT_OK, intent);
                         finish();
                     } else {
-                        Toast.makeText(ObjectsDetailActivity.this, getString(R.string.empty_string), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.empty_string),
+                                Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(ObjectsDetailActivity.this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.no_internet),
+                            Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
@@ -154,12 +209,17 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
         if (resultCode == RESULT_OK) {
             Uri uri = data.getData();
             if (uri != null) {
-                String[] projection = {MediaStore.Images.Media.DATA}, selectionArgs = {DocumentsContract.getDocumentId(uri).split(":")[1]};
-                Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, MediaStore.Images.Media._ID+" = ?", selectionArgs, null);
+                String[] projection = {MediaStore.Images.Media.DATA};
+                String[] selectionArgs = {DocumentsContract.getDocumentId(uri).split(":")[1]};
+                Cursor cursor = getContentResolver().query(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection,
+                        MediaStore.Images.Media._ID+" = ?", selectionArgs, null);
                 if (cursor != null) {
                     if (cursor.moveToFirst()) {
-                        imageFile = new File(cursor.getString(cursor.getColumnIndex(projection[0])));
-                        if (imageFile.exists()) image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
+                        imageFile =
+                                new File(cursor.getString(cursor.getColumnIndex(projection[0])));
+                        if (imageFile.exists()) image.setImageBitmap(BitmapFactory
+                                .decodeFile(imageFile.getAbsolutePath()));
                         else image.setImageResource(R.drawable.rectangle_gray);
                     }
                     cursor.close();
