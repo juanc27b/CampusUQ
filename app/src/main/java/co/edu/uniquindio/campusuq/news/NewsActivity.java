@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewStub;
@@ -35,63 +36,59 @@ import co.edu.uniquindio.campusuq.web.WebService;
 
 public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNewListener {
 
-    private RecyclerView mRecyclerView;
-    private NewsAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-
-    public ArrayList<New> news;
-    public NewsPresenter newsPresenter;
-    public boolean oldActivity = false;
-    boolean oldNews = true;
     private String action;
-
     public CallbackManager callbackManager;
     public boolean loggedIn;
     public ShareDialog shareDialog;
+    public ArrayList<New> news = new ArrayList<>();
+    public boolean newActivity = true;
+    private NewsAdapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
+    boolean oldNews = true;
+
+    private IntentFilter newsFilter = new IntentFilter(WebService.ACTION_NEWS);
+    private BroadcastReceiver newsReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int inserted = intent.getIntExtra("INSERTED", 0);
+            loadNews(inserted);
+        }
+    };
 
     public NewsActivity() {
-        this.news = new ArrayList<>();
-        newsPresenter = new NewsPresenter();
-        this.oldActivity = false;
-
         super.setHasNavigationDrawerIcon(false);
     }
 
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
+        super.setBackground(R.drawable.portrait_normal_background,
+                R.drawable.landscape_normal_background);
+
+        ViewStub stub = findViewById(R.id.layout_stub);
+        stub.setLayoutResource(R.layout.content_news);
+        stub.inflate();
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
 
         callbackManager = CallbackManager.Factory.create();
-        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        LoginManager.getInstance().registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
             @Override
-            public void onSuccess(LoginResult loginResult) {
-                // App code
-            }
+            public void onSuccess(LoginResult loginResult) {}
+
             @Override
-            public void onCancel() {
-                // App code
-            }
+            public void onCancel() {}
+
             @Override
-            public void onError(FacebookException exception) {
-                // App code
-            }
+            public void onError(FacebookException exception) {}
         });
         loggedIn = AccessToken.getCurrentAccessToken() == null;
         shareDialog = new ShareDialog(this);
 
         Twitter.initialize(this);
 
-        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
-
-        ViewStub stub = findViewById(R.id.layout_stub);
-        stub.setLayoutResource(R.layout.content_news);
-        stub.inflate();
-
-        String category = getIntent().getStringExtra("CATEGORY");
-        action = getString(R.string.news).equals(category) ? WebService.ACTION_NEWS : WebService.ACTION_EVENTS;
         loadNews(0);
 
     }
@@ -100,39 +97,37 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
     public void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            boolean found = false;
-            for (New mNew : news) {
-                if (query.trim().toLowerCase().equals(mNew.getName().toLowerCase()) ||
-                        mNew.getName().toLowerCase().contains(query.trim().toLowerCase())) {
-                    mLayoutManager.scrollToPosition(news.indexOf(mNew));
-                    found = true;
-                    break;
-                }
+            for (New n : news) if (n.getName().toLowerCase().contains(query.trim().toLowerCase())) {
+                layoutManager.scrollToPosition(news.indexOf(n));
+                return;
             }
-            if (!found) {
-                Toast.makeText(this, "No se ha encontrado la noticia: "+query, Toast.LENGTH_SHORT).show();
-            }
-        } else if (mAdapter != null) {
+            Toast.makeText(this, "No se ha encontrado la noticia: "+query,
+                    Toast.LENGTH_SHORT).show();
+        } else {
             String category = intent.getStringExtra("CATEGORY");
-            getSupportActionBar().setTitle(category);
-            action = getString(R.string.news).equals(category) ? WebService.ACTION_NEWS : WebService.ACTION_EVENTS;
-            loadNews(0);
+            action = getString(R.string.news).equals(category) ?
+                    WebService.ACTION_NEWS : WebService.ACTION_EVENTS;
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setTitle(category);
+                loadNews(0);
+            }
         }
     }
 
     @Override
     public void onNewClick(int pos, String action) {
-        switch(action) {
+        switch (action) {
             case "notice":
             case "more":
-                Intent intent = new Intent(NewsActivity.this, NewsContentActivity.class);
+                Intent intent = new Intent(this, NewsContentActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.news_detail));
                 intent.putExtra("TITLE", news.get(pos).getName());
                 intent.putExtra("DATE", news.get(pos).getDate());
                 intent.putExtra("AUTHOR", news.get(pos).getAuthor());
                 intent.putExtra("LINK", news.get(pos).getLink());
                 intent.putExtra("CONTENT", news.get(pos).getContent());
-                NewsActivity.this.startActivity(intent);
+                startActivity(intent);
                 break;
             case "facebook":
                 if (!loggedIn) {
@@ -163,99 +158,71 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK){
-            Toast.makeText(this, "Publicación correcta", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Error en la publicación", Toast.LENGTH_SHORT).show();
-        }
+        if (resultCode == RESULT_OK)
+            Toast.makeText(this, R.string.social_ok, Toast.LENGTH_SHORT).show();
+        else Toast.makeText(this, R.string.socia_error, Toast.LENGTH_SHORT).show();
     }
 
     private void loadNews(int inserted) {
 
-        if (!progressDialog.isShowing()) {
-            progressDialog.show();
-        }
+        if (!progressDialog.isShowing()) progressDialog.show();
 
-        int scrollTo;
-        int limit = inserted > 0 ? news.size()+inserted : news.size()+3;
-        if (!oldNews) {
-            scrollTo = (inserted != 0) ? inserted - 1 : 0;
-        } else {
-            scrollTo = oldActivity ? news.size()-1 : 0;
-        }
+        int scrollTo = oldNews ?
+                (newActivity ? 0 : news.size()-1) : (inserted > 0 ? inserted-1 : 0);
 
-        news = newsPresenter.loadNews(action, NewsActivity.this, limit);
+        news = NewsPresenter.loadNews(action, this,
+                inserted > 0 ? news.size()+inserted : news.size()+3);
 
-        if (!oldActivity) {
-            mRecyclerView = findViewById(R.id.news_recycler_view);
-            mRecyclerView.setHasFixedSize(true);
+        if (newActivity) {
+            newActivity = false;
+            adapter = new NewsAdapter(news, this);
+            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,
+                    false);
 
-            mLayoutManager = new LinearLayoutManager(NewsActivity.this, LinearLayoutManager.VERTICAL, false);
-            mRecyclerView.setLayoutManager(mLayoutManager);
-
-            mAdapter = new NewsAdapter(news, NewsActivity.this);
-            mRecyclerView.setAdapter(mAdapter);
-
-            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-                }
-
+            RecyclerView recyclerView = findViewById(R.id.news_recycler_view);
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setAdapter(adapter);
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
                     if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                        if (!mRecyclerView.canScrollVertically(-1)) {
+                        if (!recyclerView.canScrollVertically(-1)) {
                             if (Utilities.haveNetworkConnection(NewsActivity.this)) {
                                 oldNews = false;
                                 progressDialog.show();
                                 WebBroadcastReceiver.scheduleJob(getApplicationContext(),
                                         action, WebService.METHOD_GET, null);
                             } else {
-                                Toast.makeText(NewsActivity.this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(NewsActivity.this, R.string.no_internet,
+                                        Toast.LENGTH_SHORT).show();
                             }
-                        } else if (!mRecyclerView.canScrollVertically(1)) {
+                        } else if (!recyclerView.canScrollVertically(1)) {
                             oldNews = true;
                             loadNews(0);
                         }
                     }
                 }
             });
-
-            oldActivity = true;
         } else {
-            mAdapter.setNews(news);
-            mLayoutManager.scrollToPosition(scrollTo);
+            adapter.setNews(news);
+            layoutManager.scrollToPosition(scrollTo);
         }
 
-        if (progressDialog.isShowing() && news.size() > 0) {
-            progressDialog.dismiss();
-        }
+        if (progressDialog.isShowing() && !news.isEmpty()) progressDialog.dismiss();
 
     }
-
-    private IntentFilter newsFilter = new IntentFilter(WebService.ACTION_NEWS);
-    // Define the callback for what to do when data is received
-    private BroadcastReceiver newsReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            int inserted = intent.getIntExtra("INSERTED", 0);
-            loadNews(inserted);
-        }
-    };
 
     @Override
     protected void onResume() {
         super.onResume();
-        // Register for the particular broadcast based on ACTION string
         registerReceiver(newsReceiver, newsFilter);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // Unregister the listener when the application is paused
         unregisterReceiver(newsReceiver);
     }
 

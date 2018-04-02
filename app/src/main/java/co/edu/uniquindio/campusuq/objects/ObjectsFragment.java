@@ -74,11 +74,11 @@ public class ObjectsFragment extends DialogFragment implements View.OnClickListe
                                 object.getUserLost_ID());
                         intent.putExtra(ObjectsSQLiteController.columns[2], object.getName());
                         intent.putExtra(ObjectsSQLiteController.columns[3], object.getPlace());
-                        intent.putExtra(ObjectsSQLiteController.columns[4], object.getDate());
-                        intent.putExtra(ObjectsSQLiteController.columns[5],
+                        intent.putExtra(ObjectsSQLiteController.columns[4], object.getDateLost());
+                        intent.putExtra(ObjectsSQLiteController.columns[6],
                                 object.getDescription());
-                        intent.putExtra(ObjectsSQLiteController.columns[6], object.getImage());
-                        intent.putExtra(ObjectsSQLiteController.columns[7],
+                        intent.putExtra(ObjectsSQLiteController.columns[7], object.getImage());
+                        intent.putExtra(ObjectsSQLiteController.columns[8],
                                 object.getUserFound_ID());
                         objectsActivity.startActivityForResult(intent, 0);
                     } else if (delete.isChecked()) {
@@ -88,9 +88,8 @@ public class ObjectsFragment extends DialogFragment implements View.OnClickListe
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        WebBroadcastReceiver.scheduleJob(objectsActivity.getApplicationContext(),
-                                WebService.ACTION_OBJECTS, WebService.METHOD_DELETE,
-                                json.toString());
+                        WebBroadcastReceiver.scheduleJob(objectsActivity, WebService.ACTION_OBJECTS,
+                                WebService.METHOD_DELETE, json.toString());
                         objectsActivity.progressDialog.show();
                     }
                 } else {

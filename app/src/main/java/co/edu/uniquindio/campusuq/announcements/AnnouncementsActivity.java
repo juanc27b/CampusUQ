@@ -146,16 +146,15 @@ public class AnnouncementsActivity extends MainActivity implements
 
         if (!progressDialog.isShowing()) progressDialog.show();
 
-        int scrollTo = oldAnnouncements ? (newActivity ? 0 : announcements.size()-1) :
-                (inserted != 0 ? inserted-1 : 0);
+        int scrollTo = oldAnnouncements ?
+                (newActivity ? 0 : announcements.size()-1) : (inserted > 0 ? inserted-1 : 0);
 
         announcements = AnnouncementsPresenter.loadAnnouncements(action, this,
-                inserted > 0 ? announcements.size()+inserted : announcements.size()+3);
+                announcements.size()+(inserted > 0 ? inserted : 3));
 
         ArrayList<String> announcement_IDs = new ArrayList<>();
         for (Announcement announcement : announcements)
-            announcement_IDs.add(String.valueOf(announcement.get_ID()));
-
+            announcement_IDs.add(""+announcement.get_ID());
         ArrayList<AnnouncementLink> announcementsLinks = AnnouncementsPresenter
                 .getAnnouncementsLinks(this,
                         announcement_IDs.toArray(new String[announcement_IDs.size()]));
@@ -181,11 +180,11 @@ public class AnnouncementsActivity extends MainActivity implements
                                     .haveNetworkConnection(AnnouncementsActivity.this)) {
                                 oldAnnouncements = false;
                                 progressDialog.show();
-                                WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                                WebBroadcastReceiver.scheduleJob(AnnouncementsActivity.this,
                                         action, WebService.METHOD_GET, null);
                             } else {
                                 Toast.makeText(AnnouncementsActivity.this,
-                                        getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                                        R.string.no_internet, Toast.LENGTH_SHORT).show();
                             }
                         } else if (!recyclerView.canScrollVertically(1)) {
                             oldAnnouncements = true;
@@ -216,17 +215,16 @@ public class AnnouncementsActivity extends MainActivity implements
                         AnnouncementsFragment.newInstance(index, this.action)
                                 .show(getSupportFragmentManager(), null);
                     } else {
-                        Toast.makeText(this, getString(R.string.no_propietary),
+                        Toast.makeText(this, R.string.no_propietary,
                                 Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(this, getString(R.string.no_administrator),
+                    Toast.makeText(this, R.string.no_administrator,
                             Toast.LENGTH_SHORT).show();
                 }
                 break;
             case AnnouncementsAdapter.READ: {
-                AnnouncementsPresenter
-                        .readed(getApplicationContext(), announcements.get(index).get_ID());
+                AnnouncementsPresenter.readed(this, announcements.get(index).get_ID());
                 loadAnnouncements(0);
                 break;
             }
@@ -295,11 +293,11 @@ public class AnnouncementsActivity extends MainActivity implements
                 break;
             default:
                 callbackManager.onActivityResult(requestCode, resultCode, data);
-                if (resultCode == RESULT_OK){
-                    Toast.makeText(this, "Publicación correcta", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Error en la publicación", Toast.LENGTH_SHORT).show();
-                }
+                if (resultCode == RESULT_OK)
+                    Toast.makeText(this, R.string.social_ok,
+                            Toast.LENGTH_SHORT).show();
+                else Toast.makeText(this, R.string.socia_error,
+                        Toast.LENGTH_SHORT).show();
                 break;
         }
     }

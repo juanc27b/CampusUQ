@@ -35,6 +35,7 @@ public class AnnouncementsFragment extends DialogFragment implements View.OnClic
         Bundle args = new Bundle();
         args.putInt(INDEX, index);
         args.putString(ACTION, action);
+
         AnnouncementsFragment fragment = new AnnouncementsFragment();
         fragment.setArguments(args);
         return fragment;
@@ -93,8 +94,7 @@ public class AnnouncementsFragment extends DialogFragment implements View.OnClic
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        WebBroadcastReceiver.scheduleJob(
-                                announcementsActivity.getApplicationContext(), action,
+                        WebBroadcastReceiver.scheduleJob(announcementsActivity, action,
                                 WebService.METHOD_DELETE, json.toString());
                         announcementsActivity.progressDialog.show();
                     }

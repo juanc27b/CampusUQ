@@ -176,7 +176,7 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
             case R.id.announcement_detail_image_8: getImage(8); break;
             case R.id.announcement_detail_image_9: getImage(9); break;
             case R.id.announcement_detail_ok:
-                if (Utilities.haveNetworkConnection(AnnouncementsDetailActivity.this)) {
+                if (Utilities.haveNetworkConnection(this)) {
                     if (name.getText().length() != 0 && description.getText().length() != 0) {
                         JSONObject json = new JSONObject();
                         try {
@@ -239,7 +239,7 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             Uri uri = data.getData();
-            if (uri != null) {
+            if (uri != null) try {
                 String[] projection = {MediaStore.Images.Media.DATA};
                 String[] selectionArgs = {DocumentsContract.getDocumentId(uri).split(":")[1]};
                 Cursor cursor = getContentResolver().query(
@@ -260,6 +260,10 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
                     }
                     cursor.close();
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, R.string.get_image_error,
+                        Toast.LENGTH_SHORT).show();
             }
         }
     }

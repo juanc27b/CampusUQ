@@ -40,7 +40,8 @@ public class EmailsAdapter extends RecyclerView.Adapter<EmailsAdapter.EmailViewH
         }
 
         void bindItem(Email email) {
-            icon.setText(email.getFrom().isEmpty()? "" : email.getFrom().substring(0, 1).toUpperCase());
+            icon.setText(email.getFrom().isEmpty() ?
+                    "" : email.getFrom().substring(0, 1).toUpperCase());
             icon.setBackgroundResource(ItemsPresenter.getColor());
             date.setText(email.getDate());
             from.setText(email.getFrom());

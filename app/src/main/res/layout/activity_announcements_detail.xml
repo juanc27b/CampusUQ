@@ -86,13 +86,6 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/announcement_detail_description_count_separator"
-                    android:textSize="12sp"
-                    android:textColor="@color/colorPrimary"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:text="@string/announcement_detail_description_count_limit"
                     android:textSize="12sp"
                     android:textColor="@color/colorPrimary"/>

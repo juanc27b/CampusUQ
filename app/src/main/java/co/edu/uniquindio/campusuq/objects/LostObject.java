@@ -6,18 +6,20 @@ public class LostObject {
     private int userLost_ID;
     private String name;
     private String place;
+    private String dateLost;
     private String date;
     private String description;
     private String image;
     private Integer userFound_ID;
     private String readed;
 
-    LostObject(int _ID, int userLost_ID, String name, String place, String date,
+    LostObject(int _ID, int userLost_ID, String name, String place, String dateLost, String date,
                String description, String image, Integer userFound_ID, String readed) {
         this._ID = _ID;
         this.userLost_ID = userLost_ID;
         this.name = name;
         this.place = place;
+        this.dateLost = dateLost;
         this.date = date;
         this.description = description;
         this.image = image;
@@ -55,6 +57,14 @@ public class LostObject {
 
     public void setPlace(String place) {
         this.place = place;
+    }
+
+    public String getDateLost() {
+        return dateLost;
+    }
+
+    public void setDateLost(String dateLost) {
+        this.dateLost = dateLost;
     }
 
     public String getDate() {

@@ -10,10 +10,9 @@ class QuotasPresenter {
         QuotasSQLiteController dbController = new QuotasSQLiteController(context, 1);
 
         ArrayList<Quota> quotas = dbController.select(
-                '`'+QuotasSQLiteController.columns[1]+"` = ?", new String[]{type});
+                QuotasSQLiteController.columns[1]+" = ?", new String[]{type});
 
         dbController.destroy();
-
         return quotas;
     }
 

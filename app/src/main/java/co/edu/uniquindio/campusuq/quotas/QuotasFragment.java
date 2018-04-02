@@ -59,8 +59,8 @@ public class QuotasFragment extends DialogFragment implements View.OnClickListen
         q = quotasActivity.getQuota(args.getInt(INDEX));
 
         if (fragment_quotas) {
-            ((TextView) view.findViewById(R.id.quota_dialog_name))
-                    .setText("Ajustar Cupos de "+q.getName());
+            ((TextView) view.findViewById(R.id.quota_dialog_name)).setText(String.format("%s %s",
+                    getString(R.string.adjust_quotas), q.getName()));
             quota = view.findViewById(R.id.quota_dialog_quota);
             quota.setText(String.valueOf(q.getQuota()));
 
@@ -103,8 +103,8 @@ public class QuotasFragment extends DialogFragment implements View.OnClickListen
                             e.printStackTrace();
                         }
                         quotasActivity.progressDialog.show();
-                        WebBroadcastReceiver.scheduleJob(quotasActivity.getApplicationContext(),
-                                WebService.ACTION_QUOTAS, WebService.METHOD_PUT, json.toString());
+                        WebBroadcastReceiver.scheduleJob(quotasActivity, WebService.ACTION_QUOTAS,
+                                WebService.METHOD_PUT, json.toString());
                     } else {
                         if (modify.isChecked()) {
                             Intent intent = new Intent(quotasActivity, QuotasDetailActivity.class);
@@ -122,7 +122,7 @@ public class QuotasFragment extends DialogFragment implements View.OnClickListen
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            WebBroadcastReceiver.scheduleJob(quotasActivity.getApplicationContext(),
+                            WebBroadcastReceiver.scheduleJob(quotasActivity,
                                     WebService.ACTION_QUOTAS, WebService.METHOD_DELETE,
                                     json.toString());
                             quotasActivity.progressDialog.show();

@@ -22,8 +22,8 @@ public class AnnouncementsPresenter {
                 new AnnouncementsSQLiteController(context, 1);
 
         ArrayList<Announcement> announcements = dbController.select(String.valueOf(limit),
-                '`'+AnnouncementsSQLiteController.columns[2]+"` = ? AND `"+
-                        AnnouncementsSQLiteController.columns[6]+"` = ?", new String[]{type, "N"});
+                AnnouncementsSQLiteController.columns[2]+" = ? AND "+
+                        AnnouncementsSQLiteController.columns[6]+" = 'N'", new String[]{type});
 
         dbController.destroy();
 
@@ -35,7 +35,7 @@ public class AnnouncementsPresenter {
                 new AnnouncementsSQLiteController(context, 1);
 
         ArrayList<Announcement> announcements = dbController.select("1",
-                '`'+AnnouncementsSQLiteController.columns[0]+"` = ?", new String[]{_ID});
+                AnnouncementsSQLiteController.columns[0]+" = ?", new String[]{_ID});
 
         dbController.destroy();
 
@@ -48,9 +48,9 @@ public class AnnouncementsPresenter {
                 new AnnouncementsSQLiteController(context, 1);
 
         ArrayList<AnnouncementLink> links = dbController.selectLink(
-                '`'+AnnouncementsSQLiteController.linkColumns[1]+"` IN("+
+                AnnouncementsSQLiteController.linkColumns[1]+" IN("+
                         TextUtils.join(", ", Collections.nCopies(_IDs.length, "?"))+
-                        ")", _IDs);
+                        ')', _IDs);
 
         dbController.destroy();
 

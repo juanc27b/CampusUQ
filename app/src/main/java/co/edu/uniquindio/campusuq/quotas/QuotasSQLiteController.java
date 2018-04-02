@@ -32,6 +32,7 @@ public class QuotasSQLiteController {
 
     public ArrayList<Quota> select(String selection, String[] selectionArgs) {
         ArrayList<Quota> quotas = new ArrayList<>();
+
         Cursor c = db.query(tablename, columns, selection, selectionArgs, null,
                 null, columns[0]+" ASC");
         if (c.moveToFirst()) do {
@@ -39,6 +40,7 @@ public class QuotasSQLiteController {
                     c.getInt(3)));
         } while (c.moveToNext());
         c.close();
+
         return quotas;
     }
 

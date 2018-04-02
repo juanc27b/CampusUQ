@@ -72,20 +72,20 @@ public class AnnouncementsSQLiteController {
                 TextUtils.join(", ", Collections.nCopies(ids.length, '?'))+')', ids);
     }
 
+    void unreadAll() {
+        db.execSQL("UPDATE "+tablename+" SET "+columns[6]+" = 'N'");
+    }
+
     public void delete(Object... ids) {
         db.execSQL("DELETE FROM "+tablename+" WHERE "+columns[0]+" IN("+
                 TextUtils.join(", ", Collections.nCopies(ids.length, '?'))+')', ids);
     }
 
-    void unreadAll() {
-        db.execSQL("UPDATE "+tablename+" SET "+columns[6]+" = 'N'");
-    }
-
     public static String createLinkTable(){
         return "CREATE TABLE "+linkTablename+'('+linkColumns[0]+" INTEGER PRIMARY KEY, "+
-                linkColumns[1]+" INTEGER NOT NULL, "+linkColumns[2]+" TEXT NOT NULL, "+
-                linkColumns[3]+" TEXT NOT NULL UNIQUE, "+
-                "FOREIGN KEY("+linkColumns[1]+") REFERENCES "+tablename+'('+columns[0]+"))";
+                linkColumns[1]+" INTEGER NOT NULL REFERENCES "+
+                tablename+'('+columns[0]+") ON UPDATE CASCADE ON DELETE CASCADE, "+
+                linkColumns[2]+" TEXT NOT NULL, "+linkColumns[3]+" TEXT NOT NULL UNIQUE)";
     }
 
     public ArrayList<AnnouncementLink> selectLink(String selection, String[] selectionArgs) {
@@ -109,10 +109,15 @@ public class AnnouncementsSQLiteController {
                 ')', values);
     }
 
-    public void deleteLink(Object... announcementIds) {
-        db.execSQL("DELETE FROM "+linkTablename+" WHERE "+linkColumns[1]+" IN("+
-                TextUtils.join(", ", Collections.nCopies(announcementIds.length, '?'))+
-                ')', announcementIds);
+    public void updateLink(Object... values) {
+        db.execSQL("UPDATE "+linkTablename+" SET "+
+                TextUtils.join(" = ?, ", linkColumns)+" = ? WHERE "+ linkColumns[0]+" = ?",
+                values);
+    }
+
+    public void deleteLink(Object... ids) {
+        db.execSQL("DELETE FROM "+linkTablename+" WHERE "+linkColumns[0]+" IN("+
+                TextUtils.join(", ", Collections.nCopies(ids.length, '?'))+')', ids);
     }
 
     public void destroy() {

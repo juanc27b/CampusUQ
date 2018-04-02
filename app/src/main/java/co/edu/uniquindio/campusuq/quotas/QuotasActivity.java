@@ -74,7 +74,7 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
                 layoutManager.scrollToPosition(quotas.indexOf(quota));
                 return;
             }
-            Toast.makeText(this, "No se ha encontrado el cupo: "+query,
+            Toast.makeText(this, getString(R.string.quota_no_found)+query,
                     Toast.LENGTH_SHORT).show();
         } else {
             String category = intent.getStringExtra("CATEGORY");
@@ -96,7 +96,7 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
 
         if (!progressDialog.isShowing()) progressDialog.show();
 
-        quotas = QuotasPresenter.loadQuotas(getApplicationContext(), type);
+        quotas = QuotasPresenter.loadQuotas(this, type);
 
         if (newActivity) {
             newActivity = false;
@@ -117,7 +117,7 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
                                 !recyclerView.canScrollVertically(1)) {
                             if (Utilities.haveNetworkConnection(QuotasActivity.this)) {
                                 progressDialog.show();
-                                WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                                WebBroadcastReceiver.scheduleJob(QuotasActivity.this,
                                         WebService.ACTION_QUOTAS, WebService.METHOD_GET,
                                         null);
                             } else {
@@ -142,8 +142,8 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
         User user = UsersPresenter.loadUser(this);
         if (user != null && user.getAdministrator().equals("S")) QuotasFragment
                 .newInstance(fragment_quotas, index).show(getSupportFragmentManager(), null);
-        else Toast.makeText(this, getString(R.string.no_administrator), Toast.LENGTH_SHORT)
-                .show();
+        else Toast.makeText(this, getString(R.string.no_administrator),
+                Toast.LENGTH_SHORT).show();
     }
 
     public Quota getQuota(int index) {

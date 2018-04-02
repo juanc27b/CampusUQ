@@ -24,7 +24,8 @@ import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClickEmailListener, EasyPermissions.PermissionCallbacks {
+public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClickEmailListener,
+        EasyPermissions.PermissionCallbacks {
 
     private ArrayList<Email> emails = new ArrayList<>();
     private boolean newActivity = true;
@@ -54,35 +55,39 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+        super.setBackground(R.drawable.portrait_normal_background,
+                R.drawable.landscape_normal_background);
 
         ViewStub viewStub = findViewById(R.id.layout_stub);
         viewStub.setLayoutResource(R.layout.content_emails);
         viewStub.inflate();
-
         FloatingActionButton insert = findViewById(R.id.fab);
-        insert.setVisibility(View.VISIBLE);
+
         insert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(EmailsActivity.this, EmailsDetailActivity.class);
+                Intent intent = new Intent(EmailsActivity.this,
+                        EmailsDetailActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.institutional_mail));
                 startActivityForResult(intent, 0);
             }
         });
+        insert.setVisibility(View.VISIBLE);
 
         loadEmails(0);
     }
 
     @Override
     public void handleIntent(Intent intent) {
-        if(Intent.ACTION_SEARCH.equals(intent.getAction())) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            for(Email email : emails) if(email.getName().toLowerCase().contains(query.trim().toLowerCase())) {
+            for (Email email : emails)
+                if(email.getName().toLowerCase().contains(query.trim().toLowerCase())) {
                 layoutManager.scrollToPosition(emails.indexOf(email));
                 return;
             }
-            Toast.makeText(this, "No se ha encontrado el correo: "+query, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.email_no_found)+query,
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -90,17 +95,19 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
 
         if (!progressDialog.isShowing()) progressDialog.show();
 
-        int scrollTo = oldEmails ? (newActivity ? 0 : emails.size()-1) : (inserted != 0 ? inserted-1 : 0);
+        int scrollTo = oldEmails ?
+                (newActivity ? 0 : emails.size()-1) : (inserted != 0 ? inserted-1 : 0);
 
-        EmailsSQLiteController dbController = new EmailsSQLiteController(getApplicationContext(), 1);
-        emails = dbController.select(String.valueOf(inserted > 0 ? emails.size()+inserted : emails.size()+6),
+        EmailsSQLiteController dbController = new EmailsSQLiteController(this, 1);
+        emails = dbController.select(""+emails.size()+(inserted > 0 ? inserted : 6),
                 null, null);
         dbController.destroy();
 
         if (newActivity) {
             newActivity = false;
             adapter = new EmailsAdapter(emails, this);
-            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,
+                    false);
 
             RecyclerView recyclerView = findViewById(R.id.emails_recycler_view);
             recyclerView.setHasFixedSize(true);
@@ -115,8 +122,9 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
                             if (Utilities.haveNetworkConnection(EmailsActivity.this)) {
                                 oldEmails = false;
                                 progressDialog.show();
-                                WebBroadcastReceiver.scheduleJob(getApplicationContext(),
-                                        WebService.ACTION_EMAILS, WebService.METHOD_GET, null);
+                                WebBroadcastReceiver.scheduleJob(EmailsActivity.this,
+                                        WebService.ACTION_EMAILS, WebService.METHOD_GET,
+                                        null);
                             } else {
                                 Toast.makeText(EmailsActivity.this,
                                         getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
@@ -133,12 +141,10 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
             layoutManager.scrollToPosition(scrollTo);
         }
 
-        if (emails.size() == 0) {
-            WebBroadcastReceiver.scheduleJob(getApplicationContext(),
-                    WebService.ACTION_EMAILS, WebService.METHOD_GET, null);
-        }
+        if (emails.isEmpty()) WebBroadcastReceiver.scheduleJob(this,
+                WebService.ACTION_EMAILS, WebService.METHOD_GET, null);
 
-        if(progressDialog.isShowing() && emails.size() > 0) progressDialog.dismiss();
+        if (progressDialog.isShowing() && emails.size() > 0) progressDialog.dismiss();
 
     }
 
@@ -183,10 +189,12 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
             case EmailsPresenter.REQUEST_AUTHORIZATION:
                 if (resultCode == RESULT_OK) {
                     progressDialog.show();
-                    WebBroadcastReceiver.scheduleJob(getApplicationContext(),
-                            WebService.ACTION_EMAILS, WebService.METHOD_GET, null);
+                    WebBroadcastReceiver.scheduleJob(this, WebService.ACTION_EMAILS,
+                            WebService.METHOD_GET, null);
                 } else {
-                    Toast.makeText(this, "Authorization is required for get emails", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,
+                            R.string.email_authorization,
+                            Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:

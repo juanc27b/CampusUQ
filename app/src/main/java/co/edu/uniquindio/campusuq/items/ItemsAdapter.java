@@ -1,5 +1,6 @@
 package co.edu.uniquindio.campusuq.items;
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,12 +18,12 @@ import co.edu.uniquindio.campusuq.R;
 
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
 
-    private ArrayList<Item> mItems;
+    private ArrayList<Item> items;
     private OnClickItemListener listener;
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    ItemsAdapter(ArrayList<Item> mItems, ItemsActivity itemsActivity) {
-        this.mItems = mItems;
+    ItemsAdapter(ArrayList<Item> items, ItemsActivity itemsActivity) {
+        this.items = items;
         listener = itemsActivity;
     }
 
@@ -50,6 +51,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
             if (i.getImage() != 0) {
                 itemIcon.setVisibility(View.VISIBLE);
                 itemIcon.setImageResource(i.getImage());
+                itemIcon.setColorFilter(Color.WHITE);
             } else {
                 itemIcon.setVisibility(View.GONE);
             }
@@ -69,12 +71,8 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
     // Create new views (invoked by the layout manager)
     @Override
     public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // create a new view
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_detail, parent, false);
-        // set the view's size, margins, paddings and layout parameters
-        //...
-        return new ItemViewHolder(itemView);
+        return new ItemViewHolder(LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_detail, parent, false));
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -82,19 +80,17 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
     public void onBindViewHolder(ItemViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        Item item = mItems.get(position);
-        holder.bindItem(item);
-
+        holder.bindItem(items.get(position));
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mItems.size();
+        return items.size();
     }
 
-    public void setItems(ArrayList<Item> mItems) {
-        this.mItems = mItems;
+    public void setItems(ArrayList<Item> items) {
+        this.items = items;
         notifyDataSetChanged();
     }
 

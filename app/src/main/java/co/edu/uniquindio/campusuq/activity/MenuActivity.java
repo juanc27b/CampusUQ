@@ -1,14 +1,18 @@
 package co.edu.uniquindio.campusuq.activity;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
-import android.widget.LinearLayout;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.items.ItemsActivity;
@@ -27,7 +31,7 @@ public class MenuActivity extends MainActivity {
             if (progressDialog.isShowing()) {
                 int progress = intent.getIntExtra("PROGRESS", 0);
                 progressDialog.setProgress(progress);
-                if (progress == 120) progressDialog.dismiss();
+                if (progress == 12) progressDialog.dismiss();
             }
         }
     };
@@ -39,54 +43,73 @@ public class MenuActivity extends MainActivity {
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-
         super.setBackground(R.drawable.portrait_background, R.drawable.landscape_background);
 
-        ViewStub stub = (ViewStub) findViewById(R.id.layout_stub);
+        ViewStub stub = findViewById(R.id.layout_stub);
         stub.setLayoutResource(R.layout.content_menu);
-        View inflated = stub.inflate();
+        stub.inflate();
 
-        LinearLayout information = (LinearLayout) inflated.findViewById(R.id.information_module_layout);
-        information.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.information_module_layout).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 Intent intent = new Intent(MenuActivity.this, ItemsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.information_module));
-                MenuActivity.this.startActivity(intent);
+                startActivity(intent);
             }
         });
-        LinearLayout services = (LinearLayout) inflated.findViewById(R.id.services_module_layout);
-        services.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.services_module_layout).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 Intent intent = new Intent(MenuActivity.this, ItemsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.services_module));
-                MenuActivity.this.startActivity(intent);
+                startActivity(intent);
             }
         });
-        LinearLayout state = (LinearLayout) inflated.findViewById(R.id.state_module_layout);
-        state.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.state_module_layout).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 Intent intent = new Intent(MenuActivity.this, ItemsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.state_module));
-                MenuActivity.this.startActivity(intent);
+                startActivity(intent);
             }
         });
-        LinearLayout communication = (LinearLayout) inflated.findViewById(R.id.communication_module_layout);
-        communication.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.communication_module_layout)
+                .setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 Intent intent = new Intent(MenuActivity.this, ItemsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.communication_module));
-                MenuActivity.this.startActivity(intent);
+                startActivity(intent);
             }
         });
 
-        progressDialog = Utilities.getProgressDialog(MenuActivity.this, false);
+        progressDialog = Utilities.getProgressDialog(this, false);
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                        PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+        else loadContent();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         loadContent();
-
     }
 
     public void loadContent() {

@@ -233,7 +233,7 @@ public class ItemsPresenter {
 
         for (ContactCategory category : categories) {
             ArrayList<Contact> contacts = dbController.select(
-                    ContactsSQLiteController.CAMPOS_TABLA[1] + " = ?", new String[]{category.get_ID()});
+                    ContactsSQLiteController.columns[1] + " = ?", new String[]{category.get_ID()});
             Item item = new Item(getColor(), 0, category.getName(),
                     contacts.size()+" "+context.getString(R.string.contacts));
             items.add(item);
@@ -251,12 +251,12 @@ public class ItemsPresenter {
         ContactsSQLiteController dbController = new ContactsSQLiteController(context, 1);
 
         ArrayList<ContactCategory> categories = dbController.selectCategory(
-                ContactsSQLiteController.CAMPOS_CATEGORIA[1] + " = ?", new String[]{categoryName});
+                ContactsSQLiteController.categoryColumns[1] + " = ?", new String[]{categoryName});
         if (categories.size() > 0) {
             ContactCategory category = categories.get(0);
 
             ArrayList<Contact> contacts = dbController.select(
-                    ContactsSQLiteController.CAMPOS_TABLA[1] + " = ?", new String[]{category.get_ID()});
+                    ContactsSQLiteController.columns[1] + " = ?", new String[]{category.get_ID()});
 
             for (Contact contact : contacts) {
                 String description = context.getString(R.string.address)+": "+contact.getAddress()+"\n"+
@@ -380,8 +380,8 @@ public class ItemsPresenter {
 
         for (EventCategory category : categories) {
             ArrayList<EventRelation> relations = dbController.selectRelation(
-                    new String[]{EventsSQLiteController.CAMPOS_RELACION[1]},
-                    EventsSQLiteController.CAMPOS_RELACION[0] + " = ?", new String[]{category.get_ID()});
+                    new String[]{EventsSQLiteController.relationColumns[1]},
+                    EventsSQLiteController.relationColumns[0] + " = ?", new String[]{category.get_ID()});
             String description = context.getString(R.string.category)+": "+category.getAbbreviation()+", "+
                     context.getString(R.string.events)+": "+relations.size();
             Item item = new Item(getColor(), 0, category.getName(), description);

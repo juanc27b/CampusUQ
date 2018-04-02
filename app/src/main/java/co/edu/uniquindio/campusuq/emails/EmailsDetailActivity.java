@@ -31,7 +31,8 @@ import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class EmailsDetailActivity extends MainActivity implements View.OnClickListener, EasyPermissions.PermissionCallbacks {
+public class EmailsDetailActivity extends MainActivity implements View.OnClickListener,
+        EasyPermissions.PermissionCallbacks {
 
     private TextView from;
     private EditText to, name, content;
@@ -64,7 +65,8 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+        super.setBackground(R.drawable.portrait_normal_background,
+                R.drawable.landscape_normal_background);
 
         ViewStub viewStub = findViewById(R.id.layout_stub);
         viewStub.setLayoutResource(R.layout.activity_emails_detail);
@@ -92,13 +94,18 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
 
     public void sendEmail() {
         if (from.getText().equals("campusuq@uniquindio.edu.co")) {
-            Toast.makeText(EmailsDetailActivity.this, getString(R.string.email_from_invalid), Toast.LENGTH_SHORT).show();
-        } else if (TextUtils.isEmpty(to.getText()) || !Patterns.EMAIL_ADDRESS.matcher(to.getText()).matches()) {
-            Toast.makeText(EmailsDetailActivity.this, getString(R.string.email_to_invalid), Toast.LENGTH_SHORT).show();
+            Toast.makeText(EmailsDetailActivity.this, getString(R.string.email_from_invalid),
+                    Toast.LENGTH_SHORT).show();
+        } else if (TextUtils.isEmpty(to.getText()) ||
+                !Patterns.EMAIL_ADDRESS.matcher(to.getText()).matches()) {
+            Toast.makeText(EmailsDetailActivity.this, getString(R.string.email_to_invalid),
+                    Toast.LENGTH_SHORT).show();
         } else if (name.getText().length() < 1) {
-            Toast.makeText(EmailsDetailActivity.this, getString(R.string.email_name_invalid), Toast.LENGTH_SHORT).show();
+            Toast.makeText(EmailsDetailActivity.this, getString(R.string.email_name_invalid),
+                    Toast.LENGTH_SHORT).show();
         } else if (content.getText().length() < 1) {
-            Toast.makeText(EmailsDetailActivity.this, getString(R.string.email_content_invalid), Toast.LENGTH_SHORT).show();
+            Toast.makeText(EmailsDetailActivity.this, getString(R.string.email_content_invalid),
+                    Toast.LENGTH_SHORT).show();
         } else if (Utilities.haveNetworkConnection(EmailsDetailActivity.this)) {
             JSONObject json = new JSONObject();
             try {
@@ -160,7 +167,8 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
                 if (resultCode == RESULT_OK) {
                     sendEmail();
                 } else {
-                    Toast.makeText(this, "Authorization is required for get emails", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.email_authorization,
+                            Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
