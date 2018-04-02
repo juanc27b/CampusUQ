@@ -41,6 +41,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/object_sample_name"
+                    android:textStyle="bold"
                     android:textColor="@android:color/black"/>
 
                 <LinearLayout
@@ -72,14 +73,34 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
-                        android:text="@string/object_date"
+                        android:text="@string/object_date_lost"
                         android:textColor="@android:color/black"/>
 
                     <TextView
-                        android:id="@+id/object_date"
+                        android:id="@+id/object_date_lost"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/object_sample_date"/>
+                        android:text="@string/object_sample_date_lost"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:text="@string/object_time_lost"
+                        android:textColor="@android:color/black"/>
+
+                    <TextView
+                        android:id="@+id/object_time_lost"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/object_sample_time_lost"/>
 
                 </LinearLayout>
 
@@ -117,6 +138,7 @@
                 android:layout_marginEnd="10dp"
                 android:padding="10dp"
                 android:text="@string/object_readed"
+                android:textSize="12sp"
                 android:textColor="@color/colorPrimary"
                 android:background="@drawable/round_green_button"/>
 
@@ -128,6 +150,7 @@
                 android:gravity="center"
                 android:padding="10dp"
                 android:text="@string/object_report_found"
+                android:textSize="12sp"
                 android:textColor="@color/colorAccent"
                 android:background="@drawable/round_blue_button"/>
 

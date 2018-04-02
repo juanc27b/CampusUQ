@@ -71,7 +71,7 @@ public class QuotasDetailActivity extends MainActivity implements View.OnClickLi
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.quota_detail_ok:
-                if (Utilities.haveNetworkConnection(QuotasDetailActivity.this)) {
+                if (Utilities.haveNetworkConnection(this)) {
                     if (name.getText().length() != 0 && quota.getText().length() != 0) {
                         mTracker.send(new HitBuilders.EventBuilder()
                                 .setCategory(getString(R.string.analytics_quotas_category))

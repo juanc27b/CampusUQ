@@ -13,6 +13,9 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
@@ -72,7 +75,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                     layoutManager.scrollToPosition(objects.indexOf(object));
                     return;
                 }
-            Toast.makeText(this, "No se ha encontrado el objeto: "+query,
+            Toast.makeText(this, getString(R.string.object_no_found)+query,
                     Toast.LENGTH_SHORT).show();
         } else {
             ActionBar actionBar = getSupportActionBar();
@@ -90,27 +93,8 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         int scrollTo = oldObjects ? (newActivity ? 0 : objects.size()-1) :
                 (inserted != 0 ? inserted-1 : 0);
 
-        ObjectsSQLiteController dbController =
-                new ObjectsSQLiteController(getApplicationContext(), 1);
-        String limit = String.valueOf(inserted > 0 ? objects.size()+inserted : objects.size()+3);
-
-        User user = UsersPresenter.loadUser(this);
-        if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co")) {
-            objects = new ArrayList<>();
-            objects.addAll(dbController.select(limit,
-                    ObjectsSQLiteController.columns[1]+" = "+user.get_ID(),
-                    null));
-            objects.addAll(dbController.select(limit,
-                    ObjectsSQLiteController.columns[1]+" != "+user.get_ID()+
-                    " AND "+ObjectsSQLiteController.columns[7]+" IS NULL"+
-                    " AND "+ObjectsSQLiteController.columns[8]+" = 'N'", null));
-        } else {
-            objects = dbController.select(limit,
-                    ObjectsSQLiteController.columns[7]+" IS NULL"+
-                    " AND "+ObjectsSQLiteController.columns[8]+" = 'N'", null);
-        }
-
-        dbController.destroy();
+        objects = ObjectsPresenter.loadObjects(this, UsersPresenter.loadUser(this),
+                objects.size()+(inserted > 0 ? inserted : 3));
 
         if (newActivity) {
             newActivity = false;
@@ -131,7 +115,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                             if (Utilities.haveNetworkConnection(ObjectsActivity.this)) {
                                 oldObjects = false;
                                 progressDialog.show();
-                                WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                                WebBroadcastReceiver.scheduleJob(ObjectsActivity.this,
                                         WebService.ACTION_OBJECTS, WebService.METHOD_GET,
                                         null);
                             } else {
@@ -158,14 +142,17 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
     public void onObjectClick(int index, String action) {
         User user = UsersPresenter.loadUser(this);
         LostObject object = objects.get(index);
-        ObjectsSQLiteController dbController =
-                new ObjectsSQLiteController(getApplicationContext(), 1);
+        ObjectsSQLiteController dbController = new ObjectsSQLiteController(this, 1);
         switch (action) {
             case ObjectsAdapter.DIALOG:
                 if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
                         (user.getAdministrator().equals("S") ||
                                 object.getUserLost_ID() == user.get_ID())) {
                     ObjectsFragment.newInstance(index).show(getSupportFragmentManager(), null);
+                } else {
+                    Toast.makeText(this,
+                            R.string.no_propietary,
+                            Toast.LENGTH_SHORT).show();
                 }
                 break;
             case ObjectsAdapter.READED:
@@ -174,29 +161,40 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                 break;
             case ObjectsAdapter.FOUND:
                 if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co")) {
-                    dbController.update(
-                            object.get_ID(), object.getUserLost_ID(), object.getName(),
-                            object.getPlace(), object.getDate(), object.getDescription(),
-                            object.getImage(), user.get_ID(), object.get_ID()
-                    );
-                    loadObjects(0);
+                    JSONObject json = new JSONObject();
+                    try {
+                        json.put("UPDATE_ID", object.get_ID());
+                        json.put(ObjectsSQLiteController.columns[8], user.get_ID());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    WebBroadcastReceiver.scheduleJob(this, WebService.ACTION_OBJECTS,
+                            WebService.METHOD_DELETE, json.toString());
+                    progressDialog.show();
                 } else {
                     Intent intent = new Intent(this, LoginActivity.class);
                     intent.putExtra("CATEGORY", getString(R.string.log_in));
-                    ObjectsActivity.this.startActivity(intent);
+                    startActivity(intent);
                 }
                 break;
             case ObjectsAdapter.NOT_FOUND:
                 if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
                         object.getUserFound_ID() != null &&
                         object.getUserFound_ID() == user.get_ID()) {
-                    object = objects.get(index);
-                    dbController.update(
-                            object.get_ID(), object.getUserLost_ID(), object.getName(),
-                            object.getPlace(), object.getDate(), object.getDescription(),
-                            object.getImage(), null, object.get_ID()
-                    );
-                    loadObjects(0);
+                    JSONObject json = new JSONObject();
+                    try {
+                        json.put("UPDATE_ID", object.get_ID());
+                        json.put(ObjectsSQLiteController.columns[8], null);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    WebBroadcastReceiver.scheduleJob(this, WebService.ACTION_OBJECTS,
+                            WebService.METHOD_DELETE, json.toString());
+                    progressDialog.show();
+                } else {
+                    Toast.makeText(this,
+                            R.string.no_propietary,
+                            Toast.LENGTH_SHORT).show();
                 }
                 break;
             case ObjectsAdapter.CONTACT:
@@ -206,7 +204,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                     Intent intent = new Intent(this, UsersActivity.class);
                     intent.putExtra("CATEGORY", getString(R.string.object_view_contact));
                     intent.putExtra("USER", user);
-                    ObjectsActivity.this.startActivity(intent);
+                    startActivity(intent);
                 }
                 break;
             default:

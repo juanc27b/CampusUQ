@@ -17,15 +17,16 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
 
 public class NewsContentActivity extends MainActivity {
 
-    public TextView newTitle;
-    public TextView newDate;
-    public TextView newAuthor;
+    public TextView title;
+    public TextView date;
+    public TextView author;
 
     public WebView webView;
     public WebSettings webSettings;
@@ -38,35 +39,33 @@ public class NewsContentActivity extends MainActivity {
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-
-        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+        super.setBackground(R.drawable.portrait_normal_background,
+                R.drawable.landscape_normal_background);
 
         ViewStub stub = findViewById(R.id.layout_stub);
         stub.setLayoutResource(R.layout.content_news_detail);
         stub.inflate();
 
         Intent intent = getIntent();
-        String title = intent.getStringExtra("TITLE");
-        String date = intent.getStringExtra("DATE");
-        String author = intent.getStringExtra("AUTHOR");
-        String link = intent.getStringExtra("LINK");
-        String content = intent.getStringExtra("CONTENT");
+        title = findViewById(R.id.content_new_title);
+        date = findViewById(R.id.content_new_date);
+        author = findViewById(R.id.content_new_author);
+        webView = findViewById(R.id.webview_news_content);
 
-        newTitle = findViewById(R.id.content_new_title);
-        newTitle.setText(title);
-        newDate = findViewById(R.id.content_new_date);
+        title.setText(intent.getStringExtra("TITLE"));
+
         try {
-            Date d = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(date);
-            newDate.setText(String.format("%s\n%s",
-                    DateFormat.getDateInstance(DateFormat.MEDIUM).format(d),
-                    DateFormat.getTimeInstance(DateFormat.SHORT).format(d)));
+            Date dateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",
+                    new Locale("es", "CO"))
+                    .parse(intent.getStringExtra("DATE"));
+            date.setText(String.format("%s\n%s",
+                    DateFormat.getDateInstance(DateFormat.MEDIUM).format(dateTime),
+                    DateFormat.getTimeInstance(DateFormat.SHORT).format(dateTime)));
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        newAuthor = findViewById(R.id.content_new_author);
-        newAuthor.setText(author);
 
-        webView = findViewById(R.id.webview_news_content);
+        author.setText(intent.getStringExtra("AUTHOR"));
 
         webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -80,24 +79,26 @@ public class NewsContentActivity extends MainActivity {
 
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient() {
-            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                Toast.makeText(NewsContentActivity.this, "Oh no! " + description, Toast.LENGTH_SHORT).show();
+            public void onReceivedError(WebView view, int errorCode, String description,
+                                        String failingUrl) {
+                Toast.makeText(NewsContentActivity.this, "Oh no! "+description,
+                        Toast.LENGTH_SHORT).show();
             }
         });
 
         webView.setDownloadListener(new DownloadListener() {
             @Override
-            public void onDownloadStart(String url, String userAgent,
-                                        String contentDisposition, String mimetype,
-                                        long contentLength) {
+            public void onDownloadStart(String url, String userAgent, String contentDisposition,
+                                        String mimetype, long contentLength) {
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(url));
                 startActivity(i);
             }
         });
 
-        webView.loadDataWithBaseURL(link, content, "text/html", null, null);
-
+        webView.loadDataWithBaseURL(intent.getStringExtra("LINK"),
+                intent.getStringExtra("CONTENT"), "text/html", null,
+                null);
     }
 
     @Override

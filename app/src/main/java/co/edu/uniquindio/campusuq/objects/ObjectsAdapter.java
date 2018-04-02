@@ -10,7 +10,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.items.ItemsPresenter;
@@ -42,7 +47,8 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
         private ImageView icon;
         private TextView name;
         private TextView place;
-        private TextView date;
+        private TextView dateLost;
+        private TextView timeLost;
         private ImageView image;
         private TextView description;
         private TextView found;
@@ -53,7 +59,8 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
             icon = view.findViewById(R.id.object_icon);
             name = view.findViewById(R.id.object_name);
             place = view.findViewById(R.id.object_place);
-            date = view.findViewById(R.id.object_date);
+            dateLost = view.findViewById(R.id.object_date_lost);
+            timeLost = view.findViewById(R.id.object_time_lost);
             image = view.findViewById(R.id.object_image);
             description = view.findViewById(R.id.object_description);
             found = view.findViewById(R.id.object_found);
@@ -66,7 +73,15 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
             icon.setImageResource(ItemsPresenter.getColor());
             name.setText(lostObject.getName());
             place.setText(lostObject.getPlace());
-            date.setText(lostObject.getDate());
+
+            try {
+                Date dateTimeLost = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",
+                        new Locale("es", "CO")).parse(lostObject.getDateLost());
+                dateLost.setText(DateFormat.getDateInstance(DateFormat.LONG).format(dateTimeLost));
+                timeLost.setText(DateFormat.getTimeInstance(DateFormat.SHORT).format(dateTimeLost));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
             // Se concatena una cadena vacia para evitar el caso File(null)
             File imageFile = new File(""+lostObject.getImage());
@@ -77,7 +92,8 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
             description.setText(lostObject.getDescription());
 
             if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
-                    lostObject.getUserFound_ID() != null && lostObject.getUserFound_ID() == user.get_ID()) {
+                    lostObject.getUserFound_ID() != null &&
+                    lostObject.getUserFound_ID() == user.get_ID()) {
                 found.setText(R.string.object_not_found);
                 found.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -86,7 +102,8 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
                     }
                 });
             } else if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
-                    lostObject.getUserLost_ID() == user.get_ID() && lostObject.getUserFound_ID() != null) {
+                    lostObject.getUserLost_ID() == user.get_ID() &&
+                    lostObject.getUserFound_ID() != null) {
                 found.setText(R.string.object_view_contact);
                 found.setOnClickListener(new View.OnClickListener() {
                     @Override

@@ -192,123 +192,135 @@
     <string name="announcement_sample_name">Integral Calculus Notes G1</string>
     <string name="announcement_sample_description">Notes of the integral calculation course group 1 period 2018–2 for systems engineering</string>
 
-    <string name="incident_detail_title">DETALLES DEL INCIDENTE</string>
-    <string name="incident_detail_name">Título del Incidente</string>
-    <string name="incident_detail_name_hint">Escribe el nombre del incidente</string>
-    <string name="incident_detail_description">Descripción del Incidente</string>
-    <string name="incident_detail_description_hint">Escribe una breve descripción de los acontecimientos ocurridos, lugar, fecha, y otros detalles pertinentes</string>
-    <string name="incident_detail_image">Imagenes y Videos del Incidente (Opcional)</string>
-    <string name="incident_detail_image_description">Imagenes y videos del incidente o comunicado</string>
+    <string name="incident_detail_title">DETAILS OF THE INCIDENT</string>
+    <string name="incident_detail_name">Incident Title</string>
+    <string name="incident_detail_name_hint">Write the name of the incident</string>
+    <string name="incident_detail_description">Description of the Incident</string>
+    <string name="incident_detail_description_hint">Write a brief description of the events, place, date, and other pertinent details</string>
+    <string name="incident_detail_image">Images and Videos of the Incident (Optional)</string>
+    <string name="incident_detail_image_description">Images and videos of the incident or communication</string>
 
-    <string name="communique_detail_title">DETALLES DEL COMUNICADO</string>
-    <string name="communique_detail_name">Título del Comunicado</string>
-    <string name="communique_detail_name_hint">Escribe el nombre del comunicado</string>
-    <string name="communique_detail_description">Descripción del Comunicado</string>
-    <string name="communique_detail_description_hint">Escribe una breve descripción sobre la información, la clase de contenido, el público objetivo y otros detalles</string>
-    <string name="communique_detail_image">Imagenes o Fotos del Comunicado (Opcional)</string>
+    <string name="communique_detail_title">DETAILS OF THE COMMUNIQUE</string>
+    <string name="communique_detail_name">Title of the Statement</string>
+    <string name="communique_detail_name_hint">Write the name of the release</string>
+    <string name="communique_detail_description">Description of the Statement</string>
+    <string name="communique_detail_description_hint">Write a brief description about the information, the content class, the target audience and other details</string>
+    <string name="communique_detail_image">Images or Pictures of the Communiqué (Optional)</string>
 
     <string name="announcement_detail_sample_description_count">110</string>
-    <string name="announcement_detail_description_count_separator">/</string>
-    <string name="announcement_detail_description_count_limit">500</string>
+    <string name="announcement_detail_description_count_limit">/500</string>
 
-    <string name="quota_sample_name">Sala A</string>
+    <string name="quota_sample_name">Room A</string>
     <string name="quota_sample_quota">24</string>
-    <string name="quota_text">cupo(s)</string>
-    <string name="quota_dialog_sample_name">Ajustar Cupos de Sala A</string>
+    <string name="quota_text">quota(s)</string>
+    <string name="quota_dialog_sample_name">Adjust Room A Quotas</string>
 
-    <string name="quota_detail_title">DETALLES</string>
-    <string name="quota_detail_name">Nombre del Cupo</string>
-    <string name="quota_detail_name_hint">Escribe el nombre del cupo</string>
-    <string name="quota_detail_quota">Cupo</string>
-    <string name="quota_detail_quota_hint">Escribe el cupo</string>
-    <string name="quota_detail_ok">ENVIAR</string>
+    <string name="quota_detail_title">DETAILS</string>
+    <string name="quota_detail_name">Name of the quota</string>
+    <string name="quota_detail_name_hint">Write the name of the quota</string>
+    <string name="quota_detail_quota">Quota</string>
+    <string name="quota_detail_quota_hint">Write the quota</string>
+    <string name="quota_detail_ok">SUBMIT</string>
 
-    <string name="dialog_sample_modify">Modificar ítem</string>
-    <string name="dialog_sample_delete">Eliminar ítem</string>
-    <string name="dialog_ok">ACEPTAR</string>
-    <string name="dialog_cancel">CANCELAR</string>
+    <string name="dialog_sample_modify">Modify item</string>
+    <string name="dialog_sample_delete">Delete item</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Cancel</string>
 
-    <string name="dish_sample_name">Desayuno Uniquindiano</string>
-    <string name="dish_sample_description">Plato para las jornadas de mañana que incluye un sandwich de jamon con huevo</string>
+    <string name="dish_sample_name">Uniquindian Breakfast</string>
+    <string name="dish_sample_description">Dish for the morning days that includes a ham sandwich with egg</string>
     <string name="dish_sample_price">$ 7.500</string>
 
-    <string name="dish_detail_title">DETALLES</string>
-    <string name="dish_detail_name">Nombre</string>
-    <string name="dish_detail_name_hint">Escribe el nombre del plato</string>
-    <string name="dish_detail_description">Descripción</string>
-    <string name="dish_detail_description_hint">Escribe una breve descripción de la comida pra informar mejor al consumidor y brindar un mejor servicio</string>
+    <string name="dish_detail_title">DETAILS</string>
+    <string name="dish_detail_name">First name</string>
+    <string name="dish_detail_name_hint">Write the name of the dish</string>
+    <string name="dish_detail_description">Description</string>
+    <string name="dish_detail_description_hint">Write a brief description of the food to better inform the consumer and provide a better service</string>
     <string name="dish_detail_sample_description_count">110</string>
-    <string name="dish_detail_description_count_separator">/</string>
-    <string name="dish_detail_description_count_limit">250</string>
-    <string name="dish_detail_price">Precio</string>
-    <string name="dish_detail_price_hint">Asígnale un precio al plato</string>
-    <string name="dish_detail_image">Imagen o Foto (Opcional)</string>
-    <string name="dish_detail_image_description">Imagen o foto del plato</string>
-    <string name="dish_detail_ok">ENVIAR</string>
+    <string name="dish_detail_description_count_limit">/250</string>
+    <string name="dish_detail_price">Price</string>
+    <string name="dish_detail_price_hint">Assign a price to the plate</string>
+    <string name="dish_detail_image">Image or Photo (Optional)</string>
+    <string name="dish_detail_image_description">Image or photo of the plate</string>
+    <string name="dish_detail_ok">SUBMIT</string>
 
-    <string name="object_report_lost">Reportar Objeto Perdido</string>
-    <string name="object_icon_description">Icono del objeto perdido</string>
-    <string name="object_sample_name">Memoria USB 4GB</string>
-    <string name="object_place">Lugar:</string>
-    <string name="object_sample_place">Sala A de Computadores</string>
-    <string name="object_date">Fecha y Hora:</string>
-    <string name="object_sample_date">7 de Noviembre, 3:57 PM</string>
-    <string name="object_image_description">Imagen del objeto perdido</string>
-    <string name="object_sample_description">Memoria USB con capacidad de 4 GB Marca Kingston color negro y verde en el agarre</string>
-    <string name="object_readed">Marcar como leído</string>
-    <string name="object_report_found">Reportar Objeto Encontrado</string>
-    <string name="object_not_found">No Encontrado</string>
-    <string name="object_view_contact">Ver Contacto</string>
+    <string name="object_report_lost">Report Lost Object</string>
+    <string name="object_icon_description">Lost object icon</string>
+    <string name="object_sample_name">4GB USB memory</string>
+    <string name="object_place">Place:</string>
+    <string name="object_sample_place">Computer Room A</string>
+    <string name="object_date_lost">Date:</string>
+    <string name="object_sample_date_lost">November 7</string>
+    <string name="object_time_lost">Hour:</string>
+    <string name="object_sample_time_lost">3:57 PM</string>
+    <string name="object_image_description">Image of lost object</string>
+    <string name="object_sample_description">USB drive with capacity of 4 GB Kingston brand black and green color in the grip</string>
+    <string name="object_readed">Mark as read</string>
+    <string name="object_report_found">Report Object Found</string>
+    <string name="object_not_found">Not found</string>
+    <string name="object_view_contact">View contact</string>
 
-    <string name="object_detail_title">DETALLES DEL OBJETO PERDIDO</string>
-    <string name="object_detail_name">Nombre del Objeto</string>
-    <string name="object_detail_name_hint">Escribe el nombre del objeto</string>
-    <string name="object_detail_place">Lugar y Dirección</string>
-    <string name="object_detail_place_hint">Escribe el lugar en donde perdiste el objeto</string>
-    <string name="object_detail_date">Fecha</string>
-    <string name="object_detail_date_hint">yyyy-MM-dd</string>
-    <string name="object_detail_time">Hora</string>
-    <string name="object_detail_time_hint">HH:mm:ss</string>
-    <string name="object_detail_description">Descripción</string>
-    <string name="object_detail_description_hint">Escribe una breve descripción de la apariencia del objeto que perdiste para ayudar a los demás a identificarlo</string>
+    <string name="object_detail_title">DETAILS OF THE LOST OBJECT</string>
+    <string name="object_detail_name">Object Name</string>
+    <string name="object_detail_name_hint">Write the name of the object</string>
+    <string name="object_detail_place">Place and Address</string>
+    <string name="object_detail_place_hint">Write the place where you lost the object</string>
+    <string name="object_detail_date_lost">Date</string>
+    <string name="object_detail_date_lost_hint">yyyy-MM-dd</string>
+    <string name="object_detail_time_lost">Hour</string>
+    <string name="object_detail_time_lost_hint">HH:mm:ss</string>
+    <string name="object_detail_description">Description</string>
+    <string name="object_detail_description_hint">Write a brief description of the appearance of the object you lost to help others identify it</string>
     <string name="object_detail_sample_description_count">110</string>
-    <string name="object_detail_description_count_separator">/</string>
-    <string name="object_detail_description_count_limit">500</string>
-    <string name="object_detail_image">Imagen o Foto (Opcional)</string>
-    <string name="object_detail_image_description">Imagen o foto del objeto perdido</string>
-    <string name="object_detail_ok">ENVIAR</string>
+    <string name="object_detail_description_count_limit">/500</string>
+    <string name="object_detail_image">Image or Photo (Optional)</string>
+    <string name="object_detail_image_description">Image or photo of the lost object</string>
+    <string name="object_detail_ok">SUBMIT</string>
 
     <string name="email_sample_icon_text">D</string>
-    <string name="email_sample_date">14 de Noviembre, 7:35 AM</string>
+    <string name="email_sample_date">November 14, 7:35 AM</string>
     <string name="email_sample_from">donotreply uqvirtual</string>
-    <string name="email_sample_content">NOTICIAS acerca de modificaciones al …\nPara conocer las estrategias y …</string>
+    <string name="email_sample_content">NEWS about modifications to …\nTo know the strategies and …</string>
 
-    <string name="content_email_sample_name">NOTICIAS acerca de Modificaciones al Registro de Asignaturas</string>
+    <string name="content_email_sample_name">NEWS about Modifications to the Register of Subjects</string>
     <string name="content_email_sample_from"><![CDATA[donotreply uqvirtual <donotreply@uqvirtual.edu.co>]]></string>
-    <string name="content_email_sample_date">15 de enero de 2018, 17:54.</string>
+    <string name="content_email_sample_date">January 15, 2018, 5:54 PM</string>
 
-    <string name="email_detail_from">De:</string>
-    <string name="email_detail_from_hint">Correo institucional</string>
-    <string name="email_detail_to">Para:</string>
-    <string name="email_detail_to_hint">Escribe el destinatario</string>
-    <string name="email_detail_name">Asunto:</string>
-    <string name="email_detail_name_hint">Escribe el asunto</string>
-    <string name="email_detail_content">Correo:</string>
-    <string name="email_detail_content_hint">Escribe el contenido</string>
-    <string name="email_detail_ok">ENVIAR</string>
+    <string name="email_detail_from">From:</string>
+    <string name="email_detail_from_hint">Institutional mail</string>
+    <string name="email_detail_to">For:</string>
+    <string name="email_detail_to_hint">Write the recipient</string>
+    <string name="email_detail_name">Affair:</string>
+    <string name="email_detail_name_hint">Write the subject</string>
+    <string name="email_detail_content">Mail:</string>
+    <string name="email_detail_content_hint">Write the content</string>
+    <string name="email_detail_ok">SUBMIT</string>
 
-    <string name="email_successful_sending">Envío exitoso</string>
-    <string name="email_failed_sending">Envío fallido</string>
+    <string name="email_successful_sending">Successful delivery</string>
+    <string name="email_failed_sending">Delivery failed</string>
 
-    <string name="email_from_invalid">Debe iniciar sesión</string>
-    <string name="email_to_invalid">Debe haber un destinatario válido</string>
-    <string name="email_name_invalid">Debe escribirse un asunto</string>
-    <string name="email_content_invalid">Debe escribirse un contenido</string>
+    <string name="email_from_invalid">You must login</string>
+    <string name="email_to_invalid">There must be a valid recipient</string>
+    <string name="email_name_invalid">A subject must be written</string>
+    <string name="email_content_invalid">Content must be written</string>
 
-    <string name="notifications_text">Ajustes de notificaciones</string>
+    <string name="notifications_text">Notifications settings</string>
 
-    <string name="ic_facebook_description">icono de facebook</string>
-    <string name="ic_twitter_description">icono de twitter</string>
-    <string name="ic_whatsapp_description">icono de whatsapp</string>
+    <string name="ic_facebook_description">facebook icon</string>
+    <string name="ic_twitter_description">twitter icon</string>
+    <string name="ic_whatsapp_description">whatsapp icon</string>
+
+    <string name="social_ok">Correct publication</string>
+    <string name="socia_error">Error in the publication</string>
+    <string name="get_image_error">Error getting the image</string>
+
+    <string name="dish_no_found">The plate has not been found: </string>
+    <string name="email_no_found">Mail not found: </string>
+    <string name="object_no_found">The object was not found: </string>
+    <string name="quota_no_found">The quota has not been found: </string>
+
+    <string name="email_authorization">Authorization is required for get emails</string>
+
+    <string name="adjust_quotas">Adjust Quotas of</string>
 
 </resources>

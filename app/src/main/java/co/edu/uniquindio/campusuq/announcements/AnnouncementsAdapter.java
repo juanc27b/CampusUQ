@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
 
@@ -92,11 +93,11 @@ public class AnnouncementsAdapter extends
             }
 
             try {
-                Date d = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-                        .parse(announcement.getDate());
+                Date dateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",
+                        new Locale("es", "CO")).parse(announcement.getDate());
                 date.setText(String.format("%s\n%s",
-                        DateFormat.getDateInstance(DateFormat.FULL).format(d),
-                        DateFormat.getTimeInstance(DateFormat.SHORT).format(d)));
+                        DateFormat.getDateInstance(DateFormat.FULL).format(dateTime),
+                        DateFormat.getTimeInstance(DateFormat.SHORT).format(dateTime)));
             } catch (ParseException e) {
                 e.printStackTrace();
             }

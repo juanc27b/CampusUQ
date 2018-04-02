@@ -46,8 +46,8 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
     private String _ID;
     private EditText name;
     private EditText place;
-    private EditText date;
-    private EditText time;
+    private EditText dateLost;
+    private EditText timeLost;
     private EditText description;
     private TextView descriptionCount;
     private ImageView image;
@@ -71,15 +71,15 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
         intent = getIntent();
         name = findViewById(R.id.object_detail_name);
         place = findViewById(R.id.object_detail_place);
-        date = findViewById(R.id.object_detail_date);
-        time = findViewById(R.id.object_detail_time);
+        dateLost = findViewById(R.id.object_detail_date_lost);
+        timeLost = findViewById(R.id.object_detail_time_lost);
         description = findViewById(R.id.object_detail_description);
         descriptionCount = findViewById(R.id.object_detail_description_count);
         image = findViewById(R.id.object_detail_image);
         setObject();
 
-        date.setOnClickListener(this);
-        time.setOnClickListener(this);
+        dateLost.setOnClickListener(this);
+        timeLost.setOnClickListener(this);
         description.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
@@ -110,17 +110,17 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
         _ID = intent.getStringExtra(ObjectsSQLiteController.columns[0]);
         name.setText(intent.getStringExtra(ObjectsSQLiteController.columns[2]));
         place.setText(intent.getStringExtra(ObjectsSQLiteController.columns[3]));
-        String dateTime = intent.getStringExtra(ObjectsSQLiteController.columns[4]);
-        if (dateTime != null && dateTime.length() >= 19) {
-            date.setText(dateTime.substring(0, 10));
-            time.setText(dateTime.substring(11, 19));
+        String dateTimeLost = intent.getStringExtra(ObjectsSQLiteController.columns[4]);
+        if (dateTimeLost != null && dateTimeLost.length() >= 19) {
+            dateLost.setText(dateTimeLost.substring(0, 10));
+            timeLost.setText(dateTimeLost.substring(11, 19));
         }
-        description.setText(intent.getStringExtra(ObjectsSQLiteController.columns[5]));
+        description.setText(intent.getStringExtra(ObjectsSQLiteController.columns[6]));
         descriptionCount.setText(String.valueOf(description.getText().length()));
 
         // Se concatena una cadena vacia para evitar el caso File(null)
         imageFile =
-                new File(""+intent.getStringExtra(ObjectsSQLiteController.columns[6]));
+                new File(""+intent.getStringExtra(ObjectsSQLiteController.columns[7]));
         if (imageFile.exists())
             image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
         else image.setImageResource(R.drawable.rectangle_gray);
@@ -129,24 +129,25 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.object_detail_date: {
+            case R.id.object_detail_date_lost: {
                 Calendar calendar = Calendar.getInstance();
                 new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                        date.setText(String.format(Locale.US, "%04d-%02d-%02d", year,
-                                month+1, day));
+                        dateLost.setText(String.format(Locale.US, "%04d-%02d-%02d",
+                                year, month+1, day));
                     }
                 }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
                         calendar.get(Calendar.DAY_OF_MONTH)).show();
                 break;
             }
-            case R.id.object_detail_time: {
+            case R.id.object_detail_time_lost: {
                 Calendar calendar = Calendar.getInstance();
                 new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                        time.setText(String.format(Locale.US, "%02d:%02d:00", hour, minute));
+                        timeLost.setText(String.format(Locale.US, "%02d:%02d:00", hour,
+                                minute));
                     }
                 }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE),
                         false).show();
@@ -157,9 +158,9 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
                         .setType("image/*"), "Select Picture"), 0);
                 break;
             case R.id.object_detail_ok:
-                if (Utilities.haveNetworkConnection(ObjectsDetailActivity.this)) {
+                if (Utilities.haveNetworkConnection(this)) {
                     if (name.getText().length() != 0 && place.getText().length() != 0 &&
-                            date.getText().length() != 0 && time.getText().length() != 0 &&
+                            dateLost.getText().length() != 0 && timeLost.getText().length() != 0 &&
                             description.getText().length() != 0) {
                         mTracker.send(new HitBuilders.EventBuilder()
                                 .setCategory(getString(R.string.analytics_objects_category))
@@ -177,12 +178,10 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
                             json.put(ObjectsSQLiteController.columns[2], name.getText());
                             json.put(ObjectsSQLiteController.columns[3], place.getText());
                             json.put(ObjectsSQLiteController.columns[4],
-                                    date.getText()+"T"+time.getText());
-                            json.put(ObjectsSQLiteController.columns[5], description.getText());
-                            json.put(ObjectsSQLiteController.columns[7], intent
-                                    .getSerializableExtra(ObjectsSQLiteController.columns[7]));
+                                    dateLost.getText()+"T"+timeLost.getText()+"-05:00");
+                            json.put(ObjectsSQLiteController.columns[6], description.getText());
                             if (imageFile.exists()) {
-                                json.put(ObjectsSQLiteController.columns[6], imageFile.getName());
+                                json.put(ObjectsSQLiteController.columns[7], imageFile.getName());
                                 byte[] imageBytes = new byte[(int) imageFile.length()];
                                 BufferedInputStream bufferedInputStream =
                                         new BufferedInputStream(new FileInputStream(imageFile));
@@ -191,6 +190,8 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
                                 json.put("imageString",
                                         Base64.encodeToString(imageBytes, Base64.NO_WRAP));
                             }
+                            json.put(ObjectsSQLiteController.columns[8], intent
+                                    .getSerializableExtra(ObjectsSQLiteController.columns[8]));
                         } catch (JSONException | IOException e) {
                             e.printStackTrace();
                         }
@@ -217,7 +218,7 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             Uri uri = data.getData();
-            if (uri != null) {
+            if (uri != null) try {
                 String[] projection = {MediaStore.Images.Media.DATA};
                 String[] selectionArgs = {DocumentsContract.getDocumentId(uri).split(":")[1]};
                 Cursor cursor = getContentResolver().query(
@@ -233,6 +234,10 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
                     }
                     cursor.close();
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, R.string.get_image_error,
+                        Toast.LENGTH_SHORT).show();
             }
         }
     }

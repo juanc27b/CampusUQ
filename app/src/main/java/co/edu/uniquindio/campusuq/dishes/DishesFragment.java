@@ -90,9 +90,8 @@ public class DishesFragment extends DialogFragment implements View.OnClickListen
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        WebBroadcastReceiver.scheduleJob(dishesActivity.getApplicationContext(),
-                                WebService.ACTION_DISHES, WebService.METHOD_DELETE,
-                                json.toString());
+                        WebBroadcastReceiver.scheduleJob(dishesActivity, WebService.ACTION_DISHES,
+                                WebService.METHOD_DELETE, json.toString());
                         dishesActivity.progressDialog.show();
                     }
                 } else {

@@ -82,19 +82,19 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
-                        android:text="@string/object_detail_date"
+                        android:text="@string/object_detail_date_lost"
                         android:textSize="12sp"
                         android:textColor="@color/colorPrimary"/>
 
                     <EditText
-                        android:id="@+id/object_detail_date"
+                        android:id="@+id/object_detail_date_lost"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="15sp"
                         android:inputType="date"
                         android:focusable="false"
                         android:maxLength="10"
-                        android:hint="@string/object_detail_date_hint"/>
+                        android:hint="@string/object_detail_date_lost_hint"/>
 
                 </LinearLayout>
 
@@ -107,19 +107,19 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
-                        android:text="@string/object_detail_time"
+                        android:text="@string/object_detail_time_lost"
                         android:textSize="12sp"
                         android:textColor="@color/colorPrimary"/>
 
                     <EditText
-                        android:id="@+id/object_detail_time"
+                        android:id="@+id/object_detail_time_lost"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="15sp"
                         android:inputType="time"
                         android:focusable="false"
                         android:maxLength="8"
-                        android:hint="@string/object_detail_time_hint"/>
+                        android:hint="@string/object_detail_time_lost_hint"/>
 
                 </LinearLayout>
 
@@ -153,13 +153,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/object_detail_sample_description_count"
-                    android:textSize="12sp"
-                    android:textColor="@color/colorPrimary"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/object_detail_description_count_separator"
                     android:textSize="12sp"
                     android:textColor="@color/colorPrimary"/>
 

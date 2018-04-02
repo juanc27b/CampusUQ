@@ -47,6 +47,24 @@ public class Utilities {
     private final static String LANGUAGE_ES = "es";
     private final static String LANGUAGE_EN = "en";
 
+    public static final int SUCCESS_STATE = 11;
+    public static final int FAILURE_STATE = 12;
+
+    public static class State {
+        private int state;
+
+        public State(int state) {
+            this.state = state;
+        }
+
+        public void set(int state) {
+            this.state = state;
+        }
+
+        public int get() {
+            return state;
+        }
+    }
 
     public static void getKeyHash(Context context) {
         try {
@@ -130,11 +148,8 @@ public class Utilities {
     public static void changeLanguage(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
         String language = prefs.getString(PREFERENCE_LANGUAGE, LANGUAGE_ES);
-        if(language.equals(LANGUAGE_ES)) {
-            language = LANGUAGE_EN;
-        } else if(language.equals(LANGUAGE_EN)) {
-            language = LANGUAGE_ES;
-        }
+        if (language.equals(LANGUAGE_ES)) language = LANGUAGE_EN;
+        else if (language.equals(LANGUAGE_EN)) language = LANGUAGE_ES;
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PREFERENCE_LANGUAGE, language);
         editor.commit();
@@ -144,7 +159,7 @@ public class Utilities {
     public static void getLanguage(Context context){
         SharedPreferences prefs = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
         String language = prefs.getString(PREFERENCE_LANGUAGE, LANGUAGE_ES);
-        Locale locale = new Locale(language);
+        Locale locale = new Locale(language, "CO");
         Locale.setDefault(locale);
         Resources resources = context.getResources();
         Configuration configuration = resources.getConfiguration();

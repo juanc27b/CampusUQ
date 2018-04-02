@@ -14,22 +14,22 @@ import co.edu.uniquindio.campusuq.web.WebService;
 
 class NewsPresenter {
 
-    ArrayList<New> loadNews(String type, Context context, int limit) {
+    static ArrayList<New> loadNews(String type, Context context, int limit) {
         ArrayList<New> news = new ArrayList<>();
         NewsSQLiteController dbController = new NewsSQLiteController(context, 1);
 
         ArrayList<NewCategory> categories = dbController.selectCategory(null,
-                NewsSQLiteController.CAMPOS_CATEGORIA[1]+" = ?", new String[]{"Eventos"});
+                NewsSQLiteController.categoryColumns[1]+" = ?", new String[]{"Eventos"});
 
         if (!categories.isEmpty()) {
             ArrayList<NewRelation> relations = dbController.selectRelation(null,
-                    NewsSQLiteController.CAMPOS_RELACION[0]+" = ?",
+                    NewsSQLiteController.relationColumns[0]+" = ?",
                     new String[]{categories.get(0).get_ID()});
 
             String[] New_IDs = new String[relations.size()];
             for (int i = 0; i < New_IDs.length; i++) New_IDs[i] = relations.get(i).getNew_ID();
 
-            String selection = NewsSQLiteController.CAMPOS_TABLA[0];
+            String selection = NewsSQLiteController.columns[0];
             if (WebService.ACTION_NEWS.equals(type)) selection += " NOT";
             selection += " IN("+
                     TextUtils.join(", ", Collections.nCopies(New_IDs.length, '?'))+')';

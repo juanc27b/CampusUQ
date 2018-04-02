@@ -73,7 +73,7 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
                 layoutManager.scrollToPosition(dishes.indexOf(dish));
                 return;
             }
-            Toast.makeText(this, "No se ha encontrado el plato: "+query,
+            Toast.makeText(this, getString(R.string.dish_no_found)+query,
                     Toast.LENGTH_SHORT).show();
         }
     }
@@ -82,11 +82,11 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
 
         if (!progressDialog.isShowing()) progressDialog.show();
 
-        int scrollTo = oldDishes ? (newActivity ? 0 : dishes.size()-1) :
-                (inserted > 0 ? inserted-1 : 0);
+        int scrollTo = oldDishes ?
+                (newActivity ? 0 : dishes.size()-1) : (inserted > 0 ? inserted-1 : 0);
 
-        dishes = DishesPresenter.loadDishes(getApplicationContext(),
-                inserted > 0 ? dishes.size()+inserted : dishes.size()+12);
+        dishes = DishesPresenter.loadDishes(this,
+                dishes.size()+(inserted > 0 ? inserted : 12));
 
         if (newActivity) {
             newActivity = false;

@@ -3,7 +3,6 @@ package co.edu.uniquindio.campusuq.contacts;
 import android.content.Context;
 import android.util.Log;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -11,8 +10,6 @@ import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
-import cz.msebera.android.httpclient.HttpResponse;
-import cz.msebera.android.httpclient.client.HttpClient;
 import cz.msebera.android.httpclient.client.methods.HttpGet;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 import cz.msebera.android.httpclient.util.EntityUtils;
@@ -24,61 +21,50 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 public class ContactsServiceController {
 
     public static ArrayList<Contact> getContacts(Context context) {
-        String url = Utilities.URL_SERVICIO+"/contactos";
-        ArrayList<Contact> contacts = new ArrayList<>();
-        HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpGet request = new HttpGet(url);
-        request.setHeader("Content-Type", "application/json; Charset=UTF-8");
+        HttpGet request = new HttpGet(Utilities.URL_SERVICIO+"/contactos");
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
+        ArrayList<Contact> contacts = new ArrayList<>();
+
         try {
-            HttpResponse resp = httpClient.execute(request);
-            String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
-            JSONObject json = new JSONObject(respStr);
-            JSONArray array = json.getJSONArray("datos");
+            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
+                    .execute(request).getEntity())).getJSONArray("datos");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                String _ID = StringEscapeUtils.unescapeHtml4(object.getString("_ID"));
-                String category_ID = StringEscapeUtils.unescapeHtml4(object.getString("Categoria_ID"));
-                String name = StringEscapeUtils.unescapeHtml4(object.getString("Nombre"));
-                String address = StringEscapeUtils.unescapeHtml4(object.getString("Direccion"));
-                String phone = StringEscapeUtils.unescapeHtml4(object.getString("Telefono"));
-                String email = StringEscapeUtils.unescapeHtml4(object.getString("Email"));
-                String charge = StringEscapeUtils.unescapeHtml4(object.getString("Cargo"));
-                String additionalInformation = StringEscapeUtils.unescapeHtml4(object.getString("Informacion_Adicional"));
-                Contact contact = new Contact(_ID, category_ID, name, address, phone, email, charge, additionalInformation);
-                contacts.add(contact);
+                contacts.add(new Contact(object.getString(ContactsSQLiteController.columns[0]),
+                        object.getString(ContactsSQLiteController.columns[1]),
+                        object.getString(ContactsSQLiteController.columns[2]),
+                        object.getString(ContactsSQLiteController.columns[3]),
+                        object.getString(ContactsSQLiteController.columns[4]),
+                        object.getString(ContactsSQLiteController.columns[5]),
+                        object.getString(ContactsSQLiteController.columns[6]),
+                        object.getString(ContactsSQLiteController.columns[7])));
             }
         } catch (Exception e) {
             Log.e(ContactsServiceController.class.getSimpleName(), e.getMessage());
-            return new ArrayList<>();
         }
+
         return contacts;
     }
 
     public static ArrayList<ContactCategory> getContactCategories(Context context) {
-        String url = Utilities.URL_SERVICIO+"/contacto_categorias";
-        ArrayList<ContactCategory> categories = new ArrayList<>();
-        HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpGet request = new HttpGet(url);
-        request.setHeader("Content-Type", "application/json; Charset=UTF-8");
+        HttpGet request = new HttpGet(Utilities.URL_SERVICIO+"/contacto_categorias");
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
+        ArrayList<ContactCategory> categories = new ArrayList<>();
+
         try {
-            HttpResponse resp = httpClient.execute(request);
-            String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
-            JSONObject json = new JSONObject(respStr);
-            JSONArray array = json.getJSONArray("datos");
+            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
+                    .execute(request).getEntity())).getJSONArray("datos");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                String _ID = StringEscapeUtils.unescapeHtml4(object.getString("_ID"));
-                String name = StringEscapeUtils.unescapeHtml4(object.getString("Nombre"));
-                String link = StringEscapeUtils.unescapeHtml4(object.getString("Enlace"));
-                ContactCategory category = new ContactCategory(_ID, name, link);
-                categories.add(category);
+                categories.add(new ContactCategory(
+                        object.getString(ContactsSQLiteController.categoryColumns[0]),
+                        object.getString(ContactsSQLiteController.categoryColumns[1]),
+                        object.getString(ContactsSQLiteController.categoryColumns[2])));
             }
         } catch (Exception e) {
             Log.e(ContactsServiceController.class.getSimpleName(), e.getMessage());
-            return new ArrayList<>();
         }
+
         return categories;
     }
 

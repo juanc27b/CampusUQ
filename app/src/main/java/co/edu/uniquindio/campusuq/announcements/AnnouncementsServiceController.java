@@ -1,6 +1,7 @@
 package co.edu.uniquindio.campusuq.announcements;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -25,24 +26,33 @@ public class AnnouncementsServiceController {
 
     private static final String _ANNOUNCEMENTS = "/anuncios";
 
-    public static ArrayList<Announcement> getAnnouncements(Context context, String category) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO+_ANNOUNCEMENTS+category);
+    public static ArrayList<Announcement> getAnnouncements(Context context,
+                                                           @NonNull String category_date,
+                                                           Utilities.State state,
+                                                           ArrayList<Integer> _IDs) {
+        HttpGet request = new HttpGet(Utilities.URL_SERVICIO+_ANNOUNCEMENTS+category_date);
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         ArrayList<Announcement> announcements = new ArrayList<>();
 
         try {
-            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
-                    .execute(request).getEntity())).getJSONArray("datos");
+            JSONObject object = new JSONObject(EntityUtils.toString(HttpClientBuilder.create()
+                    .build().execute(request).getEntity()));
+            if (state != null) state.set(object.getInt("estado"));
+            JSONArray array = object.getJSONArray("datos");
             for (int i = 0; i < array.length(); i++) {
-                JSONObject object = array.getJSONObject(i);
+                JSONObject obj = array.getJSONObject(i);
                 announcements.add(new Announcement(
-                        object.getInt(AnnouncementsSQLiteController.columns[0]),
-                        object.getInt(AnnouncementsSQLiteController.columns[1]),
-                        object.getString(AnnouncementsSQLiteController.columns[2]),
-                        object.getString(AnnouncementsSQLiteController.columns[3]),
-                        object.getString(AnnouncementsSQLiteController.columns[4]),
-                        object.getString(AnnouncementsSQLiteController.columns[5]),
-                        "N"));
+                        obj.getInt(AnnouncementsSQLiteController.columns[0]),
+                        obj.getInt(AnnouncementsSQLiteController.columns[1]),
+                        obj.getString(AnnouncementsSQLiteController.columns[2]),
+                        obj.getString(AnnouncementsSQLiteController.columns[3]),
+                        obj.getString(AnnouncementsSQLiteController.columns[4]),
+                        obj.getString(AnnouncementsSQLiteController.columns[5]), "N"));
+            }
+            if (_IDs != null) {
+                array = object.getJSONArray("_IDs");
+                // Se castea a Integer para remover el objeto, no el indice
+                for (int i = 0; i < array.length(); i++) _IDs.remove((Integer) array.getInt(i));
             }
         } catch (Exception e) {
             Log.e(AnnouncementsServiceController.class.getSimpleName(), e.getMessage());
@@ -68,8 +78,10 @@ public class AnnouncementsServiceController {
 
     private static final String _ANNOUNCEMENT_LINKS = "/anuncio_enlaces";
 
-    public static ArrayList<AnnouncementLink> getAnnouncementLinks(Context context, String announcement) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO+_ANNOUNCEMENT_LINKS+announcement);
+    public static ArrayList<AnnouncementLink> getAnnouncementLinks(Context context,
+                                                                   @NonNull String _announcement) {
+        HttpGet request =
+                new HttpGet(Utilities.URL_SERVICIO+_ANNOUNCEMENT_LINKS+_announcement);
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         ArrayList<AnnouncementLink> links = new ArrayList<>();
 

@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
 
@@ -70,10 +71,11 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewViewHolder>
             else image.setImageResource(R.drawable.rectangle_gray);
 
             try {
-                Date d = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(n.getDate());
+                Date dateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",
+                        new Locale("es", "CO")).parse(n.getDate());
                 date.setText(String.format("%s\n%s",
-                        DateFormat.getDateInstance(DateFormat.MEDIUM).format(d),
-                        DateFormat.getTimeInstance(DateFormat.SHORT).format(d)));
+                        DateFormat.getDateInstance(DateFormat.MEDIUM).format(dateTime),
+                        DateFormat.getTimeInstance(DateFormat.SHORT).format(dateTime)));
             } catch (ParseException e) {
                 e.printStackTrace();
             }

@@ -116,7 +116,7 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
                         .setType("image/*"), "Select Picture"), 0);
                 break;
             case R.id.dish_detail_ok:
-                if (Utilities.haveNetworkConnection(DishesDetailActivity.this)) {
+                if (Utilities.haveNetworkConnection(this)) {
                     if (name.getText().length() != 0 && description.getText().length() != 0 &&
                             price.getText().length() != 0) {
                         mTracker.send(new HitBuilders.EventBuilder()

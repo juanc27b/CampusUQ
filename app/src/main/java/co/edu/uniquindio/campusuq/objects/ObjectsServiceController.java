@@ -1,6 +1,7 @@
 package co.edu.uniquindio.campusuq.objects;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -21,27 +22,35 @@ public class ObjectsServiceController {
 
     private static final String _OBJECTS = "/objetos";
 
-    public static ArrayList<LostObject> getObjects(Context context, String idObject) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO+_OBJECTS+idObject);
+    public static ArrayList<LostObject> getObjects(Context context, @NonNull String date,
+                                                   Utilities.State state, ArrayList<Integer> _IDs) {
+        HttpGet request = new HttpGet(Utilities.URL_SERVICIO+_OBJECTS+date);
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         ArrayList<LostObject> lostObjects = new ArrayList<>();
 
         try {
-            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
-                    .execute(request).getEntity())).getJSONArray("datos");
+            JSONObject object = new JSONObject(EntityUtils.toString(HttpClientBuilder.create()
+                    .build().execute(request).getEntity()));
+            if (state != null) state.set(object.getInt("estado"));
+            JSONArray array = object.getJSONArray("datos");
             for (int i = 0; i < array.length(); i++) {
-                JSONObject object = array.getJSONObject(i);
-                lostObjects.add(new LostObject(
-                        object.getInt(ObjectsSQLiteController.columns[0]),
-                        object.getInt(ObjectsSQLiteController.columns[1]),
-                        object.getString(ObjectsSQLiteController.columns[2]),
-                        object.getString(ObjectsSQLiteController.columns[3]),
-                        object.getString(ObjectsSQLiteController.columns[4]),
-                        object.getString(ObjectsSQLiteController.columns[5]),
-                        object.getString(ObjectsSQLiteController.columns[6]),
-                        object.isNull(ObjectsSQLiteController.columns[7]) ? null :
-                                object.getInt(ObjectsSQLiteController.columns[7]),
+                JSONObject obj = array.getJSONObject(i);
+                lostObjects.add(new LostObject(obj.getInt(ObjectsSQLiteController.columns[0]),
+                        obj.getInt(ObjectsSQLiteController.columns[1]),
+                        obj.getString(ObjectsSQLiteController.columns[2]),
+                        obj.getString(ObjectsSQLiteController.columns[3]),
+                        obj.getString(ObjectsSQLiteController.columns[4]),
+                        obj.getString(ObjectsSQLiteController.columns[5]),
+                        obj.getString(ObjectsSQLiteController.columns[6]),
+                        obj.getString(ObjectsSQLiteController.columns[7]),
+                        obj.isNull(ObjectsSQLiteController.columns[8]) ?
+                                null : obj.getInt(ObjectsSQLiteController.columns[8]),
                         "N"));
+            }
+            if (_IDs != null) {
+                array = object.getJSONArray("_IDs");
+                // Se castea a Integer para remover el objeto, no el indice
+                for (int i = 0; i < array.length(); i++) _IDs.remove((Integer) array.getInt(i));
             }
         } catch (Exception e) {
             Log.e(ObjectsServiceController.class.getSimpleName(), e.getMessage());

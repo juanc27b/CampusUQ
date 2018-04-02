@@ -229,8 +229,7 @@ public class WebService extends JobIntentService {
         }
 
         // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled)
-            return;
+        if (jobCancelled) return;
 
         Log.i(TAG, "Job finished!");
         isWorking = false;
@@ -272,7 +271,14 @@ public class WebService extends JobIntentService {
                         .setContentTitle(getString(R.string.app_name)+" - "+getString(R.string.lost_objects))
                         .setContentText(lostObject.getName())
                         .setSubText(lostObject.getDescription());
-                file = new File(lostObject.getImage());
+                // Se concatena una cadena vacia para evitar el caso File(null)
+                file = new File(""+lostObject.getImage());
+                break;
+            case ACTION_CALENDAR:
+                Event event = (Event) object;
+                builder.setContentTitle(getString(R.string.app_name)+" - "+
+                        getString(R.string.academic_calendar))
+                        .setContentText(event.getName());
                 break;
             case ACTION_INCIDENTS:
             case ACTION_COMMUNIQUES:
@@ -301,27 +307,22 @@ public class WebService extends JobIntentService {
                 break;
         }
 
-        if (file.exists()) {
+        if (file != null && file.exists()) {
             builder.setLargeIcon(BitmapFactory.decodeFile(file.getAbsolutePath()));
         } else {
             builder.setLargeIcon(BitmapFactory.decodeResource(
                     getApplicationContext().getResources(), R.drawable.app_icon));
         }
 
-        builder
-                .setSmallIcon(R.mipmap.ic_launcher)
+        return builder.setSmallIcon(R.mipmap.ic_launcher)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setContentIntent(buildPendingIntent(type))
-                .setAutoCancel(true);
-
-        return builder.build();
+                .setContentIntent(buildPendingIntent(type)).setAutoCancel(true).build();
 
     }
 
     private PendingIntent buildPendingIntent(String type) {
         Intent resultIntent = null;
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
-        PendingIntent resultPendingIntent;
         switch (type) {
             case ACTION_NEWS:
             case ACTION_EVENTS:
@@ -364,40 +365,38 @@ public class WebService extends JobIntentService {
                 break;
         }
         stackBuilder.addNextIntent(resultIntent);
-        resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-        return resultPendingIntent;
+        return stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private void loadNews(String type) {
 
         // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled)
-            return;
+        if (jobCancelled) return;
+        Context context = getApplicationContext();
 
-        NewsSQLiteController dbController = new NewsSQLiteController(getApplicationContext(), 1);
+        NewsSQLiteController dbController = new NewsSQLiteController(context, 1);
         String validRows = null;
-        String lastNewId = null;
+        String category_date = "";
         boolean notify = ACTION_EVENTS.equals(type) ?
-                NotificationsPresenter.getNotification(getApplicationContext(), "0").getActivated().equals("S") :
-                NotificationsPresenter.getNotification(getApplicationContext(), "1").getActivated().equals("S");
+                NotificationsPresenter.getNotification(context, "0").getActivated().equals("S") :
+                NotificationsPresenter.getNotification(context, "1").getActivated().equals("S");
 
         String events = "";
         ArrayList<NewCategory> categories = dbController.selectCategory(null,
-                NewsSQLiteController.CAMPOS_CATEGORIA[1] + " = ?", new String[]{"Eventos"});
-        ArrayList<NewRelation> relations;
-        if (categories.size() > 0) {
-            relations = dbController.selectRelation(null,
-                    NewsSQLiteController.CAMPOS_RELACION[0] + " = ?", new String[]{categories.get(0).get_ID()});
-            for (NewRelation relation : relations) {
+                NewsSQLiteController.categoryColumns[1] + " = ?", new String[]{"Eventos"});
+        if (!categories.isEmpty()) {
+            for (NewRelation relation : dbController.selectRelation(null,
+                    NewsSQLiteController.relationColumns[0]+" = ?",
+                    new String[]{categories.get(0).get_ID()})) {
                 events += relation.getNew_ID() + ",";
             }
             events = events.substring(0, events.length() - 1);
             if (ACTION_NEWS.equals(type)) {
-                validRows = NewsSQLiteController.CAMPOS_TABLA[0]+" NOT IN ("+events+")";
-                lastNewId = "/no_eventos";
+                validRows = NewsSQLiteController.columns[0]+" NOT IN ("+events+")";
+                category_date += "/no_eventos";
             } else {
-                validRows = NewsSQLiteController.CAMPOS_TABLA[0]+" IN ("+events+")";
-                lastNewId = "/eventos";
+                validRows = NewsSQLiteController.columns[0]+" IN ("+events+")";
+                category_date += "/eventos";
             }
 
         } else {
@@ -405,62 +404,54 @@ public class WebService extends JobIntentService {
         }
 
         int inserted = 0;
-        if (Utilities.haveNetworkConnection(getApplicationContext())) {
-            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            categories = NewsServiceController.getNewCategories(getApplicationContext());
+        if (Utilities.haveNetworkConnection(context)) {
+            NotificationManager manager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            categories = NewsServiceController.getNewCategories(context);
             for (NewCategory category: categories) {
                 ArrayList<NewCategory> oldCategories = dbController.selectCategory("1",
-                        NewsSQLiteController.CAMPOS_CATEGORIA[0]+" = ?", new String[]{category.get_ID()});
-                if (oldCategories.size() == 0) {
-                    dbController.insertCategory(category.get_ID(), category.getName(), category.getLink());
-                }
+                        NewsSQLiteController.categoryColumns[0]+" = ?",
+                        new String[]{category.get_ID()});
+                if (oldCategories.isEmpty()) dbController
+                        .insertCategory(category.get_ID(), category.getName(), category.getLink());
             }
 
             ArrayList<New> lastNews = dbController.select("1", validRows, null);
-            if (lastNews.size() > 0) {
-                lastNewId += "/"+lastNews.get(0).get_ID();
-            }
-            ArrayList<New> updated = NewsServiceController.getNews(getApplicationContext(), lastNewId);
-            for (New mNew : updated) {
-                String imagePath = Utilities.saveImage(mNew.getImage(), "/news", getApplicationContext());
-                if (imagePath != null) {
-                    mNew.setImage(imagePath);
-                }
+            if (!lastNews.isEmpty()) category_date += '/'+lastNews.get(0).getDate();
+            ArrayList<New> updated =
+                    NewsServiceController.getNews(context, category_date, null);
+            for (New n : updated) {
+                String imagePath = Utilities.saveImage(n.getImage(), "/news", context);
+                if (imagePath != null) n.setImage(imagePath);
                 ArrayList<New> olds = dbController.select("1",
-                        NewsSQLiteController.CAMPOS_TABLA[0]+" = ?", new String[]{mNew.get_ID()});
-                if (olds.size() > 0) {
-                    dbController.update(mNew.get_ID(), mNew.getName(), mNew.getLink(), mNew.getImage(),
-                            mNew.getSummary(), mNew.getContent(), mNew.getDate(), mNew.getAuthor());
+                        NewsSQLiteController.columns[0]+" = ?", new String[]{n.get_ID()});
+                if (!olds.isEmpty()) {
+                    dbController.update(n.get_ID(), n.getName(), n.getLink(), n.getImage(),
+                            n.getSummary(), n.getContent(), n.getDate(), n.getAuthor());
                 } else {
-                    dbController.insert(mNew.get_ID(), mNew.getName(), mNew.getLink(), mNew.getImage(),
-                            mNew.getSummary(), mNew.getContent(), mNew.getDate(), mNew.getAuthor());
-                    relations = NewsServiceController.getNewRelations(getApplicationContext(), mNew.get_ID());
-                    for (NewRelation relation : relations) {
-                        dbController.insertRelation(relation.getCategory_ID(), relation.getNew_ID());
-                    }
+                    dbController.insert(n.get_ID(), n.getName(), n.getLink(), n.getImage(),
+                            n.getSummary(), n.getContent(), n.getDate(), n.getAuthor());
+                    for (NewRelation relation : NewsServiceController
+                            .getNewRelations(context, "/"+n.get_ID())) dbController
+                            .insertRelation(relation.getCategory_ID(), relation.getNew_ID());
                 }
-                inserted += 1;
-                if (manager != null && notify && inserted <= 5) {
-                    manager.notify(mNew.getName(), mNotificationId, buildNotification(type, mNew));
-                }
+                inserted++;
+                if (manager != null && notify && inserted <= 5)
+                    manager.notify(n.getName(), mNotificationId, buildNotification(type, n));
             }
         }
 
         dbController.destroy();
-
-        Intent intent = new Intent(ACTION_NEWS);
-        intent.putExtra("INSERTED", inserted);
-        sendBroadcast(intent);
+        sendBroadcast(new Intent(ACTION_NEWS).putExtra("INSERTED", inserted));
 
     }
 
     private void loadInformations() {
 
         // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled)
-            return;
-
-        InformationsSQLiteController dbController = new InformationsSQLiteController(getApplicationContext(), 1);
+        if (jobCancelled) return;
+        InformationsSQLiteController dbController =
+                new InformationsSQLiteController(getApplicationContext(), 1);
 
         if (Utilities.haveNetworkConnection(getApplicationContext())) {
             boolean updateInformations = false;
@@ -495,29 +486,26 @@ public class WebService extends JobIntentService {
         }
 
         dbController.destroy();
-
-        Intent intent = new Intent(PENDING_ACTION);
-        sendBroadcast(intent);
+        sendBroadcast(new Intent(PENDING_ACTION));
 
     }
 
     private void loadContacts() {
 
         // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled)
-            return;
-
-        ContactsSQLiteController dbController = new ContactsSQLiteController(getApplicationContext(), 1);
+        if (jobCancelled) return;
+        Context context = getApplicationContext();
+        ContactsSQLiteController dbController = new ContactsSQLiteController(context, 1);
 
         ArrayList<ContactCategory> oldCategories = dbController.selectCategory(null, null);
-        if (oldCategories.size() == 0 && Utilities.haveNetworkConnection(getApplicationContext())) {
+        if (oldCategories.size() == 0 && Utilities.haveNetworkConnection(context)) {
 
-            ArrayList<ContactCategory> updatedCategories = ContactsServiceController.getContactCategories(getApplicationContext());
+            ArrayList<ContactCategory> updatedCategories = ContactsServiceController.getContactCategories(context);
             for (ContactCategory category : updatedCategories) {
                 dbController.insertCategory(category.get_ID(), category.getName(), category.getLink());
             }
 
-            ArrayList<Contact> updatedContacts = ContactsServiceController.getContacts(getApplicationContext());
+            ArrayList<Contact> updatedContacts = ContactsServiceController.getContacts(context);
             for (Contact contact : updatedContacts) {
                 dbController.insert(contact.get_ID(), contact.getCategory_ID(),
                         contact.getName(), contact.getAddress(), contact.getPhone(),
@@ -527,9 +515,7 @@ public class WebService extends JobIntentService {
         }
 
         dbController.destroy();
-
-        Intent intent = new Intent(PENDING_ACTION);
-        sendBroadcast(intent);
+        sendBroadcast(new Intent(PENDING_ACTION));
 
     }
 
@@ -593,68 +579,57 @@ public class WebService extends JobIntentService {
     private void loadCalendar() {
 
         // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled)
-            return;
+        if (jobCancelled) return;
+        Context context = getApplicationContext();
 
-        EventsSQLiteController dbController = new EventsSQLiteController(getApplicationContext(), 1);
+        if (Utilities.haveNetworkConnection(context)) {
+            EventsSQLiteController dbController = new EventsSQLiteController(context, 1);
 
-        ArrayList<EventDate> oldDates = dbController.selectDate(
-                EventsSQLiteController.CAMPOS_FECHA[1]+" = ?", new String[]{"fechasPub"});
-        if (oldDates.size() > 0 && Utilities.haveNetworkConnection(getApplicationContext())) {
-            ArrayList<EventDate> updatedDates = EventsServiceController.getEventDates(getApplicationContext());
-            for (EventDate date : updatedDates) {
-                if (date.getType().equals("fechasPub")) {
-                    if (oldDates.get(0).getDate().compareTo(date.getDate()) < 0) {
-                        dbController.deleteRelation();
-                        dbController.deleteDate();
-                        dbController.deletePeriod();
-                        dbController.delete();
-                        dbController.deleteCategory();
-                    }
-                    break;
+            ArrayList<EventDate> oldDates = dbController.selectDate(
+                    EventsSQLiteController.dateColumns[1]+" = 'fechasPub'",
+                    null);
+            if (!oldDates.isEmpty())
+                for (EventDate date : EventsServiceController.getEventDates(context))
+                    if (date.getType().equals("fechasPub")) {
+                if (oldDates.get(0).getDate().compareTo(date.getDate()) < 0) {
+                    dbController.deleteDate();
+                    dbController.deletePeriod();
+                    dbController.delete();
+                    dbController.deleteCategory();
                 }
+                break;
             }
+
+            ArrayList<EventCategory> oldCategories =
+                    dbController.selectCategory(null, null);
+            if (oldCategories.isEmpty()) {
+                for (EventCategory category : EventsServiceController.getEventCategories(context))
+                    dbController.insertCategory(category.get_ID(), category.getAbbreviation(),
+                            category.getName());
+
+                for (Event event : EventsServiceController.getEvents(context))
+                    dbController.insert(event.get_ID(), event.getName());
+
+                for (EventPeriod period : EventsServiceController.getEventPeriods(context))
+                    dbController.insertPeriod(period.get_ID(), period.getName());
+
+                for (EventDate date : EventsServiceController.getEventDates(context))
+                    dbController.insertDate(date.get_ID(), date.getType(), date.getDate());
+
+                for (EventRelation relation : EventsServiceController.getEventRelations(context))
+                    dbController.insertRelation(relation.getCategory_ID(), relation.getEvent_ID(),
+                            relation.getPeriod_ID(), relation.getDate_ID());
+            }
+
+            dbController.destroy();
         }
 
-        ArrayList<EventCategory> oldCategories = dbController.selectCategory(null, null);
-        if (oldCategories.size() == 0 && Utilities.haveNetworkConnection(getApplicationContext())) {
-
-            ArrayList<EventCategory> updatedCategories = EventsServiceController.getEventCategories(getApplicationContext());
-            for (EventCategory category : updatedCategories) {
-                dbController.insertCategory(category.get_ID(), category.getAbbreviation(), category.getName());
-            }
-
-            ArrayList<Event> updatedEvents = EventsServiceController.getEvents(getApplicationContext());
-            for (Event event : updatedEvents) {
-                dbController.insert(event.get_ID(), event.getName());
-            }
-
-            ArrayList<EventPeriod> updatedPeriods = EventsServiceController.getEventPeriods(getApplicationContext());
-            for (EventPeriod period : updatedPeriods) {
-                dbController.insertPeriod(period.get_ID(), period.getName());
-            }
-
-            ArrayList<EventDate> updatedDates = EventsServiceController.getEventDates(getApplicationContext());
-            for (EventDate date : updatedDates) {
-                dbController.insertDate(date.get_ID(), date.getType(), date.getDate());
-            }
-
-            ArrayList<EventRelation> updatedRelations = EventsServiceController.getEventRelations(getApplicationContext());
-            for (EventRelation relation : updatedRelations) {
-                dbController.insertRelation(relation.getCategory_ID(), relation.getEvent_ID(),
-                        relation.getPeriod_ID(), relation.getDate_ID());
-            }
-
-        }
-
-        dbController.destroy();
-
-        Intent intent = new Intent(PENDING_ACTION);
-        sendBroadcast(intent);
+        sendBroadcast(new Intent(PENDING_ACTION));
 
     }
 
     private void loadAnnouncements(String type, String method, String object) {
+
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled) return;
         String response = null;
@@ -670,7 +645,7 @@ public class WebService extends JobIntentService {
                     JSONArray links = (JSONArray) json.remove("links");
                     json = new JSONObject(AnnouncementsServiceController
                             .modifyAnnouncement(context, json.toString()));
-                    StringBuilder builder = new StringBuilder(json.toString());
+                    StringBuilder builder = new StringBuilder(json.getString("mensaje"));
                     int _ID = json.getInt("id");
                     if (links != null) for (int i = 0; i < links.length(); i++)
                         builder.append('\n').append(AnnouncementsServiceController
@@ -683,18 +658,18 @@ public class WebService extends JobIntentService {
                 }
                 // Despues de modificar se actualiza, por eso aqui no hay break
             case METHOD_GET: {
-                String validRows;
-                String lastAnnouncementId;
+                String selectionArg;
+                String category_date;
                 boolean notify;
 
                 if (ACTION_INCIDENTS.equals(type)) {
-                    validRows = "I";
-                    lastAnnouncementId = "/incidentes";
+                    selectionArg = "I";
+                    category_date = "/incidentes";
                     notify = NotificationsPresenter.getNotification(context, "4")
                             .getActivated().equals("S");
                 } else {
-                    validRows = "C";
-                    lastAnnouncementId = "/comunicados";
+                    selectionArg = "C";
+                    category_date = "/comunicados";
                     notify = NotificationsPresenter.getNotification(context, "5")
                             .getActivated().equals("S");
                 }
@@ -702,60 +677,69 @@ public class WebService extends JobIntentService {
                 AnnouncementsSQLiteController dbController =
                         new AnnouncementsSQLiteController(context, 1);
 
-                ArrayList<Announcement> lastAnnouncements = dbController.select("1",
-                        AnnouncementsSQLiteController.columns[1] + " = ?",
-                        new String[]{validRows});
-                if (lastAnnouncements.size() > 0)
-                    lastAnnouncementId += "/"+lastAnnouncements.get(0).get_ID();
-                else notify = false;
+                ArrayList<Integer> _IDs = new ArrayList<>();
+                ArrayList<Announcement> announcements = dbController.select(null,
+                        AnnouncementsSQLiteController.columns[2]+" = ?",
+                        new String[]{selectionArg});
+                for (Announcement announcement : announcements) _IDs.add(announcement.get_ID());
+                if (_IDs.isEmpty()) notify = false;
+                else category_date += '/'+announcements.get(0).getDate();
+                Utilities.State state = new Utilities.State(Utilities.FAILURE_STATE);
+                announcements = AnnouncementsServiceController
+                        .getAnnouncements(context, category_date, state, _IDs);
 
-                ArrayList<Integer> IDs = new ArrayList<>();
-                ArrayList<Announcement> olds =
-                        dbController.select(null, null, null);
-                for (Announcement announcement : olds) IDs.add(announcement.get_ID());
-                ArrayList<Announcement> announcements = AnnouncementsServiceController
-                        .getAnnouncements(context, lastAnnouncementId);
-
-                NotificationManager manager =
-                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                NotificationManager manager = notify ?
+                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE) : null;
 
                 for (Announcement announcement : announcements) {
-                    boolean insert = true;
-                    int index = IDs.indexOf(announcement.get_ID());
-                    if (index != -1) {
-                        if (olds.get(index).getDate().compareTo(announcement.getDate()) < 0) {
-                            dbController.deleteLink(announcement.get_ID());
-                            dbController.delete(announcement.get_ID());
-                        } else {
-                            insert = false;
-                        }
-                        IDs.remove(index);
-                    }
-                    if (insert) {
+                    int index = _IDs.indexOf(announcement.get_ID());
+                    if (index == -1) {
                         dbController.insert(announcement.get_ID(), announcement.getUser_ID(),
                                 announcement.getType(), announcement.getName(),
                                 announcement.getDate(), announcement.getDescription(),
                                 announcement.getRead());
-                        ArrayList<AnnouncementLink> links =
-                                AnnouncementsServiceController.getAnnouncementLinks(context,
-                                        "/"+announcement.get_ID());
-                        for (AnnouncementLink link : links) {
-                            String imagePath = Utilities.saveImage(link.getLink(),
-                                    "/announcements", context);
-                            if (imagePath != null) link.setLink(imagePath);
+                    } else {
+                        dbController.update(announcement.get_ID(), announcement.getUser_ID(),
+                                announcement.getType(), announcement.getName(),
+                                announcement.getDate(), announcement.getDescription(),
+                                announcement.getRead(), announcement.get_ID());
+                        _IDs.remove(index);
+                    }
+
+                    ArrayList<Integer> links_IDs = new ArrayList<>();
+                    for (AnnouncementLink link : dbController.selectLink(
+                            AnnouncementsSQLiteController.linkColumns[1]+" = ?",
+                            new String[]{""+announcement.get_ID()})) links_IDs.add(link.get_ID());
+                    ArrayList<AnnouncementLink> links =
+                            AnnouncementsServiceController.getAnnouncementLinks(context,
+                                    "/"+announcement.get_ID());
+
+                    for (AnnouncementLink link : links) {
+                        String imagePath = Utilities.saveImage(link.getLink(),
+                                "/announcements", context);
+                        if (imagePath != null) link.setLink(imagePath);
+
+                        int linkIndex = links_IDs.indexOf(link.get_ID());
+                        if (linkIndex == -1) {
                             dbController.insertLink(link.get_ID(), link.getAnnouncement_ID(),
                                     link.getType(), link.getLink());
+                        } else {
+                            dbController.updateLink(link.get_ID(), link.getAnnouncement_ID(),
+                                    link.getType(), link.getLink(), link.get_ID());
+                            links_IDs.remove(linkIndex);
                         }
-
-                        inserted++;
-                        if (manager != null && notify && inserted <= 5) manager.notify(
-                                announcement.getName(), mNotificationId,
-                                buildNotification(type, announcement));
                     }
+
+                    // Se eliminan los items que hay en la aplicacion pero no en el servidor
+                    if (state.get() == Utilities.SUCCESS_STATE)
+                        dbController.deleteLink(links_IDs.toArray());
+
+                    if (++inserted <= 5 && manager != null) manager.notify(announcement.getName(),
+                            mNotificationId, buildNotification(type, announcement));
                 }
 
                 // Se eliminan los items que hay en la aplicacion pero no en el servidor
-                if (!announcements.isEmpty()) dbController.delete(IDs.toArray());
+                if (state.get() == Utilities.SUCCESS_STATE) dbController.delete(_IDs.toArray());
                 dbController.destroy();
                 break;
             }
@@ -765,9 +749,11 @@ public class WebService extends JobIntentService {
 
         sendBroadcast(new Intent(ACTION_INCIDENTS).putExtra("INSERTED", inserted)
                 .putExtra("RESPONSE", response));
+
     }
 
     private void loadObjects(String method, String object) {
+
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled) return;
         String response = null;
@@ -781,48 +767,44 @@ public class WebService extends JobIntentService {
                 response = ObjectsServiceController.modifyObject(context, object);
                 // Despues de modificar se actualiza, por eso aqui no hay break
             case METHOD_GET: {
-                boolean notify = NotificationsPresenter.getNotification(context, "3")
-                        .getActivated().equals("S");
                 ObjectsSQLiteController dbController =
                         new ObjectsSQLiteController(context, 1);
 
-                ArrayList<Integer> IDs = new ArrayList<>();
-                for (LostObject lostObject :
-                        dbController.select(null, null, null))
-                    IDs.add(lostObject.get_ID());
-                String lastObjectId = IDs.size() > 0 ? "/"+IDs.get(0) : null;
-                ArrayList<LostObject> lostObjects =
-                        ObjectsServiceController.getObjects(context, lastObjectId);
+                ArrayList<Integer> _IDs = new ArrayList<>();
+                ArrayList<LostObject> objects = dbController.select(null, null,
+                        null);
+                for (LostObject lostObject : objects) _IDs.add(lostObject.get_ID());
+                Utilities.State state = new Utilities.State(Utilities.FAILURE_STATE);
+                objects = ObjectsServiceController.getObjects(context,
+                        _IDs.isEmpty() ? "" : '/'+objects.get(0).getDate(), state, _IDs);
 
-                NotificationManager manager =
-                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                NotificationManager manager = NotificationsPresenter.getNotification(context,
+                        "3").getActivated().equals("S") && !_IDs.isEmpty() ?
+                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE) : null;
 
-                for (LostObject lostObject : lostObjects) {
-                    lostObject.setImage(Utilities.saveImage(lostObject.getImage(),
-                            "/objects", context));
+                for (LostObject obj : objects) {
+                    obj.setImage(Utilities.saveImage(obj.getImage(), "/objects", context));
 
-                    int index = IDs.indexOf(lostObject.get_ID());
+                    int index = _IDs.indexOf(obj.get_ID());
                     if (index == -1) {
-                        dbController.insert(lostObject.get_ID(), lostObject.getUserLost_ID(),
-                                lostObject.getName(), lostObject.getPlace(), lostObject.getDate(),
-                                lostObject.getDescription(), lostObject.getImage(),
-                                lostObject.getUserFound_ID(), lostObject.getReaded());
+                        dbController.insert(obj.get_ID(), obj.getUserLost_ID(), obj.getName(),
+                                obj.getPlace(), obj.getDateLost(), obj.getDate(),
+                                obj.getDescription(), obj.getImage(), obj.getUserFound_ID(),
+                                obj.getReaded());
                     } else {
-                        dbController.update(lostObject.get_ID(), lostObject.getUserLost_ID(),
-                                lostObject.getName(), lostObject.getPlace(), lostObject.getDate(),
-                                lostObject.getDescription(), lostObject.getImage(),
-                                lostObject.getUserFound_ID(), lostObject.get_ID());
-                        IDs.remove(index);
+                        dbController.update(obj.get_ID(), obj.getUserLost_ID(), obj.getName(),
+                                obj.getPlace(), obj.getDateLost(), obj.getDate(),
+                                obj.getDescription(), obj.getImage(), obj.getUserFound_ID(),
+                                obj.get_ID());
+                        _IDs.remove(index);
                     }
 
-                    inserted++;
-                    if (manager != null && notify && lastObjectId != null && inserted <= 5)
-                        manager.notify(lostObject.getName(), mNotificationId,
-                                buildNotification(ACTION_OBJECTS, lostObject));
+                    if (++inserted <= 5 && manager != null) manager.notify(obj.getName(),
+                            mNotificationId, buildNotification(ACTION_OBJECTS, obj));
                 }
 
                 // Se eliminan los items que hay en la aplicacion pero no en el servidor
-                if (!lostObjects.isEmpty()) dbController.delete(IDs.toArray());
+                if (state.get() == Utilities.SUCCESS_STATE) dbController.delete(_IDs.toArray());
                 dbController.destroy();
                 break;
             }
@@ -832,9 +814,11 @@ public class WebService extends JobIntentService {
 
         sendBroadcast(new Intent(ACTION_OBJECTS).putExtra("INSERTED", inserted)
                 .putExtra("RESPONSE", response));
+
     }
 
     private void loadDishes(String method, String object) {
+
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled) return;
         String response = null;
@@ -882,9 +866,11 @@ public class WebService extends JobIntentService {
 
         sendBroadcast(new Intent(ACTION_DISHES).putExtra("INSERTED", inserted)
                 .putExtra("RESPONSE", response));
+
     }
 
     private void loadQuotas(String method, String object) {
+
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled) return;
         String response = null;
@@ -927,9 +913,11 @@ public class WebService extends JobIntentService {
         }
 
         sendBroadcast(new Intent(ACTION_QUOTAS).putExtra("RESPONSE", response));
+
     }
 
     private void loadUsers(String method, String object) {
+
         User user = null;
 
         if (Utilities.haveNetworkConnection(getApplicationContext())) {
@@ -973,9 +961,11 @@ public class WebService extends JobIntentService {
         }
 
         sendBroadcast(new Intent(ACTION_USERS).putExtra("USER", user));
+
     }
 
     private void loadEmails(String method, String object) {
+
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled) return;
         Intent intent = null;
@@ -1047,6 +1037,7 @@ public class WebService extends JobIntentService {
 
         sendBroadcast(new Intent(ACTION_EMAILS).putExtra("INSERTED", inserted)
                 .putExtra("INTENT", intent));
+
     }
 
     @Override

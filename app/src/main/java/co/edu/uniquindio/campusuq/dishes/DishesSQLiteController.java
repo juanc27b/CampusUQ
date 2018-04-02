@@ -32,6 +32,7 @@ public class DishesSQLiteController {
 
     public ArrayList<Dish> select(String limit, String selection, String[] selectionArgs) {
         ArrayList<Dish> dishes = new ArrayList<>();
+
         Cursor c = db.query(tablename, columns, selection, selectionArgs, null,
                 null, columns[0]+" DESC", limit);
         if (c.moveToFirst()) do {
@@ -39,6 +40,7 @@ public class DishesSQLiteController {
                     c.getInt(3), c.isNull(4) ? null : c.getString(4)));
         } while (c.moveToNext());
         c.close();
+
         return dishes;
     }
 

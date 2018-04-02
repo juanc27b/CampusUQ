@@ -21,19 +21,19 @@ class CalendarPresenter {
         EventsSQLiteController dbController = new EventsSQLiteController(context, 1);
 
         ArrayList<EventCategory> categories = dbController.selectCategory(
-                EventsSQLiteController.CAMPOS_CATEGORIA[2] + " = ?", new String[]{categoryName});
+                EventsSQLiteController.categoryColumns[2] + " = ?", new String[]{categoryName});
         String categoryID = categories.get(0).get_ID();
 
         ArrayList<EventRelation> events = dbController.selectRelation(
-                new String[]{EventsSQLiteController.CAMPOS_RELACION[1]},
-                EventsSQLiteController.CAMPOS_RELACION[0] + " = ?", new String[]{categoryID});
+                new String[]{EventsSQLiteController.relationColumns[1]},
+                EventsSQLiteController.relationColumns[0] + " = ?", new String[]{categoryID});
 
         for (EventRelation event : events) {
 
             ArrayList<EventRelation> periods = dbController.selectRelation(
-                    new String[]{EventsSQLiteController.CAMPOS_RELACION[1], EventsSQLiteController.CAMPOS_RELACION[2]},
-                    EventsSQLiteController.CAMPOS_RELACION[0] + " = ? AND " +
-                            EventsSQLiteController.CAMPOS_RELACION[1] + " = ?", new String[]{categoryID, event.getEvent_ID()});
+                    new String[]{EventsSQLiteController.relationColumns[1], EventsSQLiteController.relationColumns[2]},
+                    EventsSQLiteController.relationColumns[0] + " = ? AND " +
+                            EventsSQLiteController.relationColumns[1] + " = ?", new String[]{categoryID, event.getEvent_ID()});
 
             String periodIDs = "";
             for (EventRelation period : periods) {
@@ -42,7 +42,7 @@ class CalendarPresenter {
             periodIDs = periodIDs.substring(0, periodIDs.length() - 1);
 
             ArrayList<EventPeriod> calendarPeriods = dbController.selectPeriod(
-                    EventsSQLiteController.CAMPOS_PERIODO[0] + " IN ("+periodIDs+")", null);
+                    EventsSQLiteController.periodColumns[0] + " IN ("+periodIDs+")", null);
 
             Date currentDate = Calendar.getInstance().getTime();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
@@ -59,9 +59,9 @@ class CalendarPresenter {
             i = i == calendarPeriods.size() ? i-1 : i;
 
             ArrayList<EventRelation> dates = dbController.selectRelation(
-                    EventsSQLiteController.CAMPOS_RELACION, EventsSQLiteController.CAMPOS_RELACION[0] + " = ? AND " +
-                            EventsSQLiteController.CAMPOS_RELACION[1] + " = ? AND " +
-                            EventsSQLiteController.CAMPOS_RELACION[2] + " = ?",
+                    EventsSQLiteController.relationColumns, EventsSQLiteController.relationColumns[0] + " = ? AND " +
+                            EventsSQLiteController.relationColumns[1] + " = ? AND " +
+                            EventsSQLiteController.relationColumns[2] + " = ?",
                     new String[]{categoryID, event.getEvent_ID(), calendarPeriods.get(i).get_ID()});
 
             String dateIDs = "";
@@ -71,7 +71,7 @@ class CalendarPresenter {
             dateIDs = dateIDs.substring(0, dateIDs.length() - 1);
 
             ArrayList<EventDate> calendarDates = dbController.selectDate(
-                    EventsSQLiteController.CAMPOS_FECHA[0] + " IN ("+dateIDs+")", null);
+                    EventsSQLiteController.dateColumns[0] + " IN ("+dateIDs+")", null);
 
             String date = "";
             for (EventDate calendarDate : calendarDates) {
@@ -80,7 +80,7 @@ class CalendarPresenter {
             date = date.substring(0, date.length() - 1);
 
             ArrayList<Event> calendarEvents = dbController.select(
-                    EventsSQLiteController.CAMPOS_TABLA[0] + " = ?", new String[]{event.getEvent_ID()});
+                    EventsSQLiteController.columns[0] + " = ?", new String[]{event.getEvent_ID()});
 
             CalendarItem item = new CalendarItem(calendarEvents.get(0).getName(), date);
             items.add(item);
@@ -98,16 +98,16 @@ class CalendarPresenter {
         EventsSQLiteController dbController = new EventsSQLiteController(context, 1);
 
         ArrayList<EventCategory> categories = dbController.selectCategory(
-                EventsSQLiteController.CAMPOS_CATEGORIA[2] + " = ?", new String[]{category});
+                EventsSQLiteController.categoryColumns[2] + " = ?", new String[]{category});
         String categoryID = categories.get(0).get_ID();
 
         ArrayList<Event> events = dbController.select(
-                EventsSQLiteController.CAMPOS_TABLA[1] + " = ?", new String[]{event});
+                EventsSQLiteController.columns[1] + " = ?", new String[]{event});
         String eventID = events.get(0).get_ID();
 
         ArrayList<EventRelation> relationPeriods = dbController.selectRelation(
-                EventsSQLiteController.CAMPOS_RELACION, EventsSQLiteController.CAMPOS_RELACION[0] + " = ? AND " +
-                        EventsSQLiteController.CAMPOS_RELACION[1] + " = ?", new String[]{categoryID, eventID});
+                EventsSQLiteController.relationColumns, EventsSQLiteController.relationColumns[0] + " = ? AND " +
+                        EventsSQLiteController.relationColumns[1] + " = ?", new String[]{categoryID, eventID});
 
         String periodIDs = "";
         for (EventRelation relationPeriod : relationPeriods) {
@@ -116,14 +116,14 @@ class CalendarPresenter {
         periodIDs = periodIDs.substring(0, periodIDs.length() - 1);
 
         ArrayList<EventPeriod> periods = dbController.selectPeriod(
-                EventsSQLiteController.CAMPOS_PERIODO[0] + " IN ("+periodIDs+")", null);
+                EventsSQLiteController.periodColumns[0] + " IN ("+periodIDs+")", null);
 
         for (EventPeriod period : periods) {
 
             ArrayList<EventRelation> relationDates = dbController.selectRelation(
-                    EventsSQLiteController.CAMPOS_RELACION, EventsSQLiteController.CAMPOS_RELACION[0] + " = ? AND " +
-                            EventsSQLiteController.CAMPOS_RELACION[1] + " = ? AND " +
-                            EventsSQLiteController.CAMPOS_RELACION[2] + " = ?",
+                    EventsSQLiteController.relationColumns, EventsSQLiteController.relationColumns[0] + " = ? AND " +
+                            EventsSQLiteController.relationColumns[1] + " = ? AND " +
+                            EventsSQLiteController.relationColumns[2] + " = ?",
                     new String[]{categoryID, eventID, period.get_ID()});
 
             String dateIDs = "";
@@ -133,7 +133,7 @@ class CalendarPresenter {
             dateIDs = dateIDs.substring(0, dateIDs.length() - 1);
 
             ArrayList<EventDate> dates = dbController.selectDate(
-                    EventsSQLiteController.CAMPOS_FECHA[0] + " IN ("+dateIDs+")", null);
+                    EventsSQLiteController.dateColumns[0] + " IN ("+dateIDs+")", null);
 
             String periodText = context.getString(R.string.period)+": "+period.getName();
 

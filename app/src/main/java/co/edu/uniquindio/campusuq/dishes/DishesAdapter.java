@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
@@ -50,7 +51,7 @@ public class DishesAdapter extends RecyclerView.Adapter<DishesAdapter.DishViewHo
 
             name.setText(dish.getName());
             description.setText(dish.getDescription());
-            price.setText("$ "+dish.getPrice());
+            price.setText(NumberFormat.getCurrencyInstance().format(dish.getPrice()));
         }
 
         @Override
