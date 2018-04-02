@@ -205,7 +205,7 @@
     <string name="communique_detail_name_hint">Write the name of the release</string>
     <string name="communique_detail_description">Description of the Statement</string>
     <string name="communique_detail_description_hint">Write a brief description about the information, the content class, the target audience and other details</string>
-    <string name="communique_detail_image">Images or Pictures of the Communiqué (Optional)</string>
+    <string name="communique_detail_image">Images or Pictures of the Communique (Optional)</string>
 
     <string name="announcement_detail_sample_description_count">110</string>
     <string name="announcement_detail_description_count_limit">/500</string>
@@ -310,8 +310,8 @@
     <string name="ic_twitter_description">twitter icon</string>
     <string name="ic_whatsapp_description">whatsapp icon</string>
 
-    <string name="social_ok">Correct publication</string>
-    <string name="socia_error">Error in the publication</string>
+    <string name="social_ok">Successful operation</string>
+    <string name="socia_error">Error in the operation</string>
     <string name="get_image_error">Error getting the image</string>
 
     <string name="dish_no_found">The plate has not been found: </string>

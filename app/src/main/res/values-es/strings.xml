@@ -310,8 +310,8 @@
     <string name="ic_twitter_description">icono de twitter</string>
     <string name="ic_whatsapp_description">icono de whatsapp</string>
 
-    <string name="social_ok">Publicación correcta</string>
-    <string name="socia_error">Error en la publicación</string>
+    <string name="social_ok">Operación exitosa</string>
+    <string name="socia_error">Error en la operación</string>
     <string name="get_image_error">Error al obtener la imagen</string>
 
     <string name="dish_no_found">No se ha encontrado el plato: </string>
