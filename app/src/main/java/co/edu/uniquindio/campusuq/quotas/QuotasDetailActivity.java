@@ -8,6 +8,8 @@ import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,6 +23,7 @@ public class QuotasDetailActivity extends MainActivity implements View.OnClickLi
 
     private Intent intent;
     private String _ID;
+    private String type;
     private EditText name;
     private EditText quota;
 
@@ -59,6 +62,7 @@ public class QuotasDetailActivity extends MainActivity implements View.OnClickLi
 
     private void setQuota() {
         _ID = intent.getStringExtra(QuotasSQLiteController.columns[0]);
+        type = intent.getStringExtra(QuotasSQLiteController.columns[1]);
         name.setText(intent.getStringExtra(QuotasSQLiteController.columns[2]));
         quota.setText(intent.getStringExtra(QuotasSQLiteController.columns[3]));
     }
@@ -69,6 +73,19 @@ public class QuotasDetailActivity extends MainActivity implements View.OnClickLi
             case R.id.quota_detail_ok:
                 if (Utilities.haveNetworkConnection(QuotasDetailActivity.this)) {
                     if (name.getText().length() != 0 && quota.getText().length() != 0) {
+                        mTracker.send(new HitBuilders.EventBuilder()
+                                .setCategory(getString(R.string.analytics_quotas_category))
+                                .setAction(getString(_ID == null ?
+                                        R.string.analytics_create_action : R.string.analytics_modify_action))
+                                .setLabel(getString(
+                                        type.equals("S") ? R.string.analytics_computer_rooms_label :
+                                        type.equals("P") ? R.string.analytics_parking_lots_label :
+                                        type.equals("L") ? R.string.analytics_laboratories_label :
+                                        type.equals("E") ? R.string.analytics_study_areas_label :
+                                        type.equals("C") ? R.string.analytics_cultural_and_sport_label :
+                                        R.string.analytics_auditoriums_label))
+                                .setValue(1)
+                                .build());
                         JSONObject json = new JSONObject();
                         try {
                             if (_ID != null) json.put("UPDATE_ID", _ID);

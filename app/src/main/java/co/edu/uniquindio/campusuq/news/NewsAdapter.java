@@ -23,9 +23,15 @@ import co.edu.uniquindio.campusuq.R;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewViewHolder> {
 
+    static final String NOTICE    = "notice";
+    static final String MORE      = "more";
+    static final String FACEBOOK  = "facebook";
+    static final String TWITTER   = "twitter";
+    static final String WHATSAPP  = "whatsapp";
+    static final String UNDEFINED = "undefined";
+
     private ArrayList<New> news;
     private OnClickNewListener listener;
-
 
     NewsAdapter(ArrayList<New> news, NewsActivity newsActivity) {
         this.news = news;
@@ -82,22 +88,22 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewViewHolder>
             String action;
             switch (view.getId()) {
                 case R.id.new_layout:
-                    action = "notice";
+                    action = NOTICE;
                     break;
                 case R.id.new_more_button:
-                    action = "more";
+                    action = MORE;
                     break;
                 case R.id.new_facebook_button:
-                    action = "facebook";
+                    action = FACEBOOK;
                     break;
                 case R.id.new_twitter_button:
-                    action = "twitter";
+                    action = TWITTER;
                     break;
                 case R.id.new_whatsapp_button:
-                    action = "whatsapp";
+                    action = WHATSAPP;
                     break;
                 default:
-                    action = "undefined";
+                    action = UNDEFINED;
                     break;
             }
             listener.onNewClick(getAdapterPosition(), action);

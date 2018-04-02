@@ -1,0 +1,51 @@
+{
+  "project_info": {
+    "project_number": "472940728781",
+    "project_id": "campus-uq"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:472940728781:android:d73d04ec373b3ca9",
+        "android_client_info": {
+          "package_name": "co.edu.uniquindio.campusuq"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "472940728781-qo9d5ma8eec7f0d4o59g1drhh5svtno1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "co.edu.uniquindio.campusuq",
+            "certificate_hash": "c53cec018ae609e499e4922084f02eb6cc4bd5dd"
+          }
+        },
+        {
+          "client_id": "472940728781-a9dem0cesknm3fa86bg18097jms3kvb9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCK3p4DspWkNl313dsTT6ZcwXtlpEORXZA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-116643524-1"
+          }
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

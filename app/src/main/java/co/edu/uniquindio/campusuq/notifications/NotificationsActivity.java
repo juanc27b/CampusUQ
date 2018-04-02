@@ -7,6 +7,8 @@ import android.view.ViewStub;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import com.google.android.gms.analytics.HitBuilders;
+
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
@@ -112,6 +114,12 @@ public class NotificationsActivity extends MainActivity implements CompoundButto
         }
         String activated = isChecked ? "S" : "N";
         NotificationsPresenter.updateNotification(NotificationsActivity.this, _ID, activated);
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory(getString(R.string.analytics_notifications_category))
+                .setAction(getString(R.string.analytics_modify_action))
+                .setLabel(getString(R.string.analytics_adjust_notifications_label))
+                .setValue(1)
+                .build());
     }
 
 }

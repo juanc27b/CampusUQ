@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="co.edu.uniquindio.campusuq.activity.MapsActivity">
+    tools:context="co.edu.uniquindio.campusuq.maps.MapsActivity">
 
     <Button
         android:id="@+id/change_button"

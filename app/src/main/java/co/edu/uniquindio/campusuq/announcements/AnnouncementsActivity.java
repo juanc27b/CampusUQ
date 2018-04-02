@@ -25,18 +25,28 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
+import com.google.android.gms.analytics.HitBuilders;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthToken;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterAuthClient;
+import com.twitter.sdk.android.tweetcomposer.ComposerActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import co.edu.uniquindio.campusuq.R;
-import co.edu.uniquindio.campusuq.users.LoginActivity;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
+import co.edu.uniquindio.campusuq.users.LoginActivity;
+import co.edu.uniquindio.campusuq.users.User;
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
-import co.edu.uniquindio.campusuq.users.User;
 
 public class AnnouncementsActivity extends MainActivity implements
         AnnouncementsAdapter.OnClickAnnouncementListener, View.OnClickListener {
@@ -46,14 +56,21 @@ public class AnnouncementsActivity extends MainActivity implements
     private String action;
     private Button report;
     private FloatingActionButton fab;
-    private CallbackManager callbackManager;
-    public boolean loggedIn;
-    public ShareDialog shareDialog;
     private ArrayList<Announcement> announcements = new ArrayList<>();
     private boolean newActivity = true;
     private AnnouncementsAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private boolean oldAnnouncements = true;
+
+    private String socialNetwork = AnnouncementsAdapter.UNDEFINED;
+
+    private CallbackManager facebookCallbackManager;
+    public boolean facebookLoggedIn;
+    public ShareDialog shareDialog;
+
+    public TwitterAuthClient mTwitterAuthClient;
+    public Callback<TwitterSession> twitterCallback;
+    public boolean twitterLoggedIn;
 
     private IntentFilter announcementsFilter = new IntentFilter(WebService.ACTION_INCIDENTS);
     private BroadcastReceiver announcementsReceiver = new BroadcastReceiver() {
@@ -87,21 +104,43 @@ public class AnnouncementsActivity extends MainActivity implements
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
-
-        callbackManager = CallbackManager.Factory.create();
-        LoginManager.getInstance().registerCallback(callbackManager,
+        facebookCallbackManager = CallbackManager.Factory.create();
+        LoginManager.getInstance().registerCallback(facebookCallbackManager,
                 new FacebookCallback<LoginResult>() {
             @Override
-            public void onSuccess(LoginResult loginResult) {}
+            public void onSuccess(LoginResult loginResult) {
+                facebookLoggedIn = true;
+
+            }
 
             @Override
             public void onCancel() {}
 
             @Override
-            public void onError(FacebookException exception) {}
+            public void onError(FacebookException exception) {
+                exception.printStackTrace();
+            }
         });
-        loggedIn = AccessToken.getCurrentAccessToken() == null;
+        facebookLoggedIn = AccessToken.getCurrentAccessToken() == null;
         shareDialog = new ShareDialog(this);
+
+        Twitter.initialize(this);
+        mTwitterAuthClient = new TwitterAuthClient();
+        twitterCallback = new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                // Do something with result, which provides a TwitterSession for making API calls
+                twitterLoggedIn = true;
+            }
+            @Override
+            public void failure(TwitterException exception) {
+                // Do something on failure
+                exception.printStackTrace();
+            }
+        };
+        TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
+        TwitterAuthToken authToken = session != null ? session.getAuthToken() : null;
+        twitterLoggedIn = authToken != null;
 
         loadAnnouncements(0);
     }
@@ -231,24 +270,75 @@ public class AnnouncementsActivity extends MainActivity implements
                 break;
             }
             case AnnouncementsAdapter.FACEBOOK:
-                if (!loggedIn) {
-                    LoginManager.getInstance().logInWithReadPermissions(this,
-                            Arrays.asList("public_profile", "user_friends"));
-                } else if (ShareDialog.canShow(ShareLinkContent.class)) {
-                    ShareLinkContent content = new ShareLinkContent.Builder()
-                            .setContentTitle(announcements.get(index).getName())
-                            .setContentDescription(announcements.get(index).getDescription())
-                            .build();
-                    shareDialog.show(content);
+                if (Utilities.haveNetworkConnection(AnnouncementsActivity.this)) {
+                    mTracker.send(new HitBuilders.EventBuilder()
+                            .setCategory(getString(R.string.analytics_announcements_category))
+                            .setAction(getString(R.string.analytics_share_action))
+                            .setLabel(getString(WebService.ACTION_INCIDENTS.equals(this.action) ?
+                                    R.string.analytics_security_system_label :
+                                    R.string.analytics_billboard_information_label))
+                            .setValue(1)
+                            .build());
+                    socialNetwork = AnnouncementsAdapter.FACEBOOK;
+                    if (!facebookLoggedIn) {
+                        LoginManager.getInstance().logInWithReadPermissions(this,
+                                Arrays.asList("public_profile", "user_friends"));
+                    } else if (ShareDialog.canShow(ShareLinkContent.class)) {
+                        ShareLinkContent content = new ShareLinkContent.Builder()
+                                .setContentTitle(announcements.get(index).getName())
+                                .setContentDescription(announcements.get(index).getDescription())
+                                .build();
+                        shareDialog.show(content);
+                    }
+                } else {
+                    Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case AnnouncementsAdapter.TWITTER:
-                Toast.makeText(this, "Twitter clicked: "+index, Toast.LENGTH_SHORT)
-                        .show();
+                if (Utilities.haveNetworkConnection(AnnouncementsActivity.this)) {
+                    mTracker.send(new HitBuilders.EventBuilder()
+                            .setCategory(getString(R.string.analytics_announcements_category))
+                            .setAction(getString(R.string.analytics_share_action))
+                            .setLabel(getString(WebService.ACTION_INCIDENTS.equals(this.action) ?
+                                    R.string.analytics_security_system_label :
+                                    R.string.analytics_billboard_information_label))
+                            .setValue(1)
+                            .build());
+                    if (!twitterLoggedIn) {
+                        mTwitterAuthClient.authorize(this, twitterCallback);
+                    } else {
+                        final TwitterSession session = TwitterCore.getInstance().getSessionManager()
+                                .getActiveSession();
+                        final Intent twitterIntent = new ComposerActivity.Builder(AnnouncementsActivity.this)
+                                .session(session)
+                                .text(announcements.get(index).getName())
+                                .hashtags("#Uniquindio")
+                                .createIntent();
+                        startActivity(twitterIntent);
+                    }
+                } else {
+                    Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                }
                 break;
             case AnnouncementsAdapter.WHATSAPP:
-                Toast.makeText(this, "Whatsapp clicked: "+index, Toast.LENGTH_SHORT)
-                        .show();
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory(getString(R.string.analytics_announcements_category))
+                        .setAction(getString(R.string.analytics_share_action))
+                        .setLabel(getString(WebService.ACTION_INCIDENTS.equals(this.action) ?
+                                R.string.analytics_security_system_label :
+                                R.string.analytics_billboard_information_label))
+                        .setValue(1)
+                        .build());
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, announcements.get(index).getName());
+                sendIntent.setType("text/plain");
+                sendIntent.setPackage("com.whatsapp");
+                try {
+                    startActivity(sendIntent);
+                } catch (android.content.ActivityNotFoundException e) {
+                    Toast.makeText(this, "No se ha instalado Whatsapp", Toast.LENGTH_SHORT).show();
+                }
                 break;
             default:
                 Toast.makeText(this, "Undefined: "+index, Toast.LENGTH_SHORT).show();
@@ -294,12 +384,22 @@ public class AnnouncementsActivity extends MainActivity implements
                 if (resultCode  == RESULT_OK && !progressDialog.isShowing()) progressDialog.show();
                 break;
             default:
-                callbackManager.onActivityResult(requestCode, resultCode, data);
-                if (resultCode == RESULT_OK){
-                    Toast.makeText(this, "Publicación correcta", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Error en la publicación", Toast.LENGTH_SHORT).show();
+                switch (socialNetwork) {
+                    case AnnouncementsAdapter.FACEBOOK:
+                        facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
+                        break;
+                    case AnnouncementsAdapter.TWITTER:
+                        mTwitterAuthClient.onActivityResult(requestCode, resultCode, data);
+                        break;
+                    default:
+                        break;
                 }
+                if (resultCode == RESULT_OK){
+                    Toast.makeText(this, "Operación correcta", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Error en la operación", Toast.LENGTH_SHORT).show();
+                }
+                socialNetwork = AnnouncementsAdapter.UNDEFINED;
                 break;
         }
     }

@@ -19,7 +19,7 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        background = (ImageView) findViewById(R.id.front_image);
+        background = findViewById(R.id.front_image);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             background.setImageResource(R.drawable.portrait_front);
         } else {

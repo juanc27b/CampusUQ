@@ -373,4 +373,61 @@
     <string name="ic_twitter_description">icono de twitter</string>
     <string name="ic_whatsapp_description">icono de whatsapp</string>
 
+    <string name="analytics_news_category">Noticias</string>
+    <string name="analytics_informations_category">Informaciones</string>
+    <string name="analytics_contatcs_category">Contactos</string>
+    <string name="analytics_programs_category">Programas</string>
+    <string name="analytics_events_category">Eventos</string>
+    <string name="analytics_web_category">Web</string>
+    <string name="analytics_maps_category">Mapas</string>
+    <string name="analytics_radio_category">Radio</string>
+    <string name="analytics_objects_category">Objetos</string>
+    <string name="analytics_announcements_category">Anuncios</string>
+    <string name="analytics_dishes_category">Platos</string>
+    <string name="analytics_quotas_category">Cupos</string>
+    <string name="analytics_emails_category">Correos</string>
+    <string name="analytics_users_category">Usuarios</string>
+    <string name="analytics_notifications_category">Notificaciones</string>
+
+    <string name="analytics_events_label">Eventos</string>
+    <string name="analytics_news_label">Noticias</string>
+    <string name="analytics_mission_vision_label">Misión y visión</string>
+    <string name="analytics_quality_policy_label">Política de calidad</string>
+    <string name="analytics_axes_pillars_objectives_label">Ejes estratégicos, pilares y objetivos</string>
+    <string name="analytics_organization_chart_label">Organigrama</string>
+    <string name="analytics_normativity_label">Normatividad</string>
+    <string name="analytics_symbols_label">Símbolos</string>
+    <string name="analytics_directory_label">Directorio telefónico</string>
+    <string name="analytics_academic_offer_label">Oferta académica</string>
+    <string name="analytics_academic_calendar_label">Calendario académico</string>
+    <string name="analytics_employment_exchange_label">Bolsa de empleo</string>
+    <string name="analytics_institutional_welfare">Bienestar institucional</string>
+    <string name="analytics_university_map_label">Mapa de la universidad</string>
+    <string name="analytics_digital_repository_label">Repositorio digital</string>
+    <string name="analytics_public_catalog_label">Catálogo público</string>
+    <string name="analytics_databases_label">Bases de datos</string>
+    <string name="analytics_radio_label">Emisora institucional</string>
+    <string name="analytics_pqrsd_system_label">Sistema PQRSD</string>
+    <string name="analytics_lost_objects_label">Objetos perdidos</string>
+    <string name="analytics_security_system_label">Sistema de seguridad</string>
+    <string name="analytics_restaurant_label">Menú del restaurante</string>
+    <string name="analytics_billboard_information_label">Información de cartelera</string>
+    <string name="analytics_computer_rooms_label">Salas de cómputo</string>
+    <string name="analytics_parking_lots_label">Parqueaderos</string>
+    <string name="analytics_laboratories_label">Laboratorios</string>
+    <string name="analytics_study_areas_label">Zonas de estudio</string>
+    <string name="analytics_cultural_and_sport_label">Culturales y deportivos</string>
+    <string name="analytics_auditoriums_label">Auditorios</string>
+    <string name="analytics_institutional_mail_label">Correo institucional</string>
+    <string name="analytics_web_page_label">Página web</string>
+    <string name="analytics_ecotic_label">Ecotic</string>
+    <string name="analytics_adjust_notifications_label">Ajustar notificaciones</string>
+    <string name="analytics_login_label">Cuenta de usuario</string>
+
+    <string name="analytics_create_action">Crear</string>
+    <string name="analytics_view_action">Ver</string>
+    <string name="analytics_modify_action">Modificar</string>
+    <string name="analytics_delete_action">Eliminar</string>
+    <string name="analytics_share_action">Compartir</string>
+
 </resources>

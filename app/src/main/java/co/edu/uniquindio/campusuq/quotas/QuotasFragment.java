@@ -12,6 +12,8 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -116,6 +118,18 @@ public class QuotasFragment extends DialogFragment implements View.OnClickListen
                                     ""+q.getQuota());
                             quotasActivity.startActivityForResult(intent, 0);
                         } else if (delete.isChecked()) {
+                            quotasActivity.mTracker.send(new HitBuilders.EventBuilder()
+                                    .setCategory(getString(R.string.analytics_quotas_category))
+                                    .setAction(getString(R.string.analytics_delete_action))
+                                    .setLabel(getString(
+                                            q.getType().equals("S") ? R.string.analytics_computer_rooms_label :
+                                            q.getType().equals("P") ? R.string.analytics_parking_lots_label :
+                                            q.getType().equals("L") ? R.string.analytics_laboratories_label :
+                                            q.getType().equals("E") ? R.string.analytics_study_areas_label :
+                                            q.getType().equals("C") ? R.string.analytics_cultural_and_sport_label :
+                                            R.string.analytics_auditoriums_label))
+                                    .setValue(1)
+                                    .build());
                             JSONObject json = new JSONObject();
                             try {
                                 json.put("DELETE_ID", q.get_ID());

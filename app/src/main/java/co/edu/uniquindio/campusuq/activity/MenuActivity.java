@@ -12,7 +12,7 @@ import android.widget.LinearLayout;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.items.ItemsActivity;
-import co.edu.uniquindio.campusuq.web.StarterReceiver;
+import co.edu.uniquindio.campusuq.util.StarterReceiver;
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.web.WebService;
@@ -27,7 +27,7 @@ public class MenuActivity extends MainActivity {
             if (progressDialog.isShowing()) {
                 int progress = intent.getIntExtra("PROGRESS", 0);
                 progressDialog.setProgress(progress);
-                if (progress == 120) progressDialog.dismiss();
+                if (progress == 12) progressDialog.dismiss();
             }
         }
     };
@@ -42,11 +42,11 @@ public class MenuActivity extends MainActivity {
 
         super.setBackground(R.drawable.portrait_background, R.drawable.landscape_background);
 
-        ViewStub stub = (ViewStub) findViewById(R.id.layout_stub);
+        ViewStub stub = findViewById(R.id.layout_stub);
         stub.setLayoutResource(R.layout.content_menu);
         View inflated = stub.inflate();
 
-        LinearLayout information = (LinearLayout) inflated.findViewById(R.id.information_module_layout);
+        LinearLayout information = inflated.findViewById(R.id.information_module_layout);
         information.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,7 +55,7 @@ public class MenuActivity extends MainActivity {
                 MenuActivity.this.startActivity(intent);
             }
         });
-        LinearLayout services = (LinearLayout) inflated.findViewById(R.id.services_module_layout);
+        LinearLayout services = inflated.findViewById(R.id.services_module_layout);
         services.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,7 +64,7 @@ public class MenuActivity extends MainActivity {
                 MenuActivity.this.startActivity(intent);
             }
         });
-        LinearLayout state = (LinearLayout) inflated.findViewById(R.id.state_module_layout);
+        LinearLayout state = inflated.findViewById(R.id.state_module_layout);
         state.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,7 +73,7 @@ public class MenuActivity extends MainActivity {
                 MenuActivity.this.startActivity(intent);
             }
         });
-        LinearLayout communication = (LinearLayout) inflated.findViewById(R.id.communication_module_layout);
+        LinearLayout communication = inflated.findViewById(R.id.communication_module_layout);
         communication.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

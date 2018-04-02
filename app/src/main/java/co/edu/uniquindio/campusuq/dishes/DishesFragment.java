@@ -12,6 +12,8 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -76,6 +78,12 @@ public class DishesFragment extends DialogFragment implements View.OnClickListen
                         intent.putExtra(DishesSQLiteController.columns[4], dish.getImage());
                         dishesActivity.startActivityForResult(intent, 0);
                     } else if (delete.isChecked()) {
+                        dishesActivity.mTracker.send(new HitBuilders.EventBuilder()
+                                .setCategory(getString(R.string.analytics_dishes_category))
+                                .setAction(getString(R.string.analytics_delete_action))
+                                .setLabel(getString(R.string.analytics_restaurant_label))
+                                .setValue(1)
+                                .build());
                         JSONObject json = new JSONObject();
                         try {
                             json.put("DELETE_ID", dish.get_ID());

@@ -13,15 +13,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ViewStub;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
-import co.edu.uniquindio.campusuq.activity.MapsActivity;
 import co.edu.uniquindio.campusuq.announcements.AnnouncementsActivity;
 import co.edu.uniquindio.campusuq.dishes.DishesActivity;
 import co.edu.uniquindio.campusuq.emails.EmailsActivity;
 import co.edu.uniquindio.campusuq.events.CalendarActivity;
+import co.edu.uniquindio.campusuq.maps.MapsActivity;
 import co.edu.uniquindio.campusuq.news.NewsActivity;
 import co.edu.uniquindio.campusuq.objects.ObjectsActivity;
 import co.edu.uniquindio.campusuq.quotas.QuotasActivity;
@@ -30,9 +32,9 @@ import co.edu.uniquindio.campusuq.users.LoginActivity;
 import co.edu.uniquindio.campusuq.users.User;
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
+import co.edu.uniquindio.campusuq.web.WebService;
 import co.edu.uniquindio.campusuq.web.WebActivity;
 import co.edu.uniquindio.campusuq.web.WebContentActivity;
-import co.edu.uniquindio.campusuq.web.WebService;
 
 public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickItemListener {
 
@@ -122,127 +124,195 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
     public void onItemClick(int pos) {
         Intent intent = null;
         String title = items.get(pos).getTitle();
+        String category = null, label = null, action = getString(R.string.analytics_view_action);
+
         if (getString(R.string.events).equals(title)) {
+            category = getString(R.string.analytics_news_category);
+            label = getString(R.string.analytics_events_label);
             intent = new Intent(ItemsActivity.this, NewsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.events));
         } else if (getString(R.string.news).equals(title)) {
+            category = getString(R.string.analytics_news_category);
+            label = getString(R.string.analytics_news_label);
             intent = new Intent(ItemsActivity.this, NewsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.news));
         } else if (getString(R.string.institution).equals(title)) {
             intent = new Intent(ItemsActivity.this, ItemsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.institution));
         } else if (getString(R.string.directory).equals(title)) {
+            category = getString(R.string.analytics_contatcs_category);
+            label = getString(R.string.analytics_directory_label);
             WebService.PENDING_ACTION = WebService.ACTION_CONTACTS;
             loadContactCategories(ItemsActivity.this);
         } else if (getString(R.string.academic_offer).equals(title)) {
+            category = getString(R.string.analytics_programs_category);
+            label = getString(R.string.analytics_academic_offer_label);
             WebService.PENDING_ACTION = WebService.ACTION_PROGRAMS;
             loadPrograms(ItemsActivity.this);
         } else if (getString(R.string.academic_calendar).equals(title)) {
+            category = getString(R.string.analytics_events_category);
+            label = getString(R.string.analytics_academic_calendar_label);
             WebService.PENDING_ACTION = WebService.ACTION_CALENDAR;
             loadEventCategories(ItemsActivity.this);
         } else if (getString(R.string.employment_exchange).equals(title)) {
+            category = getString(R.string.analytics_web_category);
+            label = getString(R.string.analytics_employment_exchange_label);
             intent = new Intent(ItemsActivity.this, WebActivity.class);
             intent.putExtra("URL", getString(R.string.employment_exchange_url));
         } else if (getString(R.string.institutional_welfare).equals(title)) {
+            category = getString(R.string.analytics_informations_category);
+            label = getString(R.string.analytics_institutional_welfare);
             WebService.PENDING_ACTION = WebService.ACTION_WELFARE;
             loadInformations(getString(R.string.institutional_welfare), ItemsActivity.this);
         } else if (getString(R.string.university_map).equals(title)) {
+            category = getString(R.string.analytics_maps_category);
+            label = getString(R.string.analytics_university_map_label);
             intent = new Intent(ItemsActivity.this, MapsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.university_map));
         } else if (getString(R.string.library_services).equals(title)) {
             intent = new Intent(ItemsActivity.this, ItemsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.library_services));
         } else if (getString(R.string.radio).equals(title)) {
+            category = getString(R.string.analytics_radio_category);
+            label = getString(R.string.analytics_radio_label);
             intent = new Intent(ItemsActivity.this, RadioActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.radio));
         } else if (getString(R.string.pqrsd_system).equals(title)) {
+            category = getString(R.string.analytics_web_category);
+            label = getString(R.string.analytics_pqrsd_system_label);
             intent = new Intent(ItemsActivity.this, WebActivity.class);
             intent.putExtra("URL", getString(R.string.pqrsd_system_url));
         } else if (getString(R.string.lost_objects).equals(title)) {
+            category = getString(R.string.analytics_objects_category);
+            label = getString(R.string.analytics_lost_objects_label);
             intent = new Intent(ItemsActivity.this, ObjectsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.lost_objects));
         } else if (getString(R.string.security_system).equals(title)) {
+            category = getString(R.string.analytics_announcements_category);
+            label = getString(R.string.analytics_security_system_label);
             intent = new Intent(ItemsActivity.this, AnnouncementsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.security_system));
         } else if (getString(R.string.restaurant).equals(title)) {
+            category = getString(R.string.analytics_dishes_category);
+            label = getString(R.string.analytics_restaurant_label);
             intent = new Intent(ItemsActivity.this, DishesActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.restaurant));
         } else if (getString(R.string.billboard_information).equals(title)) {
+            category = getString(R.string.analytics_announcements_category);
+            label = getString(R.string.analytics_billboard_information_label);
             intent = new Intent(ItemsActivity.this, AnnouncementsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.billboard_information));
         } else if (getString(R.string.computer_rooms).equals(title)) {
+            category = getString(R.string.analytics_quotas_category);
+            label = getString(R.string.analytics_computer_rooms_label);
             intent = new Intent(ItemsActivity.this, QuotasActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.computer_rooms));
         } else if (getString(R.string.parking_lots).equals(title)) {
+            category = getString(R.string.analytics_quotas_category);
+            label = getString(R.string.analytics_parking_lots_label);
             intent = new Intent(ItemsActivity.this, QuotasActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.parking_lots));
         } else if (getString(R.string.laboratories).equals(title)) {
+            category = getString(R.string.analytics_quotas_category);
+            label = getString(R.string.analytics_laboratories_label);
             intent = new Intent(ItemsActivity.this, QuotasActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.laboratories));
         } else if (getString(R.string.study_areas).equals(title)) {
+            category = getString(R.string.analytics_quotas_category);
+            label = getString(R.string.analytics_study_areas_label);
             intent = new Intent(ItemsActivity.this, QuotasActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.study_areas));
         } else if (getString(R.string.cultural_and_sport).equals(title)) {
+            category = getString(R.string.analytics_quotas_category);
+            label = getString(R.string.analytics_cultural_and_sport_label);
             intent = new Intent(ItemsActivity.this, QuotasActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.cultural_and_sport));
         } else if (getString(R.string.auditoriums).equals(title)) {
+            category = getString(R.string.analytics_quotas_category);
+            label = getString(R.string.analytics_auditoriums_label);
             intent = new Intent(ItemsActivity.this, QuotasActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.auditoriums));
         } else if (getString(R.string.institutional_mail).equals(title)) {
             User user = UsersPresenter.loadUser(ItemsActivity.this);
             if (user != null) {
                 if (user.getEmail().equals("campusuq@uniquindio.edu.co")) {
+                    category = getString(R.string.analytics_users_category);
+                    label = getString(R.string.analytics_login_label);
                     intent = new Intent(ItemsActivity.this, LoginActivity.class);
                     intent.putExtra("CATEGORY", getString(R.string.log_in));
                 } else {
+                    category = getString(R.string.analytics_emails_category);
+                    label = getString(R.string.analytics_institutional_mail_label);
                     intent = new Intent(ItemsActivity.this, EmailsActivity.class);
                     intent.putExtra("CATEGORY", getString(R.string.institutional_mail));
                 }
             }
         } else if (getString(R.string.web_page).equals(title)) {
+            category = getString(R.string.analytics_web_category);
+            label = getString(R.string.analytics_web_page_label);
             intent = new Intent(ItemsActivity.this, WebActivity.class);
             intent.putExtra("URL", getString(R.string.web_page_url));
         } else if (getString(R.string.ecotic).equals(title)) {
+            category = getString(R.string.analytics_web_category);
+            label = getString(R.string.analytics_ecotic_label);
             intent = new Intent(ItemsActivity.this, WebActivity.class);
             intent.putExtra("URL", getString(R.string.ecotic_url));
         } else if (getString(R.string.mission_vision).equals(title)) {
+            category = getString(R.string.analytics_informations_category);
+            label = getString(R.string.analytics_mission_vision_label);
             intent = new Intent(ItemsActivity.this, WebContentActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.mission_vision));
             intent.putExtra("LINK",
                     getString(R.string.pdf_viewer).replaceAll("URL", getString(R.string.mission_vision_url)));
         } else if (getString(R.string.quality_policy).equals(title)) {
+            category = getString(R.string.analytics_informations_category);
+            label = getString(R.string.analytics_quality_policy_label);
             intent = new Intent(ItemsActivity.this, WebContentActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.quality_policy));
             intent.putExtra("LINK",
                     getString(R.string.pdf_viewer).replaceAll("URL", getString(R.string.quality_policy_url)));
         } else if (getString(R.string.axes_pillars_objectives).equals(title)) {
+            category = getString(R.string.analytics_informations_category);
+            label = getString(R.string.analytics_axes_pillars_objectives_label);
             intent = new Intent(ItemsActivity.this, WebContentActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.axes_pillars_objectives));
             intent.putExtra("LINK",
                     getString(R.string.pdf_viewer).replaceAll("URL", getString(R.string.axes_pillars_objectives_url)));
         } else if (getString(R.string.organization_chart).equals(title)) {
+            category = getString(R.string.analytics_informations_category);
+            label = getString(R.string.analytics_organization_chart_label);
             intent = new Intent(ItemsActivity.this, WebContentActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.organization_chart));
             intent.putExtra("LINK",
                     getString(R.string.pdf_viewer).replaceAll("URL", getString(R.string.organization_chart_url)));
         } else if (getString(R.string.normativity).equals(title)) {
+            category = getString(R.string.analytics_informations_category);
+            label = getString(R.string.analytics_normativity_label);
             intent = new Intent(ItemsActivity.this, WebActivity.class);
             intent.putExtra("URL", getString(R.string.normativity_url));
         } else if (getString(R.string.symbols).equals(title)) {
+            category = getString(R.string.analytics_informations_category);
+            label = getString(R.string.analytics_symbols_label);
             WebService.PENDING_ACTION = WebService.ACTION_SYMBOLS;
             loadInformations(getString(R.string.symbols), ItemsActivity.this);
         } else if (getString(R.string.digital_repository).equals(title)) {
+            category = getString(R.string.analytics_web_category);
+            label = getString(R.string.analytics_digital_repository_label);
             intent = new Intent(ItemsActivity.this, WebActivity.class);
             intent.putExtra("URL", getString(R.string.digital_repository_url));
         } else if (getString(R.string.public_catalog).equals(title)) {
+            category = getString(R.string.analytics_web_category);
+            label = getString(R.string.analytics_public_catalog_label);
             intent = new Intent(ItemsActivity.this, WebActivity.class);
             intent.putExtra("URL", getString(R.string.public_catalog_url));
         } else if (getString(R.string.databases).equals(title)) {
+            category = getString(R.string.analytics_web_category);
+            label = getString(R.string.analytics_databases_label);
             intent = new Intent(ItemsActivity.this, WebActivity.class);
             intent.putExtra("URL", getString(R.string.databases_url));
-        } else if (getString(R.string.directory).equals(category)) {
+        } else if (getString(R.string.directory).equals(this.category)) {
             loadContacts(title);
-        } else if (getString(R.string.academic_offer).equals(category)) {
+        } else if (getString(R.string.academic_offer).equals(this.category)) {
             intent = new Intent(ItemsActivity.this, ItemsActivity.class);
             intent.putExtra("CATEGORY", title);
             intent.putExtra("SUBCATEGORY", getString(R.string.academic_offer));
@@ -251,10 +321,19 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
                 getString(R.string.curriculum).equals(title) ||
                 getString(R.string.profiles).equals(title) ||
                 getString(R.string.program_contact).equals(title)) {
-            loadProgramContent(category, title);
-        } else if (getString(R.string.academic_calendar).equals(category)) {
+            loadProgramContent(this.category, title);
+        } else if (getString(R.string.academic_calendar).equals(this.category)) {
             intent = new Intent(ItemsActivity.this, CalendarActivity.class);
             intent.putExtra("CATEGORY", title);
+        }
+
+        if (category != null) {
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory(category)
+                    .setAction(action)
+                    .setLabel(label)
+                    .setValue(1)
+                    .build());
         }
 
         if (intent != null) {

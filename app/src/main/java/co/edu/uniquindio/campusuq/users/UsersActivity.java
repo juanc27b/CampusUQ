@@ -15,6 +15,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -107,6 +109,13 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    mTracker.send(new HitBuilders.EventBuilder()
+                            .setCategory(getString(R.string.analytics_users_category))
+                            .setAction(getString(user == null ?
+                                    R.string.analytics_create_action : R.string.analytics_modify_action))
+                            .setLabel(getString(R.string.analytics_login_label))
+                            .setValue(1)
+                            .build());
                     progressDialog.show();
                     WebBroadcastReceiver.scheduleJob(getApplicationContext(),
                             WebService.ACTION_USERS, WebService.METHOD_POST, json.toString());

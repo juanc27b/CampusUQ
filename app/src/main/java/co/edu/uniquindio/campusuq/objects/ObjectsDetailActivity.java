@@ -22,6 +22,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -159,6 +161,13 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
                     if (name.getText().length() != 0 && place.getText().length() != 0 &&
                             date.getText().length() != 0 && time.getText().length() != 0 &&
                             description.getText().length() != 0) {
+                        mTracker.send(new HitBuilders.EventBuilder()
+                                .setCategory(getString(R.string.analytics_objects_category))
+                                .setAction(getString(_ID == null ?
+                                        R.string.analytics_create_action : R.string.analytics_modify_action))
+                                .setLabel(getString(R.string.analytics_lost_objects_label))
+                                .setValue(1)
+                                .build());
                         JSONObject json = new JSONObject();
                         try {
                             if (_ID != null) json.put("UPDATE_ID", _ID);

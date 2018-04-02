@@ -29,6 +29,7 @@ public class AnnouncementsAdapter extends
     static final String FACEBOOK     = "facebook";
     static final String TWITTER      = "twitter";
     static final String WHATSAPP     = "whatsapp";
+    static final String UNDEFINED    = "undefined";
 
     private ArrayList<Announcement> announcements;
     private ArrayList<AnnouncementLink> announcementsLinks;
@@ -113,7 +114,7 @@ public class AnnouncementsAdapter extends
                 case R.id.announcement_facebook_button: action = FACEBOOK    ; break;
                 case R.id.announcement_twitter_button : action = TWITTER     ; break;
                 case R.id.announcement_whatsapp_button: action = WHATSAPP    ; break;
-                default                               : action = "undefined" ; break;
+                default                               : action = UNDEFINED   ; break;
             }
             listener.onAnnouncementClick(getAdapterPosition(), action);
         }

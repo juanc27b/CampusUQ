@@ -18,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -117,6 +119,13 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
                 if (Utilities.haveNetworkConnection(DishesDetailActivity.this)) {
                     if (name.getText().length() != 0 && description.getText().length() != 0 &&
                             price.getText().length() != 0) {
+                        mTracker.send(new HitBuilders.EventBuilder()
+                                .setCategory(getString(R.string.analytics_dishes_category))
+                                .setAction(getString(_ID == null ?
+                                        R.string.analytics_create_action : R.string.analytics_modify_action))
+                                .setLabel(getString(R.string.analytics_restaurant_label))
+                                .setValue(1)
+                                .build());
                         JSONObject json = new JSONObject();
                         try {
                             if (_ID != null) json.put("UPDATE_ID", _ID);

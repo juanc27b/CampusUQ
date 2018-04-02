@@ -12,6 +12,8 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -87,6 +89,14 @@ public class AnnouncementsFragment extends DialogFragment implements View.OnClic
                         announcementsActivity.startActivityForResult(intent,
                                 AnnouncementsActivity.REQUEST_ANNOUNCEMENT_DETAIL);
                     } else if (delete.isChecked()) {
+                        announcementsActivity.mTracker.send(new HitBuilders.EventBuilder()
+                                .setCategory(getString(R.string.analytics_announcements_category))
+                                .setAction(getString(R.string.analytics_delete_action))
+                                .setLabel(getString(announcement.getType().equals("I") ?
+                                        R.string.analytics_security_system_label :
+                                        R.string.analytics_billboard_information_label))
+                                .setValue(1)
+                                .build());
                         JSONObject json = new JSONObject();
                         try {
                             json.put("DELETE_ID", announcement.get_ID());

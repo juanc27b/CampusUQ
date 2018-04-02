@@ -12,6 +12,8 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -82,6 +84,12 @@ public class ObjectsFragment extends DialogFragment implements View.OnClickListe
                                 object.getUserFound_ID());
                         objectsActivity.startActivityForResult(intent, 0);
                     } else if (delete.isChecked()) {
+                        objectsActivity.mTracker.send(new HitBuilders.EventBuilder()
+                                .setCategory(getString(R.string.analytics_objects_category))
+                                .setAction(getString(R.string.analytics_delete_action))
+                                .setLabel(getString(R.string.analytics_lost_objects_label))
+                                .setValue(1)
+                                .build());
                         JSONObject json = new JSONObject();
                         try {
                             json.put("DELETE_ID", object.get_ID());

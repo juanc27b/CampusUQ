@@ -1,10 +1,12 @@
-package co.edu.uniquindio.campusuq.web;
+package co.edu.uniquindio.campusuq.util;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+
+import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 
 /**
  * Created by Juan Camilo on 21/02/2018.

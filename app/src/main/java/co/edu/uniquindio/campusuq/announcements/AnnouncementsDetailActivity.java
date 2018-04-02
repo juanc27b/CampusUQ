@@ -18,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -178,6 +180,15 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
             case R.id.announcement_detail_ok:
                 if (Utilities.haveNetworkConnection(AnnouncementsDetailActivity.this)) {
                     if (name.getText().length() != 0 && description.getText().length() != 0) {
+                        mTracker.send(new HitBuilders.EventBuilder()
+                                .setCategory(getString(R.string.analytics_announcements_category))
+                                .setAction(getString(_ID == null ?
+                                        R.string.analytics_create_action : R.string.analytics_modify_action))
+                                .setLabel(getString(type.equals("I") ?
+                                        R.string.analytics_security_system_label :
+                                        R.string.analytics_billboard_information_label))
+                                .setValue(1)
+                                .build());
                         JSONObject json = new JSONObject();
                         try {
                             if (_ID != null) json.put("UPDATE_ID", _ID);

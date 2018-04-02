@@ -22,8 +22,18 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
+import com.google.android.gms.analytics.HitBuilders;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthToken;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterAuthClient;
+import com.twitter.sdk.android.tweetcomposer.ComposerActivity;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -45,9 +55,15 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
     boolean oldNews = true;
     private String action;
 
-    public CallbackManager callbackManager;
-    public boolean loggedIn;
+    private String socialNetwork = NewsAdapter.UNDEFINED;
+
+    public CallbackManager facebookCallbackManager;
+    public boolean facebookLoggedIn;
     public ShareDialog shareDialog;
+
+    public TwitterAuthClient mTwitterAuthClient;
+    public Callback<TwitterSession> twitterCallback;
+    public boolean twitterLoggedIn;
 
     public NewsActivity() {
         this.news = new ArrayList<>();
@@ -60,35 +76,50 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        AppEventsLogger.activateApp(this);
-
-        callbackManager = CallbackManager.Factory.create();
-        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                // App code
-            }
-            @Override
-            public void onCancel() {
-                // App code
-            }
-            @Override
-            public void onError(FacebookException exception) {
-                // App code
-            }
-        });
-        loggedIn = AccessToken.getCurrentAccessToken() == null;
-        shareDialog = new ShareDialog(this);
-
-        Twitter.initialize(this);
-
         super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
 
         ViewStub stub = findViewById(R.id.layout_stub);
         stub.setLayoutResource(R.layout.content_news);
         stub.inflate();
+
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
+        facebookCallbackManager = CallbackManager.Factory.create();
+        LoginManager.getInstance().registerCallback(facebookCallbackManager,
+                new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                facebookLoggedIn = true;
+            }
+
+            @Override
+            public void onCancel() {}
+
+            @Override
+            public void onError(FacebookException exception) {
+                exception.printStackTrace();
+            }
+        });
+        facebookLoggedIn = AccessToken.getCurrentAccessToken() != null;
+        shareDialog = new ShareDialog(this);
+
+        Twitter.initialize(this);
+        mTwitterAuthClient = new TwitterAuthClient();
+        twitterCallback = new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                // Do something with result, which provides a TwitterSession for making API calls
+                twitterLoggedIn = true;
+            }
+            @Override
+            public void failure(TwitterException exception) {
+                // Do something on failure
+                exception.printStackTrace();
+            }
+        };
+        TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
+        TwitterAuthToken authToken = session != null ? session.getAuthToken() : null;
+        twitterLoggedIn = authToken != null;
 
         String category = getIntent().getStringExtra("CATEGORY");
         action = getString(R.string.news).equals(category) ? WebService.ACTION_NEWS : WebService.ACTION_EVENTS;
@@ -123,8 +154,8 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
     @Override
     public void onNewClick(int pos, String action) {
         switch(action) {
-            case "notice":
-            case "more":
+            case NewsAdapter.NOTICE:
+            case NewsAdapter.MORE:
                 Intent intent = new Intent(NewsActivity.this, NewsContentActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.news_detail));
                 intent.putExtra("TITLE", news.get(pos).getName());
@@ -134,24 +165,76 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                 intent.putExtra("CONTENT", news.get(pos).getContent());
                 NewsActivity.this.startActivity(intent);
                 break;
-            case "facebook":
-                if (!loggedIn) {
-                    LoginManager.getInstance().logInWithReadPermissions(this,
-                            Arrays.asList("public_profile", "user_friends"));
-                } else if (ShareDialog.canShow(ShareLinkContent.class)) {
-                    ShareLinkContent content = new ShareLinkContent.Builder()
-                            .setContentTitle(news.get(pos).getName())
-                            .setContentUrl(Uri.parse(news.get(pos).getLink()))
-                            .setContentDescription(news.get(pos).getSummary())
-                            .build();
-                    shareDialog.show(content);
+            case NewsAdapter.FACEBOOK:
+                if (Utilities.haveNetworkConnection(NewsActivity.this)) {
+                    mTracker.send(new HitBuilders.EventBuilder()
+                            .setCategory(getString(R.string.analytics_news_category))
+                            .setAction(getString(R.string.analytics_share_action))
+                            .setLabel(getString(WebService.ACTION_NEWS.equals(this.action) ?
+                                    R.string.analytics_news_label : R.string.analytics_events_label))
+                            .setValue(1)
+                            .build());
+                    socialNetwork = NewsAdapter.FACEBOOK;
+                    if (!facebookLoggedIn) {
+                        LoginManager.getInstance().logInWithReadPermissions(this,
+                                Arrays.asList("public_profile", "user_friends"));
+                    } else if (ShareDialog.canShow(ShareLinkContent.class)) {
+                        ShareLinkContent content = new ShareLinkContent.Builder()
+                                .setContentTitle(news.get(pos).getName())
+                                .setContentUrl(Uri.parse(news.get(pos).getLink()))
+                                .setContentDescription(news.get(pos).getSummary())
+                                .build();
+                        shareDialog.show(content);
+                    }
+                } else {
+                    Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
                 }
                 break;
-            case "twitter":
-                Toast.makeText(this, "Twitter clicked: "+pos, Toast.LENGTH_SHORT).show();
+            case NewsAdapter.TWITTER:
+                if (Utilities.haveNetworkConnection(NewsActivity.this)) {
+                    mTracker.send(new HitBuilders.EventBuilder()
+                            .setCategory(getString(R.string.analytics_news_category))
+                            .setAction(getString(R.string.analytics_share_action))
+                            .setLabel(getString(WebService.ACTION_NEWS.equals(this.action) ?
+                                    R.string.analytics_news_label : R.string.analytics_events_label))
+                            .setValue(1)
+                            .build());
+                    socialNetwork = NewsAdapter.TWITTER;
+                    if (!twitterLoggedIn) {
+                        mTwitterAuthClient.authorize(this, twitterCallback);
+                    } else {
+                        final TwitterSession session = TwitterCore.getInstance().getSessionManager()
+                                .getActiveSession();
+                        final Intent twitterIntent = new ComposerActivity.Builder(NewsActivity.this)
+                                .session(session)
+                                .image(Uri.fromFile(new File(news.get(pos).getImage())))
+                                .text(news.get(pos).getName())
+                                .hashtags("#Uniquindio")
+                                .createIntent();
+                        startActivity(twitterIntent);
+                    }
+                } else {
+                    Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                }
                 break;
-            case "whatsapp":
-                Toast.makeText(this, "Whatsapp clicked: "+pos, Toast.LENGTH_SHORT).show();
+            case NewsAdapter.WHATSAPP:
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory(getString(R.string.analytics_news_category))
+                        .setAction(getString(R.string.analytics_share_action))
+                        .setLabel(getString(WebService.ACTION_NEWS.equals(this.action) ?
+                                R.string.analytics_news_label : R.string.analytics_events_label))
+                        .setValue(1)
+                        .build());
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, news.get(pos).getName());
+                sendIntent.setType("text/plain");
+                sendIntent.setPackage("com.whatsapp");
+                try {
+                    startActivity(sendIntent);
+                } catch (android.content.ActivityNotFoundException e) {
+                    Toast.makeText(this, "No se ha instalado Whatsapp", Toast.LENGTH_SHORT).show();
+                }
                 break;
             default:
                 Toast.makeText(this, "Undefined: "+pos, Toast.LENGTH_SHORT).show();
@@ -162,12 +245,22 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK){
-            Toast.makeText(this, "Publicación correcta", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Error en la publicación", Toast.LENGTH_SHORT).show();
+        switch (socialNetwork) {
+            case NewsAdapter.FACEBOOK:
+                facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
+                break;
+            case NewsAdapter.TWITTER:
+                mTwitterAuthClient.onActivityResult(requestCode, resultCode, data);
+                break;
+            default:
+                break;
         }
+        if (resultCode == RESULT_OK){
+            Toast.makeText(this, "Operación correcta", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Error en la operación", Toast.LENGTH_SHORT).show();
+        }
+        socialNetwork = NewsAdapter.UNDEFINED;
     }
 
     private void loadNews(int inserted) {

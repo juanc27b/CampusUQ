@@ -1,4 +1,4 @@
-package co.edu.uniquindio.campusuq.activity;
+package co.edu.uniquindio.campusuq.maps;
 
 import android.Manifest;
 import android.app.SearchManager;
@@ -28,6 +28,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
+import co.edu.uniquindio.campusuq.activity.MainActivity;
 
 public class MapsActivity extends MainActivity implements OnMapReadyCallback, OnStreetViewPanoramaReadyCallback {
 
@@ -39,8 +40,6 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback, On
     private GoogleMap mMap;
     private StreetViewPanorama mPanorama;
     private LatLng UNIVERSIDAD = new LatLng(4.55435, -75.6601);
-    //private LatLng UNIVERSIDAD = new LatLng(4.5543300, -75.6600500);
-    //private LatLngBounds BOUNDS = new LatLngBounds(UNIVERSIDAD, UNIVERSIDAD);
 
     public ArrayList<String> tags;
     public ArrayList<LatLng> locations;
@@ -49,8 +48,8 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback, On
         super.setHasNavigationDrawerIcon(false);
 
         isMapEnabled = true;
-        tags = new ArrayList<String>();
-        locations = new ArrayList<LatLng>();
+        tags = new ArrayList<>();
+        locations = new ArrayList<>();
     }
 
     @Override
@@ -59,15 +58,15 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback, On
 
         super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
 
-        ViewStub stub = (ViewStub) findViewById(R.id.layout_stub);
+        ViewStub stub = findViewById(R.id.layout_stub);
         stub.setLayoutResource(R.layout.content_maps);
-        View inflated = stub.inflate();
+        stub.inflate();
 
         addTagsAndLocations();
 
-        mapLayout = (LinearLayout) findViewById(R.id.map_layout);
-        streetViewLayout = (LinearLayout) findViewById(R.id.streetview_layout);
-        changeButton = (Button) findViewById(R.id.change_button) ;
+        mapLayout = findViewById(R.id.map_layout);
+        streetViewLayout = findViewById(R.id.streetview_layout);
+        changeButton = findViewById(R.id.change_button) ;
         changeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
