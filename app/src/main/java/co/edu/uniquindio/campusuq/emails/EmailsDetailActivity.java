@@ -18,7 +18,7 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -46,9 +46,11 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
             if (exceptionIntent == null) {
                 int inserted = intent.getIntExtra("INSERTED", 0);
                 if (inserted == 0) {
-                    Toast.makeText(context, context.getString(R.string.email_failed_sending), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, R.string.email_failed_sending,
+                            Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(context, context.getString(R.string.email_successful_sending), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, R.string.email_successful_sending,
+                            Toast.LENGTH_SHORT).show();
                     finish();
                 }
             } else {
@@ -77,7 +79,7 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
         name = findViewById(R.id.email_detail_name);
         content = findViewById(R.id.email_detail_content);
 
-        from.setText(UsersPresenter.loadUser(EmailsDetailActivity.this).getEmail());
+        from.setText(UsersPresenter.loadUser(this).getEmail());
 
         findViewById(R.id.email_detail_ok).setOnClickListener(this);
     }
@@ -94,26 +96,27 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
 
     public void sendEmail() {
         if (from.getText().equals("campusuq@uniquindio.edu.co")) {
-            Toast.makeText(EmailsDetailActivity.this, getString(R.string.email_from_invalid),
+            Toast.makeText(this, R.string.email_from_invalid,
                     Toast.LENGTH_SHORT).show();
         } else if (TextUtils.isEmpty(to.getText()) ||
                 !Patterns.EMAIL_ADDRESS.matcher(to.getText()).matches()) {
-            Toast.makeText(EmailsDetailActivity.this, getString(R.string.email_to_invalid),
+            Toast.makeText(this, R.string.email_to_invalid,
                     Toast.LENGTH_SHORT).show();
         } else if (name.getText().length() < 1) {
-            Toast.makeText(EmailsDetailActivity.this, getString(R.string.email_name_invalid),
+            Toast.makeText(this, R.string.email_name_invalid,
                     Toast.LENGTH_SHORT).show();
         } else if (content.getText().length() < 1) {
-            Toast.makeText(EmailsDetailActivity.this, getString(R.string.email_content_invalid),
+            Toast.makeText(this, R.string.email_content_invalid,
                     Toast.LENGTH_SHORT).show();
-        } else if (Utilities.haveNetworkConnection(EmailsDetailActivity.this)) {
+        } else if (Utilities.haveNetworkConnection(this)) {
             JSONObject json = new JSONObject();
             try {
                 json.put(EmailsSQLiteController.columns[1], name.getText());
                 json.put(EmailsSQLiteController.columns[2], from.getText());
                 json.put(EmailsSQLiteController.columns[3], to.getText());
-                json.put(EmailsSQLiteController.columns[4], DateFormat
-                        .getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, Locale.US)
+                json.put(EmailsSQLiteController.columns[4], new SimpleDateFormat(
+                        "EEE, d MMM yyyy HH:mm:ss Z",
+                        new Locale("en", "CO"))
                         .format(Calendar.getInstance().getTime()));
                 json.put(EmailsSQLiteController.columns[6], content.getText());
             } catch (JSONException e) {
@@ -123,7 +126,7 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
             WebBroadcastReceiver.scheduleJob(getApplicationContext(),
                     WebService.ACTION_EMAILS, WebService.METHOD_POST, json.toString());
         } else {
-            Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT)
+            Toast.makeText(this, R.string.no_internet, Toast.LENGTH_SHORT)
                     .show();
         }
     }
@@ -167,7 +170,8 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
                 if (resultCode == RESULT_OK) {
                     sendEmail();
                 } else {
-                    Toast.makeText(this, R.string.email_authorization,
+                    Toast.makeText(this,
+                            R.string.email_authorization,
                             Toast.LENGTH_SHORT).show();
                 }
                 break;

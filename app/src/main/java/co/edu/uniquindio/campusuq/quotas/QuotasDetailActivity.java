@@ -101,11 +101,11 @@ public class QuotasDetailActivity extends MainActivity implements View.OnClickLi
                         setResult(RESULT_OK, intent);
                         finish();
                     } else {
-                        Toast.makeText(this, getString(R.string.empty_string),
+                        Toast.makeText(this, R.string.empty_string,
                                 Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(this, getString(R.string.no_internet),
+                    Toast.makeText(this, R.string.no_internet,
                             Toast.LENGTH_SHORT).show();
                 }
                 break;

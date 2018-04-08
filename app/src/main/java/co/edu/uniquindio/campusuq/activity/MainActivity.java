@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        progressDialog = Utilities.getProgressDialog(MainActivity.this, true);
+        progressDialog = Utilities.getProgressDialog(this, true);
 
         // Obtain the shared Tracker instance.
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
@@ -151,7 +151,8 @@ public class MainActivity extends AppCompatActivity
                     m.setAccessible(true);
                     m.invoke(menu, true);
                 } catch (Exception e) {
-                    Log.e(getClass().getSimpleName(), "onMenuOpened...unable to set icons for overflow menu", e);
+                    Log.e(getClass().getSimpleName(),
+                            "onMenuOpened...unable to set icons for overflow menu", e);
                 }
             }
         }
@@ -175,8 +176,8 @@ public class MainActivity extends AppCompatActivity
                 return true;
             }
             case R.id.action_change_language: {
-                Utilities.changeLanguage(MainActivity.this);
-                Intent intent = new Intent(MainActivity.this, StartActivity.class);
+                Utilities.changeLanguage(this);
+                Intent intent = new Intent(this, StartActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
                         Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
@@ -190,17 +191,17 @@ public class MainActivity extends AppCompatActivity
                         .setLabel(getString(R.string.analytics_adjust_notifications_label))
                         .setValue(1)
                         .build());
-                Intent intent = new Intent(MainActivity.this, NotificationsActivity.class);
+                Intent intent = new Intent(this, NotificationsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.log_in));
-                MainActivity.this.startActivity(intent);
+                startActivity(intent);
                 return true;
             }
             case R.id.action_delete_history: {
-                Utilities.deleteHistory(MainActivity.this);
+                Utilities.deleteHistory(this);
                 return true;
             }
             case R.id.action_login: {
-                User user = UsersPresenter.loadUser(MainActivity.this);
+                User user = UsersPresenter.loadUser(this);
                 if (user != null) {
                     mTracker.send(new HitBuilders.EventBuilder()
                             .setCategory(getString(R.string.analytics_users_category))
@@ -210,14 +211,14 @@ public class MainActivity extends AppCompatActivity
                             .build());
                     Intent intent;
                     if (user.getEmail().equals("campusuq@uniquindio.edu.co")) {
-                        intent = new Intent(MainActivity.this, LoginActivity.class);
+                        intent = new Intent(this, LoginActivity.class);
                         intent.putExtra("CATEGORY", getString(R.string.log_in));
                     } else {
-                        intent = new Intent(MainActivity.this, UsersActivity.class);
+                        intent = new Intent(this, UsersActivity.class);
                         intent.putExtra("CATEGORY", getString(R.string.edit_account));
                         intent.putExtra("USER", user);
                     }
-                    MainActivity.this.startActivity(intent);
+                    startActivity(intent);
                 }
                 return true;
             }
@@ -233,150 +234,150 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         Intent intent = null;
-        int id = item.getItemId();
         String category = null, label = null, action = getString(R.string.analytics_view_action);
 
-        switch(id) {
+        switch (item.getItemId()) {
             case R.id.nav_events:
                 category = getString(R.string.analytics_news_category);
                 label = getString(R.string.analytics_events_label);
-                intent = new Intent(MainActivity.this, NewsActivity.class);
+                intent = new Intent(this, NewsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.events));
                 break;
             case R.id.nav_news:
                 category = getString(R.string.analytics_news_category);
                 label = getString(R.string.analytics_news_label);
-                intent = new Intent(MainActivity.this, NewsActivity.class);
+                intent = new Intent(this, NewsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.news));
                 break;
             case R.id.nav_institution:
-                intent = new Intent(MainActivity.this, ItemsActivity.class);
+                intent = new Intent(this, ItemsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.institution));
                 break;
             case R.id.nav_directory:
                 category = getString(R.string.analytics_contatcs_category);
                 label = getString(R.string.analytics_directory_label);
                 WebService.PENDING_ACTION = WebService.ACTION_CONTACTS;
-                loadContactCategories(MainActivity.this);
+                loadContactCategories(this);
                 break;
             case R.id.nav_academic_offer:
                 category = getString(R.string.analytics_programs_category);
                 label = getString(R.string.analytics_academic_offer_label);
                 WebService.PENDING_ACTION = WebService.ACTION_PROGRAMS;
-                loadPrograms(MainActivity.this);
+                loadPrograms(this);
                 break;
             case R.id.nav_academic_calendar:
                 category = getString(R.string.analytics_events_category);
                 label = getString(R.string.analytics_academic_calendar_label);
                 WebService.PENDING_ACTION = WebService.ACTION_CALENDAR;
-                loadEventCategories(MainActivity.this);
+                loadEventCategories(this);
                 break;
             case R.id.nav_employment_exchange:
                 category = getString(R.string.analytics_web_category);
                 label = getString(R.string.analytics_employment_exchange_label);
-                intent = new Intent(MainActivity.this, WebActivity.class);
+                intent = new Intent(this, WebActivity.class);
                 intent.putExtra("URL", getString(R.string.employment_exchange_url));
                 break;
             case R.id.nav_institutional_welfare:
                 category = getString(R.string.analytics_informations_category);
                 label = getString(R.string.analytics_institutional_welfare);
                 WebService.PENDING_ACTION = WebService.ACTION_WELFARE;
-                loadInformations(getString(R.string.institutional_welfare), MainActivity.this);
+                loadInformations(getString(R.string.institutional_welfare), this);
                 break;
             case R.id.nav_university_map:
                 category = getString(R.string.analytics_maps_category);
                 label = getString(R.string.analytics_university_map_label);
-                intent = new Intent(MainActivity.this, MapsActivity.class);
+                intent = new Intent(this, MapsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.university_map));
                 break;
             case R.id.nav_library_services:
-                intent = new Intent(MainActivity.this, ItemsActivity.class);
+                intent = new Intent(this, ItemsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.library_services));
                 break;
             case R.id.nav_radio:
                 category = getString(R.string.analytics_radio_category);
                 label = getString(R.string.analytics_radio_label);
-                intent = new Intent(MainActivity.this, RadioActivity.class);
+                intent = new Intent(this, RadioActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.radio));
                 break;
             case R.id.nav_pqrsd_system:
                 category = getString(R.string.analytics_web_category);
                 label = getString(R.string.analytics_pqrsd_system_label);
-                intent = new Intent(MainActivity.this, WebActivity.class);
-                intent.putExtra("URL", getString(R.string.pqrsd_system_url));
+                intent = new Intent(this, WebActivity.class);
+                intent.putExtra("URL",
+                        getString(R.string.pqrsd_system_url));
                 break;
             case R.id.nav_lost_objects:
                 category = getString(R.string.analytics_objects_category);
                 label = getString(R.string.analytics_lost_objects_label);
-                intent = new Intent(MainActivity.this, ObjectsActivity.class);
+                intent = new Intent(this, ObjectsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.lost_objects));
                 break;
             case R.id.nav_security_system:
                 category = getString(R.string.analytics_announcements_category);
                 label = getString(R.string.analytics_security_system_label);
-                intent = new Intent(MainActivity.this, AnnouncementsActivity.class);
+                intent = new Intent(this, AnnouncementsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.security_system));
                 break;
             case R.id.nav_restaurant:
                 category = getString(R.string.analytics_dishes_category);
                 label = getString(R.string.analytics_restaurant_label);
-                intent = new Intent(MainActivity.this, DishesActivity.class);
+                intent = new Intent(this, DishesActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.restaurant));
                 break;
             case R.id.nav_billboard_information:
                 category = getString(R.string.analytics_announcements_category);
                 label = getString(R.string.analytics_billboard_information_label);
-                intent = new Intent(MainActivity.this, AnnouncementsActivity.class);
+                intent = new Intent(this, AnnouncementsActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.billboard_information));
                 break;
             case R.id.nav_computer_rooms:
                 category = getString(R.string.analytics_quotas_category);
                 label = getString(R.string.analytics_computer_rooms_label);
-                intent = new Intent(MainActivity.this, QuotasActivity.class);
+                intent = new Intent(this, QuotasActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.computer_rooms));
                 break;
             case R.id.nav_parking_lots:
                 category = getString(R.string.analytics_quotas_category);
                 label = getString(R.string.analytics_parking_lots_label);
-                intent = new Intent(MainActivity.this, QuotasActivity.class);
+                intent = new Intent(this, QuotasActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.parking_lots));
                 break;
             case R.id.nav_laboratories:
                 category = getString(R.string.analytics_quotas_category);
                 label = getString(R.string.analytics_laboratories_label);
-                intent = new Intent(MainActivity.this, QuotasActivity.class);
+                intent = new Intent(this, QuotasActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.laboratories));
                 break;
             case R.id.nav_studio_zones:
                 category = getString(R.string.analytics_quotas_category);
                 label = getString(R.string.analytics_study_areas_label);
-                intent = new Intent(MainActivity.this, QuotasActivity.class);
+                intent = new Intent(this, QuotasActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.study_areas));
                 break;
             case R.id.nav_cultural_and_sport:
                 category = getString(R.string.analytics_quotas_category);
                 label = getString(R.string.analytics_cultural_and_sport_label);
-                intent = new Intent(MainActivity.this, QuotasActivity.class);
+                intent = new Intent(this, QuotasActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.cultural_and_sport));
                 break;
             case R.id.nav_auditoriums:
                 category = getString(R.string.analytics_quotas_category);
                 label = getString(R.string.analytics_auditoriums_label);
-                intent = new Intent(MainActivity.this, QuotasActivity.class);
+                intent = new Intent(this, QuotasActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.auditoriums));
                 break;
             case R.id.nav_institutional_mail:
-                User user = UsersPresenter.loadUser(MainActivity.this);
+                User user = UsersPresenter.loadUser(this);
                 if (user != null) {
                     if (user.getEmail().equals("campusuq@uniquindio.edu.co")) {
                         category = getString(R.string.analytics_users_category);
                         label = getString(R.string.analytics_login_label);
-                        intent = new Intent(MainActivity.this, LoginActivity.class);
+                        intent = new Intent(this, LoginActivity.class);
                         intent.putExtra("CATEGORY", getString(R.string.log_in));
                     } else {
                         category = getString(R.string.analytics_emails_category);
                         label = getString(R.string.analytics_institutional_mail_label);
-                        intent = new Intent(MainActivity.this, EmailsActivity.class);
+                        intent = new Intent(this, EmailsActivity.class);
                         intent.putExtra("CATEGORY", getString(R.string.institutional_mail));
                     }
                 }
@@ -384,13 +385,13 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_web_page:
                 category = getString(R.string.analytics_web_category);
                 label = getString(R.string.analytics_web_page_label);
-                intent = new Intent(MainActivity.this, WebActivity.class);
+                intent = new Intent(this, WebActivity.class);
                 intent.putExtra("URL", getString(R.string.web_page_url));
                 break;
             case R.id.nav_ecotic:
                 category = getString(R.string.analytics_web_category);
                 label = getString(R.string.analytics_ecotic_label);
-                intent = new Intent(MainActivity.this, WebActivity.class);
+                intent = new Intent(this, WebActivity.class);
                 intent.putExtra("URL", getString(R.string.ecotic_url));
                 break;
             default:
@@ -406,9 +407,7 @@ public class MainActivity extends AppCompatActivity
                     .build());
         }
 
-        if (intent != null) {
-            MainActivity.this.startActivity(intent);
-        }
+        if (intent != null) startActivity(intent);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -498,7 +497,8 @@ public class MainActivity extends AppCompatActivity
         if (context.getString(R.string.symbols).equals(type)) {
             content = ItemsPresenter.getInformation("Simbolos", context);
         } else if (context.getString(R.string.institutional_welfare).equals(type)) {
-            content = ItemsPresenter.getInformation("Cursos Culturales y Deportivos", context);
+            content = ItemsPresenter
+                    .getInformation("Cursos Culturales y Deportivos", context);
         }
 
         if (progressDialog.isShowing() && content[0] != null) {

@@ -6,7 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.items.ItemsPresenter;
@@ -14,6 +19,8 @@ import co.edu.uniquindio.campusuq.items.ItemsPresenter;
 public class EmailsAdapter extends RecyclerView.Adapter<EmailsAdapter.EmailViewHolder> {
 
     private ArrayList<Email> emails;
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+            "yyyy-MM-dd'T'HH:mm:ssZ", new Locale("es", "CO"));
     private OnClickEmailListener listener;
 
     EmailsAdapter(ArrayList<Email> emails, EmailsActivity emailsActivity) {
@@ -43,7 +50,15 @@ public class EmailsAdapter extends RecyclerView.Adapter<EmailsAdapter.EmailViewH
             icon.setText(email.getFrom().isEmpty() ?
                     "" : email.getFrom().substring(0, 1).toUpperCase());
             icon.setBackgroundResource(ItemsPresenter.getColor());
-            date.setText(email.getDate());
+
+            try {
+                Date dateTime = simpleDateFormat.parse(email.getDate());
+                date.setText(DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.SHORT)
+                        .format(dateTime));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
             from.setText(email.getFrom());
             content.setText(email.getSnippet());
         }
@@ -52,6 +67,7 @@ public class EmailsAdapter extends RecyclerView.Adapter<EmailsAdapter.EmailViewH
         public void onClick(View view) {
             listener.onEmailClick(getAdapterPosition());
         }
+
     }
 
     @Override

@@ -39,7 +39,7 @@ import co.edu.uniquindio.campusuq.web.WebService;
 public class AnnouncementsDetailActivity extends MainActivity implements View.OnClickListener {
 
     private String type;
-    private Integer[] link_IDs;
+    private String[] link_IDs;
     private File[] imageFiles;
     private Intent intent;
     private String _ID;
@@ -109,7 +109,7 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
     public void handleIntent(Intent intent) {
         String category = intent.getStringExtra("CATEGORY");
         type = getString(R.string.report_incident).equals(category) ? "I" : "C";
-        link_IDs = new Integer[10];
+        link_IDs = new String[10];
         imageFiles = new File[10];
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -192,9 +192,8 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
                         JSONObject json = new JSONObject();
                         try {
                             if (_ID != null) json.put("UPDATE_ID", _ID);
-                            json.put(AnnouncementsSQLiteController.columns[1], intent.getIntExtra(
-                                    AnnouncementsSQLiteController.columns[1],
-                                    0));
+                            json.put(AnnouncementsSQLiteController.columns[1], intent
+                                    .getStringExtra(AnnouncementsSQLiteController.columns[1]));
                             json.put(AnnouncementsSQLiteController.columns[2], type);
                             json.put(AnnouncementsSQLiteController.columns[3], name.getText());
                             // La fecha se pone en el servidor, no aqui
@@ -227,11 +226,11 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
                         setResult(RESULT_OK, intent);
                         finish();
                     } else {
-                        Toast.makeText(this, getString(R.string.empty_string),
+                        Toast.makeText(this, R.string.empty_string,
                                 Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(this, getString(R.string.no_internet),
+                    Toast.makeText(this, R.string.no_internet,
                             Toast.LENGTH_SHORT).show();
                 }
                 break;

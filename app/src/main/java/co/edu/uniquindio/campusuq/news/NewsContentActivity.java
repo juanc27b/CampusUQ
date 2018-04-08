@@ -55,7 +55,7 @@ public class NewsContentActivity extends MainActivity {
         title.setText(intent.getStringExtra("TITLE"));
 
         try {
-            Date dateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",
+            Date dateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ",
                     new Locale("es", "CO"))
                     .parse(intent.getStringExtra("DATE"));
             date.setText(String.format("%s\n%s",

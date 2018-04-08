@@ -51,7 +51,8 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
             if (i.getImage() != 0) {
                 itemIcon.setVisibility(View.VISIBLE);
                 itemIcon.setImageResource(i.getImage());
-                itemIcon.setColorFilter(Color.WHITE);
+                itemIcon.setColorFilter(i.getBackground() == R.drawable.circle_white ?
+                        0xff47a22c : Color.WHITE);
             } else {
                 itemIcon.setVisibility(View.GONE);
             }

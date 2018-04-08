@@ -25,7 +25,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -119,6 +118,12 @@ public class EmailsServiceController {
                 }
             }
 
+            SimpleDateFormat inputFormat = new SimpleDateFormat(
+                    "EEE, d MMM yyyy HH:mm:ss Z", new Locale("en", "CO"));
+            SimpleDateFormat outputFormat = new SimpleDateFormat(
+                    "yyyy-MM-dd'T'HH:mm:ssZ",
+                    new Locale("es", "CO"));
+
             for (Message message : messages) {
                 if (message.getPayload() != null) {
                     String subject = "", from = "", to = "", date = "", snippet, content = "";
@@ -137,9 +142,7 @@ public class EmailsServiceController {
                                 to = value;
                                 break;
                             case "Date":
-                                date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-                                        .format(DateFormat.getDateTimeInstance(DateFormat.LONG,
-                                                DateFormat.LONG, Locale.US).parse(value));
+                                date = outputFormat.format(inputFormat.parse(value));
                                 break;
                             default:
                                 break;

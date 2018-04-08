@@ -29,7 +29,7 @@ public class AnnouncementsServiceController {
     public static ArrayList<Announcement> getAnnouncements(Context context,
                                                            @NonNull String category_date,
                                                            Utilities.State state,
-                                                           ArrayList<Integer> _IDs) {
+                                                           ArrayList<String> _IDs) {
         HttpGet request = new HttpGet(Utilities.URL_SERVICIO+_ANNOUNCEMENTS+category_date);
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         ArrayList<Announcement> announcements = new ArrayList<>();
@@ -42,8 +42,8 @@ public class AnnouncementsServiceController {
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = array.getJSONObject(i);
                 announcements.add(new Announcement(
-                        obj.getInt(AnnouncementsSQLiteController.columns[0]),
-                        obj.getInt(AnnouncementsSQLiteController.columns[1]),
+                        obj.getString(AnnouncementsSQLiteController.columns[0]),
+                        obj.getString(AnnouncementsSQLiteController.columns[1]),
                         obj.getString(AnnouncementsSQLiteController.columns[2]),
                         obj.getString(AnnouncementsSQLiteController.columns[3]),
                         obj.getString(AnnouncementsSQLiteController.columns[4]),
@@ -51,8 +51,7 @@ public class AnnouncementsServiceController {
             }
             if (_IDs != null) {
                 array = object.getJSONArray("_IDs");
-                // Se castea a Integer para remover el objeto, no el indice
-                for (int i = 0; i < array.length(); i++) _IDs.remove((Integer) array.getInt(i));
+                for (int i = 0; i < array.length(); i++) _IDs.remove(array.getString(i));
             }
         } catch (Exception e) {
             Log.e(AnnouncementsServiceController.class.getSimpleName(), e.getMessage());
@@ -91,8 +90,8 @@ public class AnnouncementsServiceController {
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 links.add(new AnnouncementLink(
-                        object.getInt(AnnouncementsSQLiteController.linkColumns[0]),
-                        object.getInt(AnnouncementsSQLiteController.linkColumns[1]),
+                        object.getString(AnnouncementsSQLiteController.linkColumns[0]),
+                        object.getString(AnnouncementsSQLiteController.linkColumns[1]),
                         object.getString(AnnouncementsSQLiteController.linkColumns[2]),
                         object.getString(AnnouncementsSQLiteController.linkColumns[3])));
             }

@@ -14,16 +14,15 @@ import co.edu.uniquindio.campusuq.web.WebService;
 
 public class AnnouncementsPresenter {
 
-    static ArrayList<Announcement> loadAnnouncements(String action, Context context,
-                                                            int limit) {
+    static ArrayList<Announcement> loadAnnouncements(String action, Context context, int limit) {
         String type = WebService.ACTION_INCIDENTS.equals(action) ? "I" : "C";
 
         AnnouncementsSQLiteController dbController =
                 new AnnouncementsSQLiteController(context, 1);
 
-        ArrayList<Announcement> announcements = dbController.select(String.valueOf(limit),
+        ArrayList<Announcement> announcements = dbController.select(""+limit,
                 AnnouncementsSQLiteController.columns[2]+" = ? AND "+
-                        AnnouncementsSQLiteController.columns[6]+" = 'N'", new String[]{type});
+                        AnnouncementsSQLiteController.columns[6]+" = 'N'", type);
 
         dbController.destroy();
 
@@ -35,15 +34,14 @@ public class AnnouncementsPresenter {
                 new AnnouncementsSQLiteController(context, 1);
 
         ArrayList<Announcement> announcements = dbController.select("1",
-                AnnouncementsSQLiteController.columns[0]+" = ?", new String[]{_ID});
+                AnnouncementsSQLiteController.columns[0]+" = ?", _ID);
 
         dbController.destroy();
 
         return announcements.get(0);
     }
 
-    static ArrayList<AnnouncementLink> getAnnouncementsLinks(Context context,
-                                                                    String... _IDs) {
+    static ArrayList<AnnouncementLink> getAnnouncementsLinks(Context context, String... _IDs) {
         AnnouncementsSQLiteController dbController =
                 new AnnouncementsSQLiteController(context, 1);
 

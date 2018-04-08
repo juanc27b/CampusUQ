@@ -18,8 +18,8 @@ import co.edu.uniquindio.campusuq.util.Utilities;
 public class ContactsSQLiteController {
 
     private static final String tablename = "Contacto";
-    public static final String columns[] ={"_ID", "Categoria_ID", "Nombre", "Direccion", "Telefono",
-            "Email", "Cargo", "Informacion_Adicional"};
+    public static final String columns[] = {"_ID", "Categoria_ID", "Nombre", "Direccion",
+            "Telefono", "Email", "Cargo", "Informacion_Adicional"};
 
     private static final String categoryTablename = "Contacto_Categoria";
     public static final String categoryColumns[] = {"_ID", "Nombre", "Enlace"};
@@ -41,7 +41,7 @@ public class ContactsSQLiteController {
                 columns[6]+" TEXT NOT NULL, "+columns[7]+" TEXT NOT NULL)";
     }
 
-    public ArrayList<Contact> select(String selection, String[] selectionArgs) {
+    public ArrayList<Contact> select(String selection, String... selectionArgs) {
         ArrayList<Contact> contacts = new ArrayList<>();
 
         Cursor c = db.query(tablename, columns, selection, selectionArgs, null,
@@ -73,11 +73,12 @@ public class ContactsSQLiteController {
                 categoryColumns[1]+" TEXT NOT NULL UNIQUE, "+categoryColumns[2]+" TEXT NOT NULL)";
     }
 
-    public ArrayList<ContactCategory> selectCategory(String selection, String[] selectionArgs) {
+    public ArrayList<ContactCategory> selectCategory(String limit, String selection,
+                                                     String... selectionArgs) {
         ArrayList<ContactCategory> categories = new ArrayList<>();
 
         Cursor c = db.query(categoryTablename, categoryColumns, selection, selectionArgs,
-                null, null, categoryColumns[1]+" ASC");
+                null, null, categoryColumns[1]+" ASC", limit);
         if (c.moveToFirst()) do {
             categories.add(new ContactCategory(c.getString(0), c.getString(1),
                     c.getString(2)));

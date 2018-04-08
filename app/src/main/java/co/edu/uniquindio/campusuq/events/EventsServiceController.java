@@ -1,6 +1,7 @@
 package co.edu.uniquindio.campusuq.events;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -103,30 +104,24 @@ public class EventsServiceController {
         return periods;
     }
 
-    public static ArrayList<EventDate> getEventDates(Context context) {
-        String url = Utilities.URL_SERVICIO+"/evento_fechas";
-        ArrayList<EventDate> dates = new ArrayList<>();
-        HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpGet request = new HttpGet(url);
-        request.setHeader("Content-Type", "application/json; Charset=UTF-8");
+    public static ArrayList<EventDate> getEventDates(Context context, @NonNull String type) {
+        HttpGet request = new HttpGet(Utilities.URL_SERVICIO+"/evento_fechas"+type);
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
+        ArrayList<EventDate> dates = new ArrayList<>();
+
         try {
-            HttpResponse resp = httpClient.execute(request);
-            String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
-            JSONObject json = new JSONObject(respStr);
-            JSONArray array = json.getJSONArray("datos");
+            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
+                    .execute(request).getEntity())).getJSONArray("datos");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                String _ID = StringEscapeUtils.unescapeHtml4(object.getString("_ID"));
-                String type = StringEscapeUtils.unescapeHtml4(object.getString("Tipo"));
-                String date = StringEscapeUtils.unescapeHtml4(object.getString("Fecha"));
-                EventDate eventDate = new EventDate(_ID, type, date);
-                dates.add(eventDate);
+                dates.add(new EventDate(object.getString(EventsSQLiteController.dateColumns[0]),
+                        object.getString(EventsSQLiteController.dateColumns[1]),
+                        object.getString(EventsSQLiteController.dateColumns[2])));
             }
         } catch (Exception e) {
             Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
-            return new ArrayList<>();
         }
+
         return dates;
     }
 

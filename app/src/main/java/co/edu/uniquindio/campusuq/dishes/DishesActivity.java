@@ -112,7 +112,7 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
                                         null);
                             } else {
                                 Toast.makeText(DishesActivity.this,
-                                        getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                                        R.string.no_internet, Toast.LENGTH_SHORT).show();
                             }
                         } else if (!recyclerView.canScrollVertically(1)) {
                             oldDishes = true;
@@ -135,7 +135,7 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
         User user = UsersPresenter.loadUser(this);
         if (user != null && user.getAdministrator().equals("S")) DishesFragment.newInstance(index)
                 .show(getSupportFragmentManager(), null);
-        else Toast.makeText(this, getString(R.string.no_administrator),
+        else Toast.makeText(this, R.string.no_administrator,
                 Toast.LENGTH_SHORT).show();
     }
 
@@ -166,12 +166,14 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
     @Override
     protected void onResume() {
         super.onResume();
+        // Register for the particular broadcast based on ACTION string
         registerReceiver(dishesReceiver, dishesFilter);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        // Unregister the listener when the application is paused
         unregisterReceiver(dishesReceiver);
     }
 

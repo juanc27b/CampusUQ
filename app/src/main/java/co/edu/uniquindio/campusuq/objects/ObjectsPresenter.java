@@ -19,16 +19,15 @@ public class ObjectsPresenter {
         if (user == null || user.getEmail().equals("campusuq@uniquindio.edu.co")) {
             objects = dbController.select(""+limit,
                     ObjectsSQLiteController.columns[8]+" IS NULL AND "+
-                            ObjectsSQLiteController.columns[9]+" = 'N'", null);
+                            ObjectsSQLiteController.columns[9]+" = 'N'");
         } else {
             objects = dbController.select(""+limit,
-                    ObjectsSQLiteController.columns[1]+" = "+user.get_ID(),
-                    null);
+                    ObjectsSQLiteController.columns[1]+" = ?", user.get_ID());
             limit = limit-objects.size();
             if (limit > 0) objects.addAll(dbController.select(""+limit,
-                    ObjectsSQLiteController.columns[1]+" != "+user.get_ID()+" AND "+
+                    ObjectsSQLiteController.columns[1]+" != ? AND "+
                             ObjectsSQLiteController.columns[8]+" IS NULL AND "+
-                            ObjectsSQLiteController.columns[9]+" = 'N'", null));
+                            ObjectsSQLiteController.columns[9]+" = 'N'", user.get_ID()));
         }
 
         dbController.destroy();

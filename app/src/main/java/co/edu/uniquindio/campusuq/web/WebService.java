@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.os.Build;
@@ -23,7 +24,11 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.math.BigInteger;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.announcements.AnnouncementsActivity;
@@ -84,33 +89,32 @@ import co.edu.uniquindio.campusuq.util.Utilities;
 
 public class WebService extends JobIntentService {
 
-    public static final String ACTION_NONE = "co.edu.uniquindio.campusuq.ACTION_NONE";
-    public static final String ACTION_ALL = "co.edu.uniquindio.campusuq.ACTION_ALL";
-    public static final String ACTION_NEWS = "co.edu.uniquindio.campusuq.ACTION_NEWS";
-    public static final String ACTION_EVENTS = "co.edu.uniquindio.campusuq.ACTION_EVENTS";
-    public static final String ACTION_SYMBOLS = "co.edu.uniquindio.campusuq.ACTION_SYMBOLS";
-    public static final String ACTION_WELFARE = "co.edu.uniquindio.campusuq.ACTION_WELFARE";
-    public static final String ACTION_CONTACTS = "co.edu.uniquindio.campusuq.ACTION_CONTACTS";
-    public static final String ACTION_PROGRAMS = "co.edu.uniquindio.campusuq.ACTION_PROGRAMS";
-    public static final String ACTION_CALENDAR = "co.edu.uniquindio.campusuq.ACTION_CALENDAR";
-    public static final String ACTION_INCIDENTS = "co.edu.uniquindio.campusuq.ACTION_INCIDENTS";
+    public static final String ACTION_NONE        = "co.edu.uniquindio.campusuq.ACTION_NONE";
+    public static final String ACTION_ALL         = "co.edu.uniquindio.campusuq.ACTION_ALL";
+    public static final String ACTION_NEWS        = "co.edu.uniquindio.campusuq.ACTION_NEWS";
+    public static final String ACTION_EVENTS      = "co.edu.uniquindio.campusuq.ACTION_EVENTS";
+    public static final String ACTION_SYMBOLS     = "co.edu.uniquindio.campusuq.ACTION_SYMBOLS";
+    public static final String ACTION_WELFARE     = "co.edu.uniquindio.campusuq.ACTION_WELFARE";
+    public static final String ACTION_CONTACTS    = "co.edu.uniquindio.campusuq.ACTION_CONTACTS";
+    public static final String ACTION_PROGRAMS    = "co.edu.uniquindio.campusuq.ACTION_PROGRAMS";
+    public static final String ACTION_CALENDAR    = "co.edu.uniquindio.campusuq.ACTION_CALENDAR";
+    public static final String ACTION_INCIDENTS   = "co.edu.uniquindio.campusuq.ACTION_INCIDENTS";
     public static final String ACTION_COMMUNIQUES = "co.edu.uniquindio.campusuq.ACTION_COMMUNIQUES";
-    public static final String ACTION_OBJECTS = "co.edu.uniquindio.campusuq.ACTION_OBJECTS";
-    public static final String ACTION_DISHES = "co.edu.uniquindio.campusuq.ACTION_DISHES";
-    public static final String ACTION_QUOTAS = "co.edu.uniquindio.campusuq.ACTION_QUOTAS";
-    public static final String ACTION_EMAILS = "co.edu.uniquindio.campusuq.ACTION_EMAILS";
-    public static final String ACTION_USERS = "co.edu.uniquindio.campusuq.ACTION_USERS";
+    public static final String ACTION_OBJECTS     = "co.edu.uniquindio.campusuq.ACTION_OBJECTS";
+    public static final String ACTION_DISHES      = "co.edu.uniquindio.campusuq.ACTION_DISHES";
+    public static final String ACTION_QUOTAS      = "co.edu.uniquindio.campusuq.ACTION_QUOTAS";
+    public static final String ACTION_EMAILS      = "co.edu.uniquindio.campusuq.ACTION_EMAILS";
+    public static final String ACTION_USERS       = "co.edu.uniquindio.campusuq.ACTION_USERS";
 
-    public static final String METHOD_GET = "co.edu.uniquindio.campusuq.METHOD_GET";
-    public static final String METHOD_POST = "co.edu.uniquindio.campusuq.METHOD_POST";
-    public static final String METHOD_PUT = "co.edu.uniquindio.campusuq.METHOD_PUT";
+    public static final String METHOD_GET    = "co.edu.uniquindio.campusuq.METHOD_GET";
+    public static final String METHOD_POST   = "co.edu.uniquindio.campusuq.METHOD_POST";
+    public static final String METHOD_PUT    = "co.edu.uniquindio.campusuq.METHOD_PUT";
     public static final String METHOD_DELETE = "co.edu.uniquindio.campusuq.METHOD_DELETE";
 
     public static String PENDING_ACTION = ACTION_NONE;
 
-    public static final String[] NOTIFICATIONS =
-            { "Events", "News", "Academic Calendar", "Lost Objects",
-            "Security System", "Billboard Information", "Institutional Mail" };
+    public static final String[] NOTIFICATIONS = {"Events", "News", "Academic Calendar",
+            "Lost Objects", "Security System", "Billboard Information", "Institutional Mail"};
 
     private static final int mNotificationId = 1;
 
@@ -138,7 +142,8 @@ public class WebService extends JobIntentService {
                 if (user == null) {
                     JSONObject json = new JSONObject();
                     try {
-                        json.put(UsersSQLiteController.columns[2], "campusuq@uniquindio.edu.co");
+                        json.put(UsersSQLiteController.columns[2],
+                                "campusuq@uniquindio.edu.co");
                         json.put(UsersSQLiteController.columns[6], "campusuq");
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -236,11 +241,11 @@ public class WebService extends JobIntentService {
     }
 
     private Notification buildNotification(String type, Object object) {
-
         NotificationCompat.Builder builder;
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManager mNotificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             String nId = getString(R.string.web_notification_id);
             CharSequence nName = getString(R.string.web_notification_name);
             String nDescription = getString(R.string.web_notification_description);
@@ -289,9 +294,11 @@ public class WebService extends JobIntentService {
                                         getString(R.string.security_system) : getString(R.string.billboard_information)))
                         .setContentText(announcement.getName())
                         .setSubText(announcement.getDescription());
-                AnnouncementsSQLiteController dbController = new AnnouncementsSQLiteController(getApplicationContext(), 1);
+                AnnouncementsSQLiteController dbController =
+                        new AnnouncementsSQLiteController(getApplicationContext(), 1);
                 ArrayList<AnnouncementLink> links = dbController.selectLink(
-                        AnnouncementsSQLiteController.linkColumns[1] + " = ?", new String[]{String.valueOf(announcement.get_ID())});
+                        AnnouncementsSQLiteController.linkColumns[1]+" = ?",
+                        announcement.get_ID());
                 dbController.destroy();
                 file = links.size() > 0 ? new File(links.get(0).getLink()) : new File("");
                 break;
@@ -317,7 +324,6 @@ public class WebService extends JobIntentService {
         return builder.setSmallIcon(R.mipmap.ic_launcher)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setContentIntent(buildPendingIntent(type)).setAutoCancel(true).build();
-
     }
 
     private PendingIntent buildPendingIntent(String type) {
@@ -369,7 +375,6 @@ public class WebService extends JobIntentService {
     }
 
     private void loadNews(String type) {
-
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled) return;
         Context context = getApplicationContext();
@@ -443,11 +448,9 @@ public class WebService extends JobIntentService {
 
         dbController.destroy();
         sendBroadcast(new Intent(ACTION_NEWS).putExtra("INSERTED", inserted));
-
     }
 
     private void loadInformations() {
-
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled) return;
         InformationsSQLiteController dbController =
@@ -473,7 +476,7 @@ public class WebService extends JobIntentService {
                     for (Information information : updatedInformations) {
                         ArrayList<Information> olds = dbController.select(
                                 InformationsSQLiteController.CAMPOS_TABLA[0]+" = ?", new String[]{information.get_ID()});
-                        if (olds.size() > 0) {
+                        if (!olds.isEmpty()) {
                             dbController.update(information.get_ID(), information.getCategory_ID(),
                                     information.getName(), information.getContent());
                         } else {
@@ -487,40 +490,39 @@ public class WebService extends JobIntentService {
 
         dbController.destroy();
         sendBroadcast(new Intent(PENDING_ACTION));
-
     }
 
     private void loadContacts() {
-
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled) return;
         Context context = getApplicationContext();
-        ContactsSQLiteController dbController = new ContactsSQLiteController(context, 1);
 
-        ArrayList<ContactCategory> oldCategories = dbController.selectCategory(null, null);
-        if (oldCategories.size() == 0 && Utilities.haveNetworkConnection(context)) {
+        if (Utilities.haveNetworkConnection(context)) {
+            ContactsSQLiteController dbController =
+                    new ContactsSQLiteController(context, 1);
 
-            ArrayList<ContactCategory> updatedCategories = ContactsServiceController.getContactCategories(context);
-            for (ContactCategory category : updatedCategories) {
-                dbController.insertCategory(category.get_ID(), category.getName(), category.getLink());
+            if (dbController.selectCategory("1", null).isEmpty()) {
+                for (ContactCategory category :
+                        ContactsServiceController.getContactCategories(context)) {
+                    dbController.insertCategory(category.get_ID(), category.getName(),
+                            category.getLink());
+                }
+
+                for (Contact contact : ContactsServiceController.getContacts(context)) {
+                    dbController.insert(contact.get_ID(), contact.getCategory_ID(),
+                            contact.getName(), contact.getAddress(), contact.getPhone(),
+                            contact.getEmail(), contact.getCharge(),
+                            contact.getAdditionalInformation());
+                }
             }
 
-            ArrayList<Contact> updatedContacts = ContactsServiceController.getContacts(context);
-            for (Contact contact : updatedContacts) {
-                dbController.insert(contact.get_ID(), contact.getCategory_ID(),
-                        contact.getName(), contact.getAddress(), contact.getPhone(),
-                        contact.getEmail(), contact.getCharge(), contact.getAdditionalInformation());
-            }
-
+            dbController.destroy();
         }
 
-        dbController.destroy();
         sendBroadcast(new Intent(PENDING_ACTION));
-
     }
 
     private void loadPrograms() {
-
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled)
             return;
@@ -570,66 +572,111 @@ public class WebService extends JobIntentService {
         }
 
         dbController.destroy();
-
-        Intent intent = new Intent(PENDING_ACTION);
-        sendBroadcast(intent);
-
+        sendBroadcast(new Intent(PENDING_ACTION));
     }
 
     private void loadCalendar() {
-
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled) return;
         Context context = getApplicationContext();
+        EventsSQLiteController dbController = new EventsSQLiteController(context, 1);
 
         if (Utilities.haveNetworkConnection(context)) {
-            EventsSQLiteController dbController = new EventsSQLiteController(context, 1);
-
             ArrayList<EventDate> oldDates = dbController.selectDate(
-                    EventsSQLiteController.dateColumns[1]+" = 'fechasPub'",
-                    null);
-            if (!oldDates.isEmpty())
-                for (EventDate date : EventsServiceController.getEventDates(context))
-                    if (date.getType().equals("fechasPub")) {
-                if (oldDates.get(0).getDate().compareTo(date.getDate()) < 0) {
-                    dbController.deleteDate();
-                    dbController.deletePeriod();
-                    dbController.delete();
-                    dbController.deleteCategory();
-                }
-                break;
+                    EventsSQLiteController.dateColumns[1]+" = 'fechasPub'");
+            ArrayList<EventDate> dates =
+                    EventsServiceController.getEventDates(context, "fechasPub");
+            if (!oldDates.isEmpty() && !dates.isEmpty() &&
+                    oldDates.get(0).getDate().compareTo(dates.get(0).getDate()) < 0) {
+                dbController.deleteDate();
+                dbController.deletePeriod();
+                dbController.delete();
+                dbController.deleteCategory();
             }
 
-            ArrayList<EventCategory> oldCategories =
-                    dbController.selectCategory(null, null);
-            if (oldCategories.isEmpty()) {
-                for (EventCategory category : EventsServiceController.getEventCategories(context))
+            if (dbController.selectCategory("1", null).isEmpty()) {
+                for (EventCategory category : EventsServiceController.getEventCategories(context)) {
                     dbController.insertCategory(category.get_ID(), category.getAbbreviation(),
                             category.getName());
+                }
 
-                for (Event event : EventsServiceController.getEvents(context))
+                for (Event event : EventsServiceController.getEvents(context)) {
                     dbController.insert(event.get_ID(), event.getName());
+                }
 
-                for (EventPeriod period : EventsServiceController.getEventPeriods(context))
+                for (EventPeriod period : EventsServiceController.getEventPeriods(context)) {
                     dbController.insertPeriod(period.get_ID(), period.getName());
+                }
 
-                for (EventDate date : EventsServiceController.getEventDates(context))
+                for (EventDate date : EventsServiceController.getEventDates(context, "")) {
                     dbController.insertDate(date.get_ID(), date.getType(), date.getDate());
+                }
 
-                for (EventRelation relation : EventsServiceController.getEventRelations(context))
+                for (EventRelation relation : EventsServiceController.getEventRelations(context)) {
                     dbController.insertRelation(relation.getCategory_ID(), relation.getEvent_ID(),
                             relation.getPeriod_ID(), relation.getDate_ID());
+                }
             }
-
-            dbController.destroy();
         }
 
-        sendBroadcast(new Intent(PENDING_ACTION));
+        Locale locale = new Locale("es", "CO");
+        SimpleDateFormat notifyDateFormat = new SimpleDateFormat("yyyy-MM-dd", locale);
+        String notifyDate = notifyDateFormat.format(Calendar.getInstance().getTime());
 
+        SharedPreferences sharedPreferences =
+                context.getSharedPreferences(Utilities.PREFERENCES, Context.MODE_PRIVATE);
+
+        if (!notifyDate.equals(sharedPreferences.getString(Utilities.CALENDAR_NOTIFY, null))) {
+            sharedPreferences.edit().putString(Utilities.CALENDAR_NOTIFY, notifyDate).apply();
+
+            NotificationManager manager = NotificationsPresenter
+                    .getNotification(context, "2").getActivated().equals("S") ?
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE) : null;
+
+            if (manager != null) {
+                SimpleDateFormat datesFormat =
+                        new SimpleDateFormat("d 'de' MMMM 'de' yyyy", locale);
+
+                int inserted = 0;
+
+                ArrayList<EventRelation> relations = dbController.selectRelation(
+                        EventsSQLiteController.relationColumns, null);
+                ArrayList<Event> events = dbController.select(null);
+
+                for (EventDate date : dbController.selectDate(null)) {
+                    try {
+                        if (notifyDateFormat.format(datesFormat.parse(date.getDate()))
+                                .equals(notifyDate)) {
+                            for (EventRelation relation : relations) {
+                                if (relation.getDate_ID().equals(date.get_ID())) {
+                                    for (Event event : events) {
+                                        if (event.get_ID().equals(relation.getEvent_ID())) {
+                                            manager.notify(event.getName(), mNotificationId,
+                                                    buildNotification(ACTION_OBJECTS, event));
+
+                                            inserted++;
+                                            break;
+                                        }
+                                    }
+
+                                    if (inserted >= 5) break;
+                                }
+                            }
+
+                            if (inserted >= 5) break;
+                        }
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        dbController.destroy();
+        sendBroadcast(new Intent(PENDING_ACTION));
     }
 
     private void loadAnnouncements(String type, String method, String object) {
-
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled) return;
         String response = null;
@@ -647,11 +694,12 @@ public class WebService extends JobIntentService {
                             .modifyAnnouncement(context, json.toString()));
                     StringBuilder builder = new StringBuilder(json.getString("mensaje"));
                     int _ID = json.getInt("id");
-                    if (links != null) for (int i = 0; i < links.length(); i++)
+                    if (links != null) for (int i = 0; i < links.length(); i++) {
                         builder.append('\n').append(AnnouncementsServiceController
                                 .modifyAnnouncementLink(context, links.getJSONObject(i)
                                         .put(AnnouncementsSQLiteController.linkColumns[1], _ID)
                                         .toString()));
+                    }
                     response = builder.toString();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -677,10 +725,9 @@ public class WebService extends JobIntentService {
                 AnnouncementsSQLiteController dbController =
                         new AnnouncementsSQLiteController(context, 1);
 
-                ArrayList<Integer> _IDs = new ArrayList<>();
+                ArrayList<String> _IDs = new ArrayList<>();
                 ArrayList<Announcement> announcements = dbController.select(null,
-                        AnnouncementsSQLiteController.columns[2]+" = ?",
-                        new String[]{selectionArg});
+                        AnnouncementsSQLiteController.columns[2]+" = ?", selectionArg);
                 for (Announcement announcement : announcements) _IDs.add(announcement.get_ID());
                 if (_IDs.isEmpty()) notify = false;
                 else category_date += '/'+announcements.get(0).getDate();
@@ -706,13 +753,15 @@ public class WebService extends JobIntentService {
                         _IDs.remove(index);
                     }
 
-                    ArrayList<Integer> links_IDs = new ArrayList<>();
+                    ArrayList<String> links_IDs = new ArrayList<>();
                     for (AnnouncementLink link : dbController.selectLink(
                             AnnouncementsSQLiteController.linkColumns[1]+" = ?",
-                            new String[]{""+announcement.get_ID()})) links_IDs.add(link.get_ID());
+                            announcement.get_ID())) {
+                        links_IDs.add(link.get_ID());
+                    }
                     ArrayList<AnnouncementLink> links =
                             AnnouncementsServiceController.getAnnouncementLinks(context,
-                                    "/"+announcement.get_ID());
+                                    '/'+announcement.get_ID());
 
                     for (AnnouncementLink link : links) {
                         String imagePath = Utilities.saveImage(link.getLink(),
@@ -731,11 +780,14 @@ public class WebService extends JobIntentService {
                     }
 
                     // Se eliminan los items que hay en la aplicacion pero no en el servidor
-                    if (state.get() == Utilities.SUCCESS_STATE)
+                    if (state.get() == Utilities.SUCCESS_STATE) {
                         dbController.deleteLink(links_IDs.toArray());
+                    }
 
-                    if (++inserted <= 5 && manager != null) manager.notify(announcement.getName(),
-                            mNotificationId, buildNotification(type, announcement));
+                    if (++inserted <= 5 && manager != null) {
+                        manager.notify(announcement.getName(), mNotificationId,
+                                buildNotification(type, announcement));
+                    }
                 }
 
                 // Se eliminan los items que hay en la aplicacion pero no en el servidor
@@ -749,11 +801,9 @@ public class WebService extends JobIntentService {
 
         sendBroadcast(new Intent(ACTION_INCIDENTS).putExtra("INSERTED", inserted)
                 .putExtra("RESPONSE", response));
-
     }
 
     private void loadObjects(String method, String object) {
-
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled) return;
         String response = null;
@@ -770,9 +820,8 @@ public class WebService extends JobIntentService {
                 ObjectsSQLiteController dbController =
                         new ObjectsSQLiteController(context, 1);
 
-                ArrayList<Integer> _IDs = new ArrayList<>();
-                ArrayList<LostObject> objects = dbController.select(null, null,
-                        null);
+                ArrayList<String> _IDs = new ArrayList<>();
+                ArrayList<LostObject> objects = dbController.select(null, null);
                 for (LostObject lostObject : objects) _IDs.add(lostObject.get_ID());
                 Utilities.State state = new Utilities.State(Utilities.FAILURE_STATE);
                 objects = ObjectsServiceController.getObjects(context,
@@ -799,8 +848,10 @@ public class WebService extends JobIntentService {
                         _IDs.remove(index);
                     }
 
-                    if (++inserted <= 5 && manager != null) manager.notify(obj.getName(),
-                            mNotificationId, buildNotification(ACTION_OBJECTS, obj));
+                    if (++inserted <= 5 && manager != null) {
+                        manager.notify(obj.getName(), mNotificationId,
+                                buildNotification(ACTION_OBJECTS, obj));
+                    }
                 }
 
                 // Se eliminan los items que hay en la aplicacion pero no en el servidor
@@ -814,11 +865,9 @@ public class WebService extends JobIntentService {
 
         sendBroadcast(new Intent(ACTION_OBJECTS).putExtra("INSERTED", inserted)
                 .putExtra("RESPONSE", response));
-
     }
 
     private void loadDishes(String method, String object) {
-
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled) return;
         String response = null;
@@ -835,9 +884,8 @@ public class WebService extends JobIntentService {
                 DishesSQLiteController dbController =
                         new DishesSQLiteController(context, 1);
 
-                ArrayList<Integer> IDs = new ArrayList<>();
-                for (Dish dish : dbController.select(null, null, null))
-                    IDs.add(dish.get_ID());
+                ArrayList<String> IDs = new ArrayList<>();
+                for (Dish dish : dbController.select(null)) IDs.add(dish.get_ID());
                 ArrayList<Dish> dishes = DishesServiceController.getDishes(context);
 
                 for (Dish dish : dishes) {
@@ -866,11 +914,9 @@ public class WebService extends JobIntentService {
 
         sendBroadcast(new Intent(ACTION_DISHES).putExtra("INSERTED", inserted)
                 .putExtra("RESPONSE", response));
-
     }
 
     private void loadQuotas(String method, String object) {
-
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled) return;
         String response = null;
@@ -886,9 +932,8 @@ public class WebService extends JobIntentService {
                 QuotasSQLiteController dbController =
                         new QuotasSQLiteController(context, 1);
 
-                ArrayList<Integer> IDs = new ArrayList<>();
-                for (Quota quota : dbController.select(null, null))
-                    IDs.add(quota.get_ID());
+                ArrayList<String> IDs = new ArrayList<>();
+                for (Quota quota : dbController.select(null)) IDs.add(quota.get_ID());
                 ArrayList<Quota> quotas = QuotasServiceController.getQuotas(context);
 
                 for (Quota quota : quotas) {
@@ -913,11 +958,9 @@ public class WebService extends JobIntentService {
         }
 
         sendBroadcast(new Intent(ACTION_QUOTAS).putExtra("RESPONSE", response));
-
     }
 
     private void loadUsers(String method, String object) {
-
         User user = null;
 
         if (Utilities.haveNetworkConnection(getApplicationContext())) {
@@ -941,8 +984,7 @@ public class WebService extends JobIntentService {
                         break;
                     }
                 case METHOD_DELETE:
-                    ArrayList<User> users = dbController.select(null, null);
-                    for (User u : users) {
+                    for (User u : dbController.select()) {
                         if (!u.getEmail().equals("campusuq@uniquindio.edu.co")) {
                             dbController.delete(u.get_ID());
                         }
@@ -961,11 +1003,9 @@ public class WebService extends JobIntentService {
         }
 
         sendBroadcast(new Intent(ACTION_USERS).putExtra("USER", user));
-
     }
 
     private void loadEmails(String method, String object) {
-
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled) return;
         Intent intent = null;
@@ -996,21 +1036,22 @@ public class WebService extends JobIntentService {
                     }
                     break;
                 case METHOD_GET:
-                    boolean notify = NotificationsPresenter.getNotification(getApplicationContext(), "6")
-                            .getActivated().equals("S");
-                    NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    boolean notify = NotificationsPresenter.getNotification(getApplicationContext(),
+                            "6").getActivated().equals("S");
+                    NotificationManager manager =
+                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                     User user = UsersPresenter.loadUser(getApplicationContext());
                     if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co")) {
                         EmailsSQLiteController dbController =
                                 new EmailsSQLiteController(getApplicationContext(), 1);
 
                         ArrayList<String> oldIDs = new ArrayList<>();
-                        ArrayList<Email> olds =
-                                dbController.select("50", null, null);
+                        ArrayList<Email> olds = dbController.select("50");
                         for (Email old : olds) oldIDs.add(old.get_ID());
                         try {
-                            ArrayList<Email> emails = EmailsServiceController.getEmails(getApplicationContext(),
-                                    olds.size() > 0 ? olds.get(0).getHistoryID() : null);
+                            ArrayList<Email> emails = EmailsServiceController.getEmails(
+                                    getApplicationContext(),
+                                    !olds.isEmpty() ? olds.get(0).getHistoryID() : null);
                             notify = emails.size() > 0 && notify;
                             for (Email email : emails) {
                                 int index = oldIDs.indexOf(email.get_ID());
@@ -1021,7 +1062,8 @@ public class WebService extends JobIntentService {
                                             ""+email.getHistoryID());
                                     inserted ++;
                                     if (manager != null && notify && inserted <= 5) {
-                                        manager.notify(email.getName(), mNotificationId, buildNotification(ACTION_EMAILS, email));
+                                        manager.notify(email.getName(), mNotificationId,
+                                                buildNotification(ACTION_EMAILS, email));
                                     }
                                 }
                             }
@@ -1037,7 +1079,6 @@ public class WebService extends JobIntentService {
 
         sendBroadcast(new Intent(ACTION_EMAILS).putExtra("INSERTED", inserted)
                 .putExtra("INTENT", intent));
-
     }
 
     @Override

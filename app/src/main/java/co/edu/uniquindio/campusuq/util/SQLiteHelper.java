@@ -23,7 +23,8 @@ import co.edu.uniquindio.campusuq.users.UsersSQLiteController;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
 
-    public SQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    public SQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory,
+                        int version) {
         super(context, name, factory, version);
     }
 

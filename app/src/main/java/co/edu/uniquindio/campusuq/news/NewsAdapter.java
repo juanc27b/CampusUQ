@@ -32,6 +32,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewViewHolder>
     static final String UNDEFINED = "undefined";
 
     private ArrayList<New> news;
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+            "yyyy-MM-dd'T'HH:mm:ssZ", new Locale("es", "CO"));
     private OnClickNewListener listener;
 
     NewsAdapter(ArrayList<New> news, NewsActivity newsActivity) {
@@ -61,7 +63,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewViewHolder>
             view.findViewById(R.id.new_facebook_button).setOnClickListener(this);
             view.findViewById(R.id.new_twitter_button).setOnClickListener(this);
             view.findViewById(R.id.new_whatsapp_button).setOnClickListener(this);
-
         }
 
         void bindItem(New n) {
@@ -71,8 +72,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewViewHolder>
             else image.setImageResource(R.drawable.rectangle_gray);
 
             try {
-                Date dateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",
-                        new Locale("es", "CO")).parse(n.getDate());
+                Date dateTime = simpleDateFormat.parse(n.getDate());
                 date.setText(String.format("%s\n%s",
                         DateFormat.getDateInstance(DateFormat.MEDIUM).format(dateTime),
                         DateFormat.getTimeInstance(DateFormat.SHORT).format(dateTime)));

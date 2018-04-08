@@ -53,8 +53,10 @@ public class WebActivity extends AppCompatActivity {
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient() {
             @Override
-            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                Toast.makeText(WebActivity.this, "Oh no! " + description, Toast.LENGTH_SHORT).show();
+            public void onReceivedError(WebView view, int errorCode, String description,
+                                        String failingUrl) {
+                Toast.makeText(WebActivity.this, "Oh no! "+description,
+                        Toast.LENGTH_SHORT).show();
             }
 
             @Override

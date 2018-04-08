@@ -64,7 +64,7 @@ public class QuotasFragment extends DialogFragment implements View.OnClickListen
             ((TextView) view.findViewById(R.id.quota_dialog_name)).setText(String.format("%s %s",
                     getString(R.string.adjust_quotas), q.getName()));
             quota = view.findViewById(R.id.quota_dialog_quota);
-            quota.setText(String.valueOf(q.getQuota()));
+            quota.setText(q.getQuota());
 
             view.findViewById(R.id.quota_dialog_minus).setOnClickListener(this);
             view.findViewById(R.id.quota_dialog_plus).setOnClickListener(this);
@@ -111,11 +111,10 @@ public class QuotasFragment extends DialogFragment implements View.OnClickListen
                         if (modify.isChecked()) {
                             Intent intent = new Intent(quotasActivity, QuotasDetailActivity.class);
                             intent.putExtra("CATEGORY", getString(R.string.quota_detail_modify));
-                            intent.putExtra(QuotasSQLiteController.columns[0], ""+q.get_ID());
+                            intent.putExtra(QuotasSQLiteController.columns[0], q.get_ID());
                             intent.putExtra(QuotasSQLiteController.columns[1], q.getType());
                             intent.putExtra(QuotasSQLiteController.columns[2], q.getName());
-                            intent.putExtra(QuotasSQLiteController.columns[3],
-                                    ""+q.getQuota());
+                            intent.putExtra(QuotasSQLiteController.columns[3], q.getQuota());
                             quotasActivity.startActivityForResult(intent, 0);
                         } else if (delete.isChecked()) {
                             quotasActivity.mTracker.send(new HitBuilders.EventBuilder()
@@ -143,7 +142,7 @@ public class QuotasFragment extends DialogFragment implements View.OnClickListen
                         }
                     }
                 } else {
-                    Toast.makeText(quotasActivity, getString(R.string.no_internet),
+                    Toast.makeText(quotasActivity, R.string.no_internet,
                             Toast.LENGTH_SHORT).show();
                 }
                 // Tanto ok como cancel cierran el dialogo, por eso aqui no hay break

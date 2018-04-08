@@ -46,7 +46,7 @@ public class EventsSQLiteController {
                 columns[1]+" TEXT NOT NULL UNIQUE)";
     }
 
-    public ArrayList<Event> select(String selection, String[] selectionArgs) {
+    public ArrayList<Event> select(String selection, String... selectionArgs) {
         ArrayList<Event> events = new ArrayList<>();
 
         Cursor c = db.query(tablename, columns, selection, selectionArgs, null,
@@ -76,11 +76,12 @@ public class EventsSQLiteController {
                 categoryColumns[2]+" TEXT NOT NULL UNIQUE)";
     }
 
-    public ArrayList<EventCategory> selectCategory(String selection, String[] selectionArgs) {
+    public ArrayList<EventCategory> selectCategory(String limit, String selection,
+                                                   String... selectionArgs) {
         ArrayList<EventCategory> categories = new ArrayList<>();
 
         Cursor c = db.query(categoryTablename, categoryColumns, selection, selectionArgs,
-                null, null, categoryColumns[0]+" ASC");
+                null, null, categoryColumns[0]+" ASC", limit);
         if (c.moveToFirst()) do {
             categories.add(new EventCategory(c.getString(0), c.getString(1),
                     c.getString(2)));
@@ -106,7 +107,7 @@ public class EventsSQLiteController {
                 periodColumns[1]+" TEXT NOT NULL UNIQUE)";
     }
 
-    ArrayList<EventPeriod> selectPeriod(String selection, String[] selectionArgs) {
+    ArrayList<EventPeriod> selectPeriod(String selection, String... selectionArgs) {
         ArrayList<EventPeriod> periods = new ArrayList<>();
 
         Cursor c = db.query(periodTablename, periodColumns, selection, selectionArgs, null,
@@ -136,7 +137,7 @@ public class EventsSQLiteController {
                 "UNIQUE("+dateColumns[1]+", "+dateColumns[2]+"))";
     }
 
-    public ArrayList<EventDate> selectDate(String selection, String[] selectionArgs) {
+    public ArrayList<EventDate> selectDate(String selection, String... selectionArgs) {
         ArrayList<EventDate> dates = new ArrayList<>();
 
         Cursor c = db.query(dateTablename, dateColumns, selection, selectionArgs, null,
@@ -175,7 +176,7 @@ public class EventsSQLiteController {
     }
 
     public ArrayList<EventRelation> selectRelation(String[] columns, String selection,
-                                                   String[] selectionArgs) {
+                                                   String... selectionArgs) {
         ArrayList<EventRelation> relations = new ArrayList<>();
 
         Cursor c = db.query(true, relationTablename, columns, selection, selectionArgs,

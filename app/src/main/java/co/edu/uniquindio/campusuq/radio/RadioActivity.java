@@ -37,8 +37,8 @@ public class RadioActivity extends MainActivity {
 
     private MediaBrowserCompat mMediaBrowser;
 
-
-    private final MediaBrowserCompat.ConnectionCallback mConnectionCallbacks = new MediaBrowserCompat.ConnectionCallback() {
+    private final MediaBrowserCompat.ConnectionCallback mConnectionCallbacks =
+            new MediaBrowserCompat.ConnectionCallback() {
         @Override
         public void onConnected() {
 
@@ -84,8 +84,8 @@ public class RadioActivity extends MainActivity {
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-
-        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+        super.setBackground(R.drawable.portrait_normal_background,
+                R.drawable.landscape_normal_background);
 
         ViewStub stub = findViewById(R.id.layout_stub);
         stub.setLayoutResource(R.layout.content_radio);
@@ -140,15 +140,19 @@ public class RadioActivity extends MainActivity {
             public void onClick(View v) {
                 // Since this is a play/pause button, you'll need to test the current state
                 // and choose the action accordingly
-                int pbState = MediaControllerCompat.getMediaController(RadioActivity.this).getPlaybackState().getState();
+                int pbState = MediaControllerCompat.getMediaController(RadioActivity.this)
+                        .getPlaybackState().getState();
                 if (pbState == PlaybackStateCompat.STATE_PLAYING) {
                     play.setEnabled(false);
-                    MediaControllerCompat.getMediaController(RadioActivity.this).getTransportControls().pause();
+                    MediaControllerCompat.getMediaController(RadioActivity.this)
+                            .getTransportControls().pause();
                 } else if (Utilities.haveNetworkConnection(RadioActivity.this)) {
                     play.setEnabled(false);
-                    MediaControllerCompat.getMediaController(RadioActivity.this).getTransportControls().play();
+                    MediaControllerCompat.getMediaController(RadioActivity.this)
+                            .getTransportControls().play();
                 } else {
-                    Toast.makeText(RadioActivity.this, "No hay conexión a internet", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RadioActivity.this, R.string.no_internet,
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -156,7 +160,8 @@ public class RadioActivity extends MainActivity {
         stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MediaControllerCompat.getMediaController(RadioActivity.this).getTransportControls().stop();
+                MediaControllerCompat.getMediaController(RadioActivity.this).getTransportControls()
+                        .stop();
             }
         });
 
@@ -185,7 +190,7 @@ public class RadioActivity extends MainActivity {
             }
         });
 
-        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(RadioActivity.this);
+        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(this);
 
         // Display the initial state
         int pbState = mediaController.getPlaybackState().getState();
@@ -201,7 +206,7 @@ public class RadioActivity extends MainActivity {
         if (state == PlaybackStateCompat.STATE_PLAYING) {
             play.setImageResource(R.drawable.pause_button);
         } else if (state == PlaybackStateCompat.STATE_CONNECTING) {
-            Glide.with(RadioActivity.this).load(R.raw.spinner).into(play);
+            Glide.with(this).load(R.raw.spinner).into(play);
         } else  {
             play.setImageResource(R.drawable.play_button);
         }
@@ -217,8 +222,8 @@ public class RadioActivity extends MainActivity {
     public void onStop() {
         super.onStop();
         // (see "stay in sync with the MediaSession")
-        if (MediaControllerCompat.getMediaController(RadioActivity.this) != null) {
-            MediaControllerCompat.getMediaController(RadioActivity.this).unregisterCallback(controllerCallback);
+        if (MediaControllerCompat.getMediaController(this) != null) {
+            MediaControllerCompat.getMediaController(this).unregisterCallback(controllerCallback);
         }
         mMediaBrowser.disconnect();
 

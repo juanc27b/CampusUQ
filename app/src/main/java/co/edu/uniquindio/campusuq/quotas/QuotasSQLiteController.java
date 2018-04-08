@@ -30,14 +30,14 @@ public class QuotasSQLiteController {
                 columns[3]+" INTEGER NOT NULL)";
     }
 
-    public ArrayList<Quota> select(String selection, String[] selectionArgs) {
+    public ArrayList<Quota> select(String selection, String... selectionArgs) {
         ArrayList<Quota> quotas = new ArrayList<>();
 
         Cursor c = db.query(tablename, columns, selection, selectionArgs, null,
                 null, columns[0]+" ASC");
         if (c.moveToFirst()) do {
-            quotas.add(new Quota(c.getInt(0), c.getString(1), c.getString(2),
-                    c.getInt(3)));
+            quotas.add(new Quota(c.getString(0), c.getString(1), c.getString(2),
+                    c.getString(3)));
         } while (c.moveToNext());
         c.close();
 

@@ -19,19 +19,17 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 public class UsersServiceController {
 
     public static User login(String json) {
-        String url = Utilities.URL_SERVICIO+"/usuarios/login";
         User user = null;
-        HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpPost post = new HttpPost(url);
+        HttpPost post = new HttpPost(Utilities.URL_SERVICIO+"/usuarios/login");
         post.setHeader("Content-Type", "application/json; Charset=UTF-8");
         try {
             StringEntity entity = new StringEntity(json);
             post.setEntity(entity);
-            HttpResponse respose = httpClient.execute(post);
+            HttpResponse respose = HttpClientBuilder.create().build().execute(post);
             String respStr = EntityUtils.toString(respose.getEntity());
             JSONObject jsonResp = new JSONObject(respStr);
             JSONObject jsonUser = jsonResp.getJSONObject("usuario");
-            int _ID = jsonUser.getInt("_ID");
+            String _ID = jsonUser.getString("_ID");
             String name = jsonUser.getString("Nombre");
             String email = jsonUser.getString("Correo");
             String phone = jsonUser.getString("Telefono");

@@ -99,8 +99,7 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
                 (newActivity ? 0 : emails.size()-1) : (inserted != 0 ? inserted-1 : 0);
 
         EmailsSQLiteController dbController = new EmailsSQLiteController(this, 1);
-        emails = dbController.select(""+emails.size()+(inserted > 0 ? inserted : 6),
-                null, null);
+        emails = dbController.select(""+emails.size()+(inserted > 0 ? inserted : 6));
         dbController.destroy();
 
         if (newActivity) {
@@ -163,12 +162,14 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
     @Override
     protected void onResume() {
         super.onResume();
+        // Register for the particular broadcast based on ACTION string
         registerReceiver(emailsReceiver, emailsFilter);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        // Unregister the listener when the application is paused
         unregisterReceiver(emailsReceiver);
     }
 

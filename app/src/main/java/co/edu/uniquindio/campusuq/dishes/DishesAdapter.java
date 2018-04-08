@@ -51,13 +51,15 @@ public class DishesAdapter extends RecyclerView.Adapter<DishesAdapter.DishViewHo
 
             name.setText(dish.getName());
             description.setText(dish.getDescription());
-            price.setText(NumberFormat.getCurrencyInstance().format(dish.getPrice()));
+            price.setText(NumberFormat.getCurrencyInstance().format(Long
+                    .parseLong(dish.getPrice())));
         }
 
         @Override
         public void onClick(View view) {
             listener.onDishClick(getAdapterPosition());
         }
+
     }
 
     @Override

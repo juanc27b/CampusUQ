@@ -47,9 +47,10 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
         public void onReceive(Context context, Intent intent) {
             User user = intent.getParcelableExtra("USER");
             if (user == null) {
-                Toast.makeText(context, context.getString(R.string.registration_wrong), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.registration_wrong, Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(context, context.getString(R.string.registration_successful), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.registration_successful,
+                        Toast.LENGTH_SHORT).show();
                 finish();
             }
             if(progressDialog.isShowing()) progressDialog.dismiss();
@@ -65,8 +66,8 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-
-        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+        super.setBackground(R.drawable.portrait_normal_background,
+                R.drawable.landscape_normal_background);
 
         ViewStub viewStub = findViewById(R.id.layout_stub);
         viewStub.setLayoutResource(R.layout.content_users);
@@ -85,17 +86,30 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
             @Override
             public void onClick(View v) {
                 if (name.getText().length() < 3 || name.getText().length() > 50) {
-                    Toast.makeText(UsersActivity.this, getString(R.string.user_name_invalid), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UsersActivity.this,
+                            R.string.user_name_invalid,
+                            Toast.LENGTH_SHORT).show();
                 } else if (email.getText().length() < 7 || email.getText().length() > 70) {
-                    Toast.makeText(UsersActivity.this, getString(R.string.user_email_invalid), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UsersActivity.this,
+                            R.string.user_email_invalid,
+                            Toast.LENGTH_SHORT).show();
                 } else if (phone.getText().length() > 50) {
-                    Toast.makeText(UsersActivity.this, getString(R.string.user_phone_invalid), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UsersActivity.this,
+                            R.string.user_phone_invalid,
+                            Toast.LENGTH_SHORT).show();
                 } else if (address.getText().length() > 100) {
-                    Toast.makeText(UsersActivity.this, getString(R.string.user_address_invalid), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UsersActivity.this,
+                            R.string.user_address_invalid,
+                            Toast.LENGTH_SHORT).show();
                 } else if (document.getText().length() > 50) {
-                    Toast.makeText(UsersActivity.this, getString(R.string.user_document_invalid), Toast.LENGTH_SHORT).show();
-                } else if (password.getText().length() > 0 && (password.getText().length() < 8 || password.getText().length() > 16)) {
-                    Toast.makeText(UsersActivity.this, getString(R.string.user_password_invalid), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UsersActivity.this,
+                            R.string.user_document_invalid,
+                            Toast.LENGTH_SHORT).show();
+                } else if (password.getText().length() > 0 && (password.getText().length() < 8 ||
+                        password.getText().length() > 16)) {
+                    Toast.makeText(UsersActivity.this,
+                            R.string.user_password_invalid,
+                            Toast.LENGTH_SHORT).show();
                 } else if (Utilities.haveNetworkConnection(UsersActivity.this)) {
                     JSONObject json = new JSONObject();
                     try {
@@ -105,7 +119,9 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
                         json.put(UsersSQLiteController.columns[3], phone.getText());
                         json.put(UsersSQLiteController.columns[4], address.getText());
                         json.put(UsersSQLiteController.columns[5], document.getText());
-                        if (password.getText().length() > 0) json.put(UsersSQLiteController.columns[6], password.getText());
+                        if (password.getText().length() > 0) {
+                            json.put(UsersSQLiteController.columns[6], password.getText());
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -120,7 +136,8 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
                     WebBroadcastReceiver.scheduleJob(getApplicationContext(),
                             WebService.ACTION_USERS, WebService.METHOD_POST, json.toString());
                 } else {
-                    Toast.makeText(UsersActivity.this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UsersActivity.this, R.string.no_internet,
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -169,7 +186,8 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
                 @Override
                 public void onClick(View v) {
                     if (!Utilities.haveNetworkConnection(UsersActivity.this)) {
-                        Toast.makeText(UsersActivity.this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UsersActivity.this, R.string.no_internet,
+                                Toast.LENGTH_SHORT).show();
                     } else if (!emailsPresenter.isGooglePlayServicesAvailable()) {
                         emailsPresenter.acquireGooglePlayServices(UsersActivity.this);
                     } else {
@@ -255,7 +273,8 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
                         if (accountName.endsWith("@uqvirtual.edu.co") || accountName.endsWith("@uniquindio.edu.co")) {
                             email.setText(accountName);
                         } else {
-                            Toast.makeText(this, getString(R.string.user_account_invalid), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, R.string.user_account_invalid,
+                                    Toast.LENGTH_SHORT).show();
                         }
                     }
                 }

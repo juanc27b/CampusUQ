@@ -31,6 +31,8 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
     static final String CONTACT   = "contact";
 
     private ArrayList<LostObject> objects;
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+            "yyyy-MM-dd'T'HH:mm:ssZ", new Locale("es", "CO"));
     private OnClickObjectListener listener;
     private Context context;
     private User user;
@@ -75,8 +77,7 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
             place.setText(lostObject.getPlace());
 
             try {
-                Date dateTimeLost = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",
-                        new Locale("es", "CO")).parse(lostObject.getDateLost());
+                Date dateTimeLost = simpleDateFormat.parse(lostObject.getDateLost());
                 dateLost.setText(DateFormat.getDateInstance(DateFormat.LONG).format(dateTimeLost));
                 timeLost.setText(DateFormat.getTimeInstance(DateFormat.SHORT).format(dateTimeLost));
             } catch (ParseException e) {
@@ -93,7 +94,7 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
 
             if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
                     lostObject.getUserFound_ID() != null &&
-                    lostObject.getUserFound_ID() == user.get_ID()) {
+                    lostObject.getUserFound_ID().equals(user.get_ID())) {
                 found.setText(R.string.object_not_found);
                 found.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -102,7 +103,7 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
                     }
                 });
             } else if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
-                    lostObject.getUserLost_ID() == user.get_ID() &&
+                    lostObject.getUserLost_ID().equals(user.get_ID()) &&
                     lostObject.getUserFound_ID() != null) {
                 found.setText(R.string.object_view_contact);
                 found.setOnClickListener(new View.OnClickListener() {
@@ -131,6 +132,7 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
             }
             listener.onObjectClick(getAdapterPosition(), action);
         }
+
     }
 
     @Override

@@ -42,10 +42,11 @@ public class Utilities {
     public final static String URL_SERVICIO = "https://campus-uq.000webhostapp.com";
     public static final String NOMBRE_BD = "Campus_UQ";
 
-    private final static String PREFERENCES = "preferences";
+    public final static String PREFERENCES = "preferences";
     private final static String PREFERENCE_LANGUAGE = "language_preferences";
     private final static String LANGUAGE_ES = "es";
     private final static String LANGUAGE_EN = "en";
+    public final static String CALENDAR_NOTIFY = "calendar_notify";
 
     public static final int SUCCESS_STATE = 11;
     public static final int FAILURE_STATE = 12;
@@ -86,7 +87,8 @@ public class Utilities {
     }
 
     public static boolean haveNetworkConnection(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnected();
     }
@@ -150,9 +152,7 @@ public class Utilities {
         String language = prefs.getString(PREFERENCE_LANGUAGE, LANGUAGE_ES);
         if (language.equals(LANGUAGE_ES)) language = LANGUAGE_EN;
         else if (language.equals(LANGUAGE_EN)) language = LANGUAGE_ES;
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(PREFERENCE_LANGUAGE, language);
-        editor.commit();
+        prefs.edit().putString(PREFERENCE_LANGUAGE, language).commit();
         getLanguage(context);
     }
 

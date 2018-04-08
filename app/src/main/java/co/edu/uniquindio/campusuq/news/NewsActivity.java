@@ -137,7 +137,7 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                 layoutManager.scrollToPosition(news.indexOf(n));
                 return;
             }
-            Toast.makeText(this, "No se ha encontrado la noticia: "+query,
+            Toast.makeText(this, getString(R.string.new_no_found)+query,
                     Toast.LENGTH_SHORT).show();
         } else {
             String category = intent.getStringExtra("CATEGORY");
@@ -214,7 +214,8 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                         startActivity(twitterIntent);
                     }
                 } else {
-                    Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.no_internet),
+                            Toast.LENGTH_SHORT).show();
                 }
                 break;
             case NewsAdapter.WHATSAPP:
@@ -233,7 +234,8 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                 try {
                     startActivity(sendIntent);
                 } catch (android.content.ActivityNotFoundException e) {
-                    Toast.makeText(this, "No se ha instalado Whatsapp", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "No se ha instalado Whatsapp",
+                            Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
@@ -295,8 +297,8 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                                 WebBroadcastReceiver.scheduleJob(getApplicationContext(),
                                         action, WebService.METHOD_GET, null);
                             } else {
-                                Toast.makeText(NewsActivity.this, R.string.no_internet,
-                                        Toast.LENGTH_SHORT).show();
+                                Toast.makeText(NewsActivity.this,
+                                        R.string.no_internet, Toast.LENGTH_SHORT).show();
                             }
                         } else if (!recyclerView.canScrollVertically(1)) {
                             oldNews = true;

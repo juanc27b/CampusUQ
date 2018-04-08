@@ -120,7 +120,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                                         null);
                             } else {
                                 Toast.makeText(ObjectsActivity.this,
-                                        getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                                        R.string.no_internet, Toast.LENGTH_SHORT).show();
                             }
                         } else if (!recyclerView.canScrollVertically(1)) {
                             oldObjects = true;
@@ -147,7 +147,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
             case ObjectsAdapter.DIALOG:
                 if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
                         (user.getAdministrator().equals("S") ||
-                                object.getUserLost_ID() == user.get_ID())) {
+                                object.getUserLost_ID().equals(user.get_ID()))) {
                     ObjectsFragment.newInstance(index).show(getSupportFragmentManager(), null);
                 } else {
                     Toast.makeText(this,
@@ -180,7 +180,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
             case ObjectsAdapter.NOT_FOUND:
                 if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
                         object.getUserFound_ID() != null &&
-                        object.getUserFound_ID() == user.get_ID()) {
+                        object.getUserFound_ID().equals(user.get_ID())) {
                     JSONObject json = new JSONObject();
                     try {
                         json.put("UPDATE_ID", object.get_ID());
@@ -199,7 +199,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                 break;
             case ObjectsAdapter.CONTACT:
                 if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
-                        object.getUserLost_ID() == user.get_ID() &&
+                        object.getUserLost_ID().equals(user.get_ID()) &&
                         object.getUserFound_ID() != null) {
                     Intent intent = new Intent(this, UsersActivity.class);
                     intent.putExtra("CATEGORY", getString(R.string.object_view_contact));
@@ -248,12 +248,14 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
     @Override
     protected void onResume() {
         super.onResume();
+        // Register for the particular broadcast based on ACTION string
         registerReceiver(objectsReceiver, objectsFilter);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        // Unregister the listener when the application is paused
         unregisterReceiver(objectsReceiver);
     }
 }

@@ -40,14 +40,15 @@ public class AnnouncementsSQLiteController {
                 columns[5]+" TEXT NOT NULL, "+columns[6]+" TEXT NOT NULL)";
     }
 
-    public ArrayList<Announcement> select(String limit, String selection, String[] selectionArgs) {
+    public ArrayList<Announcement> select(String limit, String selection, String... selectionArgs) {
         ArrayList<Announcement> announcements = new ArrayList<>();
 
         Cursor c = db.query(tablename, columns, selection, selectionArgs, null,
                 null, columns[4]+" DESC", limit);
         if (c.moveToFirst()) do {
-            announcements.add(new Announcement(c.getInt(0), c.getInt(1), c.getString(2),
-                    c.getString(3), c.getString(4), c.getString(5), c.getString(6)));
+            announcements.add(new Announcement(c.getString(0), c.getString(1),
+                    c.getString(2), c.getString(3), c.getString(4), c.getString(5),
+                    c.getString(6)));
         } while (c.moveToNext());
         c.close();
 
@@ -88,13 +89,13 @@ public class AnnouncementsSQLiteController {
                 linkColumns[2]+" TEXT NOT NULL, "+linkColumns[3]+" TEXT NOT NULL UNIQUE)";
     }
 
-    public ArrayList<AnnouncementLink> selectLink(String selection, String[] selectionArgs) {
+    public ArrayList<AnnouncementLink> selectLink(String selection, String... selectionArgs) {
         ArrayList<AnnouncementLink> links = new ArrayList<>();
 
         Cursor c = db.query(linkTablename, linkColumns, selection, selectionArgs, null,
                 null, linkColumns[0]+" ASC");
         if (c.moveToFirst()) do {
-            links.add(new AnnouncementLink(c.getInt(0), c.getInt(1), c.getString(2),
+            links.add(new AnnouncementLink(c.getString(0), c.getString(1), c.getString(2),
                     c.getString(3)));
         } while (c.moveToNext());
         c.close();

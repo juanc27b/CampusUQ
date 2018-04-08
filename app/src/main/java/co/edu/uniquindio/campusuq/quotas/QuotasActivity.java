@@ -74,7 +74,7 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
                 layoutManager.scrollToPosition(quotas.indexOf(quota));
                 return;
             }
-            Toast.makeText(this, getString(R.string.quota_no_found)+query,
+            Toast.makeText(this, R.string.quota_no_found+query,
                     Toast.LENGTH_SHORT).show();
         } else {
             String category = intent.getStringExtra("CATEGORY");
@@ -93,7 +93,6 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
     }
 
     private void loadQuotas() {
-
         if (!progressDialog.isShowing()) progressDialog.show();
 
         quotas = QuotasPresenter.loadQuotas(this, type);
@@ -122,7 +121,7 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
                                         null);
                             } else {
                                 Toast.makeText(QuotasActivity.this,
-                                        getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                                        R.string.no_internet, Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
@@ -130,11 +129,9 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
             });
         } else {
             adapter.setQuotas(quotas);
-            layoutManager.scrollToPosition(0);
         }
 
         if (progressDialog.isShowing() && quotas.size() > 0) progressDialog.dismiss();
-
     }
 
     @Override
@@ -142,7 +139,7 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
         User user = UsersPresenter.loadUser(this);
         if (user != null && user.getAdministrator().equals("S")) QuotasFragment
                 .newInstance(fragment_quotas, index).show(getSupportFragmentManager(), null);
-        else Toast.makeText(this, getString(R.string.no_administrator),
+        else Toast.makeText(this, R.string.no_administrator,
                 Toast.LENGTH_SHORT).show();
     }
 
@@ -174,12 +171,14 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
     @Override
     protected void onResume() {
         super.onResume();
+        // Register for the particular broadcast based on ACTION string
         registerReceiver(quotasReceiver, quotasFilter);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        // Unregister the listener when the application is paused
         unregisterReceiver(quotasReceiver);
     }
 }

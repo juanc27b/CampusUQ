@@ -30,14 +30,14 @@ public class DishesSQLiteController {
                 columns[3]+" INTEGER NOT NULL, "+columns[4]+" TEXT)";
     }
 
-    public ArrayList<Dish> select(String limit, String selection, String[] selectionArgs) {
+    public ArrayList<Dish> select(String limit) {
         ArrayList<Dish> dishes = new ArrayList<>();
 
-        Cursor c = db.query(tablename, columns, selection, selectionArgs, null,
+        Cursor c = db.query(tablename, columns, null, null, null,
                 null, columns[0]+" DESC", limit);
         if (c.moveToFirst()) do {
-            dishes.add(new Dish(c.getInt(0), c.getString(1), c.getString(2),
-                    c.getInt(3), c.isNull(4) ? null : c.getString(4)));
+            dishes.add(new Dish(c.getString(0), c.getString(1), c.getString(2),
+                    c.getString(3), c.isNull(4) ? null : c.getString(4)));
         } while (c.moveToNext());
         c.close();
 

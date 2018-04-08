@@ -314,8 +314,12 @@
     <string name="socia_error">Error in the operation</string>
     <string name="get_image_error">Error getting the image</string>
 
+    <string name="announcement_no_found">The ad was not found: </string>
     <string name="dish_no_found">The plate has not been found: </string>
     <string name="email_no_found">Mail not found: </string>
+    <string name="event_no_found">The event was not found: </string>
+    <string name="location_no_found">Location not found: </string>
+    <string name="new_no_found">The news has not been found: </string>
     <string name="object_no_found">The object was not found: </string>
     <string name="quota_no_found">The quota has not been found: </string>
 

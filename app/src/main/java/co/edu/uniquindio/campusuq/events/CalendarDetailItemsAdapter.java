@@ -16,7 +16,8 @@ import co.edu.uniquindio.campusuq.R;
  * Created by Juan Camilo on 1/03/2018.
  */
 
-public class CalendarDetailItemsAdapter extends RecyclerView.Adapter<CalendarDetailItemsAdapter.CalendarDetailItemViewHolder> {
+public class CalendarDetailItemsAdapter extends
+        RecyclerView.Adapter<CalendarDetailItemsAdapter.CalendarDetailItemViewHolder> {
 
     private ArrayList<CalendarDetailItem> mItems;
 
@@ -49,12 +50,19 @@ public class CalendarDetailItemsAdapter extends RecyclerView.Adapter<CalendarDet
         void bindItem(CalendarDetailItem i) {
             period.setText(i.getPeriod());
             start.setText(i.getStart());
-            if (i.getEnd() != null) {
+
+            if (i.getStart().length() >= 8 && i.getStart().substring(0, 8).equals("Inicio: ")) {
                 start_flag.setImageResource(R.drawable.green_flag);
+            } else if (i.getStart().length() >= 5 && i.getStart().substring(0, 5).equals("Fin: ")) {
+                start_flag.setImageResource(R.drawable.red_flag);
+            } else {
+                start_flag.setImageResource(R.drawable.yellow_flag);
+            }
+
+            if (i.getEnd() != null) {
                 endLayout.setVisibility(View.VISIBLE);
                 end.setText(i.getEnd());
             } else {
-                start_flag.setImageResource(R.drawable.yellow_flag);
                 endLayout.setVisibility(View.GONE);
             }
         }
@@ -70,7 +78,7 @@ public class CalendarDetailItemsAdapter extends RecyclerView.Adapter<CalendarDet
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(CalendarDetailItemsAdapter.CalendarDetailItemViewHolder holder, int position) {
+    public void onBindViewHolder(CalendarDetailItemViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         holder.bindItem(mItems.get(position));

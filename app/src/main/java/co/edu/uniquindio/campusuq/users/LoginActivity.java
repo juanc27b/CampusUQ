@@ -42,9 +42,9 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
         public void onReceive(Context context, Intent intent) {
             User user = intent.getParcelableExtra("USER");
             if (user == null) {
-                Toast.makeText(context, context.getString(R.string.login_wrong), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.login_wrong, Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(context, context.getString(R.string.login_successful), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.login_successful, Toast.LENGTH_SHORT).show();
                 finish();
             }
             if(progressDialog.isShowing()) progressDialog.dismiss();
@@ -60,8 +60,8 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-
-        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+        super.setBackground(R.drawable.portrait_normal_background,
+                R.drawable.landscape_normal_background);
 
         ViewStub viewStub = findViewById(R.id.layout_stub);
         viewStub.setLayoutResource(R.layout.content_login);
@@ -105,7 +105,8 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
                     WebBroadcastReceiver.scheduleJob(getApplicationContext(),
                             WebService.ACTION_USERS, WebService.METHOD_GET, json.toString());
                 } else {
-                    Toast.makeText(LoginActivity.this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, R.string.no_internet,
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -180,7 +181,8 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
                         if (accountName.endsWith("@uqvirtual.edu.co") || accountName.endsWith("@uniquindio.edu.co")) {
                             email.setText(accountName);
                         } else {
-                            Toast.makeText(this, getString(R.string.user_account_invalid), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, R.string.user_account_invalid,
+                                    Toast.LENGTH_SHORT).show();
                         }
                     }
                 }

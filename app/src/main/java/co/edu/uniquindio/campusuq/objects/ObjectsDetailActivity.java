@@ -172,13 +172,12 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
                         JSONObject json = new JSONObject();
                         try {
                             if (_ID != null) json.put("UPDATE_ID", _ID);
-                            json.put(ObjectsSQLiteController.columns[1], intent.getIntExtra(
-                                    ObjectsSQLiteController.columns[1],
-                                    0));
+                            json.put(ObjectsSQLiteController.columns[1],
+                                    intent.getStringExtra(ObjectsSQLiteController.columns[1]));
                             json.put(ObjectsSQLiteController.columns[2], name.getText());
                             json.put(ObjectsSQLiteController.columns[3], place.getText());
                             json.put(ObjectsSQLiteController.columns[4],
-                                    dateLost.getText()+"T"+timeLost.getText()+"-05:00");
+                                    dateLost.getText()+"T"+timeLost.getText()+"-0500");
                             json.put(ObjectsSQLiteController.columns[6], description.getText());
                             if (imageFile.exists()) {
                                 json.put(ObjectsSQLiteController.columns[7], imageFile.getName());
@@ -190,8 +189,8 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
                                 json.put("imageString",
                                         Base64.encodeToString(imageBytes, Base64.NO_WRAP));
                             }
-                            json.put(ObjectsSQLiteController.columns[8], intent
-                                    .getSerializableExtra(ObjectsSQLiteController.columns[8]));
+                            json.put(ObjectsSQLiteController.columns[8],
+                                    intent.getStringExtra(ObjectsSQLiteController.columns[8]));
                         } catch (JSONException | IOException e) {
                             e.printStackTrace();
                         }
@@ -200,11 +199,11 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
                         setResult(RESULT_OK, intent);
                         finish();
                     } else {
-                        Toast.makeText(this, getString(R.string.empty_string),
+                        Toast.makeText(this, R.string.empty_string,
                                 Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(this, getString(R.string.no_internet),
+                    Toast.makeText(this, R.string.no_internet,
                             Toast.LENGTH_SHORT).show();
                 }
                 break;

@@ -14,7 +14,7 @@ public class UsersPresenter {
         User user = null;
 
         UsersSQLiteController dbController = new UsersSQLiteController(context, 1);
-        ArrayList<User> users = dbController.select(null, null);
+        ArrayList<User> users = dbController.select();
         dbController.destroy();
 
         if (users.size() > 1) {

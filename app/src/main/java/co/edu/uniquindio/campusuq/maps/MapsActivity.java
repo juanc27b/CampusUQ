@@ -30,7 +30,8 @@ import java.util.ArrayList;
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
 
-public class MapsActivity extends MainActivity implements OnMapReadyCallback, OnStreetViewPanoramaReadyCallback {
+public class MapsActivity extends MainActivity implements OnMapReadyCallback,
+        OnStreetViewPanoramaReadyCallback {
 
     private LinearLayout mapLayout;
     private LinearLayout streetViewLayout;
@@ -55,8 +56,8 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback, On
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-
-        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+        super.setBackground(R.drawable.portrait_normal_background,
+                R.drawable.landscape_normal_background);
 
         ViewStub stub = findViewById(R.id.layout_stub);
         stub.setLayoutResource(R.layout.content_maps);
@@ -170,7 +171,8 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback, On
                 }
             }
             if (!found) {
-                Toast.makeText(this, "No se ha encontrado la ubicación: "+query, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.location_no_found)+query,
+                        Toast.LENGTH_SHORT).show();
             }
         } else if (isMapEnabled && mMap != null)  {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(UNIVERSIDAD, 16));

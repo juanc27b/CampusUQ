@@ -34,6 +34,8 @@ public class AnnouncementsAdapter extends
 
     private ArrayList<Announcement> announcements;
     private ArrayList<AnnouncementLink> announcementsLinks;
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+            "yyyy-MM-dd'T'HH:mm:ssZ", new Locale("es", "CO"));
     private OnClickAnnouncementListener listener;
 
     AnnouncementsAdapter(ArrayList<Announcement> announcements,
@@ -93,8 +95,7 @@ public class AnnouncementsAdapter extends
             }
 
             try {
-                Date dateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",
-                        new Locale("es", "CO")).parse(announcement.getDate());
+                Date dateTime = simpleDateFormat.parse(announcement.getDate());
                 date.setText(String.format("%s\n%s",
                         DateFormat.getDateInstance(DateFormat.FULL).format(dateTime),
                         DateFormat.getTimeInstance(DateFormat.SHORT).format(dateTime)));
@@ -132,9 +133,11 @@ public class AnnouncementsAdapter extends
     public void onBindViewHolder(AnnouncementViewHolder holder, int position) {
         Announcement announcement = announcements.get(position);
         ArrayList<AnnouncementLink> announcementLinks = new ArrayList<>();
-        for (AnnouncementLink announcementLink : announcementsLinks)
-            if (announcementLink.getAnnouncement_ID() == announcement.get_ID())
+        for (AnnouncementLink announcementLink : announcementsLinks) {
+            if (announcementLink.getAnnouncement_ID().equals(announcement.get_ID())) {
                 announcementLinks.add(announcementLink);
+            }
+        }
         holder.bindItem(announcement, announcementLinks);
     }
 

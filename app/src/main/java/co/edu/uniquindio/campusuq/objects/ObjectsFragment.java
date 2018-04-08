@@ -70,8 +70,7 @@ public class ObjectsFragment extends DialogFragment implements View.OnClickListe
                     if (modify.isChecked()) {
                         Intent intent = new Intent(objectsActivity, ObjectsDetailActivity.class);
                         intent.putExtra("CATEGORY", getString(R.string.object_report_lost));
-                        intent.putExtra(ObjectsSQLiteController.columns[0],
-                                ""+object.get_ID());
+                        intent.putExtra(ObjectsSQLiteController.columns[0], object.get_ID());
                         intent.putExtra(ObjectsSQLiteController.columns[1],
                                 object.getUserLost_ID());
                         intent.putExtra(ObjectsSQLiteController.columns[2], object.getName());
@@ -101,7 +100,7 @@ public class ObjectsFragment extends DialogFragment implements View.OnClickListe
                         objectsActivity.progressDialog.show();
                     }
                 } else {
-                    Toast.makeText(objectsActivity, getString(R.string.no_internet),
+                    Toast.makeText(objectsActivity, R.string.no_internet,
                             Toast.LENGTH_SHORT).show();
                 }
                 // Tanto ok como cancel cierran el dialogo, por eso aqui no hay break

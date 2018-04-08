@@ -121,7 +121,7 @@ public class EmailsPresenter {
     public void deleteEmails() {
         EmailsSQLiteController dbController = new EmailsSQLiteController(context, 1);
         ArrayList<String> oldIDs = new ArrayList<>();
-        for(Email old : dbController.select(null, null, null)) oldIDs.add(old.get_ID());
+        for (Email old : dbController.select(null)) oldIDs.add(old.get_ID());
         dbController.delete(oldIDs);
         dbController.destroy();
     }

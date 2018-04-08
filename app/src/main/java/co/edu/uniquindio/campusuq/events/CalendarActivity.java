@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
 
-public class CalendarActivity extends MainActivity implements CalendarItemsAdapter.OnClickItemListener {
+public class CalendarActivity extends MainActivity implements
+        CalendarItemsAdapter.OnClickItemListener {
 
     private CalendarItemsAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -33,8 +34,8 @@ public class CalendarActivity extends MainActivity implements CalendarItemsAdapt
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-
-        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+        super.setBackground(R.drawable.portrait_normal_background,
+                R.drawable.landscape_normal_background);
 
         ViewStub stub = findViewById(R.id.layout_stub);
         stub.setLayoutResource(R.layout.content_calendar);
@@ -43,10 +44,11 @@ public class CalendarActivity extends MainActivity implements CalendarItemsAdapt
         RecyclerView mRecyclerView = findViewById(R.id.events_recycler_view);
         mRecyclerView.setHasFixedSize(true);
 
-        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,
+                false);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new CalendarItemsAdapter(items, CalendarActivity.this);
+        mAdapter = new CalendarItemsAdapter(items, this);
         mRecyclerView.setAdapter(mAdapter);
 
         categoryText = findViewById(R.id.category_text);
@@ -70,7 +72,8 @@ public class CalendarActivity extends MainActivity implements CalendarItemsAdapt
                 }
             }
             if (!found) {
-                Toast.makeText(this, "No se ha encontrado el evento: "+query, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.event_no_found)+query,
+                        Toast.LENGTH_SHORT).show();
             }
         } else if (mAdapter != null) {
             category = intent.getStringExtra("CATEGORY");
@@ -80,16 +83,16 @@ public class CalendarActivity extends MainActivity implements CalendarItemsAdapt
     }
 
     private void setItems() {
-        this.items = CalendarPresenter.getCalendarItems(category, CalendarActivity.this);
+        this.items = CalendarPresenter.getCalendarItems(category, this);
         mAdapter.setItems(this.items);
     }
 
     @Override
     public void onCalendarItemClick(int pos) {
-        Intent intent = new Intent(CalendarActivity.this, CalendarDetailActivity.class);
+        Intent intent = new Intent(this, CalendarDetailActivity.class);
         intent.putExtra("EVENT", this.items.get(pos).getEvent());
         intent.putExtra("CATEGORY", category);
-        CalendarActivity.this.startActivity(intent);
+        startActivity(intent);
     }
 
 }

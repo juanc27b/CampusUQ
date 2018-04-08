@@ -80,7 +80,7 @@ public class AnnouncementsFragment extends DialogFragment implements View.OnClic
                                         getString(R.string.report_incident) :
                                         getString(R.string.billboard_detail));
                         intent.putExtra(AnnouncementsSQLiteController.columns[0],
-                                ""+announcement.get_ID());
+                                announcement.get_ID());
                         intent.putExtra(AnnouncementsSQLiteController.columns[1],
                                 announcement.getUser_ID());
                         intent.putExtra(AnnouncementsSQLiteController.columns[3],
@@ -109,7 +109,7 @@ public class AnnouncementsFragment extends DialogFragment implements View.OnClic
                         announcementsActivity.progressDialog.show();
                     }
                 } else {
-                    Toast.makeText(announcementsActivity, getString(R.string.no_internet),
+                    Toast.makeText(announcementsActivity, R.string.no_internet,
                             Toast.LENGTH_SHORT).show();
                 }
                 // Tanto ok como cancel cierran el dialogo, por eso aqui no hay break

@@ -34,16 +34,16 @@ public class ObjectsSQLiteController {
                 columns[8]+" INTEGER, "+columns[9]+" TEXT NOT NULL)";
     }
 
-    public ArrayList<LostObject> select(String limit, String selection, String[] selectionArgs) {
+    public ArrayList<LostObject> select(String limit, String selection, String... selectionArgs) {
         ArrayList<LostObject> objects = new ArrayList<>();
 
         Cursor c = db.query(tablename, columns, selection, selectionArgs, null,
                 null, columns[5]+" DESC", limit);
         if (c.moveToFirst()) do {
-            objects.add(new LostObject(c.getInt(0), c.getInt(1), c.getString(2),
+            objects.add(new LostObject(c.getString(0), c.getString(1), c.getString(2),
                     c.getString(3), c.getString(4), c.getString(5), c.getString(6),
                     c.isNull(7) ? null : c.getString(7),
-                    c.isNull(8) ? null : c.getInt(8), c.getString(9)));
+                    c.isNull(8) ? null : c.getString(8), c.getString(9)));
         } while (c.moveToNext());
         c.close();
 

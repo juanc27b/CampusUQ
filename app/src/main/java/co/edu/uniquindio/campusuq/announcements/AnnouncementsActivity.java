@@ -110,7 +110,6 @@ public class AnnouncementsActivity extends MainActivity implements
             @Override
             public void onSuccess(LoginResult loginResult) {
                 facebookLoggedIn = true;
-
             }
 
             @Override
@@ -154,7 +153,7 @@ public class AnnouncementsActivity extends MainActivity implements
                 layoutManager.scrollToPosition(announcements.indexOf(announcement));
                 return;
             }
-            Toast.makeText(this, "No se ha encontrado el anuncio: "+query,
+            Toast.makeText(this, getString(R.string.announcement_no_found)+query,
                     Toast.LENGTH_SHORT).show();
         } else {
             String category = intent.getStringExtra("CATEGORY");
@@ -191,12 +190,12 @@ public class AnnouncementsActivity extends MainActivity implements
         announcements = AnnouncementsPresenter.loadAnnouncements(action, this,
                 announcements.size()+(inserted > 0 ? inserted : 3));
 
-        ArrayList<String> announcement_IDs = new ArrayList<>();
-        for (Announcement announcement : announcements)
-            announcement_IDs.add(""+announcement.get_ID());
-        ArrayList<AnnouncementLink> announcementsLinks = AnnouncementsPresenter
-                .getAnnouncementsLinks(this,
-                        announcement_IDs.toArray(new String[announcement_IDs.size()]));
+        String[] announcement_IDs = new String[announcements.size()];
+        for (int i = 0; i < announcement_IDs.length; i++) {
+            announcement_IDs[i] = announcements.get(i).get_ID();
+        }
+        ArrayList<AnnouncementLink> announcementsLinks =
+                AnnouncementsPresenter.getAnnouncementsLinks(this, announcement_IDs);
 
         if (newActivity) {
             newActivity = false;
@@ -250,15 +249,17 @@ public class AnnouncementsActivity extends MainActivity implements
                     AnnouncementsFragment.newInstance(index, this.action)
                             .show(getSupportFragmentManager(), null);
                 } else if (user != null && WebService.ACTION_INCIDENTS.equals(action)) {
-                    if (user.get_ID() == announcements.get(index).getUser_ID()) {
+                    if (user.get_ID().equals(announcements.get(index).getUser_ID())) {
                         AnnouncementsFragment.newInstance(index, this.action)
                                 .show(getSupportFragmentManager(), null);
                     } else {
-                        Toast.makeText(this, R.string.no_propietary,
+                        Toast.makeText(this,
+                                R.string.no_propietary,
                                 Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(this, R.string.no_administrator,
+                    Toast.makeText(this,
+                            R.string.no_administrator,
                             Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -268,7 +269,7 @@ public class AnnouncementsActivity extends MainActivity implements
                 break;
             }
             case AnnouncementsAdapter.FACEBOOK:
-                if (Utilities.haveNetworkConnection(AnnouncementsActivity.this)) {
+                if (Utilities.haveNetworkConnection(this)) {
                     mTracker.send(new HitBuilders.EventBuilder()
                             .setCategory(getString(R.string.analytics_announcements_category))
                             .setAction(getString(R.string.analytics_share_action))
@@ -289,11 +290,12 @@ public class AnnouncementsActivity extends MainActivity implements
                         shareDialog.show(content);
                     }
                 } else {
-                    Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.no_internet,
+                            Toast.LENGTH_SHORT).show();
                 }
                 break;
             case AnnouncementsAdapter.TWITTER:
-                if (Utilities.haveNetworkConnection(AnnouncementsActivity.this)) {
+                if (Utilities.haveNetworkConnection(this)) {
                     mTracker.send(new HitBuilders.EventBuilder()
                             .setCategory(getString(R.string.analytics_announcements_category))
                             .setAction(getString(R.string.analytics_share_action))
@@ -307,7 +309,7 @@ public class AnnouncementsActivity extends MainActivity implements
                     } else {
                         final TwitterSession session = TwitterCore.getInstance().getSessionManager()
                                 .getActiveSession();
-                        final Intent twitterIntent = new ComposerActivity.Builder(AnnouncementsActivity.this)
+                        final Intent twitterIntent = new ComposerActivity.Builder(this)
                                 .session(session)
                                 .text(announcements.get(index).getName())
                                 .hashtags("#Uniquindio")
@@ -315,7 +317,8 @@ public class AnnouncementsActivity extends MainActivity implements
                         startActivity(twitterIntent);
                     }
                 } else {
-                    Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.no_internet,
+                            Toast.LENGTH_SHORT).show();
                 }
                 break;
             case AnnouncementsAdapter.WHATSAPP:
@@ -335,11 +338,13 @@ public class AnnouncementsActivity extends MainActivity implements
                 try {
                     startActivity(sendIntent);
                 } catch (android.content.ActivityNotFoundException e) {
-                    Toast.makeText(this, "No se ha instalado Whatsapp", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "No se ha instalado Whatsapp",
+                            Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
-                Toast.makeText(this, "Undefined: "+index, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Undefined: "+index,
+                        Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -407,12 +412,14 @@ public class AnnouncementsActivity extends MainActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        // Register for the particular broadcast based on ACTION string
         registerReceiver(announcementsReceiver, announcementsFilter);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        // Unregister the listener when the application is paused
         unregisterReceiver(announcementsReceiver);
     }
 

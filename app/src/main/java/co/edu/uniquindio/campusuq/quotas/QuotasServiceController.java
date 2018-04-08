@@ -31,10 +31,10 @@ public class QuotasServiceController {
                     .execute(request).getEntity())).getJSONArray("datos");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                quotas.add(new Quota(object.getInt(QuotasSQLiteController.columns[0]),
+                quotas.add(new Quota(object.getString(QuotasSQLiteController.columns[0]),
                         object.getString(QuotasSQLiteController.columns[1]),
                         object.getString(QuotasSQLiteController.columns[2]),
-                        object.getInt(QuotasSQLiteController.columns[3])));
+                        object.getString(QuotasSQLiteController.columns[3])));
             }
         } catch (Exception e) {
             Log.e(QuotasServiceController.class.getSimpleName(), e.getMessage());

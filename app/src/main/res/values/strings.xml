@@ -376,8 +376,12 @@
     <string name="socia_error">Error en la operación</string>
     <string name="get_image_error">Error al obtener la imagen</string>
 
+    <string name="announcement_no_found">No se ha encontrado el anuncio: </string>
     <string name="dish_no_found">No se ha encontrado el plato: </string>
     <string name="email_no_found">No se ha encontrado el correo: </string>
+    <string name="event_no_found">No se ha encontrado el evento: </string>
+    <string name="location_no_found">No se ha encontrado la ubicación: </string>
+    <string name="new_no_found">No se ha encontrado la noticia: </string>
     <string name="object_no_found">No se ha encontrado el objeto: </string>
     <string name="quota_no_found">No se ha encontrado el cupo: </string>
 

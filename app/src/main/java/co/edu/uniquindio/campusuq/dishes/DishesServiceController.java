@@ -31,11 +31,12 @@ public class DishesServiceController {
                     .execute(request).getEntity())).getJSONArray("datos");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                dishes.add(new Dish(object.getInt(DishesSQLiteController.columns[0]),
+                dishes.add(new Dish(object.getString(DishesSQLiteController.columns[0]),
                         object.getString(DishesSQLiteController.columns[1]),
                         object.getString(DishesSQLiteController.columns[2]),
-                        object.getInt(DishesSQLiteController.columns[3]),
-                        object.getString(DishesSQLiteController.columns[4])));
+                        object.getString(DishesSQLiteController.columns[3]),
+                        object.isNull(DishesSQLiteController.columns[4]) ?
+                                null : object.getString(DishesSQLiteController.columns[4])));
             }
         } catch (Exception e) {
             Log.e(DishesServiceController.class.getSimpleName(), e.getMessage());

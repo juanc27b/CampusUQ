@@ -42,11 +42,11 @@ public class QuotasAdapter extends RecyclerView.Adapter<QuotasAdapter.QuotaViewH
         }
 
         void bindItem(Quota q) {
-            icon.setImageResource(q.getQuota() != 0 ? R.drawable.circle_green :
-                    R.drawable.circle_gray);
+            icon.setImageResource(q.getQuota().equals("0") ?
+                    R.drawable.circle_gray : R.drawable.circle_green);
             name.setText(q.getName());
             name.setTextSize(q.getType().equals("S")? 20 : 15);
-            quota.setText(String.valueOf(q.getQuota()));
+            quota.setText(q.getQuota());
         }
 
         @Override
@@ -59,6 +59,7 @@ public class QuotasAdapter extends RecyclerView.Adapter<QuotasAdapter.QuotaViewH
             listener.onQuotaClick(false, getAdapterPosition());
             return true;
         }
+
     }
 
     @Override

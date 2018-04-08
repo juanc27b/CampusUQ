@@ -34,10 +34,10 @@ public class EmailsSQLiteController {
                 columns[7]+" TEXT NOT NULL)";
     }
 
-    public ArrayList<Email> select(String limit, String selection, String[] selectionArgs) {
+    public ArrayList<Email> select(String limit) {
         ArrayList<Email> emails = new ArrayList<>();
 
-        Cursor c = db.query(tablename, columns, selection, selectionArgs, null,
+        Cursor c = db.query(tablename, columns, null, null, null,
                 null, columns[4]+" DESC", limit);
         if (c.moveToFirst()) do {
             emails.add(new Email(c.getString(0), c.getString(1), c.getString(2),
