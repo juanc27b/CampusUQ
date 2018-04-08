@@ -10,7 +10,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
@@ -52,9 +51,8 @@ public class EmailsAdapter extends RecyclerView.Adapter<EmailsAdapter.EmailViewH
             icon.setBackgroundResource(ItemsPresenter.getColor());
 
             try {
-                Date dateTime = simpleDateFormat.parse(email.getDate());
                 date.setText(DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.SHORT)
-                        .format(dateTime));
+                        .format(simpleDateFormat.parse(email.getDate())));
             } catch (ParseException e) {
                 e.printStackTrace();
             }

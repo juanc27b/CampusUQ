@@ -13,6 +13,11 @@ import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
 
@@ -51,7 +56,15 @@ public class EmailsContentActivity extends MainActivity {
         name.setText(intent.getStringExtra(EmailsSQLiteController.columns[1]));
         icon.setText(name.getText().subSequence(0, 1).toString().toUpperCase());
         from.setText(intent.getStringExtra(EmailsSQLiteController.columns[2]));
-        date.setText(intent.getStringExtra(EmailsSQLiteController.columns[4]));
+
+        try {
+            date.setText(DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.SHORT)
+                    .format(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ",
+                            new Locale("es", "CO"))
+                            .parse(intent.getStringExtra(EmailsSQLiteController.columns[4]))));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         webView = findViewById(R.id.webview_email_content);
 

@@ -133,6 +133,7 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
                             .setValue(1)
                             .build());
                     progressDialog.show();
+                    emailsPresenter.deleteEmails();
                     WebBroadcastReceiver.scheduleJob(getApplicationContext(),
                             WebService.ACTION_USERS, WebService.METHOD_POST, json.toString());
                 } else {

@@ -153,7 +153,7 @@ public class EmailsServiceController {
                     if (mimeType != null && mimeType.startsWith("text")) {
                         byte[] emailBytes = Base64.decodeBase64(message.getPayload().getBody().getData());
                         if (emailBytes != null) {
-                            content += StringEscapeUtils.unescapeHtml4(new String(emailBytes, "UTF-8"));
+                            content += StringEscapeUtils.unescapeHtml4(new String(emailBytes, "UTF-8"))+'\n';
                         }
                     }
                     content = addParts(content, message.getPayload().getParts());
@@ -196,7 +196,7 @@ public class EmailsServiceController {
                 if (mimeType != null && mimeType.startsWith("text")) {
                     byte[] emailBytes = Base64.decodeBase64(part.getBody().getData());
                     if (emailBytes != null) {
-                        content += StringEscapeUtils.unescapeHtml4(new String(emailBytes, "UTF-8"));
+                        content += StringEscapeUtils.unescapeHtml4(new String(emailBytes, "UTF-8"))+'\n';
                     }
                 }
                 content = addParts(content, part.getParts());
