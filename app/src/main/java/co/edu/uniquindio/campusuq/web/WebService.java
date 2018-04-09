@@ -1056,6 +1056,7 @@ public class WebService extends JobIntentService {
                             for (Email email : emails) {
                                 int index = oldIDs.indexOf(email.get_ID());
                                 if (index == -1) {
+                                    oldIDs.add(email.get_ID());
                                     dbController.insert(email.get_ID(), email.getName(),
                                             email.getFrom(), email.getTo(), email.getDate(),
                                             email.getSnippet(), email.getContent(),

@@ -68,12 +68,10 @@ public class EmailsServiceController {
             List<Message> messages = new ArrayList<>();
             boolean reSync = true;
 
-            try {
-
-                if (startHistoryID != null) {
+            if (startHistoryID != null) {
+                try {
                     List<History> histories = new ArrayList<>();
                     ListHistoryResponse response = mService.users().history().list(user).setStartHistoryId(startHistoryID).execute();
-                    reSync = response.getHistory() == null;
                     while (response.getHistory() != null) {
                         histories.addAll(response.getHistory());
                         if (response.getNextPageToken() != null) {
@@ -89,7 +87,7 @@ public class EmailsServiceController {
                         List<HistoryMessageAdded> messagesAdded = history.getMessagesAdded();
                         if (messagesAdded != null) {
                             for (HistoryMessageAdded messageAdded : messagesAdded) {
-                                messages.add(messageAdded.getMessage());
+                                messages.add(getMessage(mService, user, messageAdded.getMessage().getId()));
                             }
                         }
                         List<HistoryMessageDeleted> messagesDeleted = history.getMessagesDeleted();
@@ -99,14 +97,15 @@ public class EmailsServiceController {
                             for (HistoryMessageDeleted messageDeleted : messagesDeleted) {
                                 ids.add(messageDeleted.getMessage().getId());
                             }
-                            dbController.delete(ids);
+                            dbController.delete(ids.toArray());
                             dbController.destroy();
                         }
                     }
-                }
 
-            } catch (Exception e) {
-                e.printStackTrace();
+                    reSync = false;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             if (reSync) {

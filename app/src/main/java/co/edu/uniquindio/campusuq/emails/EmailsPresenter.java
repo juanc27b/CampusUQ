@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import co.edu.uniquindio.campusuq.activity.MainActivity;
-import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.users.User;
+import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -122,7 +122,7 @@ public class EmailsPresenter {
         EmailsSQLiteController dbController = new EmailsSQLiteController(context, 1);
         ArrayList<String> oldIDs = new ArrayList<>();
         for (Email old : dbController.select(null)) oldIDs.add(old.get_ID());
-        dbController.delete(oldIDs);
+        dbController.delete(oldIDs.toArray());
         dbController.destroy();
     }
 
