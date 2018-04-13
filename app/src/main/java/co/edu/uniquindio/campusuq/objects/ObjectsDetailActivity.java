@@ -3,16 +3,12 @@ package co.edu.uniquindio.campusuq.objects;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.DatePicker;
@@ -24,13 +20,9 @@ import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -41,6 +33,8 @@ import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 
 public class ObjectsDetailActivity extends MainActivity implements View.OnClickListener {
+
+    private static final int REQUEST_IMAGE = 1010;
 
     private Intent intent;
     private String _ID;
@@ -99,6 +93,7 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
     @Override
     public void handleIntent(Intent intent) {
         ActionBar actionBar = getSupportActionBar();
+
         if (actionBar != null) {
             actionBar.setTitle(intent.getStringExtra("CATEGORY"));
             this.intent = intent;
@@ -111,19 +106,24 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
         name.setText(intent.getStringExtra(ObjectsSQLiteController.columns[2]));
         place.setText(intent.getStringExtra(ObjectsSQLiteController.columns[3]));
         String dateTimeLost = intent.getStringExtra(ObjectsSQLiteController.columns[4]);
+
         if (dateTimeLost != null && dateTimeLost.length() >= 19) {
             dateLost.setText(dateTimeLost.substring(0, 10));
             timeLost.setText(dateTimeLost.substring(11, 19));
         }
+
         description.setText(intent.getStringExtra(ObjectsSQLiteController.columns[6]));
         descriptionCount.setText(String.valueOf(description.getText().length()));
 
         // Se concatena una cadena vacia para evitar el caso File(null)
         imageFile =
                 new File(""+intent.getStringExtra(ObjectsSQLiteController.columns[7]));
-        if (imageFile.exists())
-            image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
-        else image.setImageResource(R.drawable.rectangle_gray);
+        if (imageFile.exists()) {
+            image.setImageBitmap(Utilities.getResizedBitmap(BitmapFactory
+                    .decodeFile(imageFile.getAbsolutePath())));
+        } else {
+            image.setImageResource(R.drawable.rectangle_gray);
+        }
     }
 
     @Override
@@ -154,8 +154,9 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
                 break;
             }
             case R.id.object_detail_image:
-                startActivityForResult(Intent.createChooser(new Intent(Intent.ACTION_GET_CONTENT)
-                        .setType("image/*"), "Select Picture"), 0);
+                startActivityForResult(Intent.createChooser(new Intent(Intent.ACTION_PICK,
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI).setType("image/*"),
+                        getString(R.string.select_image)), REQUEST_IMAGE);
                 break;
             case R.id.object_detail_ok:
                 if (Utilities.haveNetworkConnection(this)) {
@@ -165,12 +166,14 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
                         mTracker.send(new HitBuilders.EventBuilder()
                                 .setCategory(getString(R.string.analytics_objects_category))
                                 .setAction(getString(_ID == null ?
-                                        R.string.analytics_create_action : R.string.analytics_modify_action))
+                                        R.string.analytics_create_action :
+                                        R.string.analytics_modify_action))
                                 .setLabel(getString(R.string.analytics_lost_objects_label))
                                 .setValue(1)
                                 .build());
-                        JSONObject json = new JSONObject();
+
                         try {
+                            JSONObject json = new JSONObject();
                             if (_ID != null) json.put("UPDATE_ID", _ID);
                             json.put(ObjectsSQLiteController.columns[1],
                                     intent.getStringExtra(ObjectsSQLiteController.columns[1]));
@@ -179,25 +182,24 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
                             json.put(ObjectsSQLiteController.columns[4],
                                     dateLost.getText()+"T"+timeLost.getText()+"-0500");
                             json.put(ObjectsSQLiteController.columns[6], description.getText());
+
                             if (imageFile.exists()) {
                                 json.put(ObjectsSQLiteController.columns[7], imageFile.getName());
-                                byte[] imageBytes = new byte[(int) imageFile.length()];
-                                BufferedInputStream bufferedInputStream =
-                                        new BufferedInputStream(new FileInputStream(imageFile));
-                                bufferedInputStream.read(imageBytes);
-                                bufferedInputStream.close();
-                                json.put("imageString",
-                                        Base64.encodeToString(imageBytes, Base64.NO_WRAP));
+                                json.put("imageString", imageFile.getAbsolutePath());
                             }
+
                             json.put(ObjectsSQLiteController.columns[8],
                                     intent.getStringExtra(ObjectsSQLiteController.columns[8]));
-                        } catch (JSONException | IOException e) {
+                            WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                                    WebService.ACTION_OBJECTS, WebService.METHOD_POST,
+                                    json.toString());
+                            setResult(RESULT_OK, intent);
+                            finish();
+                        } catch (Exception e) {
                             e.printStackTrace();
+                            Toast.makeText(this, e.getLocalizedMessage(),
+                                    Toast.LENGTH_SHORT).show();
                         }
-                        WebBroadcastReceiver.scheduleJob(getApplicationContext(),
-                                WebService.ACTION_OBJECTS, WebService.METHOD_POST, json.toString());
-                        setResult(RESULT_OK, intent);
-                        finish();
                     } else {
                         Toast.makeText(this, R.string.empty_string,
                                 Toast.LENGTH_SHORT).show();
@@ -215,29 +217,20 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            Uri uri = data.getData();
-            if (uri != null) try {
-                String[] projection = {MediaStore.Images.Media.DATA};
-                String[] selectionArgs = {DocumentsContract.getDocumentId(uri).split(":")[1]};
-                Cursor cursor = getContentResolver().query(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection,
-                        MediaStore.Images.Media._ID+" = ?", selectionArgs, null);
-                if (cursor != null) {
-                    if (cursor.moveToFirst()) {
-                        imageFile =
-                                new File(cursor.getString(cursor.getColumnIndex(projection[0])));
-                        if (imageFile.exists()) image.setImageBitmap(BitmapFactory
-                                .decodeFile(imageFile.getAbsolutePath()));
-                        else image.setImageResource(R.drawable.rectangle_gray);
-                    }
-                    cursor.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(this, R.string.get_image_error,
-                        Toast.LENGTH_SHORT).show();
+
+        if (requestCode == REQUEST_IMAGE && resultCode == RESULT_OK) try {
+            imageFile = new File(Utilities.getPath(this, data.getData()));
+
+            if (imageFile.exists()) {
+                image.setImageBitmap(Utilities.getResizedBitmap(BitmapFactory
+                        .decodeFile(imageFile.getAbsolutePath())));
+            } else {
+                image.setImageResource(R.drawable.rectangle_gray);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, getString(R.string.get_image_error)+
+                    ":\n"+e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 

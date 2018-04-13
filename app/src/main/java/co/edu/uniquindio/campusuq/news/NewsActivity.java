@@ -126,7 +126,6 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
         twitterLoggedIn = authToken != null;
 
         loadNews(0);
-
     }
 
     @Override
@@ -152,21 +151,26 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
     }
 
     @Override
-    public void onNewClick(int pos, String action) {
+    public void onNewClick(int index, String action) {
         switch (action) {
             case NewsAdapter.NOTICE:
-            case NewsAdapter.MORE:
+            case NewsAdapter.MORE: {
                 Intent intent = new Intent(this, NewsContentActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.news_detail));
-                intent.putExtra("TITLE", news.get(pos).getName());
-                intent.putExtra("DATE", news.get(pos).getDate());
-                intent.putExtra("AUTHOR", news.get(pos).getAuthor());
-                intent.putExtra("LINK", news.get(pos).getLink());
-                intent.putExtra("CONTENT", news.get(pos).getContent());
+                intent.putExtra("TITLE", news.get(index).getName());
+                intent.putExtra("DATE", news.get(index).getDate());
+                intent.putExtra("AUTHOR", news.get(index).getAuthor());
+                intent.putExtra("LINK", news.get(index).getLink());
+                intent.putExtra("CONTENT", news.get(index).getContent());
                 startActivity(intent);
                 break;
+            }
+            case NewsAdapter.IMAGE:
+                startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(Uri.fromFile(
+                        new File("" + news.get(index).getImage())), "image/*"));
+                break;
             case NewsAdapter.FACEBOOK:
-                if (Utilities.haveNetworkConnection(NewsActivity.this)) {
+                if (Utilities.haveNetworkConnection(this)) {
                     mTracker.send(new HitBuilders.EventBuilder()
                             .setCategory(getString(R.string.analytics_news_category))
                             .setAction(getString(R.string.analytics_share_action))
@@ -180,9 +184,9 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                                 Arrays.asList("public_profile", "user_friends"));
                     } else if (ShareDialog.canShow(ShareLinkContent.class)) {
                         ShareLinkContent content = new ShareLinkContent.Builder()
-                                .setContentTitle(news.get(pos).getName())
-                                .setContentUrl(Uri.parse(news.get(pos).getLink()))
-                                .setContentDescription(news.get(pos).getSummary())
+                                .setContentTitle(news.get(index).getName())
+                                .setContentUrl(Uri.parse(news.get(index).getLink()))
+                                .setContentDescription(news.get(index).getSummary())
                                 .build();
                         shareDialog.show(content);
                     }
@@ -191,7 +195,7 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                 }
                 break;
             case NewsAdapter.TWITTER:
-                if (Utilities.haveNetworkConnection(NewsActivity.this)) {
+                if (Utilities.haveNetworkConnection(this)) {
                     mTracker.send(new HitBuilders.EventBuilder()
                             .setCategory(getString(R.string.analytics_news_category))
                             .setAction(getString(R.string.analytics_share_action))
@@ -205,10 +209,11 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                     } else {
                         final TwitterSession session = TwitterCore.getInstance().getSessionManager()
                                 .getActiveSession();
-                        final Intent twitterIntent = new ComposerActivity.Builder(NewsActivity.this)
+                        final Intent twitterIntent = new ComposerActivity.Builder(this)
                                 .session(session)
-                                .image(Uri.fromFile(new File(news.get(pos).getImage())))
-                                .text(news.get(pos).getName())
+                                .image(Uri.fromFile(new File("" +
+                                        news.get(index).getImage())))
+                                .text(news.get(index).getName())
                                 .hashtags("#Uniquindio")
                                 .createIntent();
                         startActivity(twitterIntent);
@@ -228,7 +233,7 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                         .build());
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, news.get(pos).getName());
+                sendIntent.putExtra(Intent.EXTRA_TEXT, news.get(index).getName());
                 sendIntent.setType("text/plain");
                 sendIntent.setPackage("com.whatsapp");
                 try {
@@ -239,7 +244,7 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                 }
                 break;
             default:
-                Toast.makeText(this, "Undefined: "+pos, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Undefined: " + index, Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -266,14 +271,13 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
     }
 
     private void loadNews(int inserted) {
-
         if (!progressDialog.isShowing()) progressDialog.show();
 
         int scrollTo = oldNews ?
-                (newActivity ? 0 : news.size()-1) : (inserted > 0 ? inserted-1 : 0);
+                (newActivity ? 0 : news.size() - 1) : (inserted > 0 ? inserted - 1 : 0);
 
         news = NewsPresenter.loadNews(action, this,
-                inserted > 0 ? news.size()+inserted : news.size()+3);
+                inserted > 0 ? news.size() + inserted : news.size() + 3);
 
         if (newActivity) {
             newActivity = false;
@@ -313,7 +317,6 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
         }
 
         if (progressDialog.isShowing() && !news.isEmpty()) progressDialog.dismiss();
-
     }
 
     @Override

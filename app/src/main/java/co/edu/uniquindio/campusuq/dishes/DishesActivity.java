@@ -5,14 +5,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
@@ -38,7 +41,10 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
         public void onReceive(Context context, Intent intent) {
             loadDishes(intent.getIntExtra("INSERTED", 0));
             String response = intent.getStringExtra("RESPONSE");
-            if (response != null) Toast.makeText(context, response, Toast.LENGTH_SHORT).show();
+            if (response != null) {
+                Toast.makeText(context, response, Toast.LENGTH_SHORT).show();
+                Log.i(DishesActivity.class.getSimpleName(), response);
+            }
         }
     };
 
@@ -79,7 +85,6 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
     }
 
     private void loadDishes(int inserted) {
-
         if (!progressDialog.isShowing()) progressDialog.show();
 
         int scrollTo = oldDishes ?
@@ -127,16 +132,29 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
         }
 
         if (progressDialog.isShowing() && dishes.size() > 0) progressDialog.dismiss();
-
     }
 
     @Override
-    public void onDishClick(int index) {
-        User user = UsersPresenter.loadUser(this);
-        if (user != null && user.getAdministrator().equals("S")) DishesFragment.newInstance(index)
-                .show(getSupportFragmentManager(), null);
-        else Toast.makeText(this, R.string.no_administrator,
-                Toast.LENGTH_SHORT).show();
+    public void onDishClick(int index, String action) {
+        switch (action) {
+            case DishesAdapter.DISH: {
+                User user = UsersPresenter.loadUser(this);
+                if (user != null && user.getAdministrator().equals("S")) {
+                    DishesFragment.newInstance(index).show(getSupportFragmentManager(), null);
+                } else {
+                    Toast.makeText(this,
+                            R.string.no_administrator,
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
+            case DishesAdapter.IMAGE:
+                startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(Uri.fromFile(
+                        new File("" + dishes.get(index).getImage())), "image/*"));
+                break;
+            default:
+                break;
+        }
     }
 
     public Dish getDish(int index) {

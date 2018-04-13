@@ -19,12 +19,12 @@ class NewsPresenter {
         NewsSQLiteController dbController = new NewsSQLiteController(context, 1);
 
         ArrayList<NewCategory> categories = dbController.selectCategory(null,
-                NewsSQLiteController.categoryColumns[1]+" = ?", new String[]{"Eventos"});
+                NewsSQLiteController.categoryColumns[1]+" = ?", "Eventos");
 
         if (!categories.isEmpty()) {
-            ArrayList<NewRelation> relations = dbController.selectRelation(null,
+            ArrayList<NewRelation> relations = dbController.selectRelation(
                     NewsSQLiteController.relationColumns[0]+" = ?",
-                    new String[]{categories.get(0).get_ID()});
+                    categories.get(0).get_ID());
 
             String[] New_IDs = new String[relations.size()];
             for (int i = 0; i < New_IDs.length; i++) New_IDs[i] = relations.get(i).getNew_ID();

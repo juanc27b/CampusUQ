@@ -14,7 +14,11 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.JobIntentService;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.text.TextUtils;
+import android.util.Base64;
+import android.util.Base64OutputStream;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 
@@ -22,12 +26,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
@@ -41,10 +50,15 @@ import co.edu.uniquindio.campusuq.dishes.DishesSQLiteController;
 import co.edu.uniquindio.campusuq.dishes.DishesServiceController;
 import co.edu.uniquindio.campusuq.emails.EmailsSQLiteController;
 import co.edu.uniquindio.campusuq.emails.EmailsServiceController;
+import co.edu.uniquindio.campusuq.events.CalendarActivity;
+import co.edu.uniquindio.campusuq.events.CalendarDetailActivity;
 import co.edu.uniquindio.campusuq.events.EventsSQLiteController;
 import co.edu.uniquindio.campusuq.events.EventsServiceController;
 import co.edu.uniquindio.campusuq.informations.InformationsSQLiteController;
 import co.edu.uniquindio.campusuq.informations.InformationsServiceController;
+import co.edu.uniquindio.campusuq.items.Item;
+import co.edu.uniquindio.campusuq.items.ItemsActivity;
+import co.edu.uniquindio.campusuq.items.ItemsPresenter;
 import co.edu.uniquindio.campusuq.news.NewsActivity;
 import co.edu.uniquindio.campusuq.notifications.NotificationsPresenter;
 import co.edu.uniquindio.campusuq.objects.ObjectsActivity;
@@ -346,6 +360,14 @@ public class WebService extends JobIntentService {
                 stackBuilder.editIntentAt(0).putExtra("CATEGORY", getString(R.string.app_title_menu));
                 stackBuilder.editIntentAt(1).putExtra("CATEGORY", getString(R.string.services_module));
                 break;
+            case ACTION_CALENDAR:
+                resultIntent = new Intent(getApplicationContext(), ItemsActivity.class);
+                resultIntent.putExtra("CATEGORY", getString(R.string.academic_calendar));
+                resultIntent.putParcelableArrayListExtra("ITEMS",
+                        ItemsPresenter.getEventCategories(getApplicationContext()));
+                stackBuilder.addParentStack(CalendarActivity.class);
+                stackBuilder.editIntentAt(0).putExtra("CATEGORY", getString(R.string.app_title_menu));
+                break;
             case ACTION_INCIDENTS:
                 resultIntent = new Intent(getApplicationContext(), AnnouncementsActivity.class);
                 resultIntent.putExtra("CATEGORY", getString(R.string.security_system));
@@ -388,14 +410,17 @@ public class WebService extends JobIntentService {
 
         String events = "";
         ArrayList<NewCategory> categories = dbController.selectCategory(null,
-                NewsSQLiteController.categoryColumns[1] + " = ?", new String[]{"Eventos"});
+                NewsSQLiteController.categoryColumns[1] + " = ?", "Eventos");
+
         if (!categories.isEmpty()) {
-            for (NewRelation relation : dbController.selectRelation(null,
+            for (NewRelation relation : dbController.selectRelation(
                     NewsSQLiteController.relationColumns[0]+" = ?",
-                    new String[]{categories.get(0).get_ID()})) {
+                    categories.get(0).get_ID())) {
                 events += relation.getNew_ID() + ",";
             }
+
             events = events.substring(0, events.length() - 1);
+
             if (ACTION_NEWS.equals(type)) {
                 validRows = NewsSQLiteController.columns[0]+" NOT IN ("+events+")";
                 category_date += "/no_eventos";
@@ -409,40 +434,73 @@ public class WebService extends JobIntentService {
         }
 
         int inserted = 0;
+
         if (Utilities.haveNetworkConnection(context)) {
             NotificationManager manager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             categories = NewsServiceController.getNewCategories(context);
+
             for (NewCategory category: categories) {
                 ArrayList<NewCategory> oldCategories = dbController.selectCategory("1",
-                        NewsSQLiteController.categoryColumns[0]+" = ?",
-                        new String[]{category.get_ID()});
-                if (oldCategories.isEmpty()) dbController
-                        .insertCategory(category.get_ID(), category.getName(), category.getLink());
+                        NewsSQLiteController.categoryColumns[0]+" = ?", category.get_ID());
+
+                if (oldCategories.isEmpty()) {
+                    dbController.insertCategory(category.get_ID(), category.getName(),
+                            category.getLink());
+                }
             }
 
-            ArrayList<New> lastNews = dbController.select("1", validRows, null);
-            if (!lastNews.isEmpty()) category_date += '/'+lastNews.get(0).getDate();
-            ArrayList<New> updated =
-                    NewsServiceController.getNews(context, category_date, null);
-            for (New n : updated) {
-                String imagePath = Utilities.saveImage(n.getImage(), "/news", context);
-                if (imagePath != null) n.setImage(imagePath);
-                ArrayList<New> olds = dbController.select("1",
-                        NewsSQLiteController.columns[0]+" = ?", new String[]{n.get_ID()});
-                if (!olds.isEmpty()) {
-                    dbController.update(n.get_ID(), n.getName(), n.getLink(), n.getImage(),
-                            n.getSummary(), n.getContent(), n.getDate(), n.getAuthor());
-                } else {
-                    dbController.insert(n.get_ID(), n.getName(), n.getLink(), n.getImage(),
-                            n.getSummary(), n.getContent(), n.getDate(), n.getAuthor());
+            ArrayList<String> _IDs = new ArrayList<>();
+            ArrayList<String> images = new ArrayList<>();
+            ArrayList<New> oldNews = dbController.select(null, validRows);
+            if (!oldNews.isEmpty()) category_date += '/' + oldNews.get(0).getDate();
+
+            for (New n : oldNews) {
+                _IDs.add(n.get_ID());
+                images.add(n.getImage());
+            }
+
+            ArrayList<New> news =
+                    NewsServiceController.getNews(context, category_date, _IDs, images);
+
+            for (New n : news) {
+                int index = _IDs.indexOf(n.get_ID());
+
+                if (index == -1) {
+                    dbController.insert(n.get_ID(), n.getName(), n.getLink(), Utilities.saveImage(
+                            n.getImage(), "/news", context), n.getSummary(), n.getContent(),
+                            n.getDate(), n.getAuthor());
+
                     for (NewRelation relation : NewsServiceController
-                            .getNewRelations(context, "/"+n.get_ID())) dbController
-                            .insertRelation(relation.getCategory_ID(), relation.getNew_ID());
+                            .getNewRelations(context, '/' + n.get_ID())) {
+                        dbController
+                                .insertRelation(relation.getCategory_ID(), relation.getNew_ID());
+                    }
+                } else {
+                    _IDs.remove(index);
+                    String image = images.remove(index);
+
+                    if (image != null) {
+                        Log.i(TAG, "delete " + image + ": " + new File(image).delete());
+                    }
+
+                    dbController.update(n.get_ID(), n.getName(), n.getLink(), Utilities.saveImage(
+                            n.getImage(), "/news", context), n.getSummary(), n.getContent(),
+                            n.getDate(), n.getAuthor());
                 }
-                inserted++;
-                if (manager != null && notify && inserted <= 5)
+
+                if (++inserted <= 5 && manager != null && notify) {
                     manager.notify(n.getName(), mNotificationId, buildNotification(type, n));
+                }
+            }
+
+            // Se eliminan los items que hay en la aplicacion pero no en el servidor
+            if (!news.isEmpty()) {
+                dbController.delete(_IDs.toArray());
+
+                for (String image : images) if (image != null) {
+                    Log.i(TAG, "delete " + image + ": " + new File(image).delete());
+                }
             }
         }
 
@@ -652,7 +710,7 @@ public class WebService extends JobIntentService {
                                     for (Event event : events) {
                                         if (event.get_ID().equals(relation.getEvent_ID())) {
                                             manager.notify(event.getName(), mNotificationId,
-                                                    buildNotification(ACTION_OBJECTS, event));
+                                                    buildNotification(ACTION_CALENDAR, event));
 
                                             inserted++;
                                             break;
@@ -694,14 +752,16 @@ public class WebService extends JobIntentService {
                             .modifyAnnouncement(context, json.toString()));
                     StringBuilder builder = new StringBuilder(json.getString("mensaje"));
                     int _ID = json.getInt("id");
+
                     if (links != null) for (int i = 0; i < links.length(); i++) {
                         builder.append('\n').append(AnnouncementsServiceController
-                                .modifyAnnouncementLink(context, links.getJSONObject(i)
-                                        .put(AnnouncementsSQLiteController.linkColumns[1], _ID)
-                                        .toString()));
+                                .modifyAnnouncementLink(context, encodeImageString(links
+                                        .getJSONObject(i)
+                                        .put(AnnouncementsSQLiteController.linkColumns[1], _ID))));
                     }
+
                     response = builder.toString();
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 // Despues de modificar se actualiza, por eso aqui no hay break
@@ -740,6 +800,7 @@ public class WebService extends JobIntentService {
 
                 for (Announcement announcement : announcements) {
                     int index = _IDs.indexOf(announcement.get_ID());
+
                     if (index == -1) {
                         dbController.insert(announcement.get_ID(), announcement.getUser_ID(),
                                 announcement.getType(), announcement.getName(),
@@ -749,39 +810,54 @@ public class WebService extends JobIntentService {
                         dbController.update(announcement.get_ID(), announcement.getUser_ID(),
                                 announcement.getType(), announcement.getName(),
                                 announcement.getDate(), announcement.getDescription(),
-                                announcement.getRead(), announcement.get_ID());
+                                announcement.get_ID());
                         _IDs.remove(index);
                     }
 
                     ArrayList<String> links_IDs = new ArrayList<>();
+                    ArrayList<String> linksLinks = new ArrayList<>();
+
                     for (AnnouncementLink link : dbController.selectLink(
                             AnnouncementsSQLiteController.linkColumns[1]+" = ?",
                             announcement.get_ID())) {
                         links_IDs.add(link.get_ID());
+                        linksLinks.add(link.getLink());
                     }
+
                     ArrayList<AnnouncementLink> links =
                             AnnouncementsServiceController.getAnnouncementLinks(context,
-                                    '/'+announcement.get_ID());
+                                    '/' + announcement.get_ID());
 
                     for (AnnouncementLink link : links) {
-                        String imagePath = Utilities.saveImage(link.getLink(),
-                                "/announcements", context);
-                        if (imagePath != null) link.setLink(imagePath);
-
                         int linkIndex = links_IDs.indexOf(link.get_ID());
+
                         if (linkIndex == -1) {
                             dbController.insertLink(link.get_ID(), link.getAnnouncement_ID(),
-                                    link.getType(), link.getLink());
+                                    link.getType(), Utilities.saveImage(link.getLink(),
+                                            "/announcements", context));
                         } else {
-                            dbController.updateLink(link.get_ID(), link.getAnnouncement_ID(),
-                                    link.getType(), link.getLink(), link.get_ID());
                             links_IDs.remove(linkIndex);
+                            String linkLink = linksLinks.remove(index);
+
+                            if (linkLink != null) {
+                                Log.i(TAG, "delete " + linkLink + ": " +
+                                        new File(linkLink).delete());
+                            }
+
+                            dbController.updateLink(link.get_ID(), link.getAnnouncement_ID(),
+                                    link.getType(), Utilities.saveImage(link.getLink(),
+                                            "/announcements", context), link.get_ID());
                         }
                     }
 
                     // Se eliminan los items que hay en la aplicacion pero no en el servidor
                     if (state.get() == Utilities.SUCCESS_STATE) {
                         dbController.deleteLink(links_IDs.toArray());
+
+                        for (String linkLink : linksLinks) if (linkLink != null) {
+                            Log.i(TAG, "delete " + linkLink + ": " +
+                                    new File(linkLink).delete());
+                        }
                     }
 
                     if (++inserted <= 5 && manager != null) {
@@ -791,7 +867,18 @@ public class WebService extends JobIntentService {
                 }
 
                 // Se eliminan los items que hay en la aplicacion pero no en el servidor
-                if (state.get() == Utilities.SUCCESS_STATE) dbController.delete(_IDs.toArray());
+                if (state.get() == Utilities.SUCCESS_STATE) {
+                    for (AnnouncementLink announcementLink : dbController.selectLink(
+                            AnnouncementsSQLiteController.linkColumns[1] + " IN(" +
+                                    TextUtils.join(", ", Collections.nCopies(_IDs.size(),
+                                            '?')) + ')',
+                            _IDs.toArray(new String[_IDs.size()]))) {
+                        Log.i(TAG, "delete " + announcementLink.getLink() + ": " +
+                                new File(announcementLink.getLink()).delete());
+                    }
+
+                    dbController.delete(_IDs.toArray());
+                }
                 dbController.destroy();
                 break;
             }
@@ -814,38 +901,56 @@ public class WebService extends JobIntentService {
             case METHOD_POST:
             case METHOD_PUT:
             case METHOD_DELETE:
-                response = ObjectsServiceController.modifyObject(context, object);
+                try {
+                    response = ObjectsServiceController
+                            .modifyObject(context, encodeImageString(new JSONObject(object)));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 // Despues de modificar se actualiza, por eso aqui no hay break
             case METHOD_GET: {
                 ObjectsSQLiteController dbController =
                         new ObjectsSQLiteController(context, 1);
 
                 ArrayList<String> _IDs = new ArrayList<>();
+                ArrayList<String> images = new ArrayList<>();
                 ArrayList<LostObject> objects = dbController.select(null, null);
-                for (LostObject lostObject : objects) _IDs.add(lostObject.get_ID());
+
+                for (LostObject lostObject : objects) {
+                    _IDs.add(lostObject.get_ID());
+                    images.add(lostObject.getImage());
+                }
+
                 Utilities.State state = new Utilities.State(Utilities.FAILURE_STATE);
                 objects = ObjectsServiceController.getObjects(context,
-                        _IDs.isEmpty() ? "" : '/'+objects.get(0).getDate(), state, _IDs);
+                        _IDs.isEmpty() ? "" : '/'+objects.get(0).getDate(), state, _IDs, images);
 
                 NotificationManager manager = NotificationsPresenter.getNotification(context,
                         "3").getActivated().equals("S") && !_IDs.isEmpty() ?
                         (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE) : null;
 
                 for (LostObject obj : objects) {
-                    obj.setImage(Utilities.saveImage(obj.getImage(), "/objects", context));
-
                     int index = _IDs.indexOf(obj.get_ID());
+
                     if (index == -1) {
                         dbController.insert(obj.get_ID(), obj.getUserLost_ID(), obj.getName(),
                                 obj.getPlace(), obj.getDateLost(), obj.getDate(),
-                                obj.getDescription(), obj.getImage(), obj.getUserFound_ID(),
+                                obj.getDescription(), Utilities.saveImage(obj.getImage(),
+                                        "/objects", context), obj.getUserFound_ID(),
                                 obj.getReaded());
                     } else {
+                        _IDs.remove(index);
+                        String image = images.remove(index);
+
+                        if (image != null) {
+                            Log.i(TAG, "delete " + image + ": " + new File(image).delete());
+                        }
+
                         dbController.update(obj.get_ID(), obj.getUserLost_ID(), obj.getName(),
                                 obj.getPlace(), obj.getDateLost(), obj.getDate(),
-                                obj.getDescription(), obj.getImage(), obj.getUserFound_ID(),
+                                obj.getDescription(), Utilities.saveImage(obj.getImage(),
+                                        "/objects", context), obj.getUserFound_ID(),
                                 obj.get_ID());
-                        _IDs.remove(index);
                     }
 
                     if (++inserted <= 5 && manager != null) {
@@ -855,7 +960,14 @@ public class WebService extends JobIntentService {
                 }
 
                 // Se eliminan los items que hay en la aplicacion pero no en el servidor
-                if (state.get() == Utilities.SUCCESS_STATE) dbController.delete(_IDs.toArray());
+                if (state.get() == Utilities.SUCCESS_STATE) {
+                    dbController.delete(_IDs.toArray());
+
+                    for (String image : images) if (image != null) {
+                        Log.i(TAG, "delete " + image + ": " + new File(image).delete());
+                    }
+                }
+
                 dbController.destroy();
                 break;
             }
@@ -878,33 +990,57 @@ public class WebService extends JobIntentService {
             case METHOD_POST:
             case METHOD_PUT:
             case METHOD_DELETE:
-                response = DishesServiceController.modifyDish(context, object);
+                try {
+                    response = DishesServiceController
+                            .modifyDish(context, encodeImageString(new JSONObject(object)));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 // Despues de modificar se actualiza, por eso aqui no hay break
             case METHOD_GET: {
                 DishesSQLiteController dbController =
                         new DishesSQLiteController(context, 1);
 
-                ArrayList<String> IDs = new ArrayList<>();
-                for (Dish dish : dbController.select(null)) IDs.add(dish.get_ID());
+                ArrayList<String> _IDs = new ArrayList<>();
+                ArrayList<String> images = new ArrayList<>();
+
+                for (Dish dish : dbController.select(null)) {
+                    _IDs.add(dish.get_ID());
+                    images.add(dish.getImage());
+                }
+
                 ArrayList<Dish> dishes = DishesServiceController.getDishes(context);
 
                 for (Dish dish : dishes) {
-                    dish.setImage(Utilities.saveImage(dish.getImage(), "/dishes", context));
+                    int index = _IDs.indexOf(dish.get_ID());
 
-                    int index = IDs.indexOf(dish.get_ID());
                     if (index == -1) {
                         dbController.insert(dish.get_ID(), dish.getName(), dish.getDescription(),
-                                dish.getPrice(), dish.getImage());
+                                dish.getPrice(), Utilities.saveImage(dish.getImage(),
+                                        "/dishes", context));
                         inserted++;
                     } else {
+                        _IDs.remove(index);
+                        String image = images.remove(index);
+
+                        if (image != null) {
+                            Log.i(TAG, "delete " + image + ": " + new File(image).delete());
+                        }
+
                         dbController.update(dish.get_ID(), dish.getName(), dish.getDescription(),
-                                dish.getPrice(), dish.getImage(), dish.get_ID());
-                        IDs.remove(index);
+                                dish.getPrice(), Utilities.saveImage(dish.getImage(),
+                                        "/dishes", context), dish.get_ID());
                     }
                 }
 
                 // Se eliminan los items que hay en la aplicacion pero no en el servidor
-                if (!dishes.isEmpty()) dbController.delete(IDs.toArray());
+                if (!dishes.isEmpty()) {
+                    dbController.delete(_IDs.toArray());
+
+                    for (String image : images) if (image != null) {
+                        Log.i(TAG, "delete " + image + ": " + new File(image).delete());
+                    }
+                }
                 dbController.destroy();
                 break;
             }
@@ -914,6 +1050,28 @@ public class WebService extends JobIntentService {
 
         sendBroadcast(new Intent(ACTION_DISHES).putExtra("INSERTED", inserted)
                 .putExtra("RESPONSE", response));
+    }
+
+    private static String encodeImageString(JSONObject json) throws JSONException, IOException {
+        if (!json.isNull("imageString")) {
+            FileInputStream input =
+                    new FileInputStream(json.getString("imageString"));
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            Base64OutputStream encoder =
+                    new Base64OutputStream(output, Base64.NO_WRAP);
+
+            while ((bytesRead = input.read(buffer)) != -1) {
+                encoder.write(buffer, 0, bytesRead);
+            }
+
+            input.close();
+            encoder.close();
+            json.put("imageString", output.toString());
+        }
+
+        return json.toString();
     }
 
     private void loadQuotas(String method, String object) {
@@ -932,24 +1090,24 @@ public class WebService extends JobIntentService {
                 QuotasSQLiteController dbController =
                         new QuotasSQLiteController(context, 1);
 
-                ArrayList<String> IDs = new ArrayList<>();
-                for (Quota quota : dbController.select(null)) IDs.add(quota.get_ID());
+                ArrayList<String> _IDs = new ArrayList<>();
+                for (Quota quota : dbController.select(null)) _IDs.add(quota.get_ID());
                 ArrayList<Quota> quotas = QuotasServiceController.getQuotas(context);
 
                 for (Quota quota : quotas) {
-                    int index = IDs.indexOf(quota.get_ID());
+                    int index = _IDs.indexOf(quota.get_ID());
                     if (index == -1) {
                         dbController.insert(quota.get_ID(), quota.getType(), quota.getName(),
                                 quota.getQuota());
                     } else {
                         dbController.update(quota.get_ID(), quota.getType(), quota.getName(),
                                 quota.getQuota(), quota.get_ID());
-                        IDs.remove(index);
+                        _IDs.remove(index);
                     }
                 }
 
                 // Se eliminan los items que hay en la aplicacion pero no en el servidor
-                if (!quotas.isEmpty()) dbController.delete(IDs.toArray());
+                if (!quotas.isEmpty()) dbController.delete(_IDs.toArray());
                 dbController.destroy();
                 break;
             }

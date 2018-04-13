@@ -21,10 +21,12 @@ import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.items.ItemsPresenter;
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.users.User;
+import co.edu.uniquindio.campusuq.util.Utilities;
 
 public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectViewHolder> {
 
-    static final String DIALOG    = "dialog";
+    static final String OBJECT    = "object";
+    static final String IMAGE     = "image";
     static final String READED    = "readed";
     static final String FOUND     = "found";
     static final String NOT_FOUND = "not_found";
@@ -68,6 +70,7 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
             found = view.findViewById(R.id.object_found);
 
             view.findViewById(R.id.object_layout).setOnClickListener(this);
+            image.setOnClickListener(this);
             view.findViewById(R.id.object_readed).setOnClickListener(this);
         }
 
@@ -86,9 +89,12 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
 
             // Se concatena una cadena vacia para evitar el caso File(null)
             File imageFile = new File(""+lostObject.getImage());
-            if (imageFile.exists())
-                image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
-            else image.setImageResource(R.drawable.rectangle_gray);
+            if (imageFile.exists()) {
+                image.setImageBitmap(Utilities.getResizedBitmap(BitmapFactory
+                        .decodeFile(imageFile.getAbsolutePath())));
+            } else {
+                image.setImageResource(R.drawable.rectangle_gray);
+            }
 
             description.setText(lostObject.getDescription());
 
@@ -126,10 +132,14 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
         @Override
         public void onClick(View view) {
             String action;
+
             switch (view.getId()) {
-                case R.id.object_readed: action = READED; break;
-                default                : action = DIALOG; break;
+                case R.id.object_layout: action = OBJECT     ; break;
+                case R.id.object_image : action = IMAGE      ; break;
+                case R.id.object_readed: action = READED     ; break;
+                default                : action = "undefined"; break;
             }
+
             listener.onObjectClick(getAdapterPosition(), action);
         }
 

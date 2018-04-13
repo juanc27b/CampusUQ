@@ -23,7 +23,7 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 public class NewsServiceController {
 
     public static ArrayList<New> getNews(Context context, @NonNull String category_date,
-                                         ArrayList<Integer> _IDs) {
+                                         ArrayList<String> _IDs, ArrayList<String> images) {
         HttpGet request = new HttpGet(Utilities.URL_SERVICIO+"/noticias"+category_date);
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         ArrayList<New> news = new ArrayList<>();
@@ -32,6 +32,7 @@ public class NewsServiceController {
             JSONObject object = new JSONObject(EntityUtils.toString(HttpClientBuilder.create()
                     .build().execute(request).getEntity()));
             JSONArray array = object.getJSONArray("datos");
+
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = array.getJSONObject(i);
                 news.add(new New(obj.getString(NewsSQLiteController.columns[0]),
@@ -46,10 +47,15 @@ public class NewsServiceController {
                         obj.getString(NewsSQLiteController.columns[6]),
                         obj.getString(NewsSQLiteController.columns[7])));
             }
-            if (_IDs != null) {
+
+            if (_IDs != null && images != null) {
                 array = object.getJSONArray("_IDs");
-                // Se castea a Integer para remover el objeto, no el indice
-                for (int i = 0; i < array.length(); i++) _IDs.remove((Integer) array.getInt(i));
+
+                for (int i = 0; i < array.length(); i++) {
+                    int index = _IDs.indexOf(array.getString(i));
+                    _IDs.remove(index);
+                    images.remove(index);
+                }
             }
         } catch (Exception e) {
             Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
@@ -66,6 +72,7 @@ public class NewsServiceController {
         try {
             JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
                     .execute(request).getEntity())).getJSONArray("datos");
+
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 categories.add(new NewCategory(
@@ -88,6 +95,7 @@ public class NewsServiceController {
         try {
             JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
                     .execute(request).getEntity())).getJSONArray("datos");
+
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 relations.add(new NewRelation(

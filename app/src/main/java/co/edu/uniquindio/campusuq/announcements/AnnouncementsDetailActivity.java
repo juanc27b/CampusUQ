@@ -1,16 +1,14 @@
 package co.edu.uniquindio.campusuq.announcements;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.EditText;
@@ -21,13 +19,9 @@ import android.widget.Toast;
 import com.google.android.gms.analytics.HitBuilders;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
@@ -38,9 +32,21 @@ import co.edu.uniquindio.campusuq.web.WebService;
 
 public class AnnouncementsDetailActivity extends MainActivity implements View.OnClickListener {
 
+    private static final int REQUEST_LINK_0 = 1010;
+    private static final int REQUEST_LINK_1 = 1011;
+    private static final int REQUEST_LINK_2 = 1012;
+    private static final int REQUEST_LINK_3 = 1013;
+    private static final int REQUEST_LINK_4 = 1014;
+    private static final int REQUEST_LINK_5 = 1015;
+    private static final int REQUEST_LINK_6 = 1016;
+    private static final int REQUEST_LINK_7 = 1017;
+    private static final int REQUEST_LINK_8 = 1018;
+    private static final int REQUEST_LINK_9 = 1019;
+
     private String type;
     private String[] link_IDs;
-    private File[] imageFiles;
+    private String[] linkTypes;
+    private File[] linksFiles;
     private Intent intent;
     private String _ID;
     private TextView titleText;
@@ -110,8 +116,10 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
         String category = intent.getStringExtra("CATEGORY");
         type = getString(R.string.report_incident).equals(category) ? "I" : "C";
         link_IDs = new String[10];
-        imageFiles = new File[10];
+        linkTypes = new String[10];
+        linksFiles = new File[10];
         ActionBar actionBar = getSupportActionBar();
+
         if (actionBar != null) {
             actionBar.setTitle(category);
             this.intent = intent;
@@ -150,16 +158,29 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
                 AnnouncementLink announcementLink = announcementLinks.get(i);
 
                 link_IDs[i] = announcementLink.get_ID();
+                linkTypes[i] = announcementLink.getType();
+                linksFiles[i] = new File(announcementLink.getLink());
 
-                imageFiles[i] = new File(announcementLink.getLink());
-                if (imageFiles[i].exists()) images[i].setImageBitmap(BitmapFactory
-                        .decodeFile(imageFiles[i].getAbsolutePath()));
-                else images[i].setImageResource(R.drawable.rectangle_gray);
+                if (linksFiles[i].exists()) {
+                    if ("I".equals(linkTypes[i])) {
+                        images[i].setImageBitmap(Utilities.getResizedBitmap(BitmapFactory
+                                .decodeFile(linksFiles[i].getAbsolutePath())));
+                    } else {
+                        MediaMetadataRetriever mediaMetadataRetriever =
+                                new MediaMetadataRetriever();
+                        mediaMetadataRetriever.setDataSource(linksFiles[i].getAbsolutePath());
+                        images[i].setImageBitmap(Utilities.getResizedBitmap(
+                                mediaMetadataRetriever.getFrameAtTime(1000000)));
+                    }
+                } else {
+                    images[i].setImageResource(R.drawable.rectangle_gray);
+                }
+
                 images[i].setVisibility(View.VISIBLE);
             } else {
                 images[i].setImageResource(R.drawable.rectangle_gray);
-                images[i].setVisibility(i != announcementLinks.size() ? View.GONE :
-                        View.VISIBLE);
+                images[i].setVisibility(i != announcementLinks.size() ?
+                        View.GONE : View.VISIBLE);
             }
         }
     }
@@ -167,30 +188,32 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.announcement_detail_image_0: getImage(0); break;
-            case R.id.announcement_detail_image_1: getImage(1); break;
-            case R.id.announcement_detail_image_2: getImage(2); break;
-            case R.id.announcement_detail_image_3: getImage(3); break;
-            case R.id.announcement_detail_image_4: getImage(4); break;
-            case R.id.announcement_detail_image_5: getImage(5); break;
-            case R.id.announcement_detail_image_6: getImage(6); break;
-            case R.id.announcement_detail_image_7: getImage(7); break;
-            case R.id.announcement_detail_image_8: getImage(8); break;
-            case R.id.announcement_detail_image_9: getImage(9); break;
+            case R.id.announcement_detail_image_0: getImage(REQUEST_LINK_0); break;
+            case R.id.announcement_detail_image_1: getImage(REQUEST_LINK_1); break;
+            case R.id.announcement_detail_image_2: getImage(REQUEST_LINK_2); break;
+            case R.id.announcement_detail_image_3: getImage(REQUEST_LINK_3); break;
+            case R.id.announcement_detail_image_4: getImage(REQUEST_LINK_4); break;
+            case R.id.announcement_detail_image_5: getImage(REQUEST_LINK_5); break;
+            case R.id.announcement_detail_image_6: getImage(REQUEST_LINK_6); break;
+            case R.id.announcement_detail_image_7: getImage(REQUEST_LINK_7); break;
+            case R.id.announcement_detail_image_8: getImage(REQUEST_LINK_8); break;
+            case R.id.announcement_detail_image_9: getImage(REQUEST_LINK_9); break;
             case R.id.announcement_detail_ok:
                 if (Utilities.haveNetworkConnection(this)) {
                     if (name.getText().length() != 0 && description.getText().length() != 0) {
                         mTracker.send(new HitBuilders.EventBuilder()
                                 .setCategory(getString(R.string.analytics_announcements_category))
                                 .setAction(getString(_ID == null ?
-                                        R.string.analytics_create_action : R.string.analytics_modify_action))
+                                        R.string.analytics_create_action :
+                                        R.string.analytics_modify_action))
                                 .setLabel(getString(type.equals("I") ?
                                         R.string.analytics_security_system_label :
                                         R.string.analytics_billboard_information_label))
                                 .setValue(1)
                                 .build());
-                        JSONObject json = new JSONObject();
+
                         try {
+                            JSONObject json = new JSONObject();
                             if (_ID != null) json.put("UPDATE_ID", _ID);
                             json.put(AnnouncementsSQLiteController.columns[1], intent
                                     .getStringExtra(AnnouncementsSQLiteController.columns[1]));
@@ -200,31 +223,36 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
                             json.put(AnnouncementsSQLiteController.columns[5],
                                     description.getText());
                             JSONArray links = new JSONArray();
-                            for (int i = 0; i < imageFiles.length; i++)
-                                if (imageFiles[i] != null && imageFiles[i].exists()) {
-                                JSONObject link = new JSONObject();
-                                if (link_IDs[i] != null) json.put("UPDATE_ID", link_IDs[i]);
-                                link.put(AnnouncementsSQLiteController.linkColumns[2], "I");
-                                link.put(AnnouncementsSQLiteController.linkColumns[3],
-                                        imageFiles[i].getName());
-                                byte[] imageBytes = new byte[(int) imageFiles[i].length()];
-                                BufferedInputStream bufferedInputStream =
-                                        new BufferedInputStream(new FileInputStream(imageFiles[i]));
-                                bufferedInputStream.read(imageBytes);
-                                bufferedInputStream.close();
-                                link.put("imageString",
-                                        Base64.encodeToString(imageBytes, Base64.NO_WRAP));
-                                links.put(link);
+
+                            for (int i = 0; i < linksFiles.length; i++) {
+                                if (linksFiles[i] != null && linksFiles[i].exists()) {
+                                    JSONObject link = new JSONObject();
+
+                                    if (link_IDs[i] != null) {
+                                        link.put("UPDATE_ID", link_IDs[i]);
+                                    }
+
+                                    link.put(AnnouncementsSQLiteController.linkColumns[2],
+                                            linkTypes[i]);
+                                    link.put(AnnouncementsSQLiteController.linkColumns[3],
+                                            linksFiles[i].getName());
+                                    link.put("imageString", linksFiles[i].getAbsolutePath());
+                                    links.put(link);
+                                }
                             }
+
                             json.put("links", links);
-                        } catch (JSONException | IOException e) {
+                            WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                                    type.equals("I") ? WebService.ACTION_INCIDENTS :
+                                            WebService.ACTION_COMMUNIQUES,
+                                    WebService.METHOD_POST, json.toString());
+                            setResult(RESULT_OK, intent);
+                            finish();
+                        } catch (Exception e) {
                             e.printStackTrace();
+                            Toast.makeText(this, e.getLocalizedMessage(),
+                                    Toast.LENGTH_SHORT).show();
                         }
-                        WebBroadcastReceiver.scheduleJob(getApplicationContext(), type.equals("I") ?
-                                        WebService.ACTION_INCIDENTS : WebService.ACTION_COMMUNIQUES,
-                                WebService.METHOD_POST, json.toString());
-                        setResult(RESULT_OK, intent);
-                        finish();
                     } else {
                         Toast.makeText(this, R.string.empty_string,
                                 Toast.LENGTH_SHORT).show();
@@ -240,40 +268,46 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
     }
 
     private void getImage(int requestCode) {
-        startActivityForResult(Intent.createChooser(new Intent(Intent.ACTION_GET_CONTENT)
-                .setType("image/*"), "Select Picture"), requestCode);
+        startActivityForResult(Intent.createChooser(new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI).setType("image/* video/*")
+                .putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/*", "video/*"}),
+                getString(R.string.select_image_or_video)), requestCode);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
+
+        if (requestCode >= REQUEST_LINK_0 && requestCode <= REQUEST_LINK_9 &&
+                resultCode == RESULT_OK) {
             Uri uri = data.getData();
+
             if (uri != null) try {
-                String[] projection = {MediaStore.Images.Media.DATA};
-                String[] selectionArgs = {DocumentsContract.getDocumentId(uri).split(":")[1]};
-                Cursor cursor = getContentResolver().query(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection,
-                        MediaStore.Images.Media._ID+" = ?", selectionArgs, null);
-                if (cursor != null) {
-                    if (cursor.moveToFirst()) {
-                        imageFiles[requestCode] = new File(cursor.getString(cursor
-                                .getColumnIndex(projection[0])));
-                        if (imageFiles[requestCode].exists()) {
-                            images[requestCode].setImageBitmap(BitmapFactory
-                                    .decodeFile(imageFiles[requestCode].getAbsolutePath()));
-                            if (++requestCode < images.length)
-                                images[requestCode].setVisibility(View.VISIBLE);
-                        } else {
-                            images[requestCode].setImageResource(R.drawable.rectangle_gray);
-                        }
+                int index = requestCode - REQUEST_LINK_0;
+                linksFiles[index] = new File(Utilities.getPath(this, uri));
+
+                if (linksFiles[index].exists()) {
+                    if (uri.toString().contains("image")) {
+                        linkTypes[index] = "I";
+                        images[index].setImageBitmap(Utilities.getResizedBitmap(BitmapFactory
+                                .decodeFile(linksFiles[index].getAbsolutePath())));
+                    } else {
+                        linkTypes[index] = "V";
+                        MediaMetadataRetriever mediaMetadataRetriever =
+                                new MediaMetadataRetriever();
+                        mediaMetadataRetriever.setDataSource(linksFiles[index].getAbsolutePath());
+                        images[index].setImageBitmap(Utilities.getResizedBitmap(
+                                mediaMetadataRetriever.getFrameAtTime(1000000)));
                     }
-                    cursor.close();
+
+                    if (++index < images.length) images[index].setVisibility(View.VISIBLE);
+                } else {
+                    images[index].setImageResource(R.drawable.rectangle_gray);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(this, R.string.get_image_error,
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.get_image_error) +
+                        ":\n" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
         }
     }

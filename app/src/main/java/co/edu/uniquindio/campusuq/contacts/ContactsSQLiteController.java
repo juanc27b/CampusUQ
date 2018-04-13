@@ -44,7 +44,7 @@ public class ContactsSQLiteController {
     public ArrayList<Contact> select(String selection, String... selectionArgs) {
         ArrayList<Contact> contacts = new ArrayList<>();
 
-        Cursor c = db.query(tablename, columns, selection, selectionArgs, null,
+        Cursor c = db.query(tablename, null, selection, selectionArgs, null,
                 null, columns[2]+" ASC");
         if (c.moveToFirst()) do {
             contacts.add(new Contact(c.getString(0), c.getString(1), c.getString(2),
@@ -77,7 +77,7 @@ public class ContactsSQLiteController {
                                                      String... selectionArgs) {
         ArrayList<ContactCategory> categories = new ArrayList<>();
 
-        Cursor c = db.query(categoryTablename, categoryColumns, selection, selectionArgs,
+        Cursor c = db.query(categoryTablename, null, selection, selectionArgs,
                 null, null, categoryColumns[1]+" ASC", limit);
         if (c.moveToFirst()) do {
             categories.add(new ContactCategory(c.getString(0), c.getString(1),

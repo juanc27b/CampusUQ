@@ -30,40 +30,40 @@ public class NotificationsSQLiteController {
     }
 
     public static String createTable() {
-        return "CREATE TABLE `"+tablename+"` (`"+columns[0]+"` INTEGER PRIMARY KEY, `"+
-                columns[1]+"` TEXT NOT NULL UNIQUE, `"+columns[2]+"` TEXT NOT NULL )";
+        return "CREATE TABLE "+tablename+'('+columns[0]+" INTEGER PRIMARY KEY, "+
+                columns[1]+" TEXT NOT NULL UNIQUE, "+columns[2]+" TEXT NOT NULL )";
     }
 
-    public ArrayList<Notification> select(String limit, String selection, String[] selectionArgs) {
+    public ArrayList<Notification> select(String limit, String selection, String... selectionArgs) {
         ArrayList<Notification> notifications = new ArrayList<>();
-        Cursor c = db.query(tablename, columns, selection, selectionArgs,
+
+        Cursor c = db.query(tablename, null, selection, selectionArgs,
                 null, null, columns[0]+" ASC", limit);
         if(c.moveToFirst()) do {
-            notifications.add(new Notification(
-                    c.getString(0),
-                    c.getString(1),
-                    c.getString(2)
-            ));
+            notifications.add(new Notification(c.getString(0), c.getString(1),
+                    c.getString(2)));
         } while(c.moveToNext());
         c.close();
+
         return notifications;
     }
 
-    public void insert(String... values) {
-        db.execSQL("INSERT INTO `"+tablename+"`(`"+
-                TextUtils.join("`, `", columns)+"`) VALUES ("+
-                TextUtils.join(", ", Collections.nCopies(columns.length, "?"))+")", values);
+    public void insert(Object... values) {
+        db.execSQL("INSERT INTO "+tablename+'('+
+                TextUtils.join(", ", columns)+") VALUES("+
+                TextUtils.join(", ", Collections.nCopies(columns.length, '?'))+
+                ')', values);
     }
 
-    public void update(String... values) {
-        db.execSQL("UPDATE `"+tablename+"` SET `"+
-                TextUtils.join("` = ?, `", Arrays.copyOfRange(columns, 0, columns.length))+
-                "` = ? WHERE `"+columns[0]+"` = ?", values);
+    public void update(Object... values) {
+        db.execSQL("UPDATE "+tablename+" SET "+TextUtils.join(" = ?, ",
+                Arrays.copyOfRange(columns, 0, columns.length))+" = ? WHERE "+
+                columns[0]+" = ?", values);
     }
 
-    public void delete(ArrayList<String> ids) {
-        db.execSQL("DELETE FROM `"+tablename+"` WHERE `"+columns[0]+"` IN("+
-                TextUtils.join(", ", Collections.nCopies(ids.size(), "?"))+")", ids.toArray());
+    public void delete(Object... ids) {
+        db.execSQL("DELETE FROM "+tablename+" WHERE "+columns[0]+" IN("+
+                TextUtils.join(", ", Collections.nCopies(ids.length, '?'))+')', ids);
     }
 
     public void destroy() {

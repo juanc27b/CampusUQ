@@ -13,7 +13,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
@@ -25,6 +24,7 @@ import co.edu.uniquindio.campusuq.R;
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewViewHolder> {
 
     static final String NOTICE    = "notice";
+    static final String IMAGE     = "image";
     static final String MORE      = "more";
     static final String FACEBOOK  = "facebook";
     static final String TWITTER   = "twitter";
@@ -59,6 +59,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewViewHolder>
             summary = view.findViewById(R.id.new_summary);
 
             view.findViewById(R.id.new_layout).setOnClickListener(this);
+            image.setOnClickListener(this);
             view.findViewById(R.id.new_more_button).setOnClickListener(this);
             view.findViewById(R.id.new_facebook_button).setOnClickListener(this);
             view.findViewById(R.id.new_twitter_button).setOnClickListener(this);
@@ -66,16 +67,14 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewViewHolder>
         }
 
         void bindItem(New n) {
-            File imageFile = new  File(n.getImage());
+            File imageFile = new  File("" + n.getImage());
             if (imageFile.exists())
                 image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
             else image.setImageResource(R.drawable.rectangle_gray);
 
             try {
-                Date dateTime = simpleDateFormat.parse(n.getDate());
-                date.setText(String.format("%s\n%s",
-                        DateFormat.getDateInstance(DateFormat.MEDIUM).format(dateTime),
-                        DateFormat.getTimeInstance(DateFormat.SHORT).format(dateTime)));
+                date.setText(DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
+                        .format(simpleDateFormat.parse(n.getDate())));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -88,26 +87,17 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewViewHolder>
         @Override
         public void onClick(View view) {
             String action;
+
             switch (view.getId()) {
-                case R.id.new_layout:
-                    action = NOTICE;
-                    break;
-                case R.id.new_more_button:
-                    action = MORE;
-                    break;
-                case R.id.new_facebook_button:
-                    action = FACEBOOK;
-                    break;
-                case R.id.new_twitter_button:
-                    action = TWITTER;
-                    break;
-                case R.id.new_whatsapp_button:
-                    action = WHATSAPP;
-                    break;
-                default:
-                    action = UNDEFINED;
-                    break;
+                case R.id.new_layout         : action = NOTICE   ; break;
+                case R.id.new_image          : action = IMAGE    ; break;
+                case R.id.new_more_button    : action = MORE     ; break;
+                case R.id.new_facebook_button: action = FACEBOOK ; break;
+                case R.id.new_twitter_button : action = TWITTER  ; break;
+                case R.id.new_whatsapp_button: action = WHATSAPP ; break;
+                default                      : action = UNDEFINED; break;
             }
+
             listener.onNewClick(getAdapterPosition(), action);
         }
 
@@ -135,7 +125,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewViewHolder>
     }
 
     public interface OnClickNewListener {
-        void onNewClick(int pos, String action);
+        void onNewClick(int index, String action);
     }
 
 }

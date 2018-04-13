@@ -5,10 +5,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Toast;
@@ -16,6 +18,7 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
@@ -43,7 +46,10 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         public void onReceive(Context context, Intent intent) {
             loadObjects(intent.getIntExtra("INSERTED", 0));
             String response = intent.getStringExtra("RESPONSE");
-            if (response != null) Toast.makeText(context, response, Toast.LENGTH_SHORT).show();
+            if (response != null) {
+                Toast.makeText(context, response, Toast.LENGTH_SHORT).show();
+                Log.i(ObjectsActivity.class.getSimpleName(), response);
+            }
         }
     };
 
@@ -87,7 +93,6 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
     }
 
     private void loadObjects(int inserted) {
-
         if (!progressDialog.isShowing()) progressDialog.show();
 
         int scrollTo = oldObjects ? (newActivity ? 0 : objects.size()-1) :
@@ -135,7 +140,6 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         }
 
         if (progressDialog.isShowing() && objects.size() > 0) progressDialog.dismiss();
-
     }
 
     @Override
@@ -143,8 +147,9 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         User user = UsersPresenter.loadUser(this);
         LostObject object = objects.get(index);
         ObjectsSQLiteController dbController = new ObjectsSQLiteController(this, 1);
+
         switch (action) {
-            case ObjectsAdapter.DIALOG:
+            case ObjectsAdapter.OBJECT:
                 if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
                         (user.getAdministrator().equals("S") ||
                                 object.getUserLost_ID().equals(user.get_ID()))) {
@@ -154,6 +159,10 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                             R.string.no_propietary,
                             Toast.LENGTH_SHORT).show();
                 }
+                break;
+            case ObjectsAdapter.IMAGE:
+                startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(Uri.fromFile(
+                        new File("" + objects.get(index).getImage())), "image/*"));
                 break;
             case ObjectsAdapter.READED:
                 dbController.readed(object.get_ID());
@@ -184,7 +193,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                     JSONObject json = new JSONObject();
                     try {
                         json.put("UPDATE_ID", object.get_ID());
-                        json.put(ObjectsSQLiteController.columns[8], null);
+                        json.put(ObjectsSQLiteController.columns[8], JSONObject.NULL);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -210,6 +219,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
             default:
                 break;
         }
+
         dbController.destroy();
     }
 

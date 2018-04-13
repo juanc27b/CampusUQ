@@ -34,17 +34,17 @@ public class AnnouncementsSQLiteController {
     }
 
     public static String createTable(){
-        return "CREATE TABLE "+tablename+'('+columns[0]+" INTEGER PRIMARY KEY, "+
-                columns[1]+" INTEGER NOT NULL, "+columns[2]+" TEXT NOT NULL, "+
-                columns[3]+" TEXT NOT NULL, "+columns[4]+" TEXT NOT NULL, "+
-                columns[5]+" TEXT NOT NULL, "+columns[6]+" TEXT NOT NULL)";
+        return "CREATE TABLE " + tablename + '(' + columns[0] + " INTEGER PRIMARY KEY, " +
+                columns[1] + " INTEGER NOT NULL, " + columns[2] + " TEXT NOT NULL, " +
+                columns[3] + " TEXT NOT NULL, " + columns[4] + " TEXT NOT NULL, " +
+                columns[5] + " TEXT NOT NULL, " + columns[6] + " INTEGER NOT NULL)";
     }
 
     public ArrayList<Announcement> select(String limit, String selection, String... selectionArgs) {
         ArrayList<Announcement> announcements = new ArrayList<>();
 
-        Cursor c = db.query(tablename, columns, selection, selectionArgs, null,
-                null, columns[4]+" DESC", limit);
+        Cursor c = db.query(tablename, null, selection, selectionArgs, null,
+                null, columns[4] + " DESC", limit);
         if (c.moveToFirst()) do {
             announcements.add(new Announcement(c.getString(0), c.getString(1),
                     c.getString(2), c.getString(3), c.getString(4), c.getString(5),
@@ -56,44 +56,45 @@ public class AnnouncementsSQLiteController {
     }
 
     public void insert(Object... values) {
-        db.execSQL("INSERT INTO "+tablename+'('+
-                TextUtils.join(", ", columns)+") VALUES("+
-                TextUtils.join(", ", Collections.nCopies(columns.length, '?'))+
+        db.execSQL("INSERT INTO " + tablename + '(' +
+                TextUtils.join(", ", columns) + ") VALUES(" +
+                TextUtils.join(", ", Collections.nCopies(columns.length, '?')) +
                 ')', values);
     }
 
     public void update(Object... values) {
-        db.execSQL("UPDATE "+tablename+" SET "+ TextUtils.join(" = ?, ",
-                Arrays.copyOfRange(columns, 0, columns.length-1))+" = ? WHERE "+
-                columns[0]+" = ?", values);
+        db.execSQL("UPDATE " + tablename + " SET " + TextUtils.join(" = ?, ",
+                Arrays.copyOfRange(columns, 0, columns.length - 1)) + " = ? WHERE " +
+                columns[0] + " = ?", values);
     }
 
     void readed(Object... ids) {
-        db.execSQL("UPDATE "+tablename+" SET "+columns[6]+" = 'S' WHERE "+columns[0]+" IN("+
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?'))+')', ids);
+        db.execSQL("UPDATE " + tablename + " SET " +
+                columns[6] + " = 1 WHERE " + columns[0] + " IN(" +
+                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
     }
 
     void unreadAll() {
-        db.execSQL("UPDATE "+tablename+" SET "+columns[6]+" = 'N'");
+        db.execSQL("UPDATE " + tablename + " SET " + columns[6] + " = 0");
     }
 
     public void delete(Object... ids) {
-        db.execSQL("DELETE FROM "+tablename+" WHERE "+columns[0]+" IN("+
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?'))+')', ids);
+        db.execSQL("DELETE FROM " + tablename + " WHERE " + columns[0] + " IN(" +
+                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
     }
 
     public static String createLinkTable(){
-        return "CREATE TABLE "+linkTablename+'('+linkColumns[0]+" INTEGER PRIMARY KEY, "+
-                linkColumns[1]+" INTEGER NOT NULL REFERENCES "+
-                tablename+'('+columns[0]+") ON UPDATE CASCADE ON DELETE CASCADE, "+
-                linkColumns[2]+" TEXT NOT NULL, "+linkColumns[3]+" TEXT NOT NULL UNIQUE)";
+        return "CREATE TABLE " + linkTablename + '(' + linkColumns[0] + " INTEGER PRIMARY KEY, " +
+                linkColumns[1] + " INTEGER NOT NULL REFERENCES " +
+                tablename + '(' + columns[0] + ") ON UPDATE CASCADE ON DELETE CASCADE, " +
+                linkColumns[2] + " TEXT NOT NULL, " + linkColumns[3] + " TEXT UNIQUE)";
     }
 
     public ArrayList<AnnouncementLink> selectLink(String selection, String... selectionArgs) {
         ArrayList<AnnouncementLink> links = new ArrayList<>();
 
-        Cursor c = db.query(linkTablename, linkColumns, selection, selectionArgs, null,
-                null, linkColumns[0]+" ASC");
+        Cursor c = db.query(linkTablename, null, selection, selectionArgs, null,
+                null, linkColumns[0] + " ASC");
         if (c.moveToFirst()) do {
             links.add(new AnnouncementLink(c.getString(0), c.getString(1), c.getString(2),
                     c.getString(3)));
@@ -104,21 +105,21 @@ public class AnnouncementsSQLiteController {
     }
 
     public void insertLink(Object... values) {
-        db.execSQL("INSERT INTO "+linkTablename+'('+
-                TextUtils.join(", ", linkColumns)+") VALUES("+
-                TextUtils.join(", ", Collections.nCopies(linkColumns.length, '?'))+
+        db.execSQL("INSERT INTO " + linkTablename + '(' +
+                TextUtils.join(", ", linkColumns) + ") VALUES(" +
+                TextUtils.join(", ", Collections.nCopies(linkColumns.length, '?')) +
                 ')', values);
     }
 
     public void updateLink(Object... values) {
-        db.execSQL("UPDATE "+linkTablename+" SET "+
-                TextUtils.join(" = ?, ", linkColumns)+" = ? WHERE "+ linkColumns[0]+" = ?",
-                values);
+        db.execSQL("UPDATE " + linkTablename + " SET " +
+                TextUtils.join(" = ?, ", linkColumns) + " = ? WHERE " +
+                linkColumns[0] + " = ?", values);
     }
 
     public void deleteLink(Object... ids) {
-        db.execSQL("DELETE FROM "+linkTablename+" WHERE "+linkColumns[0]+" IN("+
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?'))+')', ids);
+        db.execSQL("DELETE FROM " + linkTablename + " WHERE " + linkColumns[0] + " IN(" +
+                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
     }
 
     public void destroy() {

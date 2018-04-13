@@ -5,11 +5,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
@@ -36,6 +38,7 @@ import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import com.twitter.sdk.android.tweetcomposer.ComposerActivity;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -57,6 +60,7 @@ public class AnnouncementsActivity extends MainActivity implements
     private Button report;
     private FloatingActionButton fab;
     private ArrayList<Announcement> announcements = new ArrayList<>();
+    private ArrayList<AnnouncementLink> announcementsLinks;
     private boolean newActivity = true;
     private AnnouncementsAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -78,7 +82,10 @@ public class AnnouncementsActivity extends MainActivity implements
         public void onReceive(Context context, Intent intent) {
             loadAnnouncements(intent.getIntExtra("INSERTED", 0));
             String response = intent.getStringExtra("RESPONSE");
-            if (response != null) Toast.makeText(context, response, Toast.LENGTH_SHORT).show();
+            if (response != null) {
+                Toast.makeText(context, response, Toast.LENGTH_SHORT).show();
+                Log.i(AnnouncementsActivity.class.getSimpleName(), response);
+            }
         }
     };
 
@@ -181,7 +188,6 @@ public class AnnouncementsActivity extends MainActivity implements
     }
 
     private void loadAnnouncements(int inserted) {
-
         if (!progressDialog.isShowing()) progressDialog.show();
 
         int scrollTo = oldAnnouncements ?
@@ -194,7 +200,7 @@ public class AnnouncementsActivity extends MainActivity implements
         for (int i = 0; i < announcement_IDs.length; i++) {
             announcement_IDs[i] = announcements.get(i).get_ID();
         }
-        ArrayList<AnnouncementLink> announcementsLinks =
+        announcementsLinks =
                 AnnouncementsPresenter.getAnnouncementsLinks(this, announcement_IDs);
 
         if (newActivity) {
@@ -237,7 +243,6 @@ public class AnnouncementsActivity extends MainActivity implements
         }
 
         if (progressDialog.isShowing() && announcements.size() > 0) progressDialog.dismiss();
-
     }
 
     @Override
@@ -263,6 +268,28 @@ public class AnnouncementsActivity extends MainActivity implements
                             Toast.LENGTH_SHORT).show();
                 }
                 break;
+            case AnnouncementsAdapter.IMAGE_0:
+            case AnnouncementsAdapter.IMAGE_1:
+            case AnnouncementsAdapter.IMAGE_2:
+            case AnnouncementsAdapter.IMAGE_3:
+            case AnnouncementsAdapter.IMAGE_4:
+            case AnnouncementsAdapter.IMAGE_5:
+            case AnnouncementsAdapter.IMAGE_6:
+            case AnnouncementsAdapter.IMAGE_7:
+            case AnnouncementsAdapter.IMAGE_8:
+            case AnnouncementsAdapter.IMAGE_9: {
+                String _ID = announcements.get(index).get_ID();
+                int link = Integer.parseInt(action.substring(action.length()-1));
+
+                for (AnnouncementLink announcementLink : announcementsLinks) {
+                    if (announcementLink.getAnnouncement_ID().equals(_ID) && link-- == 0) {
+                        startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(
+                                Uri.fromFile(new File(announcementLink.getLink())),
+                                announcementLink.getType().equals("I") ? "image/*" : "video/*"));
+                    }
+                }
+                break;
+            }
             case AnnouncementsAdapter.READ: {
                 AnnouncementsPresenter.readed(this, announcements.get(index).get_ID());
                 loadAnnouncements(0);

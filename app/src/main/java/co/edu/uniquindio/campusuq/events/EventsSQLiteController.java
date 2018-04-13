@@ -49,7 +49,7 @@ public class EventsSQLiteController {
     public ArrayList<Event> select(String selection, String... selectionArgs) {
         ArrayList<Event> events = new ArrayList<>();
 
-        Cursor c = db.query(tablename, columns, selection, selectionArgs, null,
+        Cursor c = db.query(tablename, null, selection, selectionArgs, null,
                 null, columns[0]+" ASC");
         if (c.moveToFirst()) do {
             events.add(new Event(c.getString(0), c.getString(1)));
@@ -80,7 +80,7 @@ public class EventsSQLiteController {
                                                    String... selectionArgs) {
         ArrayList<EventCategory> categories = new ArrayList<>();
 
-        Cursor c = db.query(categoryTablename, categoryColumns, selection, selectionArgs,
+        Cursor c = db.query(categoryTablename, null, selection, selectionArgs,
                 null, null, categoryColumns[0]+" ASC", limit);
         if (c.moveToFirst()) do {
             categories.add(new EventCategory(c.getString(0), c.getString(1),
@@ -110,7 +110,7 @@ public class EventsSQLiteController {
     ArrayList<EventPeriod> selectPeriod(String selection, String... selectionArgs) {
         ArrayList<EventPeriod> periods = new ArrayList<>();
 
-        Cursor c = db.query(periodTablename, periodColumns, selection, selectionArgs, null,
+        Cursor c = db.query(periodTablename, null, selection, selectionArgs, null,
                 null, periodColumns[0]+" ASC");
         if (c.moveToFirst()) do {
             periods.add(new EventPeriod(c.getString(0), c.getString(1)));
@@ -140,7 +140,7 @@ public class EventsSQLiteController {
     public ArrayList<EventDate> selectDate(String selection, String... selectionArgs) {
         ArrayList<EventDate> dates = new ArrayList<>();
 
-        Cursor c = db.query(dateTablename, dateColumns, selection, selectionArgs, null,
+        Cursor c = db.query(dateTablename, null, selection, selectionArgs, null,
                 null, dateColumns[0]+" ASC");
         if (c.moveToFirst()) do {
             dates.add(new EventDate(c.getString(0), c.getString(1), c.getString(2)));

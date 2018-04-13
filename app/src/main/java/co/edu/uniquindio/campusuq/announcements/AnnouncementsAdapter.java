@@ -1,6 +1,7 @@
 package co.edu.uniquindio.campusuq.announcements;
 
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,10 +14,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
+import co.edu.uniquindio.campusuq.util.Utilities;
 
 /**
  * Created by Juan Camilo on 2/03/2018.
@@ -26,6 +27,16 @@ public class AnnouncementsAdapter extends
         RecyclerView.Adapter<AnnouncementsAdapter.AnnouncementViewHolder> {
 
     static final String ANNOUNCEMENT = "announcement";
+    static final String IMAGE_0      = "image_0";
+    static final String IMAGE_1      = "image_1";
+    static final String IMAGE_2      = "image_2";
+    static final String IMAGE_3      = "image_3";
+    static final String IMAGE_4      = "image_4";
+    static final String IMAGE_5      = "image_5";
+    static final String IMAGE_6      = "image_6";
+    static final String IMAGE_7      = "image_7";
+    static final String IMAGE_8      = "image_8";
+    static final String IMAGE_9      = "image_9";
     static final String READ         = "read";
     static final String FACEBOOK     = "facebook";
     static final String TWITTER      = "twitter";
@@ -74,6 +85,7 @@ public class AnnouncementsAdapter extends
             description = view.findViewById(R.id.announcement_description);
 
             view.findViewById(R.id.announcement_layout).setOnClickListener(this);
+            for (ImageView image : images) image.setOnClickListener(this);
             view.findViewById(R.id.announcement_read_button).setOnClickListener(this);
             view.findViewById(R.id.announcement_facebook_button).setOnClickListener(this);
             view.findViewById(R.id.announcement_twitter_button).setOnClickListener(this);
@@ -83,10 +95,23 @@ public class AnnouncementsAdapter extends
         void bindItem(Announcement announcement, ArrayList<AnnouncementLink> announcementLinks) {
             for (int i = 0; i < images.length; i++) {
                 if (i < announcementLinks.size()) {
-                    File imageFile = new File(announcementLinks.get(i).getLink());
-                    if (imageFile.exists()) images[i].setImageBitmap(BitmapFactory
-                            .decodeFile(imageFile.getAbsolutePath()));
-                    else images[i].setImageResource(R.drawable.rectangle_gray);
+                    File linkFile = new File(announcementLinks.get(i).getLink());
+
+                    if (linkFile.exists()) {
+                        if ("I".equals(announcementLinks.get(i).getType())) {
+                            images[i].setImageBitmap(Utilities.getResizedBitmap(BitmapFactory
+                                    .decodeFile(linkFile.getAbsolutePath())));
+                        } else {
+                            MediaMetadataRetriever mediaMetadataRetriever =
+                                    new MediaMetadataRetriever();
+                            mediaMetadataRetriever.setDataSource(linkFile.getAbsolutePath());
+                            images[i].setImageBitmap(Utilities.getResizedBitmap(
+                                    mediaMetadataRetriever.getFrameAtTime(1000000)));
+                        }
+                    } else {
+                        images[i].setImageResource(R.drawable.rectangle_gray);
+                    }
+
                     images[i].setVisibility(View.VISIBLE);
                 } else {
                     images[i].setImageResource(R.drawable.rectangle_gray);
@@ -95,10 +120,8 @@ public class AnnouncementsAdapter extends
             }
 
             try {
-                Date dateTime = simpleDateFormat.parse(announcement.getDate());
-                date.setText(String.format("%s\n%s",
-                        DateFormat.getDateInstance(DateFormat.FULL).format(dateTime),
-                        DateFormat.getTimeInstance(DateFormat.SHORT).format(dateTime)));
+                date.setText(DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.SHORT)
+                        .format(simpleDateFormat.parse(announcement.getDate())));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -110,14 +133,26 @@ public class AnnouncementsAdapter extends
         @Override
         public void onClick(View view) {
             String action;
+
             switch (view.getId()) {
                 case R.id.announcement_layout         : action = ANNOUNCEMENT; break;
+                case R.id.announcement_image_0        : action = IMAGE_0     ; break;
+                case R.id.announcement_image_1        : action = IMAGE_1     ; break;
+                case R.id.announcement_image_2        : action = IMAGE_2     ; break;
+                case R.id.announcement_image_3        : action = IMAGE_3     ; break;
+                case R.id.announcement_image_4        : action = IMAGE_4     ; break;
+                case R.id.announcement_image_5        : action = IMAGE_5     ; break;
+                case R.id.announcement_image_6        : action = IMAGE_6     ; break;
+                case R.id.announcement_image_7        : action = IMAGE_7     ; break;
+                case R.id.announcement_image_8        : action = IMAGE_8     ; break;
+                case R.id.announcement_image_9        : action = IMAGE_9     ; break;
                 case R.id.announcement_read_button    : action = READ        ; break;
                 case R.id.announcement_facebook_button: action = FACEBOOK    ; break;
                 case R.id.announcement_twitter_button : action = TWITTER     ; break;
                 case R.id.announcement_whatsapp_button: action = WHATSAPP    ; break;
                 default                               : action = UNDEFINED   ; break;
             }
+
             listener.onAnnouncementClick(getAdapterPosition(), action);
         }
 

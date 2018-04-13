@@ -23,8 +23,9 @@ public class ObjectsServiceController {
     private static final String _OBJECTS = "/objetos";
 
     public static ArrayList<LostObject> getObjects(Context context, @NonNull String date,
-                                                   Utilities.State state, ArrayList<String> _IDs) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO+_OBJECTS+date);
+                                                   Utilities.State state, ArrayList<String> _IDs,
+                                                   ArrayList<String> images) {
+        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + _OBJECTS + date);
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         ArrayList<LostObject> lostObjects = new ArrayList<>();
 
@@ -33,6 +34,7 @@ public class ObjectsServiceController {
                     .build().execute(request).getEntity()));
             if (state != null) state.set(object.getInt("estado"));
             JSONArray array = object.getJSONArray("datos");
+
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = array.getJSONObject(i);
                 lostObjects.add(new LostObject(obj.getString(ObjectsSQLiteController.columns[0]),
@@ -46,11 +48,17 @@ public class ObjectsServiceController {
                                 null : obj.getString(ObjectsSQLiteController.columns[7]),
                         obj.isNull(ObjectsSQLiteController.columns[8]) ?
                                 null : obj.getString(ObjectsSQLiteController.columns[8]),
-                        "N"));
+                        "0"));
             }
-            if (_IDs != null) {
+
+            if (_IDs != null && images != null) {
                 array = object.getJSONArray("_IDs");
-                for (int i = 0; i < array.length(); i++) _IDs.remove(array.getString(i));
+
+                for (int i = 0; i < array.length(); i++) {
+                    int index = _IDs.indexOf(array.getString(i));
+                    _IDs.remove(index);
+                    images.remove(index);
+                }
             }
         } catch (Exception e) {
             Log.e(ObjectsServiceController.class.getSimpleName(), e.getMessage());
@@ -60,7 +68,7 @@ public class ObjectsServiceController {
     }
 
     public static String modifyObject(Context context, String json) {
-        HttpPost post = new HttpPost(Utilities.URL_SERVICIO+_OBJECTS);
+        HttpPost post = new HttpPost(Utilities.URL_SERVICIO + _OBJECTS);
         post.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         post.setHeader(HTTP.CONTENT_TYPE, "application/json");
         post.setEntity(new StringEntity(json, "UTF-8"));

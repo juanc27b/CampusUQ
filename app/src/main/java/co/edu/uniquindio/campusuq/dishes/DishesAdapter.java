@@ -13,8 +13,12 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
+import co.edu.uniquindio.campusuq.util.Utilities;
 
 public class DishesAdapter extends RecyclerView.Adapter<DishesAdapter.DishViewHolder> {
+
+    static final String DISH      = "dish";
+    static final String IMAGE     = "image";
 
     private ArrayList<Dish> dishes;
     private OnClickDishListener listener;
@@ -40,14 +44,19 @@ public class DishesAdapter extends RecyclerView.Adapter<DishesAdapter.DishViewHo
             price = view.findViewById(R.id.dish_price);
 
             view.findViewById(R.id.dish_layout).setOnClickListener(this);
+            image.setOnClickListener(this);
         }
 
         void bindItem(Dish dish) {
             // Se concatena una cadena vacia para evitar el caso File(null)
             File imageFile = new File(""+dish.getImage());
-            if (imageFile.exists())
-                image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
-            else image.setImageResource(R.drawable.rectangle_gray);
+
+            if (imageFile.exists()) {
+                image.setImageBitmap(Utilities.getResizedBitmap(BitmapFactory
+                        .decodeFile(imageFile.getAbsolutePath())));
+            } else {
+                image.setImageResource(R.drawable.rectangle_gray);
+            }
 
             name.setText(dish.getName());
             description.setText(dish.getDescription());
@@ -57,7 +66,15 @@ public class DishesAdapter extends RecyclerView.Adapter<DishesAdapter.DishViewHo
 
         @Override
         public void onClick(View view) {
-            listener.onDishClick(getAdapterPosition());
+            String action;
+
+            switch (view.getId()) {
+                case R.id.dish_layout: action = DISH       ; break;
+                case R.id.dish_image : action = IMAGE      ; break;
+                default              : action = "undefined"; break;
+            }
+
+            listener.onDishClick(getAdapterPosition(), action);
         }
 
     }
@@ -84,7 +101,7 @@ public class DishesAdapter extends RecyclerView.Adapter<DishesAdapter.DishViewHo
     }
 
     public interface OnClickDishListener {
-        void onDishClick(int index);
+        void onDishClick(int index, String action);
     }
 
 }

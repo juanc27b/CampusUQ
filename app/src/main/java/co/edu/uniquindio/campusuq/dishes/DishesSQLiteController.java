@@ -25,16 +25,16 @@ public class DishesSQLiteController {
     }
 
     public static String createTable() {
-        return "CREATE TABLE "+tablename+'('+columns[0]+" INTEGER PRIMARY KEY, "+
-                columns[1]+" TEXT NOT NULL UNIQUE, "+columns[2]+" TEXT NOT NULL, "+
-                columns[3]+" INTEGER NOT NULL, "+columns[4]+" TEXT)";
+        return "CREATE TABLE " + tablename + '(' + columns[0] + " INTEGER PRIMARY KEY, " +
+                columns[1] + " TEXT NOT NULL UNIQUE, " + columns[2] + " TEXT NOT NULL, " +
+                columns[3] + " INTEGER NOT NULL, " + columns[4] + " TEXT UNIQUE)";
     }
 
     public ArrayList<Dish> select(String limit) {
         ArrayList<Dish> dishes = new ArrayList<>();
 
-        Cursor c = db.query(tablename, columns, null, null, null,
-                null, columns[0]+" DESC", limit);
+        Cursor c = db.query(tablename, null, null, null,
+                null, null, columns[0] + " DESC", limit);
         if (c.moveToFirst()) do {
             dishes.add(new Dish(c.getString(0), c.getString(1), c.getString(2),
                     c.getString(3), c.isNull(4) ? null : c.getString(4)));
@@ -45,20 +45,21 @@ public class DishesSQLiteController {
     }
 
     public void insert(Object... values) {
-        db.execSQL("INSERT INTO "+tablename+'('+
-                TextUtils.join(", ", columns)+") VALUES("+
-                TextUtils.join(", ", Collections.nCopies(columns.length, '?'))+
+        db.execSQL("INSERT INTO " + tablename + '(' +
+                TextUtils.join(", ", columns) + ") VALUES(" +
+                TextUtils.join(", ", Collections.nCopies(columns.length, '?')) +
                 ')', values);
     }
 
     public void update(Object... values) {
-        db.execSQL("UPDATE "+tablename+" SET "+
-                TextUtils.join(" = ?, ", columns)+" = ? WHERE "+columns[0]+" = ?", values);
+        db.execSQL("UPDATE " + tablename + " SET " +
+                TextUtils.join(" = ?, ", columns) + " = ? WHERE " +
+                columns[0] + " = ?", values);
     }
 
     public void delete(Object... ids) {
-        db.execSQL("DELETE FROM "+tablename+" WHERE "+columns[0]+" IN("+
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?'))+')', ids);
+        db.execSQL("DELETE FROM " + tablename + " WHERE " + columns[0] + " IN(" +
+                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
     }
 
     public void destroy() {

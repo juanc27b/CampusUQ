@@ -9,19 +9,22 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
-import com.google.api.client.util.IOUtils;
-
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.MessageDigest;
@@ -122,6 +125,7 @@ public class Utilities {
         if (spec != null) try {
             URLConnection connection = new URL(spec).openConnection();
             connection.connect();
+            InputStream input = connection.getInputStream();
 
             File dir = new File(Environment.getExternalStorageDirectory()
                     .getAbsolutePath()+"/CampusUQ/Media/Images"+path);
@@ -129,7 +133,10 @@ public class Utilities {
             File file = new File(dir, spec.substring(spec.lastIndexOf('/')+1));
             FileOutputStream output = new FileOutputStream(file);
 
-            IOUtils.copy(connection.getInputStream(), output);
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = input.read(buffer)) != -1) output.write(buffer, 0, bytesRead);
+            input.close();
             output.close();
 
             imagePath = file.getPath();
@@ -170,6 +177,39 @@ public class Utilities {
         } else {
             resources.updateConfiguration(configuration, displayMetrics);
         }
+    }
+
+    public static Bitmap getResizedBitmap(Bitmap image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        float bitmapRatio = width/(float) height;
+
+        if (bitmapRatio > 0) {
+            width = 500;
+            height = (int) (width/bitmapRatio);
+        } else {
+            height = 500;
+            width = (int) (height*bitmapRatio);
+        }
+
+        return Bitmap.createScaledBitmap(image, width, height, true);
+    }
+
+    public static String getPath(Context context, Uri uri) {
+        String path = null;
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = context.getContentResolver().query(uri, projection, null,
+                null, null);
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                path = cursor.getString(cursor.getColumnIndexOrThrow(projection[0]));
+            }
+
+            cursor.close();
+        }
+
+        return path;
     }
 
 }

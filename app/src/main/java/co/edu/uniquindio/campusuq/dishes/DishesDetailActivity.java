@@ -1,16 +1,12 @@
 package co.edu.uniquindio.campusuq.dishes;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.EditText;
@@ -20,13 +16,9 @@ import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
@@ -35,6 +27,8 @@ import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 
 public class DishesDetailActivity extends MainActivity implements View.OnClickListener {
+
+    private static final int REQUEST_IMAGE = 1010;
 
     private Intent intent;
     private String _ID;
@@ -87,6 +81,7 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
     @Override
     public void handleIntent(Intent intent) {
         ActionBar actionBar = getSupportActionBar();
+
         if (actionBar != null) {
             actionBar.setTitle(intent.getStringExtra("CATEGORY"));
             this.intent = intent;
@@ -103,17 +98,22 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
 
         // Se concatena una cadena vacia para evitar el caso File(null)
         imageFile = new File(""+intent.getStringExtra(DishesSQLiteController.columns[4]));
-        if (imageFile.exists())
-            image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
-        else image.setImageResource(R.drawable.rectangle_gray);
+
+        if (imageFile.exists()) {
+            image.setImageBitmap(Utilities.getResizedBitmap(BitmapFactory
+                    .decodeFile(imageFile.getAbsolutePath())));
+        } else {
+            image.setImageResource(R.drawable.rectangle_gray);
+        }
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.dish_detail_image:
-                startActivityForResult(Intent.createChooser(new Intent(Intent.ACTION_GET_CONTENT)
-                        .setType("image/*"), "Select Picture"), 0);
+                startActivityForResult(Intent.createChooser(new Intent(Intent.ACTION_PICK,
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI).setType("image/*"),
+                        getString(R.string.select_image)), REQUEST_IMAGE);
                 break;
             case R.id.dish_detail_ok:
                 if (Utilities.haveNetworkConnection(this)) {
@@ -126,29 +126,29 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
                                 .setLabel(getString(R.string.analytics_restaurant_label))
                                 .setValue(1)
                                 .build());
-                        JSONObject json = new JSONObject();
+
                         try {
+                            JSONObject json = new JSONObject();
                             if (_ID != null) json.put("UPDATE_ID", _ID);
                             json.put(DishesSQLiteController.columns[1], name.getText());
                             json.put(DishesSQLiteController.columns[2], description.getText());
                             json.put(DishesSQLiteController.columns[3], price.getText());
+
                             if (imageFile.exists()) {
                                 json.put(DishesSQLiteController.columns[4], imageFile.getName());
-                                byte[] imageBytes = new byte[(int) imageFile.length()];
-                                BufferedInputStream bufferedInputStream =
-                                        new BufferedInputStream(new FileInputStream(imageFile));
-                                bufferedInputStream.read(imageBytes);
-                                bufferedInputStream.close();
-                                json.put("imageString",
-                                        Base64.encodeToString(imageBytes, Base64.NO_WRAP));
+                                json.put("imageString", imageFile.getAbsolutePath());
                             }
-                        } catch (JSONException | IOException e) {
+
+                            WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                                    WebService.ACTION_DISHES, WebService.METHOD_PUT,
+                                    json.toString());
+                            setResult(RESULT_OK, intent);
+                            finish();
+                        } catch (Exception e) {
                             e.printStackTrace();
+                            Toast.makeText(this, e.getLocalizedMessage(),
+                                    Toast.LENGTH_SHORT).show();
                         }
-                        WebBroadcastReceiver.scheduleJob(getApplicationContext(),
-                                WebService.ACTION_DISHES, WebService.METHOD_PUT, json.toString());
-                        setResult(RESULT_OK, intent);
-                        finish();
                     } else {
                         Toast.makeText(this, R.string.empty_string,
                                 Toast.LENGTH_SHORT).show();
@@ -166,25 +166,20 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            Uri uri = data.getData();
-            if (uri != null) {
-                String[] projection = {MediaStore.Images.Media.DATA};
-                String[] selectionArgs = {DocumentsContract.getDocumentId(uri).split(":")[1]};
-                Cursor cursor = getContentResolver().query(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection,
-                        MediaStore.Images.Media._ID+" = ?", selectionArgs, null);
-                if (cursor != null) {
-                    if (cursor.moveToFirst()) {
-                        imageFile =
-                                new File(cursor.getString(cursor.getColumnIndex(projection[0])));
-                        if (imageFile.exists()) image.setImageBitmap(BitmapFactory
-                                .decodeFile(imageFile.getAbsolutePath()));
-                        else image.setImageResource(R.drawable.rectangle_gray);
-                    }
-                    cursor.close();
-                }
+
+        if (requestCode == REQUEST_IMAGE && resultCode == RESULT_OK) try {
+            imageFile = new File(Utilities.getPath(this, data.getData()));
+
+            if (imageFile.exists()) {
+                image.setImageBitmap(Utilities.getResizedBitmap(BitmapFactory
+                        .decodeFile(imageFile.getAbsolutePath())));
+            } else {
+                image.setImageResource(R.drawable.rectangle_gray);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, getString(R.string.get_image_error)+
+                    ":\n"+e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 

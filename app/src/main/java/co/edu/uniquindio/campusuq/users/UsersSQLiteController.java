@@ -40,8 +40,8 @@ public class UsersSQLiteController {
     public ArrayList<User> select() {
         ArrayList<User> users = new ArrayList<>();
 
-        Cursor c = db.query(tablename, columns, null, null, null,
-                null, columns[0]+" ASC");
+        Cursor c = db.query(tablename, null, null, null,
+                null, null, columns[0]+" ASC");
         if (c.moveToFirst()) do {
             users.add(new User(c.getString(0), c.getString(1), c.getString(2),
                     c.getString(3), c.getString(4), c.getString(5), c.getString(6),

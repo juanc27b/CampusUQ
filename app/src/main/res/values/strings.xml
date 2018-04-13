@@ -389,6 +389,9 @@
 
     <string name="adjust_quotas">Ajustar Cupos de</string>
 
+    <string name="select_image">Seleccionar Imagen</string>
+    <string name="select_image_or_video">Seleccionar Imagen o Video</string>
+
     <string name="analytics_news_category">Noticias</string>
     <string name="analytics_informations_category">Informaciones</string>
     <string name="analytics_contatcs_category">Contactos</string>

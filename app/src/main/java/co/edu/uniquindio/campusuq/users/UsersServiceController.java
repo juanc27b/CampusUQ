@@ -6,10 +6,10 @@ import org.json.JSONObject;
 
 import co.edu.uniquindio.campusuq.util.Utilities;
 import cz.msebera.android.httpclient.HttpResponse;
-import cz.msebera.android.httpclient.client.HttpClient;
 import cz.msebera.android.httpclient.client.methods.HttpPost;
 import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
+import cz.msebera.android.httpclient.protocol.HTTP;
 import cz.msebera.android.httpclient.util.EntityUtils;
 
 /**
@@ -21,7 +21,7 @@ public class UsersServiceController {
     public static User login(String json) {
         User user = null;
         HttpPost post = new HttpPost(Utilities.URL_SERVICIO+"/usuarios/login");
-        post.setHeader("Content-Type", "application/json; Charset=UTF-8");
+        post.setHeader(HTTP.CONTENT_TYPE, "application/json");
         try {
             StringEntity entity = new StringEntity(json);
             post.setEntity(entity);
@@ -51,10 +51,12 @@ public class UsersServiceController {
 
     public static String modifyUser(String json) {
         HttpPost post = new HttpPost(Utilities.URL_SERVICIO+"/usuarios");
-        post.setHeader("Content-Type", "application/json; Charset=UTF-8");
+        post.setHeader(HTTP.CONTENT_TYPE, "application/json");
+        post.setEntity(new StringEntity(json, "UTF-8"));
+
         try {
-            post.setEntity(new StringEntity(json));
-            return EntityUtils.toString(HttpClientBuilder.create().build().execute(post).getEntity());
+            return EntityUtils
+                    .toString(HttpClientBuilder.create().build().execute(post).getEntity());
         } catch (Exception e) {
             Log.e(UsersServiceController.class.getSimpleName(), e.getMessage());
             return null;

@@ -10,6 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Toast;
@@ -39,7 +40,10 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
         public void onReceive(Context context, Intent intent) {
             loadQuotas();
             String response = intent.getStringExtra("RESPONSE");
-            if (response != null) Toast.makeText(context, response, Toast.LENGTH_SHORT).show();
+            if (response != null) {
+                Toast.makeText(context, response, Toast.LENGTH_SHORT).show();
+                Log.i(QuotasActivity.class.getSimpleName(), response);
+            }
         }
     };
 
@@ -137,10 +141,13 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
     @Override
     public void onQuotaClick(boolean fragment_quotas, int index) {
         User user = UsersPresenter.loadUser(this);
-        if (user != null && user.getAdministrator().equals("S")) QuotasFragment
-                .newInstance(fragment_quotas, index).show(getSupportFragmentManager(), null);
-        else Toast.makeText(this, R.string.no_administrator,
-                Toast.LENGTH_SHORT).show();
+        if (user != null && user.getAdministrator().equals("S")) {
+            QuotasFragment.newInstance(fragment_quotas, index)
+                    .show(getSupportFragmentManager(), null);
+        } else {
+            Toast.makeText(this, R.string.no_administrator,
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     public Quota getQuota(int index) {

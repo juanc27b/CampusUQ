@@ -16,7 +16,6 @@ import android.widget.Toast;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
@@ -55,12 +54,10 @@ public class NewsContentActivity extends MainActivity {
         title.setText(intent.getStringExtra("TITLE"));
 
         try {
-            Date dateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ",
-                    new Locale("es", "CO"))
-                    .parse(intent.getStringExtra("DATE"));
-            date.setText(String.format("%s\n%s",
-                    DateFormat.getDateInstance(DateFormat.MEDIUM).format(dateTime),
-                    DateFormat.getTimeInstance(DateFormat.SHORT).format(dateTime)));
+            date.setText(DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
+                    .format(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ",
+                            new Locale("es", "CO"))
+                            .parse(intent.getStringExtra("DATE"))));
         } catch (ParseException e) {
             e.printStackTrace();
         }

@@ -30,7 +30,7 @@ public class AnnouncementsServiceController {
                                                            @NonNull String category_date,
                                                            Utilities.State state,
                                                            ArrayList<String> _IDs) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO+_ANNOUNCEMENTS+category_date);
+        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + _ANNOUNCEMENTS + category_date);
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         ArrayList<Announcement> announcements = new ArrayList<>();
 
@@ -39,6 +39,7 @@ public class AnnouncementsServiceController {
                     .build().execute(request).getEntity()));
             if (state != null) state.set(object.getInt("estado"));
             JSONArray array = object.getJSONArray("datos");
+
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = array.getJSONObject(i);
                 announcements.add(new Announcement(
@@ -47,8 +48,9 @@ public class AnnouncementsServiceController {
                         obj.getString(AnnouncementsSQLiteController.columns[2]),
                         obj.getString(AnnouncementsSQLiteController.columns[3]),
                         obj.getString(AnnouncementsSQLiteController.columns[4]),
-                        obj.getString(AnnouncementsSQLiteController.columns[5]), "N"));
+                        obj.getString(AnnouncementsSQLiteController.columns[5]), "0"));
             }
+
             if (_IDs != null) {
                 array = object.getJSONArray("_IDs");
                 for (int i = 0; i < array.length(); i++) _IDs.remove(array.getString(i));
@@ -61,9 +63,9 @@ public class AnnouncementsServiceController {
     }
 
     public static String modifyAnnouncement(Context context, String json) {
-        HttpPost post = new HttpPost(Utilities.URL_SERVICIO+_ANNOUNCEMENTS);
+        HttpPost post = new HttpPost(Utilities.URL_SERVICIO + _ANNOUNCEMENTS);
         post.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        post.setHeader(HTTP.CONTENT_TYPE, "application/json; Charset=UTF-8");
+        post.setHeader(HTTP.CONTENT_TYPE, "application/json");
         post.setEntity(new StringEntity(json, "UTF-8"));
 
         try {
@@ -80,13 +82,14 @@ public class AnnouncementsServiceController {
     public static ArrayList<AnnouncementLink> getAnnouncementLinks(Context context,
                                                                    @NonNull String _announcement) {
         HttpGet request =
-                new HttpGet(Utilities.URL_SERVICIO+_ANNOUNCEMENT_LINKS+_announcement);
+                new HttpGet(Utilities.URL_SERVICIO + _ANNOUNCEMENT_LINKS + _announcement);
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         ArrayList<AnnouncementLink> links = new ArrayList<>();
 
         try {
             JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
                     .execute(request).getEntity())).getJSONArray("datos");
+
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 links.add(new AnnouncementLink(
@@ -103,9 +106,9 @@ public class AnnouncementsServiceController {
     }
 
     public static String modifyAnnouncementLink(Context context, String json) {
-        HttpPost post = new HttpPost(Utilities.URL_SERVICIO+_ANNOUNCEMENT_LINKS);
+        HttpPost post = new HttpPost(Utilities.URL_SERVICIO + _ANNOUNCEMENT_LINKS);
         post.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        post.setHeader(HTTP.CONTENT_TYPE, "application/json; Charset=UTF-8");
+        post.setHeader(HTTP.CONTENT_TYPE, "application/json");
         post.setEntity(new StringEntity(json, "UTF-8"));
 
         try {

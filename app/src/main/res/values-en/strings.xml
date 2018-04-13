@@ -327,4 +327,7 @@
 
     <string name="adjust_quotas">Adjust Quotas of</string>
 
+    <string name="select_image">Select Image</string>
+    <string name="select_image_or_video">Select Image or Video</string>
+
 </resources>

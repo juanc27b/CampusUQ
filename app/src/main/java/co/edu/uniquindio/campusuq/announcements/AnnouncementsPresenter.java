@@ -22,7 +22,7 @@ public class AnnouncementsPresenter {
 
         ArrayList<Announcement> announcements = dbController.select(""+limit,
                 AnnouncementsSQLiteController.columns[2]+" = ? AND "+
-                        AnnouncementsSQLiteController.columns[6]+" = 'N'", type);
+                        AnnouncementsSQLiteController.columns[6]+" = 0", type);
 
         dbController.destroy();
 

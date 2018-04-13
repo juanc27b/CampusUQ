@@ -92,7 +92,6 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
     }
 
     private void loadEmails(int inserted) {
-
         if (!progressDialog.isShowing()) progressDialog.show();
 
         int scrollTo = oldEmails ?
@@ -144,7 +143,6 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
                 WebService.ACTION_EMAILS, WebService.METHOD_GET, null);
 
         if (progressDialog.isShowing() && emails.size() > 0) progressDialog.dismiss();
-
     }
 
     @Override
