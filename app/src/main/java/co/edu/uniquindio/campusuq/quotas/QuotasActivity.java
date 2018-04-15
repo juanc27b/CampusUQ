@@ -73,12 +73,15 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
     public void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            for (Quota quota : quotas)
+
+            for (Quota quota : quotas) {
                 if (quota.getName().toLowerCase().contains(query.trim().toLowerCase())) {
-                layoutManager.scrollToPosition(quotas.indexOf(quota));
-                return;
+                    layoutManager.scrollToPosition(quotas.indexOf(quota));
+                    return;
+                }
             }
-            Toast.makeText(this, R.string.quota_no_found+query,
+
+            Toast.makeText(this, getString(R.string.quota_no_found) + ": " + query,
                     Toast.LENGTH_SHORT).show();
         } else {
             String category = intent.getStringExtra("CATEGORY");
@@ -89,6 +92,7 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
             else if (category.equals(getString(R.string.cultural_and_sport))) type = "C";
             else if (category.equals(getString(R.string.auditoriums))) type = "A";
             ActionBar actionBar = getSupportActionBar();
+
             if (actionBar != null) {
                 actionBar.setTitle(category);
                 loadQuotas();

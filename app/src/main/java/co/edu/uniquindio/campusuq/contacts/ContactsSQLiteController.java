@@ -33,19 +33,19 @@ public class ContactsSQLiteController {
     }
 
     public static String createTable(){
-        return "CREATE TABLE "+tablename+'('+columns[0]+" INTEGER PRIMARY KEY, "+
-                columns[1]+" INTEGER NOT NULL REFERENCES "+
-                categoryTablename+'('+categoryColumns[0]+") ON UPDATE CASCADE ON DELETE CASCADE, "+
-                columns[2]+" TEXT NOT NULL UNIQUE, "+columns[3]+" TEXT NOT NULL, "+
-                columns[4]+" TEXT NOT NULL, "+columns[5]+" TEXT NOT NULL, "+
-                columns[6]+" TEXT NOT NULL, "+columns[7]+" TEXT NOT NULL)";
+        return "CREATE TABLE " + tablename + '(' + columns[0] + " INTEGER PRIMARY KEY, " +
+                columns[1] + " INTEGER NOT NULL REFERENCES " + categoryTablename + '(' +
+                categoryColumns[0] + ") ON UPDATE CASCADE ON DELETE CASCADE, " +
+                columns[2] + " TEXT NOT NULL UNIQUE, " + columns[3] + " TEXT NOT NULL, " +
+                columns[4] + " TEXT NOT NULL, " + columns[5] + " TEXT NOT NULL, " +
+                columns[6] + " TEXT NOT NULL, " + columns[7] + " TEXT NOT NULL)";
     }
 
     public ArrayList<Contact> select(String selection, String... selectionArgs) {
         ArrayList<Contact> contacts = new ArrayList<>();
 
         Cursor c = db.query(tablename, null, selection, selectionArgs, null,
-                null, columns[2]+" ASC");
+                null, columns[2] + " ASC");
         if (c.moveToFirst()) do {
             contacts.add(new Contact(c.getString(0), c.getString(1), c.getString(2),
                     c.getString(3), c.getString(4), c.getString(5), c.getString(6),
@@ -57,20 +57,22 @@ public class ContactsSQLiteController {
     }
 
     public void insert(Object... values) {
-        db.execSQL("INSERT INTO "+tablename+'('+
-                TextUtils.join(", ", columns)+") VALUES("+
-                TextUtils.join(", ", Collections.nCopies(columns.length, '?'))+
+        db.execSQL("INSERT INTO " + tablename + '(' +
+                TextUtils.join(", ", columns) + ") VALUES(" +
+                TextUtils.join(", ", Collections.nCopies(columns.length, '?')) +
                 ')', values);
     }
 
     public void delete(Object... ids) {
-        db.execSQL("DELETE FROM "+tablename+" WHERE "+columns[0]+" IN("+
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?'))+')', ids);
+        db.execSQL("DELETE FROM " + tablename + " WHERE " + columns[0] + " IN(" +
+                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
     }
 
     public static String createCategoryTable(){
-        return "CREATE TABLE "+categoryTablename+'('+categoryColumns[0]+" INTEGER PRIMARY KEY, "+
-                categoryColumns[1]+" TEXT NOT NULL UNIQUE, "+categoryColumns[2]+" TEXT NOT NULL)";
+        return "CREATE TABLE " + categoryTablename + '(' +
+                categoryColumns[0] + " INTEGER PRIMARY KEY, " +
+                categoryColumns[1] + " TEXT NOT NULL UNIQUE, " +
+                categoryColumns[2] + " TEXT NOT NULL)";
     }
 
     public ArrayList<ContactCategory> selectCategory(String limit, String selection,
@@ -78,7 +80,7 @@ public class ContactsSQLiteController {
         ArrayList<ContactCategory> categories = new ArrayList<>();
 
         Cursor c = db.query(categoryTablename, null, selection, selectionArgs,
-                null, null, categoryColumns[1]+" ASC", limit);
+                null, null, categoryColumns[1] + " ASC", limit);
         if (c.moveToFirst()) do {
             categories.add(new ContactCategory(c.getString(0), c.getString(1),
                     c.getString(2)));
@@ -89,15 +91,16 @@ public class ContactsSQLiteController {
     }
 
     public void insertCategory(Object... values) {
-        db.execSQL("INSERT INTO "+categoryTablename+'('+
-                TextUtils.join(", ", categoryColumns)+") VALUES("+
-                TextUtils.join(", ", Collections.nCopies(categoryColumns.length, '?'))+
-                ')', values);
+        db.execSQL("INSERT INTO " + categoryTablename + '(' +
+                TextUtils.join(", ", categoryColumns) + ") VALUES(" +
+                TextUtils.join(", ",
+                        Collections.nCopies(categoryColumns.length, '?')) + ')', values);
     }
 
     public void deleteCategory(Object... ids) {
-        db.execSQL("DELETE FROM "+categoryTablename+" WHERE "+categoryColumns[0]+" IN("+
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?'))+')', ids);
+        db.execSQL("DELETE FROM " + categoryTablename + " WHERE " +
+                categoryColumns[0] + " IN(" +
+                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
     }
 
     public void destroy() {

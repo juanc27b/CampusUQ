@@ -28,8 +28,8 @@ public class WebContentActivity extends MainActivity {
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-
-        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+        super.setBackground(R.drawable.portrait_normal_background,
+                R.drawable.landscape_normal_background);
 
         ViewStub stub = findViewById(R.id.layout_stub);
         stub.setLayoutResource(R.layout.content_web);
@@ -56,7 +56,8 @@ public class WebContentActivity extends MainActivity {
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient() {
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                Toast.makeText(WebContentActivity.this, "Oh no! " + description, Toast.LENGTH_SHORT).show();
+                Toast.makeText(WebContentActivity.this, getString(R.string.oh_no) +
+                        ' ' + description, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -72,11 +73,11 @@ public class WebContentActivity extends MainActivity {
         });
 
         if (content != null) {
-            webView.loadDataWithBaseURL(link, content, "text/html", null, null);
+            webView.loadDataWithBaseURL(link, content, "text/html", null,
+                    null);
         } else {
             webView.loadUrl(link);
         }
-
     }
 
     @Override
@@ -89,7 +90,8 @@ public class WebContentActivity extends MainActivity {
             String content = intent.getStringExtra("CONTENT");
 
             if (content != null) {
-                webView.loadDataWithBaseURL(link, content, "text/html", null, null);
+                webView.loadDataWithBaseURL(link, content, "text/html", null,
+                        null);
             } else {
                 webView.loadUrl(link);
             }

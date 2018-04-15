@@ -37,7 +37,9 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
     private BroadcastReceiver emailsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            WebService.PENDING_ACTION = WebService.ACTION_NONE;
             Intent exceptionIntent = intent.getParcelableExtra("INTENT");
+
             if (exceptionIntent == null) {
                 loadEmails(intent.getIntExtra("INSERTED", 0));
             } else {
@@ -81,12 +83,15 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
     public void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            for (Email email : emails)
+
+            for (Email email : emails) {
                 if(email.getName().toLowerCase().contains(query.trim().toLowerCase())) {
-                layoutManager.scrollToPosition(emails.indexOf(email));
-                return;
+                    layoutManager.scrollToPosition(emails.indexOf(email));
+                    return;
+                }
             }
-            Toast.makeText(this, getString(R.string.email_no_found)+query,
+
+            Toast.makeText(this, getString(R.string.email_no_found) + ": " + query,
                     Toast.LENGTH_SHORT).show();
         }
     }
@@ -139,8 +144,11 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
             layoutManager.scrollToPosition(scrollTo);
         }
 
-        if (emails.isEmpty()) WebBroadcastReceiver.scheduleJob(this,
-                WebService.ACTION_EMAILS, WebService.METHOD_GET, null);
+        if (emails.isEmpty() && !WebService.PENDING_ACTION.equals(WebService.ACTION_EMAILS)) {
+            WebService.PENDING_ACTION = WebService.ACTION_EMAILS;
+            WebBroadcastReceiver.scheduleJob(this, WebService.ACTION_EMAILS,
+                    WebService.METHOD_GET, null);
+        }
 
         if (progressDialog.isShowing() && emails.size() > 0) progressDialog.dismiss();
     }

@@ -81,7 +81,8 @@ public class EmailsContentActivity extends MainActivity {
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient() {
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                Toast.makeText(EmailsContentActivity.this, "Oh no! " + description, Toast.LENGTH_SHORT).show();
+                Toast.makeText(EmailsContentActivity.this, getString(R.string.oh_no) +
+                        ' ' + description, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -90,14 +91,12 @@ public class EmailsContentActivity extends MainActivity {
             public void onDownloadStart(String url, String userAgent,
                                         String contentDisposition, String mimetype,
                                         long contentLength) {
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(url));
-                startActivity(i);
+                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(url)));
             }
         });
 
-        webView.loadData(intent.getStringExtra(EmailsSQLiteController.columns[6]), "text/html", null);
-
+        webView.loadData(intent.getStringExtra(EmailsSQLiteController.columns[6]),
+                "text/html", null);
     }
 
     @Override

@@ -14,9 +14,16 @@ import java.util.ArrayList;
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
 
-public class NotificationsActivity extends MainActivity implements CompoundButton.OnCheckedChangeListener {
+public class NotificationsActivity extends MainActivity implements
+        CompoundButton.OnCheckedChangeListener {
 
-    private Switch events, news, academicCalendar, lostObjects, securitySystem, billboardInformation, institutionalMail;
+    private Switch events;
+    private Switch news;
+    private Switch academicCalendar;
+    private Switch lostObjects;
+    private Switch securitySystem;
+    private Switch billboardInformation;
+    private Switch institutionalMail;
 
     public NotificationsActivity() {
         super.setHasSearch(false);
@@ -25,7 +32,8 @@ public class NotificationsActivity extends MainActivity implements CompoundButto
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+        super.setBackground(R.drawable.portrait_normal_background,
+                R.drawable.landscape_normal_background);
 
         ViewStub viewStub = findViewById(R.id.layout_stub);
         viewStub.setLayoutResource(R.layout.content_notifications);
@@ -40,20 +48,18 @@ public class NotificationsActivity extends MainActivity implements CompoundButto
         institutionalMail = findViewById(R.id.notifications_institutional_mail);
 
         setNotifications();
-
     }
 
     @Override
     public void handleIntent(Intent intent) {
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            setNotifications();
-        }
+        if (actionBar != null) setNotifications();
     }
 
     public void setNotifications() {
         unregisterListener();
-        ArrayList<Notification> notifications = NotificationsPresenter.loadNotifications(NotificationsActivity.this);
+        ArrayList<Notification> notifications =
+                NotificationsPresenter.loadNotifications(this);
         events.setChecked(notifications.get(0).getActivated().equals("S"));
         news.setChecked(notifications.get(1).getActivated().equals("S"));
         academicCalendar.setChecked(notifications.get(2).getActivated().equals("S"));
@@ -87,6 +93,7 @@ public class NotificationsActivity extends MainActivity implements CompoundButto
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         String _ID = "";
+
         switch (buttonView.getId()) {
             case R.id.notifications_events:
                 _ID = "0";
@@ -112,14 +119,13 @@ public class NotificationsActivity extends MainActivity implements CompoundButto
             default:
                 break;
         }
-        String activated = isChecked ? "S" : "N";
-        NotificationsPresenter.updateNotification(NotificationsActivity.this, _ID, activated);
+
+        NotificationsPresenter.updateNotification(this, _ID, isChecked ? "S" : "N");
         mTracker.send(new HitBuilders.EventBuilder()
                 .setCategory(getString(R.string.analytics_notifications_category))
                 .setAction(getString(R.string.analytics_modify_action))
                 .setLabel(getString(R.string.analytics_adjust_notifications_label))
-                .setValue(1)
-                .build());
+                .setValue(1).build());
     }
 
 }

@@ -18,7 +18,6 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Base64OutputStream;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 
@@ -29,7 +28,6 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.ParseException;
@@ -51,12 +49,10 @@ import co.edu.uniquindio.campusuq.dishes.DishesServiceController;
 import co.edu.uniquindio.campusuq.emails.EmailsSQLiteController;
 import co.edu.uniquindio.campusuq.emails.EmailsServiceController;
 import co.edu.uniquindio.campusuq.events.CalendarActivity;
-import co.edu.uniquindio.campusuq.events.CalendarDetailActivity;
 import co.edu.uniquindio.campusuq.events.EventsSQLiteController;
 import co.edu.uniquindio.campusuq.events.EventsServiceController;
 import co.edu.uniquindio.campusuq.informations.InformationsSQLiteController;
 import co.edu.uniquindio.campusuq.informations.InformationsServiceController;
-import co.edu.uniquindio.campusuq.items.Item;
 import co.edu.uniquindio.campusuq.items.ItemsActivity;
 import co.edu.uniquindio.campusuq.items.ItemsPresenter;
 import co.edu.uniquindio.campusuq.news.NewsActivity;
@@ -148,10 +144,12 @@ public class WebService extends JobIntentService {
         Log.i(TAG, "Job started!");
         isWorking = true;
         jobCancelled = false;
+
         try {
             User user = UsersPresenter.loadUser(getApplicationContext());
             ArrayList<co.edu.uniquindio.campusuq.notifications.Notification> notifications =
                     NotificationsPresenter.loadNotifications(getApplicationContext());
+
             if (Utilities.haveNetworkConnection(getApplicationContext())) {
                 if (user == null) {
                     JSONObject json = new JSONObject();
@@ -164,10 +162,13 @@ public class WebService extends JobIntentService {
                     }
                     loadUsers(METHOD_GET, json.toString());
                 }
+
                 if (notifications.size() < NOTIFICATIONS.length) {
                     NotificationsPresenter.insertNotifications(getApplicationContext());
                 }
+
                 doWork(intent);
+                PENDING_ACTION = ACTION_NONE;
             }
         } catch (Exception e) {
             Log.e(TAG, "Exception in Job");
@@ -187,6 +188,7 @@ public class WebService extends JobIntentService {
         String action = intent.getStringExtra("ACTION");
         String method = intent.getStringExtra("METHOD");
         String object = intent.getStringExtra("OBJECT");
+
         switch (action) {
             case ACTION_ALL:
                 int progress = 0;
@@ -249,7 +251,6 @@ public class WebService extends JobIntentService {
 
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled) return;
-
         Log.i(TAG, "Job finished!");
         isWorking = false;
     }
@@ -273,37 +274,41 @@ public class WebService extends JobIntentService {
         }
 
         File file = null;
+
         switch (type) {
             case ACTION_NEWS:
-            case ACTION_EVENTS:
+            case ACTION_EVENTS: {
                 New mNew = (New) object;
                 builder
-                        .setContentTitle(getString(R.string.app_name)+" - "+
+                        .setContentTitle(getString(R.string.app_name) + " - " +
                                 (type.equals(ACTION_NEWS) ? getString(R.string.news) : getString(R.string.events)))
                         .setContentText(mNew.getName())
                         .setSubText(mNew.getSummary());
                 file = new File(mNew.getImage());
                 break;
-            case ACTION_OBJECTS:
+            }
+            case ACTION_OBJECTS: {
                 LostObject lostObject = (LostObject) object;
                 builder
-                        .setContentTitle(getString(R.string.app_name)+" - "+getString(R.string.lost_objects))
+                        .setContentTitle(getString(R.string.app_name) + " - " + getString(R.string.lost_objects))
                         .setContentText(lostObject.getName())
                         .setSubText(lostObject.getDescription());
                 // Se concatena una cadena vacia para evitar el caso File(null)
-                file = new File(""+lostObject.getImage());
+                file = new File("" + lostObject.getImage());
                 break;
-            case ACTION_CALENDAR:
+            }
+            case ACTION_CALENDAR: {
                 Event event = (Event) object;
-                builder.setContentTitle(getString(R.string.app_name)+" - "+
+                builder.setContentTitle(getString(R.string.app_name) + " - " +
                         getString(R.string.academic_calendar))
                         .setContentText(event.getName());
                 break;
+            }
             case ACTION_INCIDENTS:
-            case ACTION_COMMUNIQUES:
+            case ACTION_COMMUNIQUES: {
                 Announcement announcement = (Announcement) object;
                 builder
-                        .setContentTitle(getString(R.string.app_name)+" - "+
+                        .setContentTitle(getString(R.string.app_name) + " - " +
                                 (type.equals(ACTION_INCIDENTS) ?
                                         getString(R.string.security_system) : getString(R.string.billboard_information)))
                         .setContentText(announcement.getName())
@@ -311,19 +316,21 @@ public class WebService extends JobIntentService {
                 AnnouncementsSQLiteController dbController =
                         new AnnouncementsSQLiteController(getApplicationContext(), 1);
                 ArrayList<AnnouncementLink> links = dbController.selectLink(
-                        AnnouncementsSQLiteController.linkColumns[1]+" = ?",
+                        AnnouncementsSQLiteController.linkColumns[1] + " = ?",
                         announcement.get_ID());
                 dbController.destroy();
                 file = links.size() > 0 ? new File(links.get(0).getLink()) : new File("");
                 break;
-            case ACTION_EMAILS:
+            }
+            case ACTION_EMAILS: {
                 Email email = (Email) object;
                 builder
-                        .setContentTitle(getString(R.string.app_name)+" - "+getString(R.string.institutional_mail))
+                        .setContentTitle(getString(R.string.app_name) + " - " + getString(R.string.institutional_mail))
                         .setContentText(email.getName())
                         .setSubText(email.getSnippet());
                 file = new File("");
                 break;
+            }
             default:
                 break;
         }
@@ -331,8 +338,8 @@ public class WebService extends JobIntentService {
         if (file != null && file.exists()) {
             builder.setLargeIcon(BitmapFactory.decodeFile(file.getAbsolutePath()));
         } else {
-            builder.setLargeIcon(BitmapFactory.decodeResource(
-                    getApplicationContext().getResources(), R.drawable.app_icon));
+            builder.setLargeIcon(BitmapFactory
+                    .decodeResource(getApplicationContext().getResources(), R.drawable.app_icon));
         }
 
         return builder.setSmallIcon(R.mipmap.ic_launcher)
@@ -343,6 +350,7 @@ public class WebService extends JobIntentService {
     private PendingIntent buildPendingIntent(String type) {
         Intent resultIntent = null;
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+
         switch (type) {
             case ACTION_NEWS:
             case ACTION_EVENTS:
@@ -392,6 +400,7 @@ public class WebService extends JobIntentService {
             default:
                 break;
         }
+
         stackBuilder.addNextIntent(resultIntent);
         return stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
     }

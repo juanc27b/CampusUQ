@@ -8,18 +8,15 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
-import android.util.DisplayMetrics;
 import android.util.Log;
 
 import java.io.File;
@@ -128,9 +125,9 @@ public class Utilities {
             InputStream input = connection.getInputStream();
 
             File dir = new File(Environment.getExternalStorageDirectory()
-                    .getAbsolutePath()+"/CampusUQ/Media/Images"+path);
+                    .getAbsolutePath() + "/CampusUQ/Media" + path);
             dir.mkdirs();
-            File file = new File(dir, spec.substring(spec.lastIndexOf('/')+1));
+            File file = new File(dir, spec.substring(spec.lastIndexOf('/') + 1));
             FileOutputStream output = new FileOutputStream(file);
 
             byte[] buffer = new byte[4096];
@@ -155,41 +152,34 @@ public class Utilities {
     }
 
     public static void changeLanguage(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        String language = prefs.getString(PREFERENCE_LANGUAGE, LANGUAGE_ES);
-        if (language.equals(LANGUAGE_ES)) language = LANGUAGE_EN;
-        else if (language.equals(LANGUAGE_EN)) language = LANGUAGE_ES;
-        prefs.edit().putString(PREFERENCE_LANGUAGE, language).commit();
+        SharedPreferences sharedPreferences =
+                context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+        sharedPreferences.edit().putString(PREFERENCE_LANGUAGE, LANGUAGE_ES.equals(sharedPreferences
+                .getString(PREFERENCE_LANGUAGE, LANGUAGE_ES)) ? LANGUAGE_EN : LANGUAGE_ES).commit();
         getLanguage(context);
     }
 
-    public static void getLanguage(Context context){
-        SharedPreferences prefs = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        String language = prefs.getString(PREFERENCE_LANGUAGE, LANGUAGE_ES);
-        Locale locale = new Locale(language, "CO");
+    public static Context getLanguage(Context context){
+        Locale locale = new Locale(context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
+                .getString(PREFERENCE_LANGUAGE, LANGUAGE_ES), "CO");
         Locale.setDefault(locale);
-        Resources resources = context.getResources();
-        Configuration configuration = resources.getConfiguration();
-        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+        Configuration configuration = context.getResources().getConfiguration();
         configuration.setLocale(locale);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
-            context.createConfigurationContext(configuration);
-        } else {
-            resources.updateConfiguration(configuration, displayMetrics);
-        }
+        configuration.setLayoutDirection(locale);
+        return context.createConfigurationContext(configuration);
     }
 
     public static Bitmap getResizedBitmap(Bitmap image) {
         int width = image.getWidth();
         int height = image.getHeight();
-        float bitmapRatio = width/(float) height;
+        float bitmapRatio = width / (float) height;
 
         if (bitmapRatio > 0) {
             width = 500;
-            height = (int) (width/bitmapRatio);
+            height = (int) (width / bitmapRatio);
         } else {
             height = 500;
-            width = (int) (height*bitmapRatio);
+            width = (int) (height * bitmapRatio);
         }
 
         return Bitmap.createScaledBitmap(image, width, height, true);

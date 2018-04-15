@@ -20,12 +20,9 @@ public class StartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_start);
 
         background = findViewById(R.id.front_image);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            background.setImageResource(R.drawable.portrait_front);
-        } else {
-            background.setImageResource(R.drawable.landscape_front);
-        }
-
+        background.setImageResource(getResources().getConfiguration().orientation ==
+                Configuration.ORIENTATION_PORTRAIT ?
+                R.drawable.portrait_front : R.drawable.landscape_front);
     }
 
     @Override
@@ -42,7 +39,7 @@ public class StartActivity extends AppCompatActivity {
             public void onAnimationEnd(Animation animation) {
                 Intent intent = new Intent(StartActivity.this, MenuActivity.class);
                 intent.putExtra("CATEGORY", getString(R.string.app_title_menu));
-                StartActivity.this.startActivity(intent);
+                startActivity(intent);
                 finish();
             }
 

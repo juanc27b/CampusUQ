@@ -5,8 +5,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -76,15 +76,19 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
     public void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            for (LostObject object : objects)
+
+            for (LostObject object : objects) {
                 if (object.getName().toLowerCase().contains(query.trim().toLowerCase())) {
                     layoutManager.scrollToPosition(objects.indexOf(object));
                     return;
                 }
-            Toast.makeText(this, getString(R.string.object_no_found)+query,
+            }
+
+            Toast.makeText(this, getString(R.string.object_no_found) + ": " + query,
                     Toast.LENGTH_SHORT).show();
         } else {
             ActionBar actionBar = getSupportActionBar();
+
             if (actionBar != null) {
                 actionBar.setTitle(intent.getStringExtra("CATEGORY"));
                 loadObjects(0);
@@ -161,8 +165,10 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                 }
                 break;
             case ObjectsAdapter.IMAGE:
-                startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(Uri.fromFile(
-                        new File("" + objects.get(index).getImage())), "image/*"));
+                startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(FileProvider
+                        .getUriForFile(this, "co.edu.uniquindio.campusuq.provider",
+                                new File("" + objects.get(index).getImage())),
+                        "image/*").addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
                 break;
             case ObjectsAdapter.READED:
                 dbController.readed(object.get_ID());

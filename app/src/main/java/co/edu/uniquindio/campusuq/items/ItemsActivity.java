@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewStub;
@@ -57,7 +58,6 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-
         super.setBackground(R.drawable.portrait_background, R.drawable.landscape_background);
 
         ViewStub stub = findViewById(R.id.layout_stub);
@@ -71,11 +71,12 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         mRecyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,
+                false);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // specify an adapter (see also next example)
-        mAdapter = new ItemsAdapter(items, ItemsActivity.this);
+        mAdapter = new ItemsAdapter(items, this);
         mRecyclerView.setAdapter(mAdapter);
 
         ArrayList<Item> newItems;
@@ -97,26 +98,28 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
     public void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            boolean found = false;
+
             for (Item item : items) {
-                if (query.trim().toLowerCase().equals(item.getTitle().toLowerCase()) ||
-                        item.getTitle().toLowerCase().contains(query.trim().toLowerCase())) {
+                if (item.getTitle().toLowerCase().contains(query.trim().toLowerCase())) {
                     //items.add(0, items.remove(items.indexOf(item)));
                     //mAdapter.setItems(items);
                     mLayoutManager.scrollToPosition(items.indexOf(item));
-                    found = true;
-                    break;
+                    return;
                 }
             }
-            if (!found) {
-                Toast.makeText(this, "No se ha encontrado el ítem: "+query, Toast.LENGTH_SHORT).show();
-            }
-        } else if (mAdapter != null) {
+
+            Toast.makeText(this, getString(R.string.item_no_found) + ": " + query,
+                    Toast.LENGTH_SHORT).show();
+        } else {
             category = intent.getStringExtra("CATEGORY");
             subcategory = intent.getStringExtra("SUBCATEGORY");
-            getSupportActionBar().setTitle(category);
-            ArrayList<Item> newItems = intent.getParcelableArrayListExtra("ITEMS");
-            setItems(newItems);
+            ActionBar actionBar = getSupportActionBar();
+
+            if (actionBar != null) {
+                actionBar.setTitle(category);
+                ArrayList<Item> newItems = intent.getParcelableArrayListExtra("ITEMS");
+                setItems(newItems);
+            }
         }
     }
 
@@ -129,191 +132,201 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         if (getString(R.string.events).equals(title)) {
             category = getString(R.string.analytics_news_category);
             label = getString(R.string.analytics_events_label);
-            intent = new Intent(ItemsActivity.this, NewsActivity.class);
+            intent = new Intent(this, NewsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.events));
         } else if (getString(R.string.news).equals(title)) {
             category = getString(R.string.analytics_news_category);
             label = getString(R.string.analytics_news_label);
-            intent = new Intent(ItemsActivity.this, NewsActivity.class);
+            intent = new Intent(this, NewsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.news));
         } else if (getString(R.string.institution).equals(title)) {
-            intent = new Intent(ItemsActivity.this, ItemsActivity.class);
+            intent = new Intent(this, ItemsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.institution));
         } else if (getString(R.string.directory).equals(title)) {
             category = getString(R.string.analytics_contatcs_category);
             label = getString(R.string.analytics_directory_label);
             WebService.PENDING_ACTION = WebService.ACTION_CONTACTS;
-            loadContactCategories(ItemsActivity.this);
+            loadContactCategories(this);
         } else if (getString(R.string.academic_offer).equals(title)) {
             category = getString(R.string.analytics_programs_category);
             label = getString(R.string.analytics_academic_offer_label);
             WebService.PENDING_ACTION = WebService.ACTION_PROGRAMS;
-            loadPrograms(ItemsActivity.this);
+            loadPrograms(this);
         } else if (getString(R.string.academic_calendar).equals(title)) {
             category = getString(R.string.analytics_events_category);
             label = getString(R.string.analytics_academic_calendar_label);
             WebService.PENDING_ACTION = WebService.ACTION_CALENDAR;
-            loadEventCategories(ItemsActivity.this);
+            loadEventCategories(this);
         } else if (getString(R.string.employment_exchange).equals(title)) {
             category = getString(R.string.analytics_web_category);
             label = getString(R.string.analytics_employment_exchange_label);
-            intent = new Intent(ItemsActivity.this, WebActivity.class);
+            intent = new Intent(this, WebActivity.class);
             intent.putExtra("URL", getString(R.string.employment_exchange_url));
         } else if (getString(R.string.institutional_welfare).equals(title)) {
             category = getString(R.string.analytics_informations_category);
             label = getString(R.string.analytics_institutional_welfare);
             WebService.PENDING_ACTION = WebService.ACTION_WELFARE;
-            loadInformations(getString(R.string.institutional_welfare), ItemsActivity.this);
+            loadInformations(getString(R.string.institutional_welfare), this);
         } else if (getString(R.string.university_map).equals(title)) {
             category = getString(R.string.analytics_maps_category);
             label = getString(R.string.analytics_university_map_label);
-            intent = new Intent(ItemsActivity.this, MapsActivity.class);
+            intent = new Intent(this, MapsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.university_map));
         } else if (getString(R.string.library_services).equals(title)) {
-            intent = new Intent(ItemsActivity.this, ItemsActivity.class);
+            intent = new Intent(this, ItemsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.library_services));
         } else if (getString(R.string.radio).equals(title)) {
             category = getString(R.string.analytics_radio_category);
             label = getString(R.string.analytics_radio_label);
-            intent = new Intent(ItemsActivity.this, RadioActivity.class);
+            intent = new Intent(this, RadioActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.radio));
         } else if (getString(R.string.pqrsd_system).equals(title)) {
             category = getString(R.string.analytics_web_category);
             label = getString(R.string.analytics_pqrsd_system_label);
-            intent = new Intent(ItemsActivity.this, WebActivity.class);
-            intent.putExtra("URL", getString(R.string.pqrsd_system_url));
+            intent = new Intent(this, WebActivity.class);
+            intent.putExtra("URL",
+                    getString(R.string.pqrsd_system_url));
         } else if (getString(R.string.lost_objects).equals(title)) {
             category = getString(R.string.analytics_objects_category);
             label = getString(R.string.analytics_lost_objects_label);
-            intent = new Intent(ItemsActivity.this, ObjectsActivity.class);
+            intent = new Intent(this, ObjectsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.lost_objects));
         } else if (getString(R.string.security_system).equals(title)) {
             category = getString(R.string.analytics_announcements_category);
             label = getString(R.string.analytics_security_system_label);
-            intent = new Intent(ItemsActivity.this, AnnouncementsActivity.class);
+            intent = new Intent(this, AnnouncementsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.security_system));
         } else if (getString(R.string.restaurant).equals(title)) {
             category = getString(R.string.analytics_dishes_category);
             label = getString(R.string.analytics_restaurant_label);
-            intent = new Intent(ItemsActivity.this, DishesActivity.class);
+            intent = new Intent(this, DishesActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.restaurant));
         } else if (getString(R.string.billboard_information).equals(title)) {
             category = getString(R.string.analytics_announcements_category);
             label = getString(R.string.analytics_billboard_information_label);
-            intent = new Intent(ItemsActivity.this, AnnouncementsActivity.class);
+            intent = new Intent(this, AnnouncementsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.billboard_information));
         } else if (getString(R.string.computer_rooms).equals(title)) {
             category = getString(R.string.analytics_quotas_category);
             label = getString(R.string.analytics_computer_rooms_label);
-            intent = new Intent(ItemsActivity.this, QuotasActivity.class);
+            intent = new Intent(this, QuotasActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.computer_rooms));
         } else if (getString(R.string.parking_lots).equals(title)) {
             category = getString(R.string.analytics_quotas_category);
             label = getString(R.string.analytics_parking_lots_label);
-            intent = new Intent(ItemsActivity.this, QuotasActivity.class);
+            intent = new Intent(this, QuotasActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.parking_lots));
         } else if (getString(R.string.laboratories).equals(title)) {
             category = getString(R.string.analytics_quotas_category);
             label = getString(R.string.analytics_laboratories_label);
-            intent = new Intent(ItemsActivity.this, QuotasActivity.class);
+            intent = new Intent(this, QuotasActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.laboratories));
         } else if (getString(R.string.study_areas).equals(title)) {
             category = getString(R.string.analytics_quotas_category);
             label = getString(R.string.analytics_study_areas_label);
-            intent = new Intent(ItemsActivity.this, QuotasActivity.class);
+            intent = new Intent(this, QuotasActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.study_areas));
         } else if (getString(R.string.cultural_and_sport).equals(title)) {
             category = getString(R.string.analytics_quotas_category);
             label = getString(R.string.analytics_cultural_and_sport_label);
-            intent = new Intent(ItemsActivity.this, QuotasActivity.class);
+            intent = new Intent(this, QuotasActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.cultural_and_sport));
         } else if (getString(R.string.auditoriums).equals(title)) {
             category = getString(R.string.analytics_quotas_category);
             label = getString(R.string.analytics_auditoriums_label);
-            intent = new Intent(ItemsActivity.this, QuotasActivity.class);
+            intent = new Intent(this, QuotasActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.auditoriums));
         } else if (getString(R.string.institutional_mail).equals(title)) {
-            User user = UsersPresenter.loadUser(ItemsActivity.this);
+            User user = UsersPresenter.loadUser(this);
             if (user != null) {
                 if (user.getEmail().equals("campusuq@uniquindio.edu.co")) {
                     category = getString(R.string.analytics_users_category);
                     label = getString(R.string.analytics_login_label);
-                    intent = new Intent(ItemsActivity.this, LoginActivity.class);
+                    intent = new Intent(this, LoginActivity.class);
                     intent.putExtra("CATEGORY", getString(R.string.log_in));
                 } else {
                     category = getString(R.string.analytics_emails_category);
                     label = getString(R.string.analytics_institutional_mail_label);
-                    intent = new Intent(ItemsActivity.this, EmailsActivity.class);
+                    intent = new Intent(this, EmailsActivity.class);
                     intent.putExtra("CATEGORY", getString(R.string.institutional_mail));
                 }
             }
         } else if (getString(R.string.web_page).equals(title)) {
             category = getString(R.string.analytics_web_category);
             label = getString(R.string.analytics_web_page_label);
-            intent = new Intent(ItemsActivity.this, WebActivity.class);
+            intent = new Intent(this, WebActivity.class);
             intent.putExtra("URL", getString(R.string.web_page_url));
         } else if (getString(R.string.ecotic).equals(title)) {
             category = getString(R.string.analytics_web_category);
             label = getString(R.string.analytics_ecotic_label);
-            intent = new Intent(ItemsActivity.this, WebActivity.class);
+            intent = new Intent(this, WebActivity.class);
             intent.putExtra("URL", getString(R.string.ecotic_url));
         } else if (getString(R.string.mission_vision).equals(title)) {
             category = getString(R.string.analytics_informations_category);
             label = getString(R.string.analytics_mission_vision_label);
-            intent = new Intent(ItemsActivity.this, WebContentActivity.class);
+            intent = new Intent(this, WebContentActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.mission_vision));
             intent.putExtra("LINK",
-                    getString(R.string.pdf_viewer).replaceAll("URL", getString(R.string.mission_vision_url)));
+                    getString(R.string.pdf_viewer)
+                            .replaceAll("URL",
+                                    getString(R.string.mission_vision_url)));
         } else if (getString(R.string.quality_policy).equals(title)) {
             category = getString(R.string.analytics_informations_category);
             label = getString(R.string.analytics_quality_policy_label);
-            intent = new Intent(ItemsActivity.this, WebContentActivity.class);
+            intent = new Intent(this, WebContentActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.quality_policy));
             intent.putExtra("LINK",
-                    getString(R.string.pdf_viewer).replaceAll("URL", getString(R.string.quality_policy_url)));
+                    getString(R.string.pdf_viewer)
+                            .replaceAll("URL",
+                                    getString(R.string.quality_policy_url)));
         } else if (getString(R.string.axes_pillars_objectives).equals(title)) {
             category = getString(R.string.analytics_informations_category);
             label = getString(R.string.analytics_axes_pillars_objectives_label);
-            intent = new Intent(ItemsActivity.this, WebContentActivity.class);
+            intent = new Intent(this, WebContentActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.axes_pillars_objectives));
             intent.putExtra("LINK",
-                    getString(R.string.pdf_viewer).replaceAll("URL", getString(R.string.axes_pillars_objectives_url)));
+                    getString(R.string.pdf_viewer)
+                            .replaceAll("URL",
+                                    getString(R.string.axes_pillars_objectives_url)));
         } else if (getString(R.string.organization_chart).equals(title)) {
             category = getString(R.string.analytics_informations_category);
             label = getString(R.string.analytics_organization_chart_label);
-            intent = new Intent(ItemsActivity.this, WebContentActivity.class);
+            intent = new Intent(this, WebContentActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.organization_chart));
             intent.putExtra("LINK",
-                    getString(R.string.pdf_viewer).replaceAll("URL", getString(R.string.organization_chart_url)));
+                    getString(R.string.pdf_viewer)
+                            .replaceAll("URL",
+                                    getString(R.string.organization_chart_url)));
         } else if (getString(R.string.normativity).equals(title)) {
             category = getString(R.string.analytics_informations_category);
             label = getString(R.string.analytics_normativity_label);
-            intent = new Intent(ItemsActivity.this, WebActivity.class);
+            intent = new Intent(this, WebActivity.class);
             intent.putExtra("URL", getString(R.string.normativity_url));
         } else if (getString(R.string.symbols).equals(title)) {
             category = getString(R.string.analytics_informations_category);
             label = getString(R.string.analytics_symbols_label);
             WebService.PENDING_ACTION = WebService.ACTION_SYMBOLS;
-            loadInformations(getString(R.string.symbols), ItemsActivity.this);
+            loadInformations(getString(R.string.symbols), this);
         } else if (getString(R.string.digital_repository).equals(title)) {
             category = getString(R.string.analytics_web_category);
             label = getString(R.string.analytics_digital_repository_label);
-            intent = new Intent(ItemsActivity.this, WebActivity.class);
+            intent = new Intent(this, WebActivity.class);
             intent.putExtra("URL", getString(R.string.digital_repository_url));
         } else if (getString(R.string.public_catalog).equals(title)) {
             category = getString(R.string.analytics_web_category);
             label = getString(R.string.analytics_public_catalog_label);
-            intent = new Intent(ItemsActivity.this, WebActivity.class);
+            intent = new Intent(this, WebActivity.class);
             intent.putExtra("URL", getString(R.string.public_catalog_url));
         } else if (getString(R.string.databases).equals(title)) {
             category = getString(R.string.analytics_web_category);
             label = getString(R.string.analytics_databases_label);
-            intent = new Intent(ItemsActivity.this, WebActivity.class);
-            intent.putExtra("URL", getString(R.string.databases_url));
+            intent = new Intent(this, WebActivity.class);
+            intent.putExtra("URL",
+                    getString(R.string.databases_url));
         } else if (getString(R.string.directory).equals(this.category)) {
             loadContacts(title);
         } else if (getString(R.string.academic_offer).equals(this.category)) {
-            intent = new Intent(ItemsActivity.this, ItemsActivity.class);
+            intent = new Intent(this, ItemsActivity.class);
             intent.putExtra("CATEGORY", title);
             intent.putExtra("SUBCATEGORY", getString(R.string.academic_offer));
         } else if (getString(R.string.history).equals(title) ||
@@ -323,7 +336,7 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
                 getString(R.string.program_contact).equals(title)) {
             loadProgramContent(this.category, title);
         } else if (getString(R.string.academic_calendar).equals(this.category)) {
-            intent = new Intent(ItemsActivity.this, CalendarActivity.class);
+            intent = new Intent(this, CalendarActivity.class);
             intent.putExtra("CATEGORY", title);
         }
 
@@ -337,25 +350,25 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         }
 
         if (intent != null) {
-            ItemsActivity.this.startActivity(intent);
+            startActivity(intent);
         }
     }
 
     public void setItems(ArrayList<Item> items) {
         if (category.equals(getString(R.string.information_module))) {
-            this.items = itemsPresenter.getInformationItems(ItemsActivity.this);
+            this.items = itemsPresenter.getInformationItems(this);
         } else if (category.equals(getString(R.string.services_module))) {
-            this.items = itemsPresenter.getServicesItems(ItemsActivity.this);
+            this.items = itemsPresenter.getServicesItems(this);
         } else if (category.equals(getString(R.string.state_module))) {
-            this.items = itemsPresenter.getStateItems(ItemsActivity.this);
+            this.items = itemsPresenter.getStateItems(this);
         } else if (category.equals(getString(R.string.communication_module))) {
-            this.items = itemsPresenter.getCommunicationItems(ItemsActivity.this);
+            this.items = itemsPresenter.getCommunicationItems(this);
         } else if (category.equals(getString(R.string.institution))) {
-            this.items = itemsPresenter.getInstitutionItems(ItemsActivity.this);
+            this.items = itemsPresenter.getInstitutionItems(this);
         } else if (category.equals(getString(R.string.library_services))) {
-            this.items = itemsPresenter.getLibraryItems(ItemsActivity.this);
+            this.items = itemsPresenter.getLibraryItems(this);
         } else if (subcategory != null && subcategory.equals(getString(R.string.academic_offer))) {
-            this.items = itemsPresenter.getProgramItems(ItemsActivity.this);
+            this.items = itemsPresenter.getProgramItems(this);
         } else {
             this.items = items;
         }
@@ -371,18 +384,18 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
                 getString(R.string.directory).equals(category) ||
                 getString(R.string.academic_offer).equals(category) ||
                 getString(R.string.academic_calendar).equals(category)) {
-            Intent intent = new Intent(ItemsActivity.this, ItemsActivity.class);
+            Intent intent = new Intent(this, ItemsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.information_module));
-            ItemsActivity.this.startActivity(intent);
+            startActivity(intent);
         } else if (getString(R.string.library_services).equals(category)) {
-            Intent intent = new Intent(ItemsActivity.this, ItemsActivity.class);
+            Intent intent = new Intent(this, ItemsActivity.class);
             intent.putExtra("CATEGORY", getString(R.string.services_module));
-            ItemsActivity.this.startActivity(intent);
+            startActivity(intent);
         } else if (subcategory != null) {
             if (getString(R.string.directory).equals(subcategory)) {
-                loadContactCategories(ItemsActivity.this);
+                loadContactCategories(this);
             } else if (getString(R.string.academic_offer).equals(subcategory)) {
-                loadPrograms(ItemsActivity.this);
+                loadPrograms(this);
             }
         } else {
             super.onBackPressed();
@@ -435,17 +448,18 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
             progressDialog.show();
         }
 
-        ArrayList<Item> contacts = ItemsPresenter.getContacts(categoryName, ItemsActivity.this);
+        ArrayList<Item> contacts = ItemsPresenter.getContacts(categoryName, this);
 
         if (progressDialog.isShowing() && contacts.size() > 0) {
             progressDialog.dismiss();
-            Intent intent = new Intent(ItemsActivity.this, ItemsActivity.class);
+            Intent intent = new Intent(this, ItemsActivity.class);
             intent.putExtra("CATEGORY", categoryName);
             intent.putExtra("SUBCATEGORY", getString(R.string.directory));
             intent.putParcelableArrayListExtra("ITEMS", contacts);
             startActivity(intent);
-        } else if (contacts.size() == 0 && !Utilities.haveNetworkConnection(ItemsActivity.this)) {
-            Toast.makeText(ItemsActivity.this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+        } else if (contacts.size() == 0 && !Utilities.haveNetworkConnection(this)) {
+            Toast.makeText(this, getString(R.string.no_internet),
+                    Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -456,17 +470,18 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
             progressDialog.show();
         }
 
-        String[] content = ItemsPresenter.getProgramContent(name, type, ItemsActivity.this);
+        String[] content = ItemsPresenter.getProgramContent(name, type, this);
 
         if (progressDialog.isShowing() && content[0] != null) {
             progressDialog.dismiss();
-            Intent intent = new Intent(ItemsActivity.this, WebContentActivity.class);
+            Intent intent = new Intent(this, WebContentActivity.class);
             intent.putExtra("CATEGORY", type);
             intent.putExtra("LINK", content[0]);
             intent.putExtra("CONTENT", content[1]);
             startActivity(intent);
-        } else if (content[0] == null && !Utilities.haveNetworkConnection(ItemsActivity.this)) {
-            Toast.makeText(ItemsActivity.this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+        } else if (content[0] == null && !Utilities.haveNetworkConnection(this)) {
+            Toast.makeText(this, getString(R.string.no_internet),
+                    Toast.LENGTH_SHORT).show();
         }
 
     }

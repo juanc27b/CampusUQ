@@ -5,9 +5,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -82,6 +82,7 @@ public class AnnouncementsActivity extends MainActivity implements
         public void onReceive(Context context, Intent intent) {
             loadAnnouncements(intent.getIntExtra("INSERTED", 0));
             String response = intent.getStringExtra("RESPONSE");
+
             if (response != null) {
                 Toast.makeText(context, response, Toast.LENGTH_SHORT).show();
                 Log.i(AnnouncementsActivity.class.getSimpleName(), response);
@@ -155,18 +156,22 @@ public class AnnouncementsActivity extends MainActivity implements
     public void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            for (Announcement announcement : announcements)
+
+            for (Announcement announcement : announcements) {
                 if (announcement.getName().toLowerCase().contains(query.trim().toLowerCase())) {
-                layoutManager.scrollToPosition(announcements.indexOf(announcement));
-                return;
+                    layoutManager.scrollToPosition(announcements.indexOf(announcement));
+                    return;
+                }
             }
-            Toast.makeText(this, getString(R.string.announcement_no_found)+query,
-                    Toast.LENGTH_SHORT).show();
+
+            Toast.makeText(this, getString(R.string.announcement_no_found) + ": " +
+                    query, Toast.LENGTH_SHORT).show();
         } else {
             String category = intent.getStringExtra("CATEGORY");
             action = getString(R.string.security_system).equals(category) ?
                     WebService.ACTION_INCIDENTS : WebService.ACTION_COMMUNIQUES;
             ActionBar actionBar = getSupportActionBar();
+
             if (actionBar != null) {
                 actionBar.setTitle(category);
                 changeConfiguration();
@@ -283,9 +288,12 @@ public class AnnouncementsActivity extends MainActivity implements
 
                 for (AnnouncementLink announcementLink : announcementsLinks) {
                     if (announcementLink.getAnnouncement_ID().equals(_ID) && link-- == 0) {
-                        startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(
-                                Uri.fromFile(new File(announcementLink.getLink())),
-                                announcementLink.getType().equals("I") ? "image/*" : "video/*"));
+                        startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(FileProvider
+                                .getUriForFile(this,
+                                        "co.edu.uniquindio.campusuq.provider",
+                                        new File(announcementLink.getLink())),
+                                announcementLink.getType().equals("I") ? "image/*" : "video/*")
+                                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
                     }
                 }
                 break;
@@ -365,12 +373,12 @@ public class AnnouncementsActivity extends MainActivity implements
                 try {
                     startActivity(sendIntent);
                 } catch (android.content.ActivityNotFoundException e) {
-                    Toast.makeText(this, "No se ha instalado Whatsapp",
+                    Toast.makeText(this, R.string.no_whatsapp,
                             Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
-                Toast.makeText(this, "Undefined: "+index,
+                Toast.makeText(this, getString(R.string.undefined) + ": " + index,
                         Toast.LENGTH_SHORT).show();
                 break;
         }
@@ -428,7 +436,7 @@ public class AnnouncementsActivity extends MainActivity implements
                     Toast.makeText(this, R.string.social_ok,
                             Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(this, R.string.socia_error,
+                    Toast.makeText(this, R.string.social_error,
                             Toast.LENGTH_SHORT).show();
                 }
                 socialNetwork = AnnouncementsAdapter.UNDEFINED;

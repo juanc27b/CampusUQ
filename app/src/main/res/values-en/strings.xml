@@ -227,6 +227,7 @@
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Cancel</string>
 
+    <string name="dish_image_description">Image or photo of the plate</string>
     <string name="dish_sample_name">Uniquindian Breakfast</string>
     <string name="dish_sample_description">Dish for the morning days that includes a ham sandwich with egg</string>
     <string name="dish_sample_price">$ 7.500</string>
@@ -311,17 +312,23 @@
     <string name="ic_whatsapp_description">whatsapp icon</string>
 
     <string name="social_ok">Successful operation</string>
-    <string name="socia_error">Error in the operation</string>
+    <string name="social_error">Error in the operation</string>
+    <string name="no_whatsapp">WhatsApp has not been installed</string>
+    <string name="undefined">Undefined</string>
     <string name="get_image_error">Error getting the image</string>
+    <string name="google_play_error">This app requires Google Play Services. Please install Google Play Services on your device and relaunch this app.</string>
 
-    <string name="announcement_no_found">The ad was not found: </string>
-    <string name="dish_no_found">The plate has not been found: </string>
-    <string name="email_no_found">Mail not found: </string>
-    <string name="event_no_found">The event was not found: </string>
-    <string name="location_no_found">Location not found: </string>
-    <string name="new_no_found">The news has not been found: </string>
-    <string name="object_no_found">The object was not found: </string>
-    <string name="quota_no_found">The quota has not been found: </string>
+    <string name="query">Query: </string>
+    <string name="announcement_no_found">The ad was not found</string>
+    <string name="date_no_found">The date has not been found</string>
+    <string name="dish_no_found">The plate has not been found</string>
+    <string name="email_no_found">Mail not found</string>
+    <string name="event_no_found">The event was not found</string>
+    <string name="item_no_found">Item not found</string>
+    <string name="location_no_found">Location not found</string>
+    <string name="new_no_found">The new has not been found</string>
+    <string name="object_no_found">The object was not found</string>
+    <string name="quota_no_found">The quota has not been found</string>
 
     <string name="email_authorization">Authorization is required for get emails</string>
 
@@ -329,5 +336,7 @@
 
     <string name="select_image">Select Image</string>
     <string name="select_image_or_video">Select Image or Video</string>
+
+    <string name="oh_no">Oh no!</string>
 
 </resources>

@@ -113,10 +113,14 @@ public class RadioActivity extends MainActivity {
                 mConnectionCallbacks,
                 null); // optional Bundle
 
-        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         seekBar.setMax(MAX_VOLUME);
-        seekBar.setProgress(MAX_VOLUME * audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) /
-                audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+        if (audioManager != null) {
+            seekBar.setProgress(MAX_VOLUME *
+                    audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) /
+                    audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+        }
 
         volume.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,7 +134,6 @@ public class RadioActivity extends MainActivity {
                 }
             }
         });
-
     }
 
     private void buildTransportControls() {

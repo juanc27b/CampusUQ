@@ -118,6 +118,7 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
         // Se concatena una cadena vacia para evitar el caso File(null)
         imageFile =
                 new File(""+intent.getStringExtra(ObjectsSQLiteController.columns[7]));
+
         if (imageFile.exists()) {
             image.setImageBitmap(Utilities.getResizedBitmap(BitmapFactory
                     .decodeFile(imageFile.getAbsolutePath())));

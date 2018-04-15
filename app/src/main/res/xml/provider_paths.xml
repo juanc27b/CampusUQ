@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-path name="announcements" path="CampusUQ/Media/announcements/"/>
+    <external-path name="dishes" path="CampusUQ/Media/dishes/"/>
+    <external-path name="news" path="CampusUQ/Media/news/"/>
+    <external-path name="objects" path="CampusUQ/Media/objects/"/>
+</paths>

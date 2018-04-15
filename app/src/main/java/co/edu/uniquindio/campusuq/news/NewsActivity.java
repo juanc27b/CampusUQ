@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -136,7 +137,7 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                 layoutManager.scrollToPosition(news.indexOf(n));
                 return;
             }
-            Toast.makeText(this, getString(R.string.new_no_found)+query,
+            Toast.makeText(this, getString(R.string.new_no_found) + ": " + query,
                     Toast.LENGTH_SHORT).show();
         } else {
             String category = intent.getStringExtra("CATEGORY");
@@ -166,8 +167,10 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                 break;
             }
             case NewsAdapter.IMAGE:
-                startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(Uri.fromFile(
-                        new File("" + news.get(index).getImage())), "image/*"));
+                startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(FileProvider
+                        .getUriForFile(this, "co.edu.uniquindio.campusuq.provider",
+                                new File("" + news.get(index).getImage())),
+                        "image/*").addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
                 break;
             case NewsAdapter.FACEBOOK:
                 if (Utilities.haveNetworkConnection(this)) {
@@ -191,7 +194,8 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                         shareDialog.show(content);
                     }
                 } else {
-                    Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.no_internet),
+                            Toast.LENGTH_SHORT).show();
                 }
                 break;
             case NewsAdapter.TWITTER:
@@ -239,12 +243,13 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                 try {
                     startActivity(sendIntent);
                 } catch (android.content.ActivityNotFoundException e) {
-                    Toast.makeText(this, "No se ha instalado Whatsapp",
+                    Toast.makeText(this, R.string.no_whatsapp,
                             Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
-                Toast.makeText(this, "Undefined: " + index, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.undefined) + ": " + index,
+                        Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -265,7 +270,7 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
         if (resultCode == RESULT_OK){
             Toast.makeText(this, R.string.social_ok, Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, R.string.socia_error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.social_error, Toast.LENGTH_SHORT).show();
         }
         socialNetwork = NewsAdapter.UNDEFINED;
     }

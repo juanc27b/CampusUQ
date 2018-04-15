@@ -85,8 +85,8 @@ public class AnnouncementsSQLiteController {
 
     public static String createLinkTable(){
         return "CREATE TABLE " + linkTablename + '(' + linkColumns[0] + " INTEGER PRIMARY KEY, " +
-                linkColumns[1] + " INTEGER NOT NULL REFERENCES " +
-                tablename + '(' + columns[0] + ") ON UPDATE CASCADE ON DELETE CASCADE, " +
+                linkColumns[1] + " INTEGER NOT NULL REFERENCES " + tablename + '(' +
+                columns[0] + ") ON UPDATE CASCADE ON DELETE CASCADE, " +
                 linkColumns[2] + " TEXT NOT NULL, " + linkColumns[3] + " TEXT UNIQUE)";
     }
 

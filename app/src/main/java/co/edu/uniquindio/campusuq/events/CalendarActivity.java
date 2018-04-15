@@ -20,15 +20,13 @@ public class CalendarActivity extends MainActivity implements
     private CalendarItemsAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    private ArrayList<CalendarItem> items;
+    private ArrayList<CalendarItem> items = new ArrayList<>();
 
     private TextView categoryText;
     private String category;
 
     public CalendarActivity() {
         super.setHasNavigationDrawerIcon(false);
-
-        items = new ArrayList<>();
     }
 
     @Override
@@ -53,31 +51,27 @@ public class CalendarActivity extends MainActivity implements
 
         categoryText = findViewById(R.id.category_text);
         category = getIntent().getStringExtra("CATEGORY");
-        categoryText.setText(getString(R.string.category)+": "+category);
+        categoryText.setText(String.format("%s: %s", getString(R.string.category), category));
         setItems();
-
     }
 
     @Override
     public void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            boolean found = false;
+
             for (CalendarItem item : items) {
-                if (query.trim().toLowerCase().equals(item.getEvent().toLowerCase()) ||
-                        item.getEvent().toLowerCase().contains(query.trim().toLowerCase())) {
+                if (item.getEvent().toLowerCase().contains(query.trim().toLowerCase())) {
                     mLayoutManager.scrollToPosition(items.indexOf(item));
-                    found = true;
-                    break;
+                    return;
                 }
             }
-            if (!found) {
-                Toast.makeText(this, getString(R.string.event_no_found)+query,
-                        Toast.LENGTH_SHORT).show();
-            }
+
+            Toast.makeText(this, getString(R.string.event_no_found) + ": " + query,
+                    Toast.LENGTH_SHORT).show();
         } else if (mAdapter != null) {
             category = intent.getStringExtra("CATEGORY");
-            categoryText.setText(getString(R.string.category)+": "+category);
+            categoryText.setText(String.format("%s: %s", getString(R.string.category), category));
             setItems();
         }
     }

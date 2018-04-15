@@ -55,8 +55,8 @@ public class WebActivity extends AppCompatActivity {
             @Override
             public void onReceivedError(WebView view, int errorCode, String description,
                                         String failingUrl) {
-                Toast.makeText(WebActivity.this, "Oh no! "+description,
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(WebActivity.this, getString(R.string.oh_no) + ' ' +
+                        description, Toast.LENGTH_SHORT).show();
             }
 
             @Override

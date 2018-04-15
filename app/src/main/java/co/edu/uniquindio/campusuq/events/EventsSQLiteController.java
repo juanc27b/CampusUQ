@@ -42,15 +42,15 @@ public class EventsSQLiteController {
     }
 
     public static String createTable(){
-        return "CREATE TABLE "+tablename+'('+columns[0]+" INTEGER PRIMARY KEY, "+
-                columns[1]+" TEXT NOT NULL UNIQUE)";
+        return "CREATE TABLE " + tablename + '(' + columns[0] + " INTEGER PRIMARY KEY, " +
+                columns[1] + " TEXT NOT NULL UNIQUE)";
     }
 
     public ArrayList<Event> select(String selection, String... selectionArgs) {
         ArrayList<Event> events = new ArrayList<>();
 
         Cursor c = db.query(tablename, null, selection, selectionArgs, null,
-                null, columns[0]+" ASC");
+                null, columns[0] + " ASC");
         if (c.moveToFirst()) do {
             events.add(new Event(c.getString(0), c.getString(1)));
         } while (c.moveToNext());
@@ -60,9 +60,9 @@ public class EventsSQLiteController {
     }
 
     public void insert(Object... values) {
-        db.execSQL("INSERT INTO "+tablename+'('+
-                TextUtils.join(", ", columns)+") VALUES("+
-                TextUtils.join(", ", Collections.nCopies(columns.length, '?'))+
+        db.execSQL("INSERT INTO " + tablename + '(' +
+                TextUtils.join(", ", columns) + ") VALUES(" +
+                TextUtils.join(", ", Collections.nCopies(columns.length, '?')) +
                 ')', values);
     }
 
@@ -71,9 +71,10 @@ public class EventsSQLiteController {
     }
 
     public static String createCategoryTable(){
-        return "CREATE TABLE "+categoryTablename+'('+categoryColumns[0]+" INTEGER PRIMARY KEY, "+
-                categoryColumns[1]+" TEXT NOT NULL UNIQUE, "+
-                categoryColumns[2]+" TEXT NOT NULL UNIQUE)";
+        return "CREATE TABLE " + categoryTablename + '(' +
+                categoryColumns[0] + " INTEGER PRIMARY KEY, " +
+                categoryColumns[1] + " TEXT NOT NULL UNIQUE, " +
+                categoryColumns[2] + " TEXT NOT NULL UNIQUE)";
     }
 
     public ArrayList<EventCategory> selectCategory(String limit, String selection,
@@ -81,7 +82,7 @@ public class EventsSQLiteController {
         ArrayList<EventCategory> categories = new ArrayList<>();
 
         Cursor c = db.query(categoryTablename, null, selection, selectionArgs,
-                null, null, categoryColumns[0]+" ASC", limit);
+                null, null, categoryColumns[0] + " ASC", limit);
         if (c.moveToFirst()) do {
             categories.add(new EventCategory(c.getString(0), c.getString(1),
                     c.getString(2)));
@@ -92,26 +93,27 @@ public class EventsSQLiteController {
     }
 
     public void insertCategory(Object... values) {
-        db.execSQL("INSERT INTO "+categoryTablename+'('+
-                TextUtils.join(", ", categoryColumns)+") VALUES("+
-                TextUtils.join(", ", Collections.nCopies(categoryColumns.length, '?'))+
-                ')', values);
+        db.execSQL("INSERT INTO " + categoryTablename + '(' +
+                TextUtils.join(", ", categoryColumns) + ") VALUES(" +
+                TextUtils.join(", ",
+                        Collections.nCopies(categoryColumns.length, '?')) + ')', values);
     }
 
     public void deleteCategory() {
-        db.execSQL("DELETE FROM "+categoryTablename);
+        db.execSQL("DELETE FROM " + categoryTablename);
     }
 
     public static String createPeriodTable(){
-        return "CREATE TABLE "+periodTablename+'('+periodColumns[0]+" INTEGER PRIMARY KEY, "+
-                periodColumns[1]+" TEXT NOT NULL UNIQUE)";
+        return "CREATE TABLE " + periodTablename + '(' +
+                periodColumns[0] + " INTEGER PRIMARY KEY, " +
+                periodColumns[1] + " TEXT NOT NULL UNIQUE)";
     }
 
     ArrayList<EventPeriod> selectPeriod(String selection, String... selectionArgs) {
         ArrayList<EventPeriod> periods = new ArrayList<>();
 
         Cursor c = db.query(periodTablename, null, selection, selectionArgs, null,
-                null, periodColumns[0]+" ASC");
+                null, periodColumns[0] + " ASC");
         if (c.moveToFirst()) do {
             periods.add(new EventPeriod(c.getString(0), c.getString(1)));
         } while (c.moveToNext());
@@ -121,27 +123,27 @@ public class EventsSQLiteController {
     }
 
     public void insertPeriod(Object... values) {
-        db.execSQL("INSERT INTO "+periodTablename+'('+
-                TextUtils.join(", ", periodColumns)+") VALUES("+
-                TextUtils.join(", ", Collections.nCopies(periodColumns.length, '?'))+
+        db.execSQL("INSERT INTO " + periodTablename + '(' +
+                TextUtils.join(", ", periodColumns) + ") VALUES(" +
+                TextUtils.join(", ", Collections.nCopies(periodColumns.length, '?')) +
                 ')', values);
     }
 
     public void deletePeriod() {
-        db.execSQL("DELETE FROM "+periodTablename);
+        db.execSQL("DELETE FROM " + periodTablename);
     }
 
     public static String createDateTable(){
-        return "CREATE TABLE "+dateTablename+'('+dateColumns[0]+" INTEGER PRIMARY KEY, "+
-                dateColumns[1]+" TEXT NOT NULL, "+dateColumns[2]+" TEXT NOT NULL, "+
-                "UNIQUE("+dateColumns[1]+", "+dateColumns[2]+"))";
+        return "CREATE TABLE " + dateTablename + '(' + dateColumns[0] + " INTEGER PRIMARY KEY, " +
+                dateColumns[1] + " TEXT NOT NULL, " + dateColumns[2] + " TEXT NOT NULL, " +
+                "UNIQUE(" + dateColumns[1] + ", " + dateColumns[2] + "))";
     }
 
     public ArrayList<EventDate> selectDate(String selection, String... selectionArgs) {
         ArrayList<EventDate> dates = new ArrayList<>();
 
         Cursor c = db.query(dateTablename, null, selection, selectionArgs, null,
-                null, dateColumns[0]+" ASC");
+                null, dateColumns[0] + " ASC");
         if (c.moveToFirst()) do {
             dates.add(new EventDate(c.getString(0), c.getString(1), c.getString(2)));
         } while (c.moveToNext());
@@ -151,9 +153,9 @@ public class EventsSQLiteController {
     }
 
     public void insertDate(Object... values) {
-        db.execSQL("INSERT INTO "+dateTablename+'('+
-                TextUtils.join(", ", dateColumns)+") VALUES("+
-                TextUtils.join(", ", Collections.nCopies(dateColumns.length, '?'))+
+        db.execSQL("INSERT INTO " + dateTablename + '(' +
+                TextUtils.join(", ", dateColumns) + ") VALUES(" +
+                TextUtils.join(", ", Collections.nCopies(dateColumns.length, '?')) +
                 ')', values);
     }
 
@@ -162,17 +164,17 @@ public class EventsSQLiteController {
     }
 
     public static String createRelationTable(){
-        return "CREATE TABLE "+relationTablename+'('+
-                relationColumns[0]+" INTEGER NOT NULL REFERENCES "+
-                categoryTablename+'('+categoryColumns[0]+") ON UPDATE CASCADE ON DELETE CASCADE, "+
-                relationColumns[1]+" INTEGER NOT NULL REFERENCES "+
-                tablename+'('+columns[0]+") ON UPDATE CASCADE ON DELETE CASCADE, "+
-                relationColumns[2]+" INTEGER NOT NULL REFERENCES "+
-                periodTablename+'('+periodColumns[0]+") ON UPDATE CASCADE ON DELETE CASCADE, "+
-                relationColumns[3]+" INTEGER NOT NULL REFERENCES "+
-                dateTablename+'('+dateColumns[0]+") ON UPDATE CASCADE ON DELETE CASCADE, "+
-                "PRIMARY KEY("+relationColumns[0]+", "+relationColumns[1]+", "+
-                relationColumns[2]+", "+ relationColumns[3]+"))";
+        return "CREATE TABLE " + relationTablename + '(' +
+                relationColumns[0] + " INTEGER NOT NULL REFERENCES " + categoryTablename + '(' +
+                categoryColumns[0] + ") ON UPDATE CASCADE ON DELETE CASCADE, " +
+                relationColumns[1] + " INTEGER NOT NULL REFERENCES " + tablename + '(' +
+                columns[0] + ") ON UPDATE CASCADE ON DELETE CASCADE, " +
+                relationColumns[2] + " INTEGER NOT NULL REFERENCES " + periodTablename + '(' +
+                periodColumns[0] + ") ON UPDATE CASCADE ON DELETE CASCADE, " +
+                relationColumns[3] + " INTEGER NOT NULL REFERENCES " + dateTablename + '(' +
+                dateColumns[0] + ") ON UPDATE CASCADE ON DELETE CASCADE, " +
+                "PRIMARY KEY(" + relationColumns[0] + ", " + relationColumns[1] + ", " +
+                relationColumns[2] + ", " + relationColumns[3] + "))";
     }
 
     public ArrayList<EventRelation> selectRelation(String[] columns, String selection,
@@ -180,9 +182,9 @@ public class EventsSQLiteController {
         ArrayList<EventRelation> relations = new ArrayList<>();
 
         Cursor c = db.query(true, relationTablename, columns, selection, selectionArgs,
-                null, null, relationColumns[0]+" ASC, "+
-                        relationColumns[1]+" ASC, "+relationColumns[2]+" ASC, "+
-                        relationColumns[3]+" ASC", null);
+                null, null, relationColumns[0] + " ASC, " +
+                        relationColumns[1] + " ASC, " + relationColumns[2] + " ASC, " +
+                        relationColumns[3] + " ASC", null);
         if (c.moveToFirst()) do {
             String category_ID = null;
             String event_ID = null;
@@ -193,9 +195,9 @@ public class EventsSQLiteController {
                 case 4:
                     category_ID = c.getString(i++);
                 case 3:
-                    date_ID = c.getString(columns.length-1);
+                    date_ID = c.getString(columns.length - 1);
                 case 2:
-                    period_ID = c.getString(i+1);
+                    period_ID = c.getString(i + 1);
                 case 1:
                     event_ID = c.getString(i);
                 default:
@@ -209,10 +211,10 @@ public class EventsSQLiteController {
     }
 
     public void insertRelation(Object... values) {
-        db.execSQL("INSERT INTO "+relationTablename+'('+
-                TextUtils.join(", ", relationColumns)+") VALUES("+
-                TextUtils.join(", ", Collections.nCopies(relationColumns.length, '?'))+
-                ')', values);
+        db.execSQL("INSERT INTO " + relationTablename + '(' +
+                TextUtils.join(", ", relationColumns) + ") VALUES(" +
+                TextUtils.join(", ",
+                        Collections.nCopies(relationColumns.length, '?')) + ')', values);
     }
 
     public void destroy() {

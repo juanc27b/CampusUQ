@@ -5,9 +5,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -74,12 +74,15 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
     public void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            for (Dish dish : dishes)
+
+            for (Dish dish : dishes) {
                 if (dish.getName().toLowerCase().contains(query.trim().toLowerCase())) {
-                layoutManager.scrollToPosition(dishes.indexOf(dish));
-                return;
+                    layoutManager.scrollToPosition(dishes.indexOf(dish));
+                    return;
+                }
             }
-            Toast.makeText(this, getString(R.string.dish_no_found)+query,
+
+            Toast.makeText(this, getString(R.string.dish_no_found) + ": " + query,
                     Toast.LENGTH_SHORT).show();
         }
     }
@@ -149,8 +152,10 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
                 break;
             }
             case DishesAdapter.IMAGE:
-                startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(Uri.fromFile(
-                        new File("" + dishes.get(index).getImage())), "image/*"));
+                startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(FileProvider
+                        .getUriForFile(this, "co.edu.uniquindio.campusuq.provider",
+                                new File("" + dishes.get(index).getImage())),
+                        "image/*").addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
                 break;
             default:
                 break;

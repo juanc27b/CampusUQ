@@ -289,6 +289,7 @@
     <string name="dialog_ok">ACEPTAR</string>
     <string name="dialog_cancel">CANCELAR</string>
 
+    <string name="dish_image_description">Imagen o foto del plato</string>
     <string name="dish_sample_name">Desayuno Uniquindiano</string>
     <string name="dish_sample_description">Plato para las jornadas de mañana que incluye un sandwich de jamon con huevo</string>
     <string name="dish_sample_price">$ 7.500</string>
@@ -373,17 +374,23 @@
     <string name="ic_whatsapp_description">icono de whatsapp</string>
 
     <string name="social_ok">Operación exitosa</string>
-    <string name="socia_error">Error en la operación</string>
+    <string name="social_error">Error en la operación</string>
+    <string name="no_whatsapp">No se ha instalado Whatsapp</string>
+    <string name="undefined">Undefined</string>
     <string name="get_image_error">Error al obtener la imagen</string>
+    <string name="google_play_error">Esta aplicación requiere los servicios de Google Play. Instale Google Play Services en su dispositivo y vuelva a iniciar esta aplicación.</string>
 
-    <string name="announcement_no_found">No se ha encontrado el anuncio: </string>
-    <string name="dish_no_found">No se ha encontrado el plato: </string>
-    <string name="email_no_found">No se ha encontrado el correo: </string>
-    <string name="event_no_found">No se ha encontrado el evento: </string>
-    <string name="location_no_found">No se ha encontrado la ubicación: </string>
-    <string name="new_no_found">No se ha encontrado la noticia: </string>
-    <string name="object_no_found">No se ha encontrado el objeto: </string>
-    <string name="quota_no_found">No se ha encontrado el cupo: </string>
+    <string name="query">Consulta: </string>
+    <string name="announcement_no_found">No se ha encontrado el anuncio</string>
+    <string name="date_no_found">No se ha encontrado la fecha</string>
+    <string name="dish_no_found">No se ha encontrado el plato</string>
+    <string name="email_no_found">No se ha encontrado el correo</string>
+    <string name="event_no_found">No se ha encontrado el evento</string>
+    <string name="item_no_found">No se ha encontrado el ítem</string>
+    <string name="location_no_found">No se ha encontrado la ubicación</string>
+    <string name="new_no_found">No se ha encontrado la noticia</string>
+    <string name="object_no_found">No se ha encontrado el objeto</string>
+    <string name="quota_no_found">No se ha encontrado el cupo</string>
 
     <string name="email_authorization">Se requiere autorización para recibir correos electrónicos</string>
 
@@ -391,6 +398,8 @@
 
     <string name="select_image">Seleccionar Imagen</string>
     <string name="select_image_or_video">Seleccionar Imagen o Video</string>
+
+    <string name="oh_no">Oh no!</string>
 
     <string name="analytics_news_category">Noticias</string>
     <string name="analytics_informations_category">Informaciones</string>

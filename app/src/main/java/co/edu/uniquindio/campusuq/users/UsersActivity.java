@@ -157,7 +157,6 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
         Intent intent = getIntent();
         category = intent.getStringExtra("CATEGORY");
         setUser(intent);
-
     }
 
     @Override
@@ -261,17 +260,19 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
         switch(requestCode) {
             case EmailsPresenter.REQUEST_GOOGLE_PLAY_SERVICES:
                 if (resultCode != RESULT_OK) {
-                    Toast.makeText(this, "This app requires Google Play Services. Please install " +
-                            "Google Play Services on your device and relaunch this app.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,
+                            R.string.google_play_error,
+                            Toast.LENGTH_SHORT).show();
                 } else {
-                    emailsPresenter.chooseAccount(UsersActivity.this);
+                    emailsPresenter.chooseAccount(this);
                 }
                 break;
             case EmailsPresenter.REQUEST_ACCOUNT_PICKER:
                 if (resultCode == RESULT_OK && data != null && data.getExtras() != null) {
                     String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                     if (accountName != null) {
-                        if (accountName.endsWith("@uqvirtual.edu.co") || accountName.endsWith("@uniquindio.edu.co")) {
+                        if (accountName.endsWith("@uqvirtual.edu.co") ||
+                                accountName.endsWith("@uniquindio.edu.co")) {
                             email.setText(accountName);
                         } else {
                             Toast.makeText(this, R.string.user_account_invalid,

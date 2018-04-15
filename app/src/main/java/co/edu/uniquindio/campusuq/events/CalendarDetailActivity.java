@@ -19,7 +19,7 @@ public class CalendarDetailActivity extends MainActivity {
     private CalendarDetailItemsAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    private ArrayList<CalendarDetailItem> items;
+    private ArrayList<CalendarDetailItem> items = new ArrayList<>();
 
     private TextView eventText;
     private TextView categoryText;
@@ -28,15 +28,13 @@ public class CalendarDetailActivity extends MainActivity {
 
     public CalendarDetailActivity() {
         super.setHasNavigationDrawerIcon(false);
-
-        items = new ArrayList<>();
     }
 
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
-
-        super.setBackground(R.drawable.portrait_normal_background, R.drawable.landscape_normal_background);
+        super.setBackground(R.drawable.portrait_normal_background,
+                R.drawable.landscape_normal_background);
 
         ViewStub stub = findViewById(R.id.layout_stub);
         stub.setLayoutResource(R.layout.content_calendar_detail);
@@ -45,7 +43,8 @@ public class CalendarDetailActivity extends MainActivity {
         RecyclerView mRecyclerView = findViewById(R.id.event_detail_recycler_view);
         mRecyclerView.setHasFixedSize(true);
 
-        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,
+                false);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         mAdapter = new CalendarDetailItemsAdapter(items);
@@ -56,7 +55,7 @@ public class CalendarDetailActivity extends MainActivity {
         event = getIntent().getStringExtra("EVENT");
         category = getIntent().getStringExtra("CATEGORY");
         eventText.setText(event);
-        categoryText.setText(getString(R.string.category)+": "+category);
+        categoryText.setText(String.format("%s: %s", getString(R.string.category), category));
         setItems();
 
     }
@@ -66,6 +65,7 @@ public class CalendarDetailActivity extends MainActivity {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
             boolean found = false;
+
             for (CalendarDetailItem item : items) {
                 if (query.trim().toLowerCase().equals(item.getPeriod().toLowerCase()) ||
                         item.getPeriod().toLowerCase().contains(query.trim().toLowerCase()) ||
@@ -78,21 +78,23 @@ public class CalendarDetailActivity extends MainActivity {
                     break;
                 }
             }
+
             if (!found) {
-                Toast.makeText(this, "No se ha encontrado la fecha: "+query, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.date_no_found) + ": " + query,
+                        Toast.LENGTH_SHORT).show();
             }
         } else if (mAdapter != null) {
             event = intent.getStringExtra("EVENT");
             category = intent.getStringExtra("CATEGORY");
             eventText.setText(event);
-            categoryText.setText(getString(R.string.category)+": "+category);
+            categoryText.setText(String.format("%s: %s", getString(R.string.category), category));
             setItems();
         }
     }
 
     private void setItems() {
-        this.items = CalendarPresenter.getCalendarDetailItems(event, category, CalendarDetailActivity.this);
-        mAdapter.setItems(this.items);
+        items = CalendarPresenter.getCalendarDetailItems(event, category, this);
+        mAdapter.setItems(items);
     }
 
 }

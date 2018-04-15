@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewStub;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,9 +28,9 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 public class LoginActivity extends MainActivity implements EasyPermissions.PermissionCallbacks {
 
-    private TextView title, email, signUp;
+    private TextView title;
+    private TextView email;
     private EditText password;
-    private Button logIn;
 
     private String category;
     private EmailsPresenter emailsPresenter;
@@ -41,12 +40,15 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
         @Override
         public void onReceive(Context context, Intent intent) {
             User user = intent.getParcelableExtra("USER");
+
             if (user == null) {
-                Toast.makeText(context, R.string.login_wrong, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.login_wrong,
+                        Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(context, R.string.login_successful, Toast.LENGTH_SHORT).show();
                 finish();
             }
+
             if(progressDialog.isShowing()) progressDialog.dismiss();
         }
     };
@@ -76,7 +78,8 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
             @Override
             public void onClick(View v) {
                 if (!Utilities.haveNetworkConnection(LoginActivity.this)) {
-                    Toast.makeText(LoginActivity.this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, getString(R.string.no_internet),
+                            Toast.LENGTH_SHORT).show();
                 } else if (!emailsPresenter.isGooglePlayServicesAvailable()) {
                     emailsPresenter.acquireGooglePlayServices(LoginActivity.this);
                 } else {
@@ -85,14 +88,17 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
             }
         });
 
-        logIn = findViewById(R.id.user_log_in);
-        logIn.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.user_log_in).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (email.getText().length() < 7 || email.getText().length() > 70) {
-                    Toast.makeText(LoginActivity.this, getString(R.string.user_email_invalid), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this,
+                            getString(R.string.user_email_invalid),
+                            Toast.LENGTH_SHORT).show();
                 } else if (password.getText().length() < 8 || password.getText().length() > 16) {
-                    Toast.makeText(LoginActivity.this, getString(R.string.user_password_invalid), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this,
+                            getString(R.string.user_password_invalid),
+                            Toast.LENGTH_SHORT).show();
                 } else if (Utilities.haveNetworkConnection(LoginActivity.this)) {
                     JSONObject json = new JSONObject();
                     try {
@@ -111,8 +117,7 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
             }
         });
 
-        signUp = findViewById(R.id.user_sign_up);
-        signUp.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.user_sign_up).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this, UsersActivity.class);
@@ -168,17 +173,19 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
         switch(requestCode) {
             case EmailsPresenter.REQUEST_GOOGLE_PLAY_SERVICES:
                 if (resultCode != RESULT_OK) {
-                    Toast.makeText(this, "This app requires Google Play Services. Please install " +
-                            "Google Play Services on your device and relaunch this app.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,
+                            R.string.google_play_error,
+                            Toast.LENGTH_SHORT).show();
                 } else {
-                    emailsPresenter.chooseAccount(LoginActivity.this);
+                    emailsPresenter.chooseAccount(this);
                 }
                 break;
             case EmailsPresenter.REQUEST_ACCOUNT_PICKER:
                 if (resultCode == RESULT_OK && data != null && data.getExtras() != null) {
                     String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                     if (accountName != null) {
-                        if (accountName.endsWith("@uqvirtual.edu.co") || accountName.endsWith("@uniquindio.edu.co")) {
+                        if (accountName.endsWith("@uqvirtual.edu.co") ||
+                                accountName.endsWith("@uniquindio.edu.co")) {
                             email.setText(accountName);
                         } else {
                             Toast.makeText(this, R.string.user_account_invalid,

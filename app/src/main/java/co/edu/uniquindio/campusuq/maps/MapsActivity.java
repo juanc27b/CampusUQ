@@ -20,7 +20,6 @@ import com.google.android.gms.maps.StreetViewPanorama;
 import com.google.android.gms.maps.StreetViewPanoramaFragment;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -86,11 +85,13 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
         });
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         StreetViewPanoramaFragment streetViewPanoramaFragment =
-                (StreetViewPanoramaFragment) getFragmentManager().findFragmentById(R.id.streetviewpanorama);
+                (StreetViewPanoramaFragment) getFragmentManager()
+                        .findFragmentById(R.id.streetviewpanorama);
         streetViewPanoramaFragment.getStreetViewPanoramaAsync(this);
 
     }
@@ -112,10 +113,11 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
         //mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
         //mMap.setBuildingsEnabled(false);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                        PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -135,13 +137,14 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
         //mMap.setLatLngBoundsForCameraTarget(BOUNDS);
 
         for (int i = 0; i < 41; i++) {
-            mMap.addMarker(new MarkerOptions().position(locations.get(i)).title(tags.get(i)).alpha(0.0f));
+            mMap.addMarker(new MarkerOptions().position(locations.get(i)).title(tags.get(i))
+                    .alpha(0.0f));
         }
 
         GroundOverlayOptions universityMap = new GroundOverlayOptions()
                 .image(BitmapDescriptorFactory.fromResource(R.drawable.map))
                 .position(UNIVERSIDAD, 500f, 500f);//.transparency(0.5f).bearing(357);
-        GroundOverlay imageOverlay = mMap.addGroundOverlay(universityMap);
+        /*GroundOverlay imageOverlay = */mMap.addGroundOverlay(universityMap);
 
         /*
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -162,7 +165,8 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
                 if (query.trim().toLowerCase().equals(tags.get(i).toLowerCase()) ||
                         tags.get(i).toLowerCase().contains(query.trim().toLowerCase())) {
                     if (isMapEnabled) {
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locations.get(i), 16));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locations.get(i),
+                                16));
                     } else {
                         mPanorama.setPosition(locations.get(i));
                     }
@@ -171,8 +175,8 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
                 }
             }
             if (!found) {
-                Toast.makeText(this, getString(R.string.location_no_found)+query,
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.location_no_found) + ": " +
+                        query, Toast.LENGTH_SHORT).show();
             }
         } else if (isMapEnabled && mMap != null)  {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(UNIVERSIDAD, 16));

@@ -74,9 +74,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(Utilities.getLanguage(newBase));
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Utilities.getLanguage(this);
         setContentView(R.layout.activity_main);
 
         // Get the intent, verify the action and get the query
@@ -417,7 +421,8 @@ public class MainActivity extends AppCompatActivity
     public void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            Toast.makeText(this, "Consulta: "+query, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.query)+query,
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -431,11 +436,8 @@ public class MainActivity extends AppCompatActivity
 
     public void setBackground(int portraitBackground, int landscapeBackground) {
         ImageView background = findViewById(R.id.background_image);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            background.setImageResource(portraitBackground);
-        } else {
-            background.setImageResource(landscapeBackground);
-        }
+        background.setImageResource(getResources().getConfiguration().orientation ==
+                Configuration.ORIENTATION_PORTRAIT ? portraitBackground : landscapeBackground);
     }
 
     public void addContent(Bundle savedInstanceState) {
@@ -447,23 +449,21 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onReceive(Context context, Intent intent) {
             WebService.PENDING_ACTION = WebService.ACTION_NONE;
-            if (progressDialog.isShowing()) {
-                switch (intent.getAction()) {
-                    case WebService.ACTION_WELFARE:
-                        loadInformations(getString(R.string.institutional_welfare), MainActivity.this);
-                        break;
-                    case WebService.ACTION_CONTACTS:
-                        loadContactCategories(MainActivity.this);
-                        break;
-                    case WebService.ACTION_PROGRAMS:
-                        loadPrograms(MainActivity.this);
-                        break;
-                    case WebService.ACTION_CALENDAR:
-                        loadEventCategories(MainActivity.this);
-                        break;
-                    default:
-                        break;
-                }
+            if (progressDialog.isShowing()) switch (intent.getAction()) {
+                case WebService.ACTION_WELFARE:
+                    loadInformations(getString(R.string.institutional_welfare), MainActivity.this);
+                    break;
+                case WebService.ACTION_CONTACTS:
+                    loadContactCategories(MainActivity.this);
+                    break;
+                case WebService.ACTION_PROGRAMS:
+                    loadPrograms(MainActivity.this);
+                    break;
+                case WebService.ACTION_CALENDAR:
+                    loadEventCategories(MainActivity.this);
+                    break;
+                default:
+                    break;
             }
         }
     };
@@ -486,14 +486,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     public static void loadInformations(String type, Context context) {
-
         ProgressDialog progressDialog = ((MainActivity) context).progressDialog;
-
-        if (!progressDialog.isShowing()) {
-            progressDialog.show();
-        }
-
+        if (!progressDialog.isShowing()) progressDialog.show();
         String[] content = new String[2];
+
         if (context.getString(R.string.symbols).equals(type)) {
             content = ItemsPresenter.getInformation("Simbolos", context);
         } else if (context.getString(R.string.institutional_welfare).equals(type)) {
@@ -509,19 +505,14 @@ public class MainActivity extends AppCompatActivity
             intent.putExtra("CONTENT", content[1]);
             context.startActivity(intent);
         } else if (content[0] == null && !Utilities.haveNetworkConnection(context)) {
-            Toast.makeText(context, context.getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, context.getString(R.string.no_internet),
+                    Toast.LENGTH_SHORT).show();
         }
-
     }
 
     public static void loadContactCategories(Context context) {
-
         ProgressDialog progressDialog = ((MainActivity) context).progressDialog;
-
-        if (!progressDialog.isShowing()) {
-            progressDialog.show();
-        }
-
+        if (!progressDialog.isShowing()) progressDialog.show();
         ArrayList<Item> categories = ItemsPresenter.getContactCategories(context);
 
         if (progressDialog.isShowing() && categories.size() > 0) {
@@ -531,19 +522,14 @@ public class MainActivity extends AppCompatActivity
             intent.putParcelableArrayListExtra("ITEMS", categories);
             context.startActivity(intent);
         } else if (categories.size() == 0 && !Utilities.haveNetworkConnection(context)) {
-            Toast.makeText(context, context.getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, context.getString(R.string.no_internet),
+                    Toast.LENGTH_SHORT).show();
         }
-
     }
 
     public static void loadPrograms(Context context) {
-
         ProgressDialog progressDialog = ((MainActivity) context).progressDialog;
-
-        if (!progressDialog.isShowing()) {
-            progressDialog.show();
-        }
-
+        if (!progressDialog.isShowing()) progressDialog.show();
         ArrayList<Item> programs = ItemsPresenter.getPrograms(context);
 
         if (progressDialog.isShowing() && programs.size() > 0) {
@@ -553,19 +539,14 @@ public class MainActivity extends AppCompatActivity
             intent.putParcelableArrayListExtra("ITEMS", programs);
             context.startActivity(intent);
         } else if (programs.size() == 0 && !Utilities.haveNetworkConnection(context)) {
-            Toast.makeText(context, context.getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, context.getString(R.string.no_internet),
+                    Toast.LENGTH_SHORT).show();
         }
-
     }
 
     public static void loadEventCategories(Context context) {
-
         ProgressDialog progressDialog = ((MainActivity) context).progressDialog;
-
-        if (!progressDialog.isShowing()) {
-            progressDialog.show();
-        }
-
+        if (!progressDialog.isShowing()) progressDialog.show();
         ArrayList<Item> categories = ItemsPresenter.getEventCategories(context);
 
         if (progressDialog.isShowing() && categories.size() > 0) {
@@ -575,9 +556,9 @@ public class MainActivity extends AppCompatActivity
             intent.putParcelableArrayListExtra("ITEMS", categories);
             context.startActivity(intent);
         } else if (categories.size() == 0 && !Utilities.haveNetworkConnection(context)) {
-            Toast.makeText(context, context.getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, context.getString(R.string.no_internet),
+                    Toast.LENGTH_SHORT).show();
         }
-
     }
 
 }
