@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -32,12 +33,15 @@ import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 
+/**
+ * Actividad para modificar o insertar nuevos objetos perdidos.
+ */
 public class ObjectsDetailActivity extends MainActivity implements View.OnClickListener {
 
     private static final int REQUEST_IMAGE = 1010;
 
     private Intent intent;
-    private String _ID;
+    private LostObject object;
     private EditText name;
     private EditText place;
     private EditText dateLost;
@@ -47,11 +51,22 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
     private ImageView image;
     private File imageFile;
 
+    /**
+     * Constructor que oculta el ícono de navegación reemplazandolo por una flecha de ir atrás, y
+     * oculta también el botón de busqueda.
+     */
     public ObjectsDetailActivity() {
         super.setHasNavigationDrawerIcon(false);
         super.setHasSearch(false);
     }
 
+    /**
+     * Asigna el fondo de la actividad, infla el diseño de edición de objetos perdidos en la
+     * actividad superior, asigna las variables de vistas y los listener de click de la vista de
+     * descripción, imagen y del boton OK, y llama la funcion para asignar los valores de las
+     * variables y vistas.
+     * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
@@ -70,7 +85,6 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
         description = findViewById(R.id.object_detail_description);
         descriptionCount = findViewById(R.id.object_detail_description_count);
         image = findViewById(R.id.object_detail_image);
-        setObject();
 
         dateLost.setOnClickListener(this);
         timeLost.setOnClickListener(this);
@@ -88,8 +102,15 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
         });
         image.setOnClickListener(this);
         findViewById(R.id.object_detail_ok).setOnClickListener(this);
+
+        setObject();
     }
 
+    /**
+     * Método para manejar nuevas llamadas a la actividad, asigna un nuevo título a la actividad en
+     * caso de haberse creado previamente.
+     * @param intent Contiene los datos nuevos.
+     */
     @Override
     public void handleIntent(Intent intent) {
         ActionBar actionBar = getSupportActionBar();
@@ -101,32 +122,40 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
         }
     }
 
+    /**
+     * Asigna los valores a las variables y vistas desde el objeto perdido obtenido del intento.
+     */
     private void setObject() {
-        _ID = intent.getStringExtra(ObjectsSQLiteController.columns[0]);
-        name.setText(intent.getStringExtra(ObjectsSQLiteController.columns[2]));
-        place.setText(intent.getStringExtra(ObjectsSQLiteController.columns[3]));
-        String dateTimeLost = intent.getStringExtra(ObjectsSQLiteController.columns[4]);
+        object = intent.getParcelableExtra(ObjectsFragment.OBJECT);
+        name.setText(object.getName());
+        place.setText(object.getPlace());
 
-        if (dateTimeLost != null && dateTimeLost.length() >= 19) {
-            dateLost.setText(dateTimeLost.substring(0, 10));
-            timeLost.setText(dateTimeLost.substring(11, 19));
+        if (object.getDateLost() != null && object.getDateLost().length() >= 19) {
+            dateLost.setText(object.getDateLost().substring(0, 10));
+            timeLost.setText(object.getDateLost().substring(11, 19));
         }
 
-        description.setText(intent.getStringExtra(ObjectsSQLiteController.columns[6]));
+        description.setText(object.getDescription());
         descriptionCount.setText(String.valueOf(description.getText().length()));
 
         // Se concatena una cadena vacia para evitar el caso File(null)
-        imageFile =
-                new File(""+intent.getStringExtra(ObjectsSQLiteController.columns[7]));
+        imageFile = new File("" + object.getImage());
 
         if (imageFile.exists()) {
-            image.setImageBitmap(Utilities.getResizedBitmap(BitmapFactory
-                    .decodeFile(imageFile.getAbsolutePath())));
+            image.setImageBitmap(Utilities
+                    .getResizedBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath())));
         } else {
             image.setImageResource(R.drawable.rectangle_gray);
         }
     }
 
+    /**
+     * Responde al listener de la vista de imagen y del boton OK, en el caso de la imagen abre otra
+     * aplicacion que permita seleccionar una imagen, en el caso del boton OK envia los datos del
+     * objeto perdido al servidor para insertarlo o actualizarlo, o en caso de error muestra un
+     * mensaje con la informacion de dicho error.
+     * @param view Vista de la cual se puede obtener el identificador del boton OK.
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -136,7 +165,7 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         dateLost.setText(String.format(Locale.US, "%04d-%02d-%02d",
-                                year, month+1, day));
+                                year, month + 1, day));
                     }
                 }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
                         calendar.get(Calendar.DAY_OF_MONTH)).show();
@@ -155,8 +184,9 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
                 break;
             }
             case R.id.object_detail_image:
-                startActivityForResult(Intent.createChooser(new Intent(Intent.ACTION_PICK,
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI).setType("image/*"),
+                startActivityForResult(Intent.createChooser(
+                        new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                                .setType("image/*"),
                         getString(R.string.select_image)), REQUEST_IMAGE);
                 break;
             case R.id.object_detail_ok:
@@ -166,22 +196,24 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
                             description.getText().length() != 0) {
                         mTracker.send(new HitBuilders.EventBuilder()
                                 .setCategory(getString(R.string.analytics_objects_category))
-                                .setAction(getString(_ID == null ?
-                                        R.string.analytics_create_action :
-                                        R.string.analytics_modify_action))
+                                .setAction(getString(object.get_ID() == null ?
+                                        R.string.analytics_create_action : R.string.analytics_modify_action))
                                 .setLabel(getString(R.string.analytics_lost_objects_label))
                                 .setValue(1)
                                 .build());
 
                         try {
                             JSONObject json = new JSONObject();
-                            if (_ID != null) json.put("UPDATE_ID", _ID);
-                            json.put(ObjectsSQLiteController.columns[1],
-                                    intent.getStringExtra(ObjectsSQLiteController.columns[1]));
+
+                            if (object.get_ID() != null) {
+                                json.put("UPDATE_ID", object.get_ID());
+                            }
+
+                            json.put(ObjectsSQLiteController.columns[1], object.getUserLost_ID());
                             json.put(ObjectsSQLiteController.columns[2], name.getText());
                             json.put(ObjectsSQLiteController.columns[3], place.getText());
                             json.put(ObjectsSQLiteController.columns[4],
-                                    dateLost.getText()+"T"+timeLost.getText()+"-0500");
+                                    dateLost.getText() + "T" + timeLost.getText() + "-0500");
                             json.put(ObjectsSQLiteController.columns[6], description.getText());
 
                             if (imageFile.exists()) {
@@ -189,14 +221,13 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
                                 json.put("imageString", imageFile.getAbsolutePath());
                             }
 
-                            json.put(ObjectsSQLiteController.columns[8],
-                                    intent.getStringExtra(ObjectsSQLiteController.columns[8]));
+                            json.put(ObjectsSQLiteController.columns[8], object.getUserFound_ID());
                             WebBroadcastReceiver.scheduleJob(getApplicationContext(),
                                     WebService.ACTION_OBJECTS, WebService.METHOD_POST,
                                     json.toString());
                             setResult(RESULT_OK, intent);
                             finish();
-                        } catch (Exception e) {
+                        } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(this, e.getLocalizedMessage(),
                                     Toast.LENGTH_SHORT).show();
@@ -215,6 +246,14 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
         }
     }
 
+    /**
+     * Si el codigo requerido corresponde a obtener imagen y la actividad resulta en un codigo
+     * exitoso se utilizan los datos retornados para asignar el archivo y la vista de imagen del
+     * objeto perdido.
+     * @param requestCode Código de solicitud para el cual se espera un resultado.
+     * @param resultCode Código de resultado que indica exito o fracaso.
+     * @param data Datos retornados por la actividad.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -223,15 +262,15 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
             imageFile = new File(Utilities.getPath(this, data.getData()));
 
             if (imageFile.exists()) {
-                image.setImageBitmap(Utilities.getResizedBitmap(BitmapFactory
-                        .decodeFile(imageFile.getAbsolutePath())));
+                image.setImageBitmap(Utilities
+                        .getResizedBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath())));
             } else {
                 image.setImageResource(R.drawable.rectangle_gray);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this, getString(R.string.get_image_error)+
-                    ":\n"+e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.get_image_error) +
+                    ":\n" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 

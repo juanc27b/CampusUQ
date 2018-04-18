@@ -1,11 +1,12 @@
 package co.edu.uniquindio.campusuq.quotas;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
@@ -17,12 +18,21 @@ import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 import cz.msebera.android.httpclient.protocol.HTTP;
 import cz.msebera.android.httpclient.util.EntityUtils;
 
+/**
+ * Controlador del servicio de cupos que permite enviar y recivir cupos desde y hacia el servidor.
+ */
 public class QuotasServiceController {
 
     private static final String _QUOTAS = "/cupos";
 
+    /**
+     * Obtiene del servidor el arreglo total de cupos.
+     * @param context Contexto utilizado para obtener la clave de autorizacion del usuario que haya
+     *                iniciado sesion.
+     * @return Arreglo de cupos.
+     */
     public static ArrayList<Quota> getQuotas(Context context) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO+_QUOTAS);
+        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + _QUOTAS);
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         ArrayList<Quota> quotas = new ArrayList<>();
 
@@ -36,15 +46,22 @@ public class QuotasServiceController {
                         object.getString(QuotasSQLiteController.columns[2]),
                         object.getString(QuotasSQLiteController.columns[3])));
             }
-        } catch (Exception e) {
-            Log.e(QuotasServiceController.class.getSimpleName(), e.getMessage());
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
         }
 
         return quotas;
     }
 
+    /**
+     * Envía una peticion al servidor para insertar, actualizar o eliminar un cupo.
+     * @param context Contexto utilizado para obtener la clave de autorizacion del usuario que haya
+     *                iniciado sesion.
+     * @param json Petición en formato JSON para insertar, actualizar o eliminar un cupo.
+     * @return Respuesta del servidor.
+     */
     public static String modifyQuota(Context context, String json) {
-        HttpPost post = new HttpPost(Utilities.URL_SERVICIO+_QUOTAS);
+        HttpPost post = new HttpPost(Utilities.URL_SERVICIO + _QUOTAS);
         post.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         post.setHeader(HTTP.CONTENT_TYPE, "application/json");
         post.setEntity(new StringEntity(json, "UTF-8"));
@@ -52,8 +69,8 @@ public class QuotasServiceController {
         try {
             return new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
                     .execute(post).getEntity())).getString("mensaje");
-        } catch (Exception e) {
-            Log.e(QuotasServiceController.class.getSimpleName(), e.getMessage());
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
             return null;
         }
     }

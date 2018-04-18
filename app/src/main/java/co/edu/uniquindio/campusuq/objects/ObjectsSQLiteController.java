@@ -12,20 +12,32 @@ import java.util.Collections;
 import co.edu.uniquindio.campusuq.util.SQLiteHelper;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
+/**
+ * Controlador de la base de datos para la tabla Objeto.
+ */
 public class ObjectsSQLiteController {
 
-    private static final String tablename = "Objetos";
-    public static final String columns[] = {"_ID", "Usuario_Perdio_ID", "Nombre", "Lugar",
-            "Fecha_Perdio", "Fecha", "Descripcion", "Imagen", "Usuario_Encontro_ID", "Leido"};
+    private static final String tablename = "Objeto";
+    static final String columns[] = {"_ID", "Usuario_Perdio_ID", "Nombre", "Lugar", "Fecha_Perdio",
+            "Fecha", "Descripcion", "Imagen", "Usuario_Encontro_ID", "Leido"};
 
     private SQLiteHelper usdbh;
     private SQLiteDatabase db;
 
+    /**
+     * Construye el controlador de la base de datos.
+     * @param context Contexto usado para la construccion.
+     * @param version Versión del controlador.
+     */
     public ObjectsSQLiteController(Context context, int version) {
         usdbh = new SQLiteHelper(context, Utilities.NOMBRE_BD , null, version);
         db = usdbh.getWritableDatabase();
     }
 
+    /**
+     * Crea la cadena con las instrucciones SQL nesesarias para crear la tabla Objeto.
+     * @return Cadena con las instrucciones SQL para crear la tabla Objeto.
+     */
     public static String createTable() {
         return "CREATE TABLE " + tablename + '('+columns[0] + " INTEGER PRIMARY KEY, " +
                 columns[1] + " INTEGER NOT NULL, " + columns[2] + " TEXT NOT NULL, " +
@@ -35,6 +47,15 @@ public class ObjectsSQLiteController {
                 columns[9] + " INTEGER NOT NULL)";
     }
 
+    /**
+     * Selecciona un arreglo de objetos perdidos desde la base de datos permitiendo difinir
+     * opcinalmente un maximo numero de objetos perdidos a seleccionar.
+     * @param limit Maximo numero de objetos perdidos a seleccionar.
+     * @param selection Sentencia WHERE para filtrar los objetos perdidos que se obtendran de la
+     *                  base de datos.
+     * @param selectionArgs Valores a reemplasar en el filtro de selección.
+     * @return Arreglo de objetos perdidos de la base de datos.
+     */
     public ArrayList<LostObject> select(String limit, String selection, String... selectionArgs) {
         ArrayList<LostObject> objects = new ArrayList<>();
 
@@ -51,6 +72,11 @@ public class ObjectsSQLiteController {
         return objects;
     }
 
+    /**
+     * Inserta un objeto perdido en la base de datos, de acuerdo a los valores de las columnas
+     * pasados como parámetros.
+     * @param values Valores de las columnas del objeto perdido a insertar.
+     */
     public void insert(Object... values) {
         db.execSQL("INSERT INTO " + tablename + '(' +
                 TextUtils.join(", ", columns) + ") VALUES(" +
@@ -58,27 +84,48 @@ public class ObjectsSQLiteController {
                 ')', values);
     }
 
+    /**
+     * Actualiza un objeto perdido en la base de datos de acuerdo a los valores de las columnas
+     * (todas menos la columna Leido) pasados como parámetros, siendo el último de estos la ID de la
+     * fila a modificar.
+     * @param values Valores de las columnas del objeto perdido a actualizar seguidos de la ID de
+     *               dicho objeto perdido.
+     */
     public void update(Object... values) {
         db.execSQL("UPDATE " + tablename + " SET " + TextUtils.join(" = ?, ",
                 Arrays.copyOfRange(columns, 0, columns.length - 1)) + " = ? WHERE " +
                 columns[0] + " = ?", values);
     }
 
+    /**
+     * Marca como leidos un conjunto de objetos perdidos de la base de datos.
+     * @param ids Conjunto de IDs de los objetos perdidos que se desea marcar como leidos.
+     */
     void readed(Object... ids) {
         db.execSQL("UPDATE " + tablename + " SET " +
                 columns[9] + " = 1 WHERE " + columns[0] + " IN(" +
                 TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
     }
 
+    /**
+     * Marca como no leidos todos los objetos perdidos de la base de datos.
+     */
     void unreadAll() {
         db.execSQL("UPDATE " + tablename + " SET " + columns[9] + " = 0");
     }
 
+    /**
+     * Elimina un conjunto de objetos perdidos de la base de datos.
+     * @param ids Conjunto de IDs de los objetos perdidos que se desea eliminar.
+     */
     public void delete(Object... ids) {
         db.execSQL("DELETE FROM " + tablename + " WHERE " + columns[0] + " IN(" +
                 TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
     }
 
+    /**
+     * Destruye el controlador de la base de datos.
+     */
     public void destroy() {
         usdbh.close();
     }

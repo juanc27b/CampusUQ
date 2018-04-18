@@ -23,6 +23,9 @@ import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.users.User;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
+/**
+ * Adaptador de objetos perdidos.
+ */
 public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectViewHolder> {
 
     static final String OBJECT    = "object";
@@ -39,6 +42,12 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
     private Context context;
     private User user;
 
+    /**
+     * Constructor que asigna el arreglo de objetos perdidos inicial y la interfaz para
+     * redireccionar el procesamiento del click en un objeto perdido.
+     * @param objects Arreglo de objetos perdidos.
+     * @param objectsActivity Actividad que implementa la interfaz OnClickQuotaListener.
+     */
     ObjectsAdapter(ArrayList<LostObject> objects, ObjectsActivity objectsActivity) {
         this.objects = objects;
         listener = objectsActivity;
@@ -46,6 +55,9 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
         user = UsersPresenter.loadUser(context);
     }
 
+    /**
+     * Portador de vistas de objetos perdidos, el cual está atento a clicks.
+     */
     public class ObjectViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ImageView icon;
@@ -57,6 +69,12 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
         private TextView description;
         private TextView found;
 
+        /**
+         * Obtiene los objetos de vista a partir de sus identificadores y asigna los listener de
+         * click.
+         * @param view Vista de un item en la cual buscar las subvistas que se controlan en el
+         *             adaptador.
+         */
         ObjectViewHolder(View view) {
             super(view);
 
@@ -74,13 +92,17 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
             view.findViewById(R.id.object_readed).setOnClickListener(this);
         }
 
-        void bindItem(LostObject lostObject) {
+        /**
+         * Asigna los valores de las vistas a partir del objeto perdido suministrado.
+         * @param object Objeto perdido a visualizar.
+         */
+        void bindItem(LostObject object) {
             icon.setImageResource(ItemsPresenter.getColor());
-            name.setText(lostObject.getName());
-            place.setText(lostObject.getPlace());
+            name.setText(object.getName());
+            place.setText(object.getPlace());
 
             try {
-                Date dateTimeLost = simpleDateFormat.parse(lostObject.getDateLost());
+                Date dateTimeLost = simpleDateFormat.parse(object.getDateLost());
                 dateLost.setText(DateFormat.getDateInstance(DateFormat.LONG).format(dateTimeLost));
                 timeLost.setText(DateFormat.getTimeInstance(DateFormat.SHORT).format(dateTimeLost));
             } catch (ParseException e) {
@@ -88,19 +110,19 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
             }
 
             // Se concatena una cadena vacia para evitar el caso File(null)
-            File imageFile = new File(""+lostObject.getImage());
+            File imageFile = new File("" + object.getImage());
             if (imageFile.exists()) {
-                image.setImageBitmap(Utilities.getResizedBitmap(BitmapFactory
-                        .decodeFile(imageFile.getAbsolutePath())));
+                image.setImageBitmap(Utilities
+                        .getResizedBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath())));
             } else {
                 image.setImageResource(R.drawable.rectangle_gray);
             }
 
-            description.setText(lostObject.getDescription());
+            description.setText(object.getDescription());
 
-            if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
-                    lostObject.getUserFound_ID() != null &&
-                    lostObject.getUserFound_ID().equals(user.get_ID())) {
+            if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail()) &&
+                    object.getUserFound_ID() != null &&
+                    object.getUserFound_ID().equals(user.get_ID())) {
                 found.setText(R.string.object_not_found);
                 found.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -108,9 +130,9 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
                         listener.onObjectClick(getAdapterPosition(), NOT_FOUND);
                     }
                 });
-            } else if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
-                    lostObject.getUserLost_ID().equals(user.get_ID()) &&
-                    lostObject.getUserFound_ID() != null) {
+            } else if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail()) &&
+                    object.getUserLost_ID().equals(user.get_ID()) &&
+                    object.getUserFound_ID() != null) {
                 found.setText(R.string.object_view_contact);
                 found.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -129,6 +151,11 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
             }
         }
 
+        /**
+         * Redirige hacia la funcion en la actividad que procesara el click en el objeto perdido
+         * asignando una accion que depende de a cual vista se le ha dado click.
+         * @param view Vista en la que se ha hecho click.
+         */
         @Override
         public void onClick(View view) {
             String action;
@@ -145,28 +172,51 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
 
     }
 
+    /**
+     * Crea el portador de objetos perdidos inflando su diseño.
+     * @param parent Vista donde inflar el portador de cupos.
+     * @param viewType Tipo de la vista (no utilizado).
+     * @return Nuevo portador de objetos perdidos creado.
+     */
     @Override
     public ObjectViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ObjectViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.object_detail, parent, false));
     }
 
+    /**
+     * Vincula los valores del objeto perdido con sus vistas.
+     * @param holder Portador de objetos perdidos.
+     * @param position Posición del objeto perdido en el arreglo de objetos perdidos.
+     */
     @Override
     public void onBindViewHolder(ObjectViewHolder holder, int position) {
         holder.bindItem(objects.get(position));
     }
 
+    /**
+     * Obtiene la cantidad de ítems en el arreglo de objetos perdidos.
+     * @return Cantidad de ítems.
+     */
     @Override
     public int getItemCount() {
         return objects.size();
     }
 
+    /**
+     * Asigna el nuevo arreglo de objetos perdidos y notifica que los datos han cambiado.
+     * @param objects Arreglo de objetos perdidos.
+     */
     public void setObjects(ArrayList<LostObject> objects) {
         user = UsersPresenter.loadUser(context);
         this.objects = objects;
         notifyDataSetChanged();
     }
 
+    /**
+     * Interfaz para ser implementada por una actividad hacia la cual se redireccionará el
+     * procesamiento del click.
+     */
     public interface OnClickObjectListener {
         void onObjectClick(int index, String action);
     }

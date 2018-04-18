@@ -1,6 +1,14 @@
 package co.edu.uniquindio.campusuq.quotas;
 
-public class Quota {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+/**
+ * Clase que almacena la informacion de un cupo (objeto de valor para las funcionalidades de salas
+ * de cómputo, parqueaderos, laboratorios, zonas de estudio, espacios culturales y deportivos, y
+ * auditorios), y permite transmitirlos desde y hacia el servidor y la base de datos local.
+ */
+public class Quota implements Parcelable {
 
     private String _ID;
     private String type;
@@ -13,6 +21,38 @@ public class Quota {
         this.name = name;
         this.quota = quota;
     }
+
+    private Quota(Parcel in) {
+        _ID = in.readString();
+        type = in.readString();
+        name = in.readString();
+        quota = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(_ID);
+        dest.writeString(type);
+        dest.writeString(name);
+        dest.writeString(quota);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Quota> CREATOR = new Creator<Quota>() {
+        @Override
+        public Quota createFromParcel(Parcel in) {
+            return new Quota(in);
+        }
+
+        @Override
+        public Quota[] newArray(int size) {
+            return new Quota[size];
+        }
+    };
 
     public String get_ID() {
         return _ID;

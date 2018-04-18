@@ -19,19 +19,31 @@ import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 
+/**
+ * Actividad para modificar o insertar nuevos cupos.
+ */
 public class QuotasDetailActivity extends MainActivity implements View.OnClickListener {
 
     private Intent intent;
-    private String _ID;
-    private String type;
+    private Quota q;
     private EditText name;
     private EditText quota;
 
+    /**
+     * Constructor que oculta el ícono de navegación reemplazandolo por una flecha de ir atrás, y
+     * oculta también el botón de busqueda.
+     */
     public QuotasDetailActivity() {
         super.setHasNavigationDrawerIcon(false);
         super.setHasSearch(false);
     }
 
+    /**
+     * Asigna el fondo de la actividad, infla el diseño de edición de cupos en la actividad
+     * superior, asigna las variables de vistas y el listener de click de la vista del boton OK, y
+     * llama la funcion para asignar los valores de las variables y vistas.
+     * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
@@ -45,14 +57,21 @@ public class QuotasDetailActivity extends MainActivity implements View.OnClickLi
         intent = getIntent();
         name = findViewById(R.id.quota_detail_name);
         quota = findViewById(R.id.quota_detail_quota);
-        setQuota();
 
         findViewById(R.id.quota_detail_ok).setOnClickListener(this);
+
+        setQuota();
     }
 
+    /**
+     * Método para manejar nuevas llamadas a la actividad, asigna un nuevo título a la actividad en
+     * caso de haberse creado previamente.
+     * @param intent Contiene los datos nuevos.
+     */
     @Override
     public void handleIntent(Intent intent) {
         ActionBar actionBar = getSupportActionBar();
+
         if (actionBar != null) {
             actionBar.setTitle(intent.getStringExtra("CATEGORY"));
             this.intent = intent;
@@ -60,13 +79,21 @@ public class QuotasDetailActivity extends MainActivity implements View.OnClickLi
         }
     }
 
+    /**
+     * Asigna los valores a las variables y vistas desde el cupo obtenido del intento.
+     */
     private void setQuota() {
-        _ID = intent.getStringExtra(QuotasSQLiteController.columns[0]);
-        type = intent.getStringExtra(QuotasSQLiteController.columns[1]);
-        name.setText(intent.getStringExtra(QuotasSQLiteController.columns[2]));
-        quota.setText(intent.getStringExtra(QuotasSQLiteController.columns[3]));
+        q = intent.getParcelableExtra(QuotasFragment.QUOTA);
+        name.setText(q.getName());
+        quota.setText(q.getQuota());
     }
 
+    /**
+     * Responde al listener de la vista del boton OK y envia los datos del cupo al servidor para
+     * insertarlo o actualizarlo, o en caso de error muestra un mensaje con la informacion de dicho
+     * error.
+     * @param view Vista de la cual se puede obtener el identificador del boton OK.
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -75,31 +102,34 @@ public class QuotasDetailActivity extends MainActivity implements View.OnClickLi
                     if (name.getText().length() != 0 && quota.getText().length() != 0) {
                         mTracker.send(new HitBuilders.EventBuilder()
                                 .setCategory(getString(R.string.analytics_quotas_category))
-                                .setAction(getString(_ID == null ?
+                                .setAction(getString(q.get_ID() == null ?
                                         R.string.analytics_create_action : R.string.analytics_modify_action))
                                 .setLabel(getString(
-                                        type.equals("S") ? R.string.analytics_computer_rooms_label :
-                                        type.equals("P") ? R.string.analytics_parking_lots_label :
-                                        type.equals("L") ? R.string.analytics_laboratories_label :
-                                        type.equals("E") ? R.string.analytics_study_areas_label :
-                                        type.equals("C") ? R.string.analytics_cultural_and_sport_label :
+                                        "S".equals(q.getType()) ? R.string.analytics_computer_rooms_label :
+                                        "P".equals(q.getType()) ? R.string.analytics_parking_lots_label :
+                                        "L".equals(q.getType()) ? R.string.analytics_laboratories_label :
+                                        "E".equals(q.getType()) ? R.string.analytics_study_areas_label :
+                                        "C".equals(q.getType()) ? R.string.analytics_cultural_and_sport_label :
                                         R.string.analytics_auditoriums_label))
                                 .setValue(1)
                                 .build());
-                        JSONObject json = new JSONObject();
+
                         try {
-                            if (_ID != null) json.put("UPDATE_ID", _ID);
-                            json.put(QuotasSQLiteController.columns[1],
-                                    intent.getStringExtra(QuotasSQLiteController.columns[1]));
+                            JSONObject json = new JSONObject();
+                            if (q.get_ID() != null) json.put("UPDATE_ID", q.get_ID());
+                            json.put(QuotasSQLiteController.columns[1], q.getType());
                             json.put(QuotasSQLiteController.columns[2], name.getText());
                             json.put(QuotasSQLiteController.columns[3], quota.getText());
+                            WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                                    WebService.ACTION_QUOTAS, WebService.METHOD_POST,
+                                    json.toString());
+                            setResult(RESULT_OK, intent);
+                            finish();
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            Toast.makeText(this, e.getLocalizedMessage(),
+                                    Toast.LENGTH_SHORT).show();
                         }
-                        WebBroadcastReceiver.scheduleJob(getApplicationContext(),
-                                WebService.ACTION_QUOTAS, WebService.METHOD_POST, json.toString());
-                        setResult(RESULT_OK, intent);
-                        finish();
                     } else {
                         Toast.makeText(this, R.string.empty_string,
                                 Toast.LENGTH_SHORT).show();

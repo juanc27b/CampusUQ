@@ -1,6 +1,13 @@
 package co.edu.uniquindio.campusuq.dishes;
 
-public class Dish {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+/**
+ * Clase que almacena la informacion de un plato, y permite transmitirlo desde y hacia el servidor y
+ * la base de datos local.
+ */
+public class Dish implements Parcelable {
 
     private String _ID;
     private String name;
@@ -15,6 +22,40 @@ public class Dish {
         this.price = price;
         this.image = image;
     }
+
+    private Dish(Parcel in) {
+        _ID = in.readString();
+        name = in.readString();
+        description = in.readString();
+        price = in.readString();
+        image = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(_ID);
+        dest.writeString(name);
+        dest.writeString(description);
+        dest.writeString(price);
+        dest.writeString(image);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Dish> CREATOR = new Creator<Dish>() {
+        @Override
+        public Dish createFromParcel(Parcel in) {
+            return new Dish(in);
+        }
+
+        @Override
+        public Dish[] newArray(int size) {
+            return new Dish[size];
+        }
+    };
 
     public String get_ID() {
         return _ID;

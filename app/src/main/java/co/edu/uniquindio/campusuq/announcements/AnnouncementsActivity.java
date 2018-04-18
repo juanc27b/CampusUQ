@@ -1,6 +1,7 @@
 package co.edu.uniquindio.campusuq.announcements;
 
 import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -51,6 +52,9 @@ import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 
+/**
+ * Actividad para visualizar los anuncios de incidentes y comunicados.
+ */
 public class AnnouncementsActivity extends MainActivity implements
         AnnouncementsAdapter.OnClickAnnouncementListener, View.OnClickListener {
 
@@ -84,16 +88,24 @@ public class AnnouncementsActivity extends MainActivity implements
             String response = intent.getStringExtra("RESPONSE");
 
             if (response != null) {
-                Toast.makeText(context, response, Toast.LENGTH_SHORT).show();
                 Log.i(AnnouncementsActivity.class.getSimpleName(), response);
+                Toast.makeText(context, response, Toast.LENGTH_SHORT).show();
             }
         }
     };
 
+    /**
+     * Constructor que oculta el ícono de navegación para reemplazarlo por la flecha de ir atrás.
+     */
     public AnnouncementsActivity() {
         super.setHasNavigationDrawerIcon(false);
     }
 
+    /**
+     * Asigna el fondo de la actividad, infla el diseño de anuncios en la actividad superior, y
+     * llama a la funcion para cargar los anuncios.
+     * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
@@ -152,6 +164,11 @@ public class AnnouncementsActivity extends MainActivity implements
         loadAnnouncements(0);
     }
 
+    /**
+     * Método para manejar nuevas llamadas a la actividad, dependiendo de la accion del intento,
+     * puede buscar un ítem, o cambiar el titulo de la actividad y volver a cargar los ítems.
+     * @param intent Intento que contiene la accion a realizar.
+     */
     @Override
     public void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
@@ -192,14 +209,26 @@ public class AnnouncementsActivity extends MainActivity implements
         }
     }
 
+    /**
+     * Carga los anuncios desde la base de datos y los almacena en el arreglo de anuncios para
+     * enviarselos al adaptador, si la actividad es nueva el arreglo se envia por medio de su
+     * constructor, se crea tambien el manejador de diseño y se asignan al recilador de vista, al
+     * cual tambien se le asigna un listener de desplasamiento encargado de actualizar desde el
+     * servidor la base de datos local al realizar un desplasamiento vetical en el limite
+     * superior o cargar mas anuncios desde la base de datos local al realizar un desplasamiento
+     * vetical en el limite inferior, adicionalmente muestra un mensaje de de carga durante el
+     * tiempo que realiza el proceso.
+     * @param inserted Indica la cantidad de objetos perdidos insertados.
+     */
     private void loadAnnouncements(int inserted) {
         if (!progressDialog.isShowing()) progressDialog.show();
 
         int scrollTo = oldAnnouncements ?
-                (newActivity ? 0 : announcements.size()-1) : (inserted > 0 ? inserted-1 : 0);
+                (newActivity ? 0 : announcements.size() - 1) :
+                (inserted > 0 ? inserted - 1 : 0);
 
         announcements = AnnouncementsPresenter.loadAnnouncements(action, this,
-                announcements.size()+(inserted > 0 ? inserted : 3));
+                announcements.size() + (inserted > 0 ? inserted : 3));
 
         String[] announcement_IDs = new String[announcements.size()];
         for (int i = 0; i < announcement_IDs.length; i++) {
@@ -250,17 +279,29 @@ public class AnnouncementsActivity extends MainActivity implements
         if (progressDialog.isShowing() && announcements.size() > 0) progressDialog.dismiss();
     }
 
+    /**
+     * Dependiendo de la accion, en caso haber iniciado sesión como administrador o ser propietario
+     * del anuncio, puede mostrar un cuadro de dialogo que permite modificar o eliminar el anuncio
+     * (o un mensaje de advertencia en caso contrario), puede llamar a otra aplicacion que permita
+     * visualizar con mas detalle uno de los enlaces del anuncio, puede marcar el anuncio como leido
+     * o compartirlo en redes sociales.
+     * @param index Indice del anuncio que determina a cuál de los ítems del arreglo de anuncios se
+     *              le aplicará la accion.
+     * @param action Determina si se le ha dado clic al anuncio, a uno de sus enlaces (imagen o
+     *               video), al boton de leido, facebook, twitter o whatsapp.
+     */
     @Override
     public void onAnnouncementClick(int index, String action) {
         switch (action) {
-            case AnnouncementsAdapter.ANNOUNCEMENT:
+            case AnnouncementsAdapter.ANNOUNCEMENT: {
                 User user = UsersPresenter.loadUser(this);
-                if (user != null && user.getAdministrator().equals("S")) {
-                    AnnouncementsFragment.newInstance(index, this.action)
+
+                if (user != null && "S".equals(user.getAdministrator())) {
+                    AnnouncementsFragment.newInstance(announcements.get(index), this.action)
                             .show(getSupportFragmentManager(), null);
                 } else if (user != null && WebService.ACTION_INCIDENTS.equals(action)) {
                     if (user.get_ID().equals(announcements.get(index).getUser_ID())) {
-                        AnnouncementsFragment.newInstance(index, this.action)
+                        AnnouncementsFragment.newInstance(announcements.get(index), this.action)
                                 .show(getSupportFragmentManager(), null);
                     } else {
                         Toast.makeText(this,
@@ -273,6 +314,7 @@ public class AnnouncementsActivity extends MainActivity implements
                             Toast.LENGTH_SHORT).show();
                 }
                 break;
+            }
             case AnnouncementsAdapter.IMAGE_0:
             case AnnouncementsAdapter.IMAGE_1:
             case AnnouncementsAdapter.IMAGE_2:
@@ -288,11 +330,12 @@ public class AnnouncementsActivity extends MainActivity implements
 
                 for (AnnouncementLink announcementLink : announcementsLinks) {
                     if (announcementLink.getAnnouncement_ID().equals(_ID) && link-- == 0) {
-                        startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(FileProvider
-                                .getUriForFile(this,
+                        startActivity(new Intent(Intent.ACTION_VIEW)
+                                .setDataAndType(FileProvider.getUriForFile(this,
                                         "co.edu.uniquindio.campusuq.provider",
                                         new File(announcementLink.getLink())),
-                                announcementLink.getType().equals("I") ? "image/*" : "video/*")
+                                        "I".equals(announcementLink.getType()) ?
+                                                "image/*" : "video/*")
                                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
                     }
                 }
@@ -342,14 +385,12 @@ public class AnnouncementsActivity extends MainActivity implements
                     if (!twitterLoggedIn) {
                         mTwitterAuthClient.authorize(this, twitterCallback);
                     } else {
-                        final TwitterSession session = TwitterCore.getInstance().getSessionManager()
-                                .getActiveSession();
-                        final Intent twitterIntent = new ComposerActivity.Builder(this)
-                                .session(session)
+                        startActivity(new ComposerActivity.Builder(this)
+                                .session(TwitterCore
+                                        .getInstance().getSessionManager().getActiveSession())
                                 .text(announcements.get(index).getName())
                                 .hashtags("#Uniquindio")
-                                .createIntent();
-                        startActivity(twitterIntent);
+                                .createIntent());
                     }
                 } else {
                     Toast.makeText(this, R.string.no_internet,
@@ -365,14 +406,13 @@ public class AnnouncementsActivity extends MainActivity implements
                                 R.string.analytics_billboard_information_label))
                         .setValue(1)
                         .build());
-                Intent sendIntent = new Intent();
-                sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, announcements.get(index).getName());
-                sendIntent.setType("text/plain");
-                sendIntent.setPackage("com.whatsapp");
+
                 try {
-                    startActivity(sendIntent);
-                } catch (android.content.ActivityNotFoundException e) {
+                    startActivity(new Intent(Intent.ACTION_SEND)
+                            .putExtra(Intent.EXTRA_TEXT, announcements.get(index).getName())
+                            .setType("text/plain")
+                            .setPackage("com.whatsapp"));
+                } catch (ActivityNotFoundException e) {
                     Toast.makeText(this, R.string.no_whatsapp,
                             Toast.LENGTH_SHORT).show();
                 }
@@ -384,28 +424,35 @@ public class AnnouncementsActivity extends MainActivity implements
         }
     }
 
-    public Announcement getAnnouncement(int index) {
-        return announcements.get(index);
-    }
-
+    /**
+     * Define la tarea a realizar cuando se da click en una de las vistas controladas por esta
+     * actividad, en caso de dar click en el boton de añadir se abrirá la actividad que permite
+     * insertar un nuevo anuncio.
+     * @param view Vista a la cual el usuario ha dado click.
+     */
     @Override
     public void onClick(View view) {
         int id = view.getId();
+
         switch (id) {
             case R.id.report_incident:
             case R.id.fab: {
                 User user = UsersPresenter.loadUser(this);
-                if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co")) {
-                    Intent intent =
-                            new Intent(this, AnnouncementsDetailActivity.class);
-                    intent.putExtra("CATEGORY", getString(id == R.id.report_incident ?
-                            R.string.report_incident : R.string.billboard_detail));
-                    intent.putExtra(AnnouncementsSQLiteController.columns[1], user.get_ID());
-                    startActivityForResult(intent, REQUEST_ANNOUNCEMENT_DETAIL);
+
+                if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail())) {
+                    startActivityForResult(
+                            new Intent(this, AnnouncementsDetailActivity.class)
+                                    .putExtra("CATEGORY",
+                                            getString(id == R.id.report_incident ?
+                                                    R.string.report_incident : R.string.billboard_detail))
+                                    .putExtra(AnnouncementsFragment.ANNOUNCEMENT,
+                                            new Announcement(null, user.get_ID(), null,
+                                                    null, null, null,
+                                                    null)),
+                            REQUEST_ANNOUNCEMENT_DETAIL);
                 } else {
-                    Intent intent = new Intent(this, LoginActivity.class);
-                    intent.putExtra("CATEGORY", getString(R.string.log_in));
-                    startActivity(intent);
+                    startActivity(new Intent(this, LoginActivity.class)
+                            .putExtra("CATEGORY", getString(R.string.log_in)));
                 }
                 break;
             }
@@ -414,9 +461,17 @@ public class AnnouncementsActivity extends MainActivity implements
         }
     }
 
+    /**
+     * Muestra el cuadro de dialogo de progreso si la actividad que permite modificar o insertar un
+     * anuncio resulta en un codigo correcto.
+     * @param requestCode Código de solicitud para el cual se espera un resultado.
+     * @param resultCode Código de resultado que indica exito o fracaso.
+     * @param data Datos retornados por la actividad (no utilizado).
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         switch (requestCode) {
             case REQUEST_ANNOUNCEMENT_DETAIL:
                 if (resultCode  == RESULT_OK && !progressDialog.isShowing()) progressDialog.show();
@@ -433,8 +488,7 @@ public class AnnouncementsActivity extends MainActivity implements
                         break;
                 }
                 if (resultCode == RESULT_OK){
-                    Toast.makeText(this, R.string.social_ok,
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.social_ok, Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(this, R.string.social_error,
                             Toast.LENGTH_SHORT).show();
@@ -444,17 +498,23 @@ public class AnnouncementsActivity extends MainActivity implements
         }
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para reanudar la misma, en el que se registra un
+     * receptor para estar atento a los intentos relacionados con los anuncios.
+     */
     @Override
     protected void onResume() {
         super.onResume();
-        // Register for the particular broadcast based on ACTION string
         registerReceiver(announcementsReceiver, announcementsFilter);
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para pausar la misma, en el que se invalida el
+     * previo registro del receptor para los anuncios.
+     */
     @Override
     protected void onPause() {
         super.onPause();
-        // Unregister the listener when the application is paused
         unregisterReceiver(announcementsReceiver);
     }
 

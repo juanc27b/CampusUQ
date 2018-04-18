@@ -30,6 +30,9 @@ import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 
+/**
+ * Actividad para modificar o insertar nuevos anuncios.
+ */
 public class AnnouncementsDetailActivity extends MainActivity implements View.OnClickListener {
 
     private static final int REQUEST_LINK_0 = 1010;
@@ -44,11 +47,10 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
     private static final int REQUEST_LINK_9 = 1019;
 
     private String type;
-    private String[] link_IDs;
-    private String[] linkTypes;
+    private AnnouncementLink[] announcementLinks;
     private File[] linksFiles;
     private Intent intent;
-    private String _ID;
+    private Announcement announcement;
     private TextView titleText;
     private TextView nameText;
     private EditText name;
@@ -58,11 +60,22 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
     private TextView imageText;
     private ImageView[] images;
 
+    /**
+     * Constructor que oculta el ícono de navegación reemplazandolo por una flecha de ir atrás, y
+     * oculta también el botón de busqueda.
+     */
     public AnnouncementsDetailActivity() {
         super.setHasNavigationDrawerIcon(false);
         super.setHasSearch(false);
     }
 
+    /**
+     * Asigna el fondo de la actividad, infla el diseño de edición de anuncios en la actividad
+     * superior, asigna las variables de vistas y los listener de click de las vistas de
+     * descripción, imagenes y del boton OK, y llama la funcion para asignar los valores de las
+     * variables y vistas.
+     * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
@@ -93,7 +106,6 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
                 findViewById(R.id.announcement_detail_image_8),
                 findViewById(R.id.announcement_detail_image_9),
         };
-        setAnnouncement();
 
         description.addTextChangedListener(new TextWatcher() {
             @Override
@@ -109,14 +121,20 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
         });
         for (ImageView image : images) image.setOnClickListener(this);
         findViewById(R.id.announcement_detail_ok).setOnClickListener(this);
+
+        setAnnouncement();
     }
 
+    /**
+     * Método para manejar nuevas llamadas a la actividad, asigna un nuevo título a la actividad en
+     * caso de haberse creado previamente.
+     * @param intent Contiene los datos nuevos.
+     */
     @Override
     public void handleIntent(Intent intent) {
         String category = intent.getStringExtra("CATEGORY");
         type = getString(R.string.report_incident).equals(category) ? "I" : "C";
-        link_IDs = new String[10];
-        linkTypes = new String[10];
+        announcementLinks = new AnnouncementLink[10];
         linksFiles = new File[10];
         ActionBar actionBar = getSupportActionBar();
 
@@ -127,8 +145,11 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
         }
     }
 
+    /**
+     * Asigna los valores a las variables y vistas desde el anuncio obtenido del intento.
+     */
     public void setAnnouncement() {
-        _ID = intent.getStringExtra(AnnouncementsSQLiteController.columns[0]);
+        announcement = intent.getParcelableExtra(AnnouncementsFragment.ANNOUNCEMENT);
 
         if (type.equals("I")) {
             titleText.setText(R.string.incident_detail_title);
@@ -146,23 +167,21 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
             imageText.setText(R.string.communique_detail_image);
         }
 
-        name.setText(intent.getStringExtra(AnnouncementsSQLiteController.columns[3]));
-        description.setText(intent.getStringExtra(AnnouncementsSQLiteController.columns[5]));
+        name.setText(announcement.getName());
+        description.setText(announcement.getDescription());
         descriptionCount.setText(String.valueOf(description.getText().length()));
 
-        ArrayList<AnnouncementLink> announcementLinks = _ID != null ? AnnouncementsPresenter
-                .getAnnouncementsLinks(this, _ID) : new ArrayList<AnnouncementLink>();
+        ArrayList<AnnouncementLink> announcementLinks = announcement.get_ID() != null ?
+                AnnouncementsPresenter.getAnnouncementsLinks(this, announcement.get_ID()) :
+                new ArrayList<AnnouncementLink>();
 
         for (int i = 0; i < images.length; i++) {
             if (i < announcementLinks.size()) {
-                AnnouncementLink announcementLink = announcementLinks.get(i);
-
-                link_IDs[i] = announcementLink.get_ID();
-                linkTypes[i] = announcementLink.getType();
-                linksFiles[i] = new File(announcementLink.getLink());
+                this.announcementLinks[i] = announcementLinks.get(i);
+                linksFiles[i] = new File(this.announcementLinks[i].getLink());
 
                 if (linksFiles[i].exists()) {
-                    if ("I".equals(linkTypes[i])) {
+                    if ("I".equals(this.announcementLinks[i].getType())) {
                         images[i].setImageBitmap(Utilities.getResizedBitmap(BitmapFactory
                                 .decodeFile(linksFiles[i].getAbsolutePath())));
                     } else {
@@ -185,6 +204,13 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
         }
     }
 
+    /**
+     * Responde al listener de las vistas de imagenes y del boton OK, en el caso de las imagenes
+     * abre otra aplicacion que permita seleccionar una imagen o video, en el caso del boton OK
+     * envia los datos del anuncio al servidor para insertarlo o actualizarlo, o en caso de error
+     * muestra un mensaje con la informacion de dicho error.
+     * @param view Vista de la cual se puede obtener el identificador de las imagenes o el boton OK.
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()){
@@ -203,7 +229,7 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
                     if (name.getText().length() != 0 && description.getText().length() != 0) {
                         mTracker.send(new HitBuilders.EventBuilder()
                                 .setCategory(getString(R.string.analytics_announcements_category))
-                                .setAction(getString(_ID == null ?
+                                .setAction(getString(announcement.get_ID() == null ?
                                         R.string.analytics_create_action :
                                         R.string.analytics_modify_action))
                                 .setLabel(getString(type.equals("I") ?
@@ -214,9 +240,13 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
 
                         try {
                             JSONObject json = new JSONObject();
-                            if (_ID != null) json.put("UPDATE_ID", _ID);
-                            json.put(AnnouncementsSQLiteController.columns[1], intent
-                                    .getStringExtra(AnnouncementsSQLiteController.columns[1]));
+
+                            if (announcement.get_ID() != null) {
+                                json.put("UPDATE_ID", announcement.get_ID());
+                            }
+
+                            json.put(AnnouncementsSQLiteController.columns[1],
+                                    announcement.getUser_ID());
                             json.put(AnnouncementsSQLiteController.columns[2], type);
                             json.put(AnnouncementsSQLiteController.columns[3], name.getText());
                             // La fecha se pone en el servidor, no aqui
@@ -228,12 +258,12 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
                                 if (linksFiles[i] != null && linksFiles[i].exists()) {
                                     JSONObject link = new JSONObject();
 
-                                    if (link_IDs[i] != null) {
-                                        link.put("UPDATE_ID", link_IDs[i]);
+                                    if (announcementLinks[i].get_ID() != null) {
+                                        link.put("UPDATE_ID", announcementLinks[i].get_ID());
                                     }
 
                                     link.put(AnnouncementsSQLiteController.linkColumns[2],
-                                            linkTypes[i]);
+                                            announcementLinks[i].getType());
                                     link.put(AnnouncementsSQLiteController.linkColumns[3],
                                             linksFiles[i].getName());
                                     link.put("imageString", linksFiles[i].getAbsolutePath());
@@ -243,7 +273,7 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
 
                             json.put("links", links);
                             WebBroadcastReceiver.scheduleJob(getApplicationContext(),
-                                    type.equals("I") ? WebService.ACTION_INCIDENTS :
+                                    "I".equals(type) ? WebService.ACTION_INCIDENTS :
                                             WebService.ACTION_COMMUNIQUES,
                                     WebService.METHOD_POST, json.toString());
                             setResult(RESULT_OK, intent);
@@ -268,12 +298,21 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
     }
 
     private void getImage(int requestCode) {
-        startActivityForResult(Intent.createChooser(new Intent(Intent.ACTION_PICK,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI).setType("image/* video/*")
-                .putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/*", "video/*"}),
+        startActivityForResult(Intent.createChooser(
+                new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                        .setType("image/* video/*")
+                        .putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/*", "video/*"}),
                 getString(R.string.select_image_or_video)), requestCode);
     }
 
+    /**
+     * Si el codigo requerido corresponde a obtener imagen y la actividad resulta en un codigo
+     * exitoso se utilizan los datos retornados para asignar el archivo y la vista de imagen del
+     * enlace de anuncio.
+     * @param requestCode Código de solicitud para el cual se espera un resultado.
+     * @param resultCode Código de resultado que indica exito o fracaso.
+     * @param data Datos retornados por la actividad.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -287,12 +326,17 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
                 linksFiles[index] = new File(Utilities.getPath(this, uri));
 
                 if (linksFiles[index].exists()) {
+                    if (announcementLinks[index] == null) {
+                        announcementLinks[index] = new AnnouncementLink(null,
+                                null, null, null);
+                    }
+
                     if (uri.toString().contains("image")) {
-                        linkTypes[index] = "I";
+                        announcementLinks[index].setType("I");
                         images[index].setImageBitmap(Utilities.getResizedBitmap(BitmapFactory
                                 .decodeFile(linksFiles[index].getAbsolutePath())));
                     } else {
-                        linkTypes[index] = "V";
+                        announcementLinks[index].setType("V");
                         MediaMetadataRetriever mediaMetadataRetriever =
                                 new MediaMetadataRetriever();
                         mediaMetadataRetriever.setDataSource(linksFiles[index].getAbsolutePath());

@@ -20,9 +20,8 @@ import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
 /**
- * Created by Juan Camilo on 2/03/2018.
+ * Adaptador de anuncios.
  */
-
 public class AnnouncementsAdapter extends
         RecyclerView.Adapter<AnnouncementsAdapter.AnnouncementViewHolder> {
 
@@ -49,6 +48,13 @@ public class AnnouncementsAdapter extends
             "yyyy-MM-dd'T'HH:mm:ssZ", new Locale("es", "CO"));
     private OnClickAnnouncementListener listener;
 
+    /**
+     * Constructor que asigna los arreglos de anuncios y enlaces de anuncios iniciales y la interfaz
+     * para redireccionar el procesamiento del click en un anuncio.
+     * @param announcements Arreglo de anuncios.
+     * @param announcementsLinks Arreglo de enlaces de anuncios.
+     * @param announcementsActivity Actividad que implementa la interfaz OnClickQuotaListener.
+     */
     AnnouncementsAdapter(ArrayList<Announcement> announcements,
                                 ArrayList<AnnouncementLink> announcementsLinks,
                                 AnnouncementsActivity announcementsActivity) {
@@ -57,6 +63,9 @@ public class AnnouncementsAdapter extends
         this.listener = announcementsActivity;
     }
 
+    /**
+     * Portador de vistas de anuncios, el cual está atento a clicks.
+     */
     public class AnnouncementViewHolder extends RecyclerView.ViewHolder implements
             View.OnClickListener {
 
@@ -65,6 +74,12 @@ public class AnnouncementsAdapter extends
         private TextView name;
         private TextView description;
 
+        /**
+         * Obtiene los objetos de vista a partir de sus identificadores y asigna los listener de
+         * click.
+         * @param view Vista de un item en la cual buscar las subvistas que se controlan en el
+         *             adaptador.
+         */
         AnnouncementViewHolder(View view) {
             super(view);
 
@@ -92,6 +107,12 @@ public class AnnouncementsAdapter extends
             view.findViewById(R.id.announcement_whatsapp_button).setOnClickListener(this);
         }
 
+        /**
+         * Asigna los valores de las vistas a partir del anuncio y el arreglo de enlaces de anuncio
+         * suministrado.
+         * @param announcement Anuncio a visualizar.
+         * @param announcementLinks Enlaces de anuncio a visualizar.
+         */
         void bindItem(Announcement announcement, ArrayList<AnnouncementLink> announcementLinks) {
             for (int i = 0; i < images.length; i++) {
                 if (i < announcementLinks.size()) {
@@ -130,6 +151,11 @@ public class AnnouncementsAdapter extends
             description.setText(announcement.getDescription());
         }
 
+        /**
+         * Redirige hacia la funcion en la actividad que procesara el click en el anuncio asignando
+         * una accion que depende de a cual vista se le ha dado click.
+         * @param view Vista en la que se ha hecho click.
+         */
         @Override
         public void onClick(View view) {
             String action;
@@ -158,12 +184,23 @@ public class AnnouncementsAdapter extends
 
     }
 
+    /**
+     * Crea el portador de anuncios inflando su diseño.
+     * @param parent Vista donde inflar el portador de cupos.
+     * @param viewType Tipo de la vista (no utilizado).
+     * @return Nuevo portador de anuncios creado.
+     */
     @Override
     public AnnouncementViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new AnnouncementViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.announcement_detail, parent, false));
     }
 
+    /**
+     * Vincula los valores del anuncio con sus vistas.
+     * @param holder Portador de anuncios.
+     * @param position Posición del anuncio en el arreglo de anuncios.
+     */
     @Override
     public void onBindViewHolder(AnnouncementViewHolder holder, int position) {
         Announcement announcement = announcements.get(position);
@@ -176,11 +213,21 @@ public class AnnouncementsAdapter extends
         holder.bindItem(announcement, announcementLinks);
     }
 
+    /**
+     * Obtiene la cantidad de ítems en el arreglo de anuncios.
+     * @return Cantidad de ítems.
+     */
     @Override
     public int getItemCount() {
         return announcements.size();
     }
 
+    /**
+     * Asigna los nuevos arreglos de anuncios y enlaces de anuncios y notifica que los datos han
+     * cambiado.
+     * @param announcements Arreglo de anuncios.
+     * @param announcementsLinks Arreglo de enlaces de anuncios.
+     */
     void setAnnouncements(ArrayList<Announcement> announcements,
                                  ArrayList<AnnouncementLink> announcementsLinks) {
         this.announcements = announcements;
@@ -188,6 +235,10 @@ public class AnnouncementsAdapter extends
         notifyDataSetChanged();
     }
 
+    /**
+     * Interfaz para ser implementada por una actividad hacia la cual se redireccionará el
+     * procesamiento del click.
+     */
     public interface OnClickAnnouncementListener {
         void onAnnouncementClick(int pos, String action);
     }

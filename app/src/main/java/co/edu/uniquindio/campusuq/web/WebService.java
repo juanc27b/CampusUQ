@@ -94,9 +94,10 @@ import co.edu.uniquindio.campusuq.users.User;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
 /**
- * Created by Juan Camilo on 21/02/2018.
+ * Servicio que permite obtener del servidor los datos necesarios para la base de datos local,
+ * ademas tambien permite enviar peticiones al servidor para insertar, actualizar o eliminar items
+ * de algunas de las tablas.
  */
-
 public class WebService extends JobIntentService {
 
     public static final String ACTION_NONE        = "co.edu.uniquindio.campusuq.ACTION_NONE";
@@ -344,7 +345,9 @@ public class WebService extends JobIntentService {
 
         return builder.setSmallIcon(R.mipmap.ic_launcher)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setContentIntent(buildPendingIntent(type)).setAutoCancel(true).build();
+                .setContentIntent(buildPendingIntent(type))
+                .setAutoCancel(true)
+                .build();
     }
 
     private PendingIntent buildPendingIntent(String type) {
@@ -401,8 +404,8 @@ public class WebService extends JobIntentService {
                 break;
         }
 
-        stackBuilder.addNextIntent(resultIntent);
-        return stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        return stackBuilder.addNextIntent(resultIntent)
+                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private void loadNews(String type) {
@@ -514,7 +517,8 @@ public class WebService extends JobIntentService {
         }
 
         dbController.destroy();
-        sendBroadcast(new Intent(ACTION_NEWS).putExtra("INSERTED", inserted));
+        sendBroadcast(new Intent(ACTION_NEWS)
+                .putExtra("INSERTED", inserted));
     }
 
     private void loadInformations() {
@@ -743,6 +747,16 @@ public class WebService extends JobIntentService {
         sendBroadcast(new Intent(PENDING_ACTION));
     }
 
+    /**
+     * Permite insertar, actualizar o eliminar un anuncio en el servidor para luego actualizar los
+     * anuncios de la base de datos local, o solamente actualizar los anuncios de la base de datos
+     * local.
+     * @param type El tipo de anuncios (incidentes o comunicados) en los cuales realizar la
+     *             operación.
+     * @param method El tipo de operación a realizar: insertar, actualizar, eliminar, o obtener.
+     * @param object Cadena de texto con formato JSON para realizar una inserción, actualización o
+     *               eliminación.
+     */
     private void loadAnnouncements(String type, String method, String object) {
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled) return;
@@ -895,10 +909,20 @@ public class WebService extends JobIntentService {
                 break;
         }
 
-        sendBroadcast(new Intent(ACTION_INCIDENTS).putExtra("INSERTED", inserted)
+        sendBroadcast(new Intent(ACTION_INCIDENTS)
+                .putExtra("INSERTED", inserted)
                 .putExtra("RESPONSE", response));
     }
 
+    /**
+     * Permite insertar, actualizar o eliminar un objeto perdido en el servidor para luego
+     * actualizar los objetos perdidos de la base de datos local, o solamente actualizar los objetos
+     * perdidos de la base de datos
+     * local.
+     * @param method El tipo de operación a realizar: insertar, actualizar, eliminar, o obtener.
+     * @param object Cadena de texto con formato JSON para realizar una inserción, actualización o
+     *               eliminación.
+     */
     private void loadObjects(String method, String object) {
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled) return;
@@ -984,10 +1008,19 @@ public class WebService extends JobIntentService {
                 break;
         }
 
-        sendBroadcast(new Intent(ACTION_OBJECTS).putExtra("INSERTED", inserted)
+        sendBroadcast(new Intent(ACTION_OBJECTS)
+                .putExtra("INSERTED", inserted)
                 .putExtra("RESPONSE", response));
     }
 
+    /**
+     * Permite insertar, actualizar o eliminar un plato en el servidor para luego actualizar los
+     * platos de la base de datos local, o solamente actualizar los platos de la base de datos
+     * local.
+     * @param method El tipo de operación a realizar: insertar, actualizar, eliminar, o obtener.
+     * @param object Cadena de texto con formato JSON para realizar una inserción, actualización o
+     *               eliminación.
+     */
     private void loadDishes(String method, String object) {
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled) return;
@@ -1057,7 +1090,8 @@ public class WebService extends JobIntentService {
                 break;
         }
 
-        sendBroadcast(new Intent(ACTION_DISHES).putExtra("INSERTED", inserted)
+        sendBroadcast(new Intent(ACTION_DISHES)
+                .putExtra("INSERTED", inserted)
                 .putExtra("RESPONSE", response));
     }
 
@@ -1083,6 +1117,13 @@ public class WebService extends JobIntentService {
         return json.toString();
     }
 
+    /**
+     * Permite insertar, actualizar o eliminar un cupo en el servidor para luego actualizar los
+     * cupos de la base de datos local, o solamente actualizar los cupos de la base de datos local.
+     * @param method El tipo de operación a realizar: insertar, actualizar, eliminar, o obtener.
+     * @param object Cadena de texto con formato JSON para realizar una inserción, actualización o
+     *               eliminación.
+     */
     private void loadQuotas(String method, String object) {
         // If the job has been cancelled, stop working; the job will be rescheduled.
         if (jobCancelled) return;
@@ -1124,7 +1165,8 @@ public class WebService extends JobIntentService {
                 break;
         }
 
-        sendBroadcast(new Intent(ACTION_QUOTAS).putExtra("RESPONSE", response));
+        sendBroadcast(new Intent(ACTION_QUOTAS)
+                .putExtra("RESPONSE", response));
     }
 
     private void loadUsers(String method, String object) {
@@ -1152,7 +1194,7 @@ public class WebService extends JobIntentService {
                     }
                 case METHOD_DELETE:
                     for (User u : dbController.select()) {
-                        if (!u.getEmail().equals("campusuq@uniquindio.edu.co")) {
+                        if (!"campusuq@uniquindio.edu.co".equals(u.getEmail())) {
                             dbController.delete(u.get_ID());
                         }
                     }
@@ -1169,7 +1211,8 @@ public class WebService extends JobIntentService {
             dbController.destroy();
         }
 
-        sendBroadcast(new Intent(ACTION_USERS).putExtra("USER", user));
+        sendBroadcast(new Intent(ACTION_USERS)
+                .putExtra("USER", user));
     }
 
     private void loadEmails(String method, String object) {
@@ -1245,7 +1288,8 @@ public class WebService extends JobIntentService {
             }
         }
 
-        sendBroadcast(new Intent(ACTION_EMAILS).putExtra("INSERTED", inserted)
+        sendBroadcast(new Intent(ACTION_EMAILS)
+                .putExtra("INSERTED", inserted)
                 .putExtra("INTENT", intent));
     }
 

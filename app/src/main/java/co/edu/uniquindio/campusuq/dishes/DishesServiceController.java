@@ -4,8 +4,10 @@ import android.content.Context;
 import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
@@ -17,12 +19,21 @@ import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 import cz.msebera.android.httpclient.protocol.HTTP;
 import cz.msebera.android.httpclient.util.EntityUtils;
 
+/**
+ * Controlador del servicio de platos que permite enviar y recivir platos desde y hacia el servidor.
+ */
 public class DishesServiceController {
 
     private static final String _DISHES = "/platos";
 
+    /**
+     * Obtiene del servidor el arreglo total de platos.
+     * @param context Contexto utilizado para obtener la clave de autorizacion del usuario que haya
+     *                iniciado sesion.
+     * @return Arreglo de platos.
+     */
     public static ArrayList<Dish> getDishes(Context context) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO+_DISHES);
+        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + _DISHES);
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         ArrayList<Dish> dishes = new ArrayList<>();
 
@@ -38,15 +49,22 @@ public class DishesServiceController {
                         object.isNull(DishesSQLiteController.columns[4]) ?
                                 null : object.getString(DishesSQLiteController.columns[4])));
             }
-        } catch (Exception e) {
-            Log.e(DishesServiceController.class.getSimpleName(), e.getMessage());
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
         }
 
         return dishes;
     }
 
+    /**
+     * Envía una peticion al servidor para insertar, actualizar o eliminar un plato.
+     * @param context Contexto utilizado para obtener la clave de autorizacion del usuario que haya
+     *                iniciado sesion.
+     * @param json Petición en formato JSON para insertar, actualizar o eliminar un plato.
+     * @return Respuesta del servidor.
+     */
     public static String modifyDish(Context context, String json) {
-        HttpPost post = new HttpPost(Utilities.URL_SERVICIO+_DISHES);
+        HttpPost post = new HttpPost(Utilities.URL_SERVICIO + _DISHES);
         post.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         post.setHeader(HTTP.CONTENT_TYPE, "application/json");
         post.setEntity(new StringEntity(json, "UTF-8"));
@@ -54,8 +72,8 @@ public class DishesServiceController {
         try {
             return new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
                     .execute(post).getEntity())).getString("mensaje");
-        } catch (Exception e) {
-            Log.e(DishesServiceController.class.getSimpleName(), e.getMessage());
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
             return null;
         }
     }

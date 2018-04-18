@@ -22,23 +22,38 @@ import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 
+/**
+ * Dialogo que da la opciones de modificar o eliminar un plato del menú del restaurante.
+ */
 public class DishesFragment extends DialogFragment implements View.OnClickListener {
 
-    private static final String INDEX = "index";
+    static final String DISH = "dish";
 
     private DishesActivity dishesActivity;
     private Dish dish;
     private RadioButton modify;
     private RadioButton delete;
 
-    public static DishesFragment newInstance(int index) {
+    /**
+     * Crea una nueva instancia del dialogo y asigna sus parametros.
+     * @param dish Plato que se usara para el titulo del dialogo.
+     * @return Instancia del nuevo dialogo.
+     */
+    public static DishesFragment newInstance(Dish dish) {
         Bundle args = new Bundle();
-        args.putInt(INDEX, index);
+        args.putParcelable(DISH, dish);
+
         DishesFragment fragment = new DishesFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
+    /**
+     * Infla el diseño del dialogo de platos, asigna las variables de vistas, sus listener y sus
+     * valores, y crea el dialogo.
+     * @param savedInstanceState No utilizado.
+     * @return Nuevo dialogo creado.
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -51,31 +66,38 @@ public class DishesFragment extends DialogFragment implements View.OnClickListen
         Bundle args = getArguments();
         assert args != null;
 
-        dish = dishesActivity.getDish(args.getInt(INDEX));
-        ((TextView) view.findViewById(R.id.dialog_name)).setText(dish.getName());
+        dish = args.getParcelable(DISH);
         modify = view.findViewById(R.id.dialog_modify);
         delete = view.findViewById(R.id.dialog_delete);
 
         view.findViewById(R.id.dialog_cancel).setOnClickListener(this);
         view.findViewById(R.id.dialog_ok).setOnClickListener(this);
 
+        ((TextView) view.findViewById(R.id.dialog_name)).setText(dish.getName());
+
         return new AlertDialog.Builder(dishesActivity).setView(view).create();
     }
 
+    /**
+     * Responde al listener de los botones aceptar y cancelar, para el caso de cancelar cierra el
+     * cuadro de dialogo, para el caso de aceptar verifica primero si el boton modificar esta
+     * seleccionado en cuyo caso inicia la actividad de edición de platos, si no esta seleccionado
+     * entonces verifica si el boton eliminar esta seleccionado en cuyo caso envia una peticion al
+     * servidor para eliminar el plato, finalmente cierra el cuadro de dialogo.
+     * @param view Vista de la cual se pude obtener un identificador para saber a cual de los
+     *             botones de ha dado click.
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.dialog_ok:
                 if (Utilities.haveNetworkConnection(dishesActivity)) {
                     if (modify.isChecked()) {
-                        Intent intent = new Intent(dishesActivity, DishesDetailActivity.class);
-                        intent.putExtra("CATEGORY", getString(R.string.restaurant_detail));
-                        intent.putExtra(DishesSQLiteController.columns[0], dish.get_ID());
-                        intent.putExtra(DishesSQLiteController.columns[1], dish.getName());
-                        intent.putExtra(DishesSQLiteController.columns[2], dish.getDescription());
-                        intent.putExtra(DishesSQLiteController.columns[3], dish.getPrice());
-                        intent.putExtra(DishesSQLiteController.columns[4], dish.getImage());
-                        dishesActivity.startActivityForResult(intent, 0);
+                        dishesActivity.startActivityForResult(
+                                new Intent(dishesActivity, DishesDetailActivity.class)
+                                        .putExtra("CATEGORY", getString(R.string.restaurant_detail))
+                                        .putExtra(DISH, dish),
+                                DishesActivity.REQUEST_DISHES_DETAIL);
                     } else if (delete.isChecked()) {
                         dishesActivity.mTracker.send(new HitBuilders.EventBuilder()
                                 .setCategory(getString(R.string.analytics_dishes_category))
@@ -83,15 +105,20 @@ public class DishesFragment extends DialogFragment implements View.OnClickListen
                                 .setLabel(getString(R.string.analytics_restaurant_label))
                                 .setValue(1)
                                 .build());
-                        JSONObject json = new JSONObject();
+
                         try {
-                            json.put("DELETE_ID", dish.get_ID());
+                            WebBroadcastReceiver.scheduleJob(dishesActivity,
+                                    WebService.ACTION_DISHES,
+                                    WebService.METHOD_DELETE,
+                                    new JSONObject()
+                                            .put("DELETE_ID", dish.get_ID())
+                                            .toString());
+                            dishesActivity.progressDialog.show();
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            Toast.makeText(dishesActivity, e.getLocalizedMessage(),
+                                    Toast.LENGTH_SHORT).show();
                         }
-                        WebBroadcastReceiver.scheduleJob(dishesActivity, WebService.ACTION_DISHES,
-                                WebService.METHOD_DELETE, json.toString());
-                        dishesActivity.progressDialog.show();
                     }
                 } else {
                     Toast.makeText(dishesActivity, getString(R.string.no_internet),
@@ -105,4 +132,5 @@ public class DishesFragment extends DialogFragment implements View.OnClickListen
                 break;
         }
     }
+
 }

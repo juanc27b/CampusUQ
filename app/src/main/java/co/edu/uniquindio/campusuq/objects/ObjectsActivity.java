@@ -31,8 +31,13 @@ import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 import co.edu.uniquindio.campusuq.users.User;
 
+/**
+ * Actividad para visualizar los objetos perdidos.
+ */
 public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnClickObjectListener,
         View.OnClickListener {
+
+    static final int REQUEST_OBJECTS_DETAIL = 1001;
 
     private ArrayList<LostObject> objects = new ArrayList<>();
     private boolean newActivity = true;
@@ -46,6 +51,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         public void onReceive(Context context, Intent intent) {
             loadObjects(intent.getIntExtra("INSERTED", 0));
             String response = intent.getStringExtra("RESPONSE");
+
             if (response != null) {
                 Toast.makeText(context, response, Toast.LENGTH_SHORT).show();
                 Log.i(ObjectsActivity.class.getSimpleName(), response);
@@ -53,10 +59,18 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         }
     };
 
+    /**
+     * Constructor que oculta el ícono de navegación para reemplazarlo por la flecha de ir atrás.
+     */
     public ObjectsActivity() {
         super.setHasNavigationDrawerIcon(false);
     }
 
+    /**
+     * Asigna el fondo de la actividad, infla el diseño de objetos perdidos en la actividad
+     * superior, y llama a la funcion para cargar los objetos perdidos.
+     * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
@@ -72,6 +86,11 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         loadObjects(0);
     }
 
+    /**
+     * Método para manejar nuevas llamadas a la actividad, dependiendo de la accion del intento,
+     * puede buscar un ítem, o cambiar el titulo de la actividad y volver a cargar los ítems.
+     * @param intent Intento que contiene la accion a realizar.
+     */
     @Override
     public void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
@@ -96,14 +115,26 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         }
     }
 
+    /**
+     * Carga los objetos perdidos desde la base de datos y los almacena en el arreglo de objetos
+     * perdidos para enviarselos al adaptador, si la actividad es nueva el arreglo se envia por
+     * medio de su constructor, se crea tambien el manejador de diseño y se asignan al recilador de
+     * vista, al cual tambien se le asigna un listener de desplasamiento encargado de actualizar
+     * desde el servidor la base de datos local al realizar un desplasamiento vetical en el limite
+     * superior o cargar mas objetos perdidos desde la base de datos local al realizar un
+     * desplasamiento vetical en el limite inferior, adicionalmente muestra un mensaje de de carga
+     * durante el tiempo que realiza el proceso.
+     * @param inserted Indica la cantidad de objetos perdidos insertados.
+     */
     private void loadObjects(int inserted) {
         if (!progressDialog.isShowing()) progressDialog.show();
 
-        int scrollTo = oldObjects ? (newActivity ? 0 : objects.size()-1) :
-                (inserted != 0 ? inserted-1 : 0);
+        int scrollTo = oldObjects ?
+                (newActivity ? 0 : objects.size() - 1) :
+                (inserted != 0 ? inserted - 1 : 0);
 
         objects = ObjectsPresenter.loadObjects(this, UsersPresenter.loadUser(this),
-                objects.size()+(inserted > 0 ? inserted : 3));
+                objects.size() + (inserted > 0 ? inserted : 3));
 
         if (newActivity) {
             newActivity = false;
@@ -146,18 +177,31 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         if (progressDialog.isShowing() && objects.size() > 0) progressDialog.dismiss();
     }
 
+    /**
+     * Dependiendo de la accion, en caso haber iniciado sesión como administrador o ser propietario
+     * del objeto perdido, puede mostrar un cuadro de dialogo que permite modificar o eliminar el
+     * objeto perdido (o un mensaje de advertencia en caso contrario), puede llamar a otra
+     * aplicacion que permita visualizar con mas detalle la imagen del objeto perdido, puede marcar
+     * el objeto perdido como leido, encontrado o no encontrado (este ultimo solo si es
+     * administrador o propietario), o si es propietario y el objeto ha sido encontrado puede
+     * contactar con quien lo encontró.
+     * @param index Indice del objeto perdido que determina a cuál de los ítems del arreglo de
+     *              objetos perdidos se le aplicará la accion.
+     * @param action Determina si se le ha dado clic al objeto, a su imagen, al boton de leido, al
+     *               boton de encontrado, al boon de no encontrado o al boton de contactar.
+     */
     @Override
     public void onObjectClick(int index, String action) {
         User user = UsersPresenter.loadUser(this);
         LostObject object = objects.get(index);
-        ObjectsSQLiteController dbController = new ObjectsSQLiteController(this, 1);
 
         switch (action) {
             case ObjectsAdapter.OBJECT:
-                if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
-                        (user.getAdministrator().equals("S") ||
+                if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail()) &&
+                        ("S".equals(user.getAdministrator()) ||
                                 object.getUserLost_ID().equals(user.get_ID()))) {
-                    ObjectsFragment.newInstance(index).show(getSupportFragmentManager(), null);
+                    ObjectsFragment
+                            .newInstance(object).show(getSupportFragmentManager(), null);
                 } else {
                     Toast.makeText(this,
                             R.string.no_propietary,
@@ -165,47 +209,60 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                 }
                 break;
             case ObjectsAdapter.IMAGE:
-                startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(FileProvider
-                        .getUriForFile(this, "co.edu.uniquindio.campusuq.provider",
+                startActivity(new Intent(Intent.ACTION_VIEW)
+                        .setDataAndType(FileProvider.getUriForFile(this,
+                                "co.edu.uniquindio.campusuq.provider",
                                 new File("" + objects.get(index).getImage())),
-                        "image/*").addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+                                "image/*")
+                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
                 break;
-            case ObjectsAdapter.READED:
+            case ObjectsAdapter.READED: {
+                ObjectsSQLiteController dbController =
+                        new ObjectsSQLiteController(this, 1);
                 dbController.readed(object.get_ID());
+                dbController.destroy();
                 loadObjects(0);
                 break;
+            }
             case ObjectsAdapter.FOUND:
-                if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co")) {
-                    JSONObject json = new JSONObject();
+                if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail())) {
                     try {
-                        json.put("UPDATE_ID", object.get_ID());
-                        json.put(ObjectsSQLiteController.columns[8], user.get_ID());
+                        WebBroadcastReceiver.scheduleJob(this,
+                                WebService.ACTION_OBJECTS,
+                                WebService.METHOD_DELETE,
+                                new JSONObject()
+                                        .put("UPDATE_ID", object.get_ID())
+                                        .put(ObjectsSQLiteController.columns[8], user.get_ID())
+                                        .toString());
+                        progressDialog.show();
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        Toast.makeText(this, e.getLocalizedMessage(),
+                                Toast.LENGTH_SHORT).show();
                     }
-                    WebBroadcastReceiver.scheduleJob(this, WebService.ACTION_OBJECTS,
-                            WebService.METHOD_DELETE, json.toString());
-                    progressDialog.show();
                 } else {
-                    Intent intent = new Intent(this, LoginActivity.class);
-                    intent.putExtra("CATEGORY", getString(R.string.log_in));
-                    startActivity(intent);
+                    startActivity(new Intent(this, LoginActivity.class)
+                            .putExtra("CATEGORY", getString(R.string.log_in)));
                 }
                 break;
             case ObjectsAdapter.NOT_FOUND:
-                if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
+                if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail()) &&
                         object.getUserFound_ID() != null &&
                         object.getUserFound_ID().equals(user.get_ID())) {
-                    JSONObject json = new JSONObject();
                     try {
-                        json.put("UPDATE_ID", object.get_ID());
-                        json.put(ObjectsSQLiteController.columns[8], JSONObject.NULL);
+                        WebBroadcastReceiver.scheduleJob(this,
+                                WebService.ACTION_OBJECTS,
+                                WebService.METHOD_DELETE,
+                                new JSONObject()
+                                        .put("UPDATE_ID", object.get_ID())
+                                        .put(ObjectsSQLiteController.columns[8], JSONObject.NULL)
+                                        .toString());
+                        progressDialog.show();
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        Toast.makeText(this, e.getLocalizedMessage(),
+                                Toast.LENGTH_SHORT).show();
                     }
-                    WebBroadcastReceiver.scheduleJob(this, WebService.ACTION_OBJECTS,
-                            WebService.METHOD_DELETE, json.toString());
-                    progressDialog.show();
                 } else {
                     Toast.makeText(this,
                             R.string.no_propietary,
@@ -213,40 +270,43 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                 }
                 break;
             case ObjectsAdapter.CONTACT:
-                if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co") &&
+                if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail()) &&
                         object.getUserLost_ID().equals(user.get_ID()) &&
                         object.getUserFound_ID() != null) {
-                    Intent intent = new Intent(this, UsersActivity.class);
-                    intent.putExtra("CATEGORY", getString(R.string.object_view_contact));
-                    intent.putExtra("USER", user);
-                    startActivity(intent);
+                    startActivity(new Intent(this, UsersActivity.class)
+                            .putExtra("CATEGORY", getString(R.string.object_view_contact))
+                            .putExtra("USER", user));
                 }
                 break;
             default:
                 break;
         }
-
-        dbController.destroy();
     }
 
-    public LostObject getObject(int index) {
-        return objects.get(index);
-    }
-
+    /**
+     * Define la tarea a realizar cuando se da click en una de las vistas controladas por esta
+     * actividad, en caso de dar click en el boton de añadir, se abrirá la actividad que permite
+     * insertar un nuevo objeto perdido.
+     * @param view Vista a la cual el usuario ha dado click.
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.object_report: {
                 User user = UsersPresenter.loadUser(this);
-                if (user != null && !user.getEmail().equals("campusuq@uniquindio.edu.co")) {
-                    Intent intent = new Intent(this, ObjectsDetailActivity.class);
-                    intent.putExtra("CATEGORY", getString(R.string.object_report_lost));
-                    intent.putExtra(ObjectsSQLiteController.columns[1], user.get_ID());
-                    startActivityForResult(intent, 0);
+
+                if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail())) {
+                    startActivityForResult(
+                            new Intent(this, ObjectsDetailActivity.class)
+                                    .putExtra("CATEGORY", getString(R.string.object_report_lost))
+                                    .putExtra(ObjectsFragment.OBJECT, new LostObject(null,
+                                            user.get_ID(), null, null, null,
+                                            null, null, null,
+                                            null, null)),
+                            REQUEST_OBJECTS_DETAIL);
                 } else {
-                    Intent intent = new Intent(this, LoginActivity.class);
-                    intent.putExtra("CATEGORY", getString(R.string.log_in));
-                    startActivity(intent);
+                    startActivity(new Intent(this, LoginActivity.class)
+                            .putExtra("CATEGORY", getString(R.string.log_in)));
                 }
                 break;
             }
@@ -255,23 +315,40 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         }
     }
 
+    /**
+     * Muestra el cuadro de dialogo de progreso si la actividad que permite modificar o insertar un
+     * objeto perdido resulta en un codigo correcto.
+     * @param requestCode Código de solicitud para el cual se espera un resultado.
+     * @param resultCode Código de resultado que indica exito o fracaso.
+     * @param data Datos retornados por la actividad (no utilizado).
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode  == RESULT_OK && !progressDialog.isShowing()) progressDialog.show();
+
+        if (requestCode == REQUEST_OBJECTS_DETAIL && resultCode  == RESULT_OK &&
+                !progressDialog.isShowing()) {
+            progressDialog.show();
+        }
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para reanudar la misma, en el que se registra un
+     * receptor para estar atento a los intentos relacionados con los objetos perdidos.
+     */
     @Override
     protected void onResume() {
         super.onResume();
-        // Register for the particular broadcast based on ACTION string
         registerReceiver(objectsReceiver, objectsFilter);
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para pausar la misma, en el que se invalida el
+     * previo registro del receptor para los objetos perdidos.
+     */
     @Override
     protected void onPause() {
         super.onPause();
-        // Unregister the listener when the application is paused
         unregisterReceiver(objectsReceiver);
     }
 }

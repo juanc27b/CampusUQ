@@ -22,9 +22,12 @@ import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 
+/**
+ * Dialogo que da la opciones de modificar o eliminar un anuncio.
+ */
 public class AnnouncementsFragment extends DialogFragment implements View.OnClickListener {
 
-    private static final String INDEX  = "index";
+    static final String ANNOUNCEMENT = "announcement";
     private static final String ACTION = "action";
 
     private AnnouncementsActivity announcementsActivity;
@@ -33,9 +36,16 @@ public class AnnouncementsFragment extends DialogFragment implements View.OnClic
     private RadioButton delete;
     private String action;
 
-    public static AnnouncementsFragment newInstance(int index, String action) {
+    /**
+     * Crea una nueva instancia del dialogo y asigna sus parametros.
+     * @param announcement Anuncio que se usara para el titulo del dialogo.
+     * @param action Accion que determina si el dialogo fue llamado desde la funcionalidad de
+     *               incidentes o de comunicados.
+     * @return Instancia del nuevo dialogo.
+     */
+    public static AnnouncementsFragment newInstance(Announcement announcement, String action) {
         Bundle args = new Bundle();
-        args.putInt(INDEX, index);
+        args.putParcelable(ANNOUNCEMENT, announcement);
         args.putString(ACTION, action);
 
         AnnouncementsFragment fragment = new AnnouncementsFragment();
@@ -43,6 +53,12 @@ public class AnnouncementsFragment extends DialogFragment implements View.OnClic
         return fragment;
     }
 
+    /**
+     * Infla el diseño del dialogo de anuncios, asigna las variables de vistas, sus listener y sus
+     * valores, y crea el dialogo.
+     * @param savedInstanceState No utilizado.
+     * @return Nuevo dialogo creado.
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -55,8 +71,7 @@ public class AnnouncementsFragment extends DialogFragment implements View.OnClic
         Bundle args = getArguments();
         assert args != null;
 
-        announcement = announcementsActivity.getAnnouncement(args.getInt(INDEX));
-        ((TextView) view.findViewById(R.id.dialog_name)).setText(announcement.getName());
+        announcement = args.getParcelable(ANNOUNCEMENT);
         modify = view.findViewById(R.id.dialog_modify);
         delete = view.findViewById(R.id.dialog_delete);
         action = args.getString(ACTION);
@@ -64,30 +79,33 @@ public class AnnouncementsFragment extends DialogFragment implements View.OnClic
         view.findViewById(R.id.dialog_cancel).setOnClickListener(this);
         view.findViewById(R.id.dialog_ok).setOnClickListener(this);
 
+        ((TextView) view.findViewById(R.id.dialog_name)).setText(announcement.getName());
+
         return new AlertDialog.Builder(announcementsActivity).setView(view).create();
     }
 
+    /**
+     * Responde al listener de los botones aceptar y cancelar, para el caso de cancelar cierra el
+     * cuadro de dialogo, para el caso de aceptar verifica primero si el boton modificar esta
+     * seleccionado en cuyo caso inicia la actividad de edición de anuncios, si no esta seleccionado
+     * entonces verifica si el boton eliminar esta seleccionado en cuyo caso envia una peticion al
+     * servidor para eliminar el anuncio, finalmente cierra el cuadro de dialogo.
+     * @param view Vista de la cual se pude obtener un identificador para saber a cual de los
+     *             botones de ha dado click.
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.dialog_ok:
                 if (Utilities.haveNetworkConnection(announcementsActivity)) {
                     if (modify.isChecked()) {
-                        Intent intent = new Intent(announcementsActivity,
-                                AnnouncementsDetailActivity.class);
-                        intent.putExtra("CATEGORY",
-                                WebService.ACTION_INCIDENTS.equals(action) ?
-                                        getString(R.string.report_incident) :
-                                        getString(R.string.billboard_detail));
-                        intent.putExtra(AnnouncementsSQLiteController.columns[0],
-                                announcement.get_ID());
-                        intent.putExtra(AnnouncementsSQLiteController.columns[1],
-                                announcement.getUser_ID());
-                        intent.putExtra(AnnouncementsSQLiteController.columns[3],
-                                announcement.getName());
-                        intent.putExtra(AnnouncementsSQLiteController.columns[5],
-                                announcement.getDescription());
-                        announcementsActivity.startActivityForResult(intent,
+                        announcementsActivity.startActivityForResult(
+                                new Intent(announcementsActivity, AnnouncementsDetailActivity.class)
+                                        .putExtra("CATEGORY",
+                                                WebService.ACTION_INCIDENTS.equals(action) ?
+                                                        getString(R.string.report_incident) :
+                                                        getString(R.string.billboard_detail))
+                                        .putExtra(ANNOUNCEMENT, announcement),
                                 AnnouncementsActivity.REQUEST_ANNOUNCEMENT_DETAIL);
                     } else if (delete.isChecked()) {
                         announcementsActivity.mTracker.send(new HitBuilders.EventBuilder()
@@ -98,15 +116,20 @@ public class AnnouncementsFragment extends DialogFragment implements View.OnClic
                                         R.string.analytics_billboard_information_label))
                                 .setValue(1)
                                 .build());
-                        JSONObject json = new JSONObject();
+
                         try {
-                            json.put("DELETE_ID", announcement.get_ID());
+                            WebBroadcastReceiver.scheduleJob(announcementsActivity,
+                                    action,
+                                    WebService.METHOD_DELETE,
+                                    new JSONObject()
+                                            .put("DELETE_ID", announcement.get_ID())
+                                            .toString());
+                            announcementsActivity.progressDialog.show();
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            Toast.makeText(announcementsActivity, e.getLocalizedMessage(),
+                                    Toast.LENGTH_SHORT).show();
                         }
-                        WebBroadcastReceiver.scheduleJob(announcementsActivity, action,
-                                WebService.METHOD_DELETE, json.toString());
-                        announcementsActivity.progressDialog.show();
                     }
                 } else {
                     Toast.makeText(announcementsActivity, R.string.no_internet,

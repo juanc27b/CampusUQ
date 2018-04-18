@@ -1,6 +1,13 @@
 package co.edu.uniquindio.campusuq.objects;
 
-public class LostObject {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+/**
+ * Clase que almacena la informacion de un objeto perdido, y permite transmitirlo desde y hacia el
+ * servidor y la base de datos local.
+ */
+public class LostObject implements Parcelable {
 
     private String _ID;
     private String userLost_ID;
@@ -26,6 +33,50 @@ public class LostObject {
         this.userFound_ID = userFound_ID;
         this.readed = readed;
     }
+
+    private LostObject(Parcel in) {
+        _ID = in.readString();
+        userLost_ID = in.readString();
+        name = in.readString();
+        place = in.readString();
+        dateLost = in.readString();
+        date = in.readString();
+        description = in.readString();
+        image = in.readString();
+        userFound_ID = in.readString();
+        readed = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(_ID);
+        dest.writeString(userLost_ID);
+        dest.writeString(name);
+        dest.writeString(place);
+        dest.writeString(dateLost);
+        dest.writeString(date);
+        dest.writeString(description);
+        dest.writeString(image);
+        dest.writeString(userFound_ID);
+        dest.writeString(readed);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<LostObject> CREATOR = new Creator<LostObject>() {
+        @Override
+        public LostObject createFromParcel(Parcel in) {
+            return new LostObject(in);
+        }
+
+        @Override
+        public LostObject[] newArray(int size) {
+            return new LostObject[size];
+        }
+    };
 
     public String get_ID() {
         return _ID;

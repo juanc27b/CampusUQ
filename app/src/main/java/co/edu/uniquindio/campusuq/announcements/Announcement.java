@@ -1,10 +1,14 @@
 package co.edu.uniquindio.campusuq.announcements;
 
-/**
- * Created by Juan Camilo on 2/03/2018.
- */
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class Announcement {
+/**
+ * Clase que almacena la informacion de un anuncio (objeto de valor para las funcionalidades de
+ * incidentes y comunicados), y permite transmitirlo desde y hacia el servidor y la base de datos
+ * local.
+ */
+public class Announcement implements Parcelable {
 
     private String _ID;
     private String user_ID;
@@ -24,6 +28,44 @@ public class Announcement {
         this.description = description;
         this.read = read;
     }
+
+    private Announcement(Parcel in) {
+        _ID = in.readString();
+        user_ID = in.readString();
+        type = in.readString();
+        name = in.readString();
+        date = in.readString();
+        description = in.readString();
+        read = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(_ID);
+        dest.writeString(user_ID);
+        dest.writeString(type);
+        dest.writeString(name);
+        dest.writeString(date);
+        dest.writeString(description);
+        dest.writeString(read);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Announcement> CREATOR = new Creator<Announcement>() {
+        @Override
+        public Announcement createFromParcel(Parcel in) {
+            return new Announcement(in);
+        }
+
+        @Override
+        public Announcement[] newArray(int size) {
+            return new Announcement[size];
+        }
+    };
 
     public String get_ID() {
         return _ID;

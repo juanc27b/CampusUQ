@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -50,10 +51,18 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
         }
     };
 
+    /**
+     * Constructor que oculta el ícono de navegación para reemplazarlo por la flecha de ir atrás.
+     */
     public EmailsActivity() {
         super.setHasNavigationDrawerIcon(false);
     }
 
+    /**
+     * Asigna el fondo de la actividad, infla el diseño de anuncios en la actividad superior, y
+     * llama a la funcion para cargar los correos.
+     * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
@@ -63,6 +72,7 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
         ViewStub viewStub = findViewById(R.id.layout_stub);
         viewStub.setLayoutResource(R.layout.content_emails);
         viewStub.inflate();
+
         FloatingActionButton insert = findViewById(R.id.fab);
 
         insert.setOnClickListener(new View.OnClickListener() {
@@ -79,6 +89,11 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
         loadEmails(0);
     }
 
+    /**
+     * Método para manejar nuevas llamadas a la actividad, dependiendo de la accion del intento,
+     * puede buscar un ítem, o cambiar el titulo de la actividad y volver a cargar los ítems.
+     * @param intent Intento que contiene la accion a realizar.
+     */
     @Override
     public void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
@@ -93,17 +108,36 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
 
             Toast.makeText(this, getString(R.string.email_no_found) + ": " + query,
                     Toast.LENGTH_SHORT).show();
+        } else {
+            ActionBar actionBar = getSupportActionBar();
+
+            if (actionBar != null) {
+                actionBar.setTitle(intent.getStringExtra("CATEGORY"));
+                loadEmails(0);
+            }
         }
     }
 
+    /**
+     * Carga los correos desde la base de datos y los almacena en el arreglo de correos para
+     * enviarselos al adaptador, si la actividad es nueva el arreglo se envia por medio de su
+     * constructor, se crea tambien el manejador de diseño y se asignan al recilador de vista, al
+     * cual tambien se le asigna un listener de desplasamiento encargado de actualizar desde
+     * el servidor la base de datos local al realizar un desplasamiento vetical en el limite
+     * superior o cargar mas correos desde la base de datos local al realizar un desplasamiento
+     * vetical en el limite inferior, adicionalmente muestra un mensaje de de carga durante el
+     * tiempo que realiza el proceso.
+     * @param inserted Indica la cantidad de correos insertados.
+     */
     private void loadEmails(int inserted) {
         if (!progressDialog.isShowing()) progressDialog.show();
 
         int scrollTo = oldEmails ?
-                (newActivity ? 0 : emails.size()-1) : (inserted != 0 ? inserted-1 : 0);
+                (newActivity ? 0 : emails.size() - 1) :
+                (inserted != 0 ? inserted - 1 : 0);
 
         EmailsSQLiteController dbController = new EmailsSQLiteController(this, 1);
-        emails = dbController.select(""+emails.size()+(inserted > 0 ? inserted : 6));
+        emails = dbController.select("" + emails.size() + (inserted > 0 ? inserted : 6));
         dbController.destroy();
 
         if (newActivity) {
@@ -156,22 +190,28 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
     @Override
     public void onEmailClick(int index) {
         Email email = emails.get(index);
-        Intent intent = new Intent(this, EmailsContentActivity.class);
-        intent.putExtra("CATEGORY", getString(R.string.institutional_mail));
-        intent.putExtra(EmailsSQLiteController.columns[1], email.getName());
-        intent.putExtra(EmailsSQLiteController.columns[2], email.getFrom());
-        intent.putExtra(EmailsSQLiteController.columns[4], email.getDate());
-        intent.putExtra(EmailsSQLiteController.columns[6], email.getContent());
-        startActivity(intent);
+        startActivity(new Intent(this, EmailsContentActivity.class)
+                .putExtra("CATEGORY", getString(R.string.institutional_mail))
+                .putExtra(EmailsSQLiteController.columns[1], email.getName())
+                .putExtra(EmailsSQLiteController.columns[2], email.getFrom())
+                .putExtra(EmailsSQLiteController.columns[4], email.getDate())
+                .putExtra(EmailsSQLiteController.columns[6], email.getContent()));
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para reanudar la misma, en el que se registra un
+     * receptor para estar atento a los intentos relacionados con los correos.
+     */
     @Override
     protected void onResume() {
         super.onResume();
-        // Register for the particular broadcast based on ACTION string
         registerReceiver(emailsReceiver, emailsFilter);
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para pausar la misma, en el que se invalida el
+     * previo registro del receptor para los correos.
+     */
     @Override
     protected void onPause() {
         super.onPause();

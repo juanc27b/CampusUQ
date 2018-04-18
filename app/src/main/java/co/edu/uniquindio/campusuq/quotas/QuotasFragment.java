@@ -22,10 +22,14 @@ import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 
+/**
+ * Dialogo que permite modificar rapidamente un cupo de forma parcial, o da la opciones de modificar
+ * completamente o eliminar un cupo.
+ */
 public class QuotasFragment extends DialogFragment implements View.OnClickListener {
 
     private static final String FRAGMENT_QUOTAS = "fragment_quotas";
-    private static final String INDEX           = "index";
+    static final String QUOTA = "quota";
 
     private boolean fragment_quotas;
     private QuotasActivity quotasActivity;
@@ -34,15 +38,28 @@ public class QuotasFragment extends DialogFragment implements View.OnClickListen
     private RadioButton modify;
     private RadioButton delete;
 
-    public static QuotasFragment newInstance(boolean fragment_quotas, int index) {
+    /**
+     * Crea una nueva instancia del dialogo y asigna sus parametros.
+     * @param fragment_quotas Determina el tipo de dialogo a crear.
+     * @param q Cupo que se usara para el titulo del dialogo.
+     * @return Instancia del nuevo dialogo.
+     */
+    public static QuotasFragment newInstance(boolean fragment_quotas, Quota q) {
         Bundle args = new Bundle();
         args.putBoolean(FRAGMENT_QUOTAS, fragment_quotas);
-        args.putInt(INDEX, index);
+        args.putParcelable(QUOTA, q);
+
         QuotasFragment fragment = new QuotasFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
+    /**
+     * Infla el diseño del dialogo de cupos, asigna las variables de vistas, sus listener y sus
+     * valores, y crea el dialogo.
+     * @param savedInstanceState No utilizado.
+     * @return Nuevo dialogo creado.
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -58,87 +75,100 @@ public class QuotasFragment extends DialogFragment implements View.OnClickListen
                 .inflate(fragment_quotas? R.layout.fragment_quotas : R.layout.fragment_dialog,
                         null);
 
-        q = quotasActivity.getQuota(args.getInt(INDEX));
+        q = args.getParcelable(QUOTA);
 
         if (fragment_quotas) {
-            ((TextView) view.findViewById(R.id.quota_dialog_name)).setText(String.format("%s %s",
-                    getString(R.string.adjust_quotas), q.getName()));
             quota = view.findViewById(R.id.quota_dialog_quota);
-            quota.setText(q.getQuota());
 
             view.findViewById(R.id.quota_dialog_minus).setOnClickListener(this);
             view.findViewById(R.id.quota_dialog_plus).setOnClickListener(this);
             view.findViewById(R.id.quota_dialog_cancel).setOnClickListener(this);
             view.findViewById(R.id.quota_dialog_ok).setOnClickListener(this);
+
+            ((TextView) view.findViewById(R.id.quota_dialog_name)).setText(String
+                    .format("%s %s", getString(R.string.adjust_quotas), q.getName()));
+            quota.setText(q.getQuota());
         } else {
-            ((TextView) view.findViewById(R.id.dialog_name)).setText(q.getName());
             modify = view.findViewById(R.id.dialog_modify);
             delete = view.findViewById(R.id.dialog_delete);
 
             view.findViewById(R.id.dialog_cancel).setOnClickListener(this);
             view.findViewById(R.id.dialog_ok).setOnClickListener(this);
+
+            ((TextView) view.findViewById(R.id.dialog_name)).setText(q.getName());
         }
 
         return new AlertDialog.Builder(quotasActivity).setView(view).create();
     }
 
+    /**
+     * Responde al listener de los botones aceptar y cancelar, para el caso de cancelar cierra el
+     * cuadro de dialogo, para el caso de aceptar verifica primero si el boton modificar esta
+     * seleccionado en cuyo caso inicia la actividad de edición de cupos, si no esta seleccionado
+     * entonces verifica si el boton eliminar esta seleccionado en cuyo caso envia una peticion al
+     * servidor para eliminar el cupo, finalmente cierra el cuadro de dialogo.
+     * @param view Vista de la cual se pude obtener un identificador para saber a cual de los
+     *             botones de ha dado click.
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.quota_dialog_minus:
                 quota.setText(String.valueOf(Math
-                        .min(Math.max(Integer.parseInt(quota.getText().toString())-1, 0), 99)));
+                        .min(Math.max(Integer.parseInt(quota.getText().toString()) - 1, 0), 99)));
                 break;
             case R.id.quota_dialog_plus:
                 quota.setText(String.valueOf(Math
-                        .min(Math.max(Integer.parseInt(quota.getText().toString())+1, 0), 99)));
+                        .min(Math.max(Integer.parseInt(quota.getText().toString()) + 1, 0), 99)));
                 break;
             case R.id.quota_dialog_ok:
             case R.id.dialog_ok:
                 if (Utilities.haveNetworkConnection(quotasActivity)) {
                     if (fragment_quotas) {
-                        JSONObject json = new JSONObject();
                         try {
-                            json.put("UPDATE_ID", q.get_ID());
-                            json.put(QuotasSQLiteController.columns[3], quota.getText());
+                            quotasActivity.progressDialog.show();
+                            WebBroadcastReceiver.scheduleJob(quotasActivity,
+                                    WebService.ACTION_QUOTAS, WebService.METHOD_PUT,
+                                    new JSONObject()
+                                            .put("UPDATE_ID", q.get_ID())
+                                            .put(QuotasSQLiteController.columns[3], quota.getText())
+                                            .toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            Toast.makeText(quotasActivity, e.getLocalizedMessage(),
+                                    Toast.LENGTH_SHORT).show();
                         }
-                        quotasActivity.progressDialog.show();
-                        WebBroadcastReceiver.scheduleJob(quotasActivity, WebService.ACTION_QUOTAS,
-                                WebService.METHOD_PUT, json.toString());
-                    } else {
-                        if (modify.isChecked()) {
-                            Intent intent = new Intent(quotasActivity, QuotasDetailActivity.class);
-                            intent.putExtra("CATEGORY", getString(R.string.quota_detail_modify));
-                            intent.putExtra(QuotasSQLiteController.columns[0], q.get_ID());
-                            intent.putExtra(QuotasSQLiteController.columns[1], q.getType());
-                            intent.putExtra(QuotasSQLiteController.columns[2], q.getName());
-                            intent.putExtra(QuotasSQLiteController.columns[3], q.getQuota());
-                            quotasActivity.startActivityForResult(intent, 0);
-                        } else if (delete.isChecked()) {
-                            quotasActivity.mTracker.send(new HitBuilders.EventBuilder()
-                                    .setCategory(getString(R.string.analytics_quotas_category))
-                                    .setAction(getString(R.string.analytics_delete_action))
-                                    .setLabel(getString(
-                                            q.getType().equals("S") ? R.string.analytics_computer_rooms_label :
-                                            q.getType().equals("P") ? R.string.analytics_parking_lots_label :
-                                            q.getType().equals("L") ? R.string.analytics_laboratories_label :
-                                            q.getType().equals("E") ? R.string.analytics_study_areas_label :
-                                            q.getType().equals("C") ? R.string.analytics_cultural_and_sport_label :
-                                            R.string.analytics_auditoriums_label))
-                                    .setValue(1)
-                                    .build());
-                            JSONObject json = new JSONObject();
-                            try {
-                                json.put("DELETE_ID", q.get_ID());
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                    } else if (modify.isChecked()) {
+                        quotasActivity.startActivityForResult(
+                                new Intent(quotasActivity, QuotasDetailActivity.class)
+                                        .putExtra("CATEGORY", getString(R.string.quota_detail_modify))
+                                        .putExtra(QUOTA, q),
+                                QuotasActivity.REQUEST_QUOTAS_DETAIL);
+                    } else if (delete.isChecked()) {
+                        quotasActivity.mTracker.send(new HitBuilders.EventBuilder()
+                                .setCategory(getString(R.string.analytics_quotas_category))
+                                .setAction(getString(R.string.analytics_delete_action))
+                                .setLabel(getString(
+                                        "S".equals(q.getType()) ? R.string.analytics_computer_rooms_label :
+                                        "P".equals(q.getType()) ? R.string.analytics_parking_lots_label :
+                                        "L".equals(q.getType()) ? R.string.analytics_laboratories_label :
+                                        "E".equals(q.getType()) ? R.string.analytics_study_areas_label :
+                                        "C".equals(q.getType()) ? R.string.analytics_cultural_and_sport_label :
+                                        R.string.analytics_auditoriums_label))
+                                .setValue(1)
+                                .build());
+
+                        try {
                             WebBroadcastReceiver.scheduleJob(quotasActivity,
                                     WebService.ACTION_QUOTAS, WebService.METHOD_DELETE,
-                                    json.toString());
+                                    new JSONObject()
+                                            .put("DELETE_ID", q.get_ID())
+                                            .toString());
                             quotasActivity.progressDialog.show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(quotasActivity, e.getLocalizedMessage(),
+                                    Toast.LENGTH_SHORT).show();
                         }
                     }
                 } else {

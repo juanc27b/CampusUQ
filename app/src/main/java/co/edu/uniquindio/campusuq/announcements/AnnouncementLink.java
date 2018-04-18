@@ -1,9 +1,10 @@
 package co.edu.uniquindio.campusuq.announcements;
 
 /**
- * Created by Juan Camilo on 2/03/2018.
+ * Clase que almacena la informacion del enlace (imagen o video) de un anuncio (objeto de valor para
+ * las funcionalidades de incidentes y comunicados), y permite transmitirlo desde y hacia el
+ * servidor y la base de datos local.
  */
-
 public class AnnouncementLink {
 
     private String _ID;

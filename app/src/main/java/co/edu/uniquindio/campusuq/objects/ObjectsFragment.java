@@ -22,23 +22,38 @@ import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 
+/**
+ * Dialogo que da la opciones de modificar o eliminar un objeto perdido.
+ */
 public class ObjectsFragment extends DialogFragment implements View.OnClickListener {
 
-    private static final String INDEX = "index";
+    static final String OBJECT = "object";
 
     private ObjectsActivity objectsActivity;
     private LostObject object;
     private RadioButton modify;
     private RadioButton delete;
 
-    public static ObjectsFragment newInstance(int index) {
+    /**
+     * Crea una nueva instancia del dialogo y asigna sus parametros.
+     * @param object Objeto perdido que se usara para el titulo del dialogo.
+     * @return Instancia del nuevo dialogo.
+     */
+    public static ObjectsFragment newInstance(LostObject object) {
         Bundle args = new Bundle();
-        args.putInt(INDEX, index);
+        args.putParcelable(OBJECT, object);
+
         ObjectsFragment fragment = new ObjectsFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
+    /**
+     * Infla el diseño del dialogo de objetos perdidos, asigna las variables de vistas, sus listener
+     * y sus valores, y crea el dialogo.
+     * @param savedInstanceState No utilizado.
+     * @return Nuevo dialogo creado.
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -51,37 +66,38 @@ public class ObjectsFragment extends DialogFragment implements View.OnClickListe
         Bundle args = getArguments();
         assert args != null;
 
-        object = objectsActivity.getObject(args.getInt(INDEX));
-        ((TextView) view.findViewById(R.id.dialog_name)).setText(object.getName());
+        object = args.getParcelable(OBJECT);
         modify = view.findViewById(R.id.dialog_modify);
         delete = view.findViewById(R.id.dialog_delete);
 
         view.findViewById(R.id.dialog_cancel).setOnClickListener(this);
         view.findViewById(R.id.dialog_ok).setOnClickListener(this);
 
+        ((TextView) view.findViewById(R.id.dialog_name)).setText(object.getName());
+
         return new AlertDialog.Builder(objectsActivity).setView(view).create();
     }
 
+    /**
+     * Responde al listener de los botones aceptar y cancelar, para el caso de cancelar cierra el
+     * cuadro de dialogo, para el caso de aceptar verifica primero si el boton modificar esta
+     * seleccionado en cuyo caso inicia la actividad de edición de objetos perdidos, si no esta
+     * seleccionado entonces verifica si el boton eliminar esta seleccionado en cuyo caso envia una
+     * peticion al servidor para eliminar el objeto perdido, finalmente cierra el cuadro de dialogo.
+     * @param view Vista de la cual se pude obtener un identificador para saber a cual de los
+     *             botones de ha dado click.
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.dialog_ok:
                 if (Utilities.haveNetworkConnection(objectsActivity)) {
                     if (modify.isChecked()) {
-                        Intent intent = new Intent(objectsActivity, ObjectsDetailActivity.class);
-                        intent.putExtra("CATEGORY", getString(R.string.object_report_lost));
-                        intent.putExtra(ObjectsSQLiteController.columns[0], object.get_ID());
-                        intent.putExtra(ObjectsSQLiteController.columns[1],
-                                object.getUserLost_ID());
-                        intent.putExtra(ObjectsSQLiteController.columns[2], object.getName());
-                        intent.putExtra(ObjectsSQLiteController.columns[3], object.getPlace());
-                        intent.putExtra(ObjectsSQLiteController.columns[4], object.getDateLost());
-                        intent.putExtra(ObjectsSQLiteController.columns[6],
-                                object.getDescription());
-                        intent.putExtra(ObjectsSQLiteController.columns[7], object.getImage());
-                        intent.putExtra(ObjectsSQLiteController.columns[8],
-                                object.getUserFound_ID());
-                        objectsActivity.startActivityForResult(intent, 0);
+                        objectsActivity.startActivityForResult(
+                                new Intent(objectsActivity, ObjectsDetailActivity.class)
+                                        .putExtra("CATEGORY", getString(R.string.object_report_lost))
+                                        .putExtra(OBJECT, object),
+                                ObjectsActivity.REQUEST_OBJECTS_DETAIL);
                     } else if (delete.isChecked()) {
                         objectsActivity.mTracker.send(new HitBuilders.EventBuilder()
                                 .setCategory(getString(R.string.analytics_objects_category))
@@ -89,15 +105,20 @@ public class ObjectsFragment extends DialogFragment implements View.OnClickListe
                                 .setLabel(getString(R.string.analytics_lost_objects_label))
                                 .setValue(1)
                                 .build());
-                        JSONObject json = new JSONObject();
+
                         try {
-                            json.put("DELETE_ID", object.get_ID());
+                            WebBroadcastReceiver.scheduleJob(objectsActivity,
+                                    WebService.ACTION_OBJECTS,
+                                    WebService.METHOD_DELETE,
+                                    new JSONObject()
+                                            .put("DELETE_ID", object.get_ID())
+                                            .toString());
+                            objectsActivity.progressDialog.show();
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            Toast.makeText(objectsActivity, e.getLocalizedMessage(),
+                                    Toast.LENGTH_SHORT).show();
                         }
-                        WebBroadcastReceiver.scheduleJob(objectsActivity, WebService.ACTION_OBJECTS,
-                                WebService.METHOD_DELETE, json.toString());
-                        objectsActivity.progressDialog.show();
                     }
                 } else {
                     Toast.makeText(objectsActivity, R.string.no_internet,
