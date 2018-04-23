@@ -401,6 +401,8 @@
 
     <string name="oh_no">Oh no!</string>
 
+    <string name="too_large_file">El archivo es demasiado grande, no puede ser mayor a</string>
+
     <string name="analytics_news_category">Noticias</string>
     <string name="analytics_informations_category">Informaciones</string>
     <string name="analytics_contatcs_category">Contactos</string>

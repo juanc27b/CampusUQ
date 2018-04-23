@@ -202,12 +202,13 @@ public class ItemsPresenter {
         InformationsSQLiteController dbController = new InformationsSQLiteController(context, 1);
 
         ArrayList<InformationCategory> categories = dbController.selectCategory(
-                InformationsSQLiteController.CAMPOS_CATEGORIA[1] + " = ?", new String[]{categoryName});
+                InformationsSQLiteController.categoryColumns[1] + " = ?", categoryName);
         ArrayList<Information> informations;
         if (categories.size() > 0) {
             link = categories.get(0).getLink();
             informations = dbController.select(
-                    InformationsSQLiteController.CAMPOS_TABLA[1] + " = ?", new String[]{categories.get(0).get_ID()});
+                    InformationsSQLiteController.columns[1] + " = ?",
+                    categories.get(0).get_ID());
         } else {
             informations = new ArrayList<>();
         }
@@ -280,12 +281,12 @@ public class ItemsPresenter {
 
         ProgramsSQLiteController dbController = new ProgramsSQLiteController(context, 1);
 
-        ArrayList<ProgramCategory> categories = dbController.selectCategory(null, null);
+        ArrayList<ProgramCategory> categories = dbController.selectCategory();
         if (categories.size() > 0) {
             ProgramCategory undergraduate = categories.get(0).getName().equals("Pregrado") ? categories.get(0) : categories.get(1);
             ProgramCategory postgraduate = categories.get(0).getName().equals("Posgrado") ? categories.get(0) : categories.get(1);
 
-            ArrayList<ProgramFaculty> faculties = dbController.selectFaculty(null, null);
+            ArrayList<ProgramFaculty> faculties = dbController.selectFaculty();
 
             for (ProgramFaculty faculty : faculties) {
 
@@ -317,7 +318,7 @@ public class ItemsPresenter {
                 }
 
                 ArrayList<Program> programs = dbController.select(
-                        ProgramsSQLiteController.CAMPOS_TABLA[2] + " = ?", new String[]{faculty.get_ID()});
+                        ProgramsSQLiteController.columns[2] + " = ?", faculty.get_ID());
 
                 for (Program program : programs) {
                     String categoria = program.getCategory_ID().equals(undergraduate.get_ID()) ?
@@ -343,7 +344,7 @@ public class ItemsPresenter {
         ProgramsSQLiteController dbController = new ProgramsSQLiteController(context, 1);
 
         ArrayList<Program> programs = dbController.select(
-                ProgramsSQLiteController.CAMPOS_TABLA[3] + " = ?", new String[]{name});
+                ProgramsSQLiteController.columns[3] + " = ?", name);
         if (programs.size() > 0) {
             if (context.getString(R.string.history).equals(type)) {
                 link = programs.get(0).getHistoryLink();

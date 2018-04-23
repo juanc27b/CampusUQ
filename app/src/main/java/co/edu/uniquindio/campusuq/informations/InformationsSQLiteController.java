@@ -3,8 +3,10 @@ package co.edu.uniquindio.campusuq.informations;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import co.edu.uniquindio.campusuq.util.SQLiteHelper;
 import co.edu.uniquindio.campusuq.util.Utilities;
@@ -15,11 +17,11 @@ import co.edu.uniquindio.campusuq.util.Utilities;
 
 public class InformationsSQLiteController {
 
-    private static final String NOMBRE_TABLA = "Informacion";
-    public static final String CAMPOS_TABLA[] = new String[]{"_ID", "Categoria_ID", "Nombre", "Contenido"};
+    private static final String tablename = "Informacion";
+    public static final String columns[] = {"_ID", "Categoria_ID", "Nombre", "Contenido"};
 
-    private static final String NOMBRE_CATEGORIA = "Informacion_Categoria";
-    public static final String CAMPOS_CATEGORIA[] = new String[]{"_ID", "Nombre", "Enlace", "Fecha"};
+    private static final String categoryTablename = "Informacion_Categoria";
+    public static final String categoryColumns[] = {"_ID", "Nombre", "Enlace", "Fecha"};
 
     private SQLiteHelper usdbh;
     private SQLiteDatabase db;
@@ -30,144 +32,79 @@ public class InformationsSQLiteController {
     }
 
     public static String createTable(){
-        String crearTabla = "CREATE TABLE ? ( ? INTEGER PRIMARY KEY, ? INTEGER NOT NULL, " +
-                "? TEXT NOT NULL UNIQUE, ? TEXT NOT NULL, FOREIGN KEY (?) REFERENCES ? (?) )";
-        StringBuilder builder = new StringBuilder(crearTabla);
-        builder.replace(builder.indexOf("?"), crearTabla.indexOf("?") + 1, NOMBRE_TABLA);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[0]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[1]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[2]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[3]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[1]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, NOMBRE_CATEGORIA);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_CATEGORIA[0]);
-        return builder.toString();
+        return "CREATE TABLE " + tablename + '(' + columns[0] + " INTEGER PRIMARY KEY, " +
+                columns[1] + " INTEGER NOT NULL REFERENCES " + categoryTablename + '(' +
+                categoryColumns[0] + ") ON UPDATE CASCADE ON DELETE CASCADE, " +
+                columns[2] + " TEXT NOT NULL UNIQUE, " + columns[3] + " TEXT NOT NULL)";
     }
 
-    public ArrayList<Information> select(String selection, String[] selectionArgs) {
+    public ArrayList<Information> select(String selection, String... selectionArgs) {
         ArrayList<Information> informations = new ArrayList<>();
-        Cursor c = db.query(NOMBRE_TABLA, CAMPOS_TABLA, selection, selectionArgs,
-                null, null, CAMPOS_TABLA[0]+" ASC");
-        if (c.moveToFirst()) {
-            do {
-                String id = c.getString(0);
-                String categoryId = c.getString(1);
-                String name = c.getString(2);
-                String content = c.getString(3);
-                Information information = new Information(id, categoryId, name, content);
-                informations.add(information);
-            } while (c.moveToNext());
-        }
+
+        Cursor c = db.query(tablename, null, selection, selectionArgs, null,
+                null, columns[0] + " ASC");
+        if (c.moveToFirst()) do {
+            informations.add(new Information(c.getString(0), c.getString(1),
+                    c.getString(2), c.getString(3)));
+        } while (c.moveToNext());
         c.close();
+
         return informations;
     }
 
-    public void insert(String... campos) {
-        String insertar = "INSERT INTO ? (?,?,?,?) VALUES (?,?,?,?)";
-        StringBuilder builder = new StringBuilder(insertar);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, NOMBRE_TABLA);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[0]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[1]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[2]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[3]);
-        db.execSQL(builder.toString(), new String[] {
-                campos[0],
-                campos[1],
-                campos[2],
-                campos[3]
-        });
+    public void insert(Object... values) {
+        db.execSQL("INSERT INTO " + tablename + '(' +
+                TextUtils.join(", ", columns) + ") VALUES(" +
+                TextUtils.join(", ", Collections.nCopies(columns.length, '?')) +
+                ')', values);
     }
 
-    public void update(String... campos) {
-        String update = "UPDATE "+NOMBRE_TABLA+" SET ?=?,?=?,?=? WHERE ? = ?";
-        StringBuilder builder = new StringBuilder(update);
-        int offset = builder.indexOf("?");
-        for (int i = 1; i < 4; i++) {
-            builder.replace(offset, offset+1, CAMPOS_TABLA[i]);
-            offset = builder.indexOf("?", offset)+2;
-        }
-        offset = offset+6;
-        builder.replace(offset, offset+1, CAMPOS_TABLA[0]);
-        db.execSQL(builder.toString(), new String[] {
-                campos[1],
-                campos[2],
-                campos[3],
-                campos[0]
-        });
+    public void update(Object... values) {
+        db.execSQL("UPDATE " + tablename + " SET " +
+                TextUtils.join(" = ?, ", columns) + " = ? WHERE " +
+                columns[0] + " = ?", values);
     }
 
-    public void delete(String id) {
-        StringBuilder builder = new StringBuilder("DELETE FROM ? WHERE ? = '?'");
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, NOMBRE_TABLA);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_TABLA[0]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, id);
-        db.execSQL(builder.toString());
+    public void delete(Object... ids) {
+        db.execSQL("DELETE FROM " + tablename + " WHERE " + columns[0] + " IN(" +
+                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
     }
 
     public static String createCategoryTable(){
-        String crearTabla = "CREATE TABLE ? ( ? INTEGER PRIMARY KEY, " +
-                "? TEXT NOT NULL UNIQUE, ? TEXT NOT NULL, ? TEXT NOT NULL )";
-        StringBuilder builder = new StringBuilder(crearTabla);
-        builder.replace(builder.indexOf("?"), crearTabla.indexOf("?") + 1, NOMBRE_CATEGORIA);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_CATEGORIA[0]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_CATEGORIA[1]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_CATEGORIA[2]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_CATEGORIA[3]);
-        return builder.toString();
+        return "CREATE TABLE " + categoryTablename + '(' +
+                categoryColumns[0] + " INTEGER PRIMARY KEY, " +
+                categoryColumns[1] + " TEXT NOT NULL UNIQUE, " +
+                categoryColumns[2] + " TEXT NOT NULL, " +
+                categoryColumns[3] + " TEXT NOT NULL)";
     }
 
-    public ArrayList<InformationCategory> selectCategory(String selection, String[] selectionArgs) {
+    public ArrayList<InformationCategory> selectCategory(String selection,
+                                                         String... selectionArgs) {
         ArrayList<InformationCategory> categories = new ArrayList<>();
-        Cursor c = db.query(NOMBRE_CATEGORIA, CAMPOS_CATEGORIA, selection, selectionArgs,
+
+        Cursor c = db.query(categoryTablename, null, selection, selectionArgs,
                 null, null, null);
-        if (c.moveToFirst()) {
-            do {
-                String id = c.getString(0);
-                String name = c.getString(1);
-                String link = c.getString(2);
-                String date = c.getString(3);
-                InformationCategory category = new InformationCategory(id, name, link, date);
-                categories.add(category);
-            } while (c.moveToNext());
-        }
+        if (c.moveToFirst()) do {
+            categories.add(new InformationCategory(c.getString(0), c.getString(1),
+                    c.getString(2), c.getString(3)));
+        } while (c.moveToNext());
         c.close();
+
         return categories;
     }
 
-    public void insertCategory(String... campos) {
-        String insertar = "INSERT INTO ? (?,?,?,?) VALUES (?,?,?,?)";
-        StringBuilder builder = new StringBuilder(insertar);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, NOMBRE_CATEGORIA);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_CATEGORIA[0]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_CATEGORIA[1]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_CATEGORIA[2]);
-        builder.replace(builder.indexOf("?"), builder.indexOf("?") + 1, CAMPOS_CATEGORIA[3]);
-        db.execSQL(builder.toString(), new String[] {
-                campos[0],
-                campos[1],
-                campos[2],
-                campos[3]
-        });
+    public void insertCategory(Object... values) {
+        db.execSQL("INSERT INTO " + categoryTablename + '(' +
+                TextUtils.join(", ", categoryColumns) + ") VALUES(" +
+                TextUtils.join(", ",
+                        Collections.nCopies(categoryColumns.length, '?')) + ')', values);
     }
 
-    public void updateCategory(String... campos) {
-        String update = "UPDATE "+NOMBRE_CATEGORIA+" SET ?=?,?=?,?=? WHERE ? = ?";
-        StringBuilder builder = new StringBuilder(update);
-        int offset = builder.indexOf("?");
-        for (int i = 1; i < 4; i++) {
-            builder.replace(offset, offset+1, CAMPOS_CATEGORIA[i]);
-            offset = builder.indexOf("?", offset)+2;
-        }
-        offset = offset+6;
-        builder.replace(offset, offset+1, CAMPOS_CATEGORIA[0]);
-        db.execSQL(builder.toString(), new String[] {
-                campos[1],
-                campos[2],
-                campos[3],
-                campos[0]
-        });
+    public void updateCategory(Object... values) {
+        db.execSQL("UPDATE " + categoryTablename + " SET " +
+                TextUtils.join(" = ?, ", categoryColumns) + " = ? WHERE " +
+                categoryColumns[0] + " = ?", values);
     }
-
 
     public void destroy() {
         usdbh.close();

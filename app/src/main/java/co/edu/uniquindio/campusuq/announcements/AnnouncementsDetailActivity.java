@@ -325,28 +325,36 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
                 int index = requestCode - REQUEST_LINK_0;
                 linksFiles[index] = new File(Utilities.getPath(this, uri));
 
-                if (linksFiles[index].exists()) {
-                    if (announcementLinks[index] == null) {
-                        announcementLinks[index] = new AnnouncementLink(null,
-                                null, null, null);
-                    }
+                if (linksFiles[index].length() <= Utilities.UPLOAD_FILE_MAX_MB * 1024 * 1024) {
+                    if (linksFiles[index].exists()) {
+                        if (announcementLinks[index] == null) {
+                            announcementLinks[index] = new AnnouncementLink(null,
+                                    null, null, null);
+                        }
 
-                    if (uri.toString().contains("image")) {
-                        announcementLinks[index].setType("I");
-                        images[index].setImageBitmap(Utilities.getResizedBitmap(BitmapFactory
-                                .decodeFile(linksFiles[index].getAbsolutePath())));
+                        if (uri.toString().contains("image")) {
+                            announcementLinks[index].setType("I");
+                            images[index].setImageBitmap(Utilities.getResizedBitmap(BitmapFactory
+                                    .decodeFile(linksFiles[index].getAbsolutePath())));
+                        } else {
+                            announcementLinks[index].setType("V");
+                            MediaMetadataRetriever mediaMetadataRetriever =
+                                    new MediaMetadataRetriever();
+                            mediaMetadataRetriever
+                                    .setDataSource(linksFiles[index].getAbsolutePath());
+                            images[index].setImageBitmap(Utilities.getResizedBitmap(
+                                    mediaMetadataRetriever.getFrameAtTime(1000000)));
+                        }
+
+                        if (++index < images.length) images[index].setVisibility(View.VISIBLE);
                     } else {
-                        announcementLinks[index].setType("V");
-                        MediaMetadataRetriever mediaMetadataRetriever =
-                                new MediaMetadataRetriever();
-                        mediaMetadataRetriever.setDataSource(linksFiles[index].getAbsolutePath());
-                        images[index].setImageBitmap(Utilities.getResizedBitmap(
-                                mediaMetadataRetriever.getFrameAtTime(1000000)));
+                        images[index].setImageResource(R.drawable.rectangle_gray);
                     }
-
-                    if (++index < images.length) images[index].setVisibility(View.VISIBLE);
                 } else {
-                    images[index].setImageResource(R.drawable.rectangle_gray);
+                    Toast.makeText(this,
+                            getString(R.string.too_large_file) +
+                                    ' ' + Utilities.UPLOAD_FILE_MAX_MB + " MB",
+                            Toast.LENGTH_SHORT).show();
                 }
             } catch (Exception e) {
                 e.printStackTrace();

@@ -5,17 +5,18 @@ import android.util.Log;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
-import cz.msebera.android.httpclient.HttpResponse;
-import cz.msebera.android.httpclient.client.HttpClient;
-import cz.msebera.android.httpclient.client.methods.HttpGet;
-import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
-import cz.msebera.android.httpclient.util.EntityUtils;
 
 /**
  * Created by Juan Camilo on 28/02/2018.
@@ -23,98 +24,270 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 
 public class ProgramsServiceController {
 
-    public static ArrayList<Program> getPrograms(Context context) {
-        String url = Utilities.URL_SERVICIO+"/programas";
-        ArrayList<Program> programs = new ArrayList<>();
-        HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpGet request = new HttpGet(url);
-        request.setHeader("Content-Type", "application/json; Charset=UTF-8");
+    /*public static ArrayList<Program> getPrograms(Context context) {
+        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + "/programas");
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
+        ArrayList<Program> programs = new ArrayList<>();
+
         try {
-            HttpResponse resp = httpClient.execute(request);
-            String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
-            JSONObject json = new JSONObject(respStr);
-            JSONArray array = json.getJSONArray("datos");
+            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
+                    .execute(request).getEntity())).getJSONArray("datos");
+
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                String _ID = StringEscapeUtils.unescapeHtml4(object.getString("_ID"));
-                String category_ID = StringEscapeUtils.unescapeHtml4(object.getString("Categoria_ID"));
-                String faculty_ID = StringEscapeUtils.unescapeHtml4(object.getString("Facultad_ID"));
-                String name = StringEscapeUtils.unescapeHtml4(object.getString("Nombre"));
-                String history = StringEscapeUtils.unescapeHtml4(object.getString("Historia"));
-                String historyLink = StringEscapeUtils.unescapeHtml4(object.getString("Historia_Enlace"));
-                String historyDate = StringEscapeUtils.unescapeHtml4(object.getString("Historia_Fecha"));
-                String missionVision = StringEscapeUtils.unescapeHtml4(object.getString("Mision_Vision"));
-                String missionVisionLink = StringEscapeUtils.unescapeHtml4(object.getString("Mision_Vision_Enlace"));
-                String missionVisionDate = StringEscapeUtils.unescapeHtml4(object.getString("Mision_Vision_Fecha"));
-                String curriculum = StringEscapeUtils.unescapeHtml4(object.getString("Plan_Estudios"));
-                String curriculumLink = StringEscapeUtils.unescapeHtml4(object.getString("Plan_Estudios_Enlace"));
-                String curriculumDate = StringEscapeUtils.unescapeHtml4(object.getString("Plan_Estudios_Fecha"));
-                String profiles = StringEscapeUtils.unescapeHtml4(object.getString("Perfiles"));
-                String profilesLink = StringEscapeUtils.unescapeHtml4(object.getString("Perfiles_Enlace"));
-                String profilesDate = StringEscapeUtils.unescapeHtml4(object.getString("Perfiles_Fecha"));
-                String contact = StringEscapeUtils.unescapeHtml4(object.getString("Contacto"));
-                Program program = new Program(_ID, category_ID, faculty_ID, name, history, historyLink, historyDate,
-                        missionVision, missionVisionLink, missionVisionDate, curriculum, curriculumLink, curriculumDate,
-                        profiles, profilesLink, profilesDate, contact);
-                programs.add(program);
+                programs.add(new Program(
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[0])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[1])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[2])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[3])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[4])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[5])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[6])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[7])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[8])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[9])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[10])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[11])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[12])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[13])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[14])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[15])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[16]))));
             }
-        } catch (Exception e) {
-            Log.e(ProgramsServiceController.class.getSimpleName(), e.getMessage());
-            return new ArrayList<>();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
         }
+
+        return programs;
+    }*/
+    public static ArrayList<Program> getPrograms(Context context) {
+        ArrayList<Program> programs = new ArrayList<>();
+
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(
+                    Utilities.URL_SERVICIO + "/programas").openConnection();
+            connection.setRequestProperty("Authorization",
+                    UsersPresenter.loadUser(context).getApiKey());
+
+            InputStream inputStream;
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            try {
+                inputStream = connection.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("ResponseCode", "" + connection.getResponseCode());
+                InputStream errorStream = connection.getErrorStream();
+
+                if (errorStream != null) {
+                    Utilities.copy(errorStream, byteArrayOutputStream);
+                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                }
+
+                return programs;
+            }
+
+            Utilities.copy(inputStream, byteArrayOutputStream);
+            JSONArray array =
+                    new JSONObject(byteArrayOutputStream.toString()).getJSONArray("datos");
+
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject object = array.getJSONObject(i);
+                programs.add(new Program(
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[0])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[1])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[2])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[3])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[4])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[5])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[6])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[7])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[8])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[9])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[10])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[11])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[12])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[13])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[14])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[15])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.columns[16]))));
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+
         return programs;
     }
 
-    public static ArrayList<ProgramCategory> getProgramCategories(Context context) {
-        String url = Utilities.URL_SERVICIO+"/programa_categorias";
-        ArrayList<ProgramCategory> categories = new ArrayList<>();
-        HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpGet request = new HttpGet(url);
-        request.setHeader("Content-Type", "application/json; Charset=UTF-8");
+    /*public static ArrayList<ProgramCategory> getProgramCategories(Context context) {
+        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + "/programa_categorias");
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
+        ArrayList<ProgramCategory> categories = new ArrayList<>();
+
         try {
-            HttpResponse resp = httpClient.execute(request);
-            String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
-            JSONObject json = new JSONObject(respStr);
-            JSONArray array = json.getJSONArray("datos");
+            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
+                    .execute(request).getEntity())).getJSONArray("datos");
+
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                String _ID = StringEscapeUtils.unescapeHtml4(object.getString("_ID"));
-                String name = StringEscapeUtils.unescapeHtml4(object.getString("Nombre"));
-                ProgramCategory category = new ProgramCategory(_ID, name);
-                categories.add(category);
+                categories.add(new ProgramCategory(
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.categoryColumns[0])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.categoryColumns[1]))));
             }
-        } catch (Exception e) {
-            Log.e(ProgramsServiceController.class.getSimpleName(), e.getMessage());
-            return new ArrayList<>();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
         }
+
+        return categories;
+    }*/
+    public static ArrayList<ProgramCategory> getProgramCategories(Context context) {
+        ArrayList<ProgramCategory> categories = new ArrayList<>();
+
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(
+                    Utilities.URL_SERVICIO + "/programa_categorias").openConnection();
+            connection.setRequestProperty("Authorization",
+                    UsersPresenter.loadUser(context).getApiKey());
+
+            InputStream inputStream;
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            try {
+                inputStream = connection.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("ResponseCode", "" + connection.getResponseCode());
+                InputStream errorStream = connection.getErrorStream();
+
+                if (errorStream != null) {
+                    Utilities.copy(errorStream, byteArrayOutputStream);
+                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                }
+
+                return categories;
+            }
+
+            Utilities.copy(inputStream, byteArrayOutputStream);
+            JSONArray array =
+                    new JSONObject(byteArrayOutputStream.toString()).getJSONArray("datos");
+
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject object = array.getJSONObject(i);
+                categories.add(new ProgramCategory(
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.categoryColumns[0])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.categoryColumns[1]))));
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+
         return categories;
     }
 
-    public static ArrayList<ProgramFaculty> getProgramFaculties(Context context) {
-        String url = Utilities.URL_SERVICIO+"/programa_facultades";
-        ArrayList<ProgramFaculty> faculties = new ArrayList<>();
-        HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpGet request = new HttpGet(url);
-        request.setHeader("Content-Type", "application/json; Charset=UTF-8");
+    /*public static ArrayList<ProgramFaculty> getProgramFaculties(Context context) {
+        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + "/programa_facultades");
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
+        ArrayList<ProgramFaculty> faculties = new ArrayList<>();
+
         try {
-            HttpResponse resp = httpClient.execute(request);
-            String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
-            JSONObject json = new JSONObject(respStr);
-            JSONArray array = json.getJSONArray("datos");
+            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
+                    .execute(request).getEntity())).getJSONArray("datos");
+
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                String _ID = StringEscapeUtils.unescapeHtml4(object.getString("_ID"));
-                String name = StringEscapeUtils.unescapeHtml4(object.getString("Nombre"));
-                ProgramFaculty faculty = new ProgramFaculty(_ID, name);
-                faculties.add(faculty);
+                faculties.add(new ProgramFaculty(
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.facultyColumns[0])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.facultyColumns[1]))));
             }
-        } catch (Exception e) {
-            Log.e(ProgramsServiceController.class.getSimpleName(), e.getMessage());
-            return new ArrayList<>();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
         }
+
+        return faculties;
+    }*/
+    public static ArrayList<ProgramFaculty> getProgramFaculties(Context context) {
+        ArrayList<ProgramFaculty> faculties = new ArrayList<>();
+
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(
+                    Utilities.URL_SERVICIO + "/programa_facultades").openConnection();
+            connection.setRequestProperty("Authorization",
+                    UsersPresenter.loadUser(context).getApiKey());
+
+            InputStream inputStream;
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            try {
+                inputStream = connection.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("ResponseCode", "" + connection.getResponseCode());
+                InputStream errorStream = connection.getErrorStream();
+
+                if (errorStream != null) {
+                    Utilities.copy(errorStream, byteArrayOutputStream);
+                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                }
+
+                return faculties;
+            }
+
+            Utilities.copy(inputStream, byteArrayOutputStream);
+            JSONArray array =
+                    new JSONObject(byteArrayOutputStream.toString()).getJSONArray("datos");
+
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject object = array.getJSONObject(i);
+                faculties.add(new ProgramFaculty(
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.facultyColumns[0])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(ProgramsSQLiteController.facultyColumns[1]))));
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+
         return faculties;
     }
 

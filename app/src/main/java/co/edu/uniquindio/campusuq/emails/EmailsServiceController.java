@@ -39,9 +39,6 @@ import javax.mail.internet.MimeMessage;
 import co.edu.uniquindio.campusuq.R;
 
 /**
- * Created by Juan Camilo on 20/03/2018.
- */
-/**
  * Attempt to call the API, after verifying that all the preconditions are
  * satisfied. The preconditions are: Google Play Services installed, an
  * account was selected and the device currently has online access. If any

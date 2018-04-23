@@ -67,7 +67,7 @@ public class EventsSQLiteController {
     }
 
     public void delete() {
-        db.execSQL("DELETE FROM "+tablename);
+        db.execSQL("DELETE FROM " + tablename);
     }
 
     public static String createCategoryTable(){

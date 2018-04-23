@@ -6,18 +6,18 @@ import android.util.Log;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
-import co.edu.uniquindio.campusuq.news.NewsServiceController;
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
-import cz.msebera.android.httpclient.HttpResponse;
-import cz.msebera.android.httpclient.client.HttpClient;
-import cz.msebera.android.httpclient.client.methods.HttpGet;
-import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
-import cz.msebera.android.httpclient.util.EntityUtils;
 
 /**
  * Created by Juan Camilo on 28/02/2018.
@@ -25,131 +25,348 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 
 public class EventsServiceController {
 
-    public static ArrayList<Event> getEvents(Context context) {
-        String url = Utilities.URL_SERVICIO+"/eventos";
-        ArrayList<Event> events = new ArrayList<>();
-        HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpGet request = new HttpGet(url);
-        request.setHeader("Content-Type", "application/json; Charset=UTF-8");
+    /*public static ArrayList<Event> getEvents(Context context) {
+        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + "/eventos");
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
+        ArrayList<Event> events = new ArrayList<>();
+
         try {
-            HttpResponse resp = httpClient.execute(request);
-            String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
-            JSONObject json = new JSONObject(respStr);
-            JSONArray array = json.getJSONArray("datos");
+            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
+                    .execute(request).getEntity())).getJSONArray("datos");
+
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                String _ID = StringEscapeUtils.unescapeHtml4(object.getString("_ID"));
-                String name = StringEscapeUtils.unescapeHtml4(object.getString("Nombre"));
-                Event event = new Event(_ID, name);
-                events.add(event);
+                events.add(new Event(
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(EventsSQLiteController.columns[0])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(EventsSQLiteController.columns[1]))));
             }
-        } catch (Exception e) {
-            Log.e(EventsServiceController.class.getSimpleName(), e.getMessage());
-            return new ArrayList<>();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
         }
+
+        return events;
+    }*/
+    public static ArrayList<Event> getEvents(Context context) {
+        ArrayList<Event> events = new ArrayList<>();
+
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(
+                    Utilities.URL_SERVICIO + "/eventos").openConnection();
+            connection.setRequestProperty("Authorization",
+                    UsersPresenter.loadUser(context).getApiKey());
+
+            InputStream inputStream;
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            try {
+                inputStream = connection.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("ResponseCode", "" + connection.getResponseCode());
+                InputStream errorStream = connection.getErrorStream();
+
+                if (errorStream != null) {
+                    Utilities.copy(errorStream, byteArrayOutputStream);
+                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                }
+
+                return events;
+            }
+
+            Utilities.copy(inputStream, byteArrayOutputStream);
+            JSONArray array =
+                    new JSONObject(byteArrayOutputStream.toString()).getJSONArray("datos");
+
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject object = array.getJSONObject(i);
+                events.add(new Event(
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(EventsSQLiteController.columns[0])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(EventsSQLiteController.columns[1]))));
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+
         return events;
     }
 
-    public static ArrayList<EventCategory> getEventCategories(Context context) {
-        String url = Utilities.URL_SERVICIO+"/evento_categorias";
-        ArrayList<EventCategory> categories = new ArrayList<>();
-        HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpGet request = new HttpGet(url);
-        request.setHeader("Content-Type", "application/json; Charset=UTF-8");
+    /*public static ArrayList<EventCategory> getEventCategories(Context context) {
+        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + "/evento_categorias");
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
+        ArrayList<EventCategory> categories = new ArrayList<>();
+
         try {
-            HttpResponse resp = httpClient.execute(request);
-            String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
-            JSONObject json = new JSONObject(respStr);
-            JSONArray array = json.getJSONArray("datos");
+            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
+                    .execute(request).getEntity())).getJSONArray("datos");
+
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                String _ID = StringEscapeUtils.unescapeHtml4(object.getString("_ID"));
-                String abbreviation = StringEscapeUtils.unescapeHtml4(object.getString("Abreviacion"));
-                String name = StringEscapeUtils.unescapeHtml4(object.getString("Nombre"));
-                EventCategory category = new EventCategory(_ID, abbreviation, name);
-                categories.add(category);
+                categories.add(new EventCategory(
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(EventsSQLiteController.categoryColumns[0])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(EventsSQLiteController.categoryColumns[1])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(EventsSQLiteController.categoryColumns[2]))));
             }
-        } catch (Exception e) {
-            Log.e(EventsServiceController.class.getSimpleName(), e.getMessage());
-            return new ArrayList<>();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
         }
+
+        return categories;
+    }*/
+    public static ArrayList<EventCategory> getEventCategories(Context context) {
+        ArrayList<EventCategory> categories = new ArrayList<>();
+
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(
+                    Utilities.URL_SERVICIO + "/evento_categorias").openConnection();
+            connection.setRequestProperty("Authorization",
+                    UsersPresenter.loadUser(context).getApiKey());
+
+            InputStream inputStream;
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            try {
+                inputStream = connection.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("ResponseCode", "" + connection.getResponseCode());
+                InputStream errorStream = connection.getErrorStream();
+
+                if (errorStream != null) {
+                    Utilities.copy(errorStream, byteArrayOutputStream);
+                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                }
+
+                return categories;
+            }
+
+            Utilities.copy(inputStream, byteArrayOutputStream);
+            JSONArray array =
+                    new JSONObject(byteArrayOutputStream.toString()).getJSONArray("datos");
+
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject object = array.getJSONObject(i);
+                categories.add(new EventCategory(
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(EventsSQLiteController.categoryColumns[0])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(EventsSQLiteController.categoryColumns[1])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(EventsSQLiteController.categoryColumns[2]))));
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+
         return categories;
     }
 
-    public static ArrayList<EventPeriod> getEventPeriods(Context context) {
-        String url = Utilities.URL_SERVICIO+"/evento_periodos";
-        ArrayList<EventPeriod> periods = new ArrayList<>();
-        HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpGet request = new HttpGet(url);
-        request.setHeader("Content-Type", "application/json; Charset=UTF-8");
+    /*public static ArrayList<EventPeriod> getEventPeriods(Context context) {
+        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + "/evento_periodos");
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
+        ArrayList<EventPeriod> periods = new ArrayList<>();
+
         try {
-            HttpResponse resp = httpClient.execute(request);
-            String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
-            JSONObject json = new JSONObject(respStr);
-            JSONArray array = json.getJSONArray("datos");
+            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
+                    .execute(request).getEntity())).getJSONArray("datos");
+
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                String _ID = StringEscapeUtils.unescapeHtml4(object.getString("_ID"));
-                String name = StringEscapeUtils.unescapeHtml4(object.getString("Nombre"));
-                EventPeriod period = new EventPeriod(_ID, name);
-                periods.add(period);
+                periods.add(new EventPeriod(
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(EventsSQLiteController.periodColumns[0])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(EventsSQLiteController.periodColumns[1]))));
             }
-        } catch (Exception e) {
-            Log.e(EventsServiceController.class.getSimpleName(), e.getMessage());
-            return new ArrayList<>();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
         }
+
+        return periods;
+    }*/
+    public static ArrayList<EventPeriod> getEventPeriods(Context context) {
+        ArrayList<EventPeriod> periods = new ArrayList<>();
+
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(
+                    Utilities.URL_SERVICIO + "/evento_periodos").openConnection();
+            connection.setRequestProperty("Authorization",
+                    UsersPresenter.loadUser(context).getApiKey());
+
+            InputStream inputStream;
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            try {
+                inputStream = connection.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("ResponseCode", "" + connection.getResponseCode());
+                InputStream errorStream = connection.getErrorStream();
+
+                if (errorStream != null) {
+                    Utilities.copy(errorStream, byteArrayOutputStream);
+                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                }
+
+                return periods;
+            }
+
+            Utilities.copy(inputStream, byteArrayOutputStream);
+            JSONArray array =
+                    new JSONObject(byteArrayOutputStream.toString()).getJSONArray("datos");
+
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject object = array.getJSONObject(i);
+                periods.add(new EventPeriod(
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(EventsSQLiteController.periodColumns[0])),
+                        StringEscapeUtils.unescapeHtml4(
+                                object.getString(EventsSQLiteController.periodColumns[1]))));
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+
         return periods;
     }
 
-    public static ArrayList<EventDate> getEventDates(Context context, @NonNull String type) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO+"/evento_fechas"+type);
+    /*public static ArrayList<EventDate> getEventDates(Context context, @NonNull String type) {
+        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + "/evento_fechas" + type);
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         ArrayList<EventDate> dates = new ArrayList<>();
 
         try {
             JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
                     .execute(request).getEntity())).getJSONArray("datos");
+
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 dates.add(new EventDate(object.getString(EventsSQLiteController.dateColumns[0]),
                         object.getString(EventsSQLiteController.dateColumns[1]),
                         object.getString(EventsSQLiteController.dateColumns[2])));
             }
-        } catch (Exception e) {
-            Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+
+        return dates;
+    }*/
+    public static ArrayList<EventDate> getEventDates(Context context, @NonNull String type) {
+        ArrayList<EventDate> dates = new ArrayList<>();
+
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(
+                    Utilities.URL_SERVICIO + "/evento_fechas" + type).openConnection();
+            connection.setRequestProperty("Authorization",
+                    UsersPresenter.loadUser(context).getApiKey());
+
+            InputStream inputStream;
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            try {
+                inputStream = connection.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("ResponseCode", "" + connection.getResponseCode());
+                InputStream errorStream = connection.getErrorStream();
+
+                if (errorStream != null) {
+                    Utilities.copy(errorStream, byteArrayOutputStream);
+                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                }
+
+                return dates;
+            }
+
+            Utilities.copy(inputStream, byteArrayOutputStream);
+            JSONArray array =
+                    new JSONObject(byteArrayOutputStream.toString()).getJSONArray("datos");
+
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject object = array.getJSONObject(i);
+                dates.add(new EventDate(object.getString(EventsSQLiteController.dateColumns[0]),
+                        object.getString(EventsSQLiteController.dateColumns[1]),
+                        object.getString(EventsSQLiteController.dateColumns[2])));
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
         }
 
         return dates;
     }
 
-    public static ArrayList<EventRelation> getEventRelations(Context context) {
-        String url = Utilities.URL_SERVICIO+"/evento_relaciones";
-        ArrayList<EventRelation> relations = new ArrayList<>();
-        HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpGet request = new HttpGet(url);
-        request.setHeader("Content-Type", "application/json; Charset=UTF-8");
+    /*public static ArrayList<EventRelation> getEventRelations(Context context) {
+        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + "/evento_relaciones");
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
+        ArrayList<EventRelation> relations = new ArrayList<>();
+
         try {
-            HttpResponse resp = httpClient.execute(request);
-            String respStr = EntityUtils.toString(resp.getEntity(), "UTF-8");
-            JSONObject json = new JSONObject(respStr);
-            JSONArray array = json.getJSONArray("datos");
+            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
+                    .execute(request).getEntity())).getJSONArray("datos");
+
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                String category_ID = StringEscapeUtils.unescapeHtml4(object.getString("Categoria_ID"));
-                String event_ID = StringEscapeUtils.unescapeHtml4(object.getString("Evento_ID"));
-                String period_ID = StringEscapeUtils.unescapeHtml4(object.getString("Periodo_ID"));
-                String date_ID = StringEscapeUtils.unescapeHtml4(object.getString("Fecha_ID"));
-                EventRelation relation = new EventRelation(category_ID, event_ID, period_ID, date_ID);
-                relations.add(relation);
+                relations.add(new EventRelation(
+                        object.getString(EventsSQLiteController.relationColumns[0]),
+                        object.getString(EventsSQLiteController.relationColumns[1]),
+                        object.getString(EventsSQLiteController.relationColumns[2]),
+                        object.getString(EventsSQLiteController.relationColumns[3])));
             }
-        } catch (Exception e) {
-            Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
-            return new ArrayList<>();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
         }
+
+        return relations;
+    }*/
+    public static ArrayList<EventRelation> getEventRelations(Context context) {
+        ArrayList<EventRelation> relations = new ArrayList<>();
+
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(
+                    Utilities.URL_SERVICIO + "/evento_relaciones").openConnection();
+            connection.setRequestProperty("Authorization",
+                    UsersPresenter.loadUser(context).getApiKey());
+
+            InputStream inputStream;
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            try {
+                inputStream = connection.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("ResponseCode", "" + connection.getResponseCode());
+                InputStream errorStream = connection.getErrorStream();
+
+                if (errorStream != null) {
+                    Utilities.copy(errorStream, byteArrayOutputStream);
+                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                }
+
+                return relations;
+            }
+
+            Utilities.copy(inputStream, byteArrayOutputStream);
+            JSONArray array =
+                    new JSONObject(byteArrayOutputStream.toString()).getJSONArray("datos");
+
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject object = array.getJSONObject(i);
+                relations.add(new EventRelation(
+                        object.getString(EventsSQLiteController.relationColumns[0]),
+                        object.getString(EventsSQLiteController.relationColumns[1]),
+                        object.getString(EventsSQLiteController.relationColumns[2]),
+                        object.getString(EventsSQLiteController.relationColumns[3])));
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+
         return relations;
     }
 
