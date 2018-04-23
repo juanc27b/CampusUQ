@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
+import co.edu.uniquindio.campusuq.util.State;
 import co.edu.uniquindio.campusuq.util.Utilities;
 import cz.msebera.android.httpclient.client.methods.HttpGet;
 import cz.msebera.android.httpclient.client.methods.HttpPost;
@@ -42,7 +43,7 @@ public class AnnouncementsServiceController {
      */
     public static ArrayList<Announcement> getAnnouncements(Context context,
                                                            @NonNull String category_date,
-                                                           Utilities.State state,
+                                                           State state,
                                                            ArrayList<String> _IDs) {
         HttpGet request = new HttpGet(Utilities.URL_SERVICIO + _ANNOUNCEMENTS + category_date);
         request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());

@@ -14,9 +14,6 @@ import cz.msebera.android.httpclient.client.methods.HttpGet;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 import cz.msebera.android.httpclient.util.EntityUtils;
 
-/**
- * Created by Juan Camilo on 23/02/2018.
- */
 
 public class ContactsServiceController {
 

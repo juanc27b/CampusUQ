@@ -12,9 +12,9 @@ import co.edu.uniquindio.campusuq.util.SQLiteHelper;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
 /**
- * Created by Juan Camilo on 23/02/2018.
+ * Controlador de la base de datos para las tablas Contacto y Contacto_Categoria, que hacen parte de
+ * la funcionalidad de Directorio telefónico.
  */
-
 public class ContactsSQLiteController {
 
     private static final String tablename = "Contacto";
@@ -27,11 +27,22 @@ public class ContactsSQLiteController {
     private SQLiteHelper usdbh;
     private SQLiteDatabase db;
 
+    /**
+     * Constructor del controlador de la base de datos, el cual utiliza un SQLiteHelper para
+     * asegurar que las tablas se creen al crear la base de datos, y obtiene una instancia de la
+     * base de datos con permisos de escritura.
+     * @param context Contexto necesario para crear un SQLiteHelper.
+     * @param version Versión de la base de datos.
+     */
     public ContactsSQLiteController(Context context, int version) {
         usdbh = new SQLiteHelper(context, Utilities.NOMBRE_BD , null, version);
         db = usdbh.getWritableDatabase();
     }
 
+    /**
+     * Crea una cadena válida para crear la tabla Contacto en la base de datos.
+     * @return Cadena SQL para crear la tabla Contacto.
+     */
     public static String createTable(){
         return "CREATE TABLE " + tablename + '(' + columns[0] + " INTEGER PRIMARY KEY, " +
                 columns[1] + " INTEGER NOT NULL REFERENCES " + categoryTablename + '(' +
@@ -41,6 +52,13 @@ public class ContactsSQLiteController {
                 columns[6] + " TEXT NOT NULL, " + columns[7] + " TEXT NOT NULL)";
     }
 
+    /**
+     * Obtiene de la base de datos un arreglo de contactos de acuerdo a los filtros pasados como
+     * parámetro a la función, y los ordena por nombre en orden ascendente.
+     * @param selection Cláusula SQL WHERE para filtrar los resultados.
+     * @param selectionArgs Parámetros de la cláusula SQL WHERE.
+     * @return Arreglo de contactos extraído de la base de datos.
+     */
     public ArrayList<Contact> select(String selection, String... selectionArgs) {
         ArrayList<Contact> contacts = new ArrayList<>();
 
@@ -56,6 +74,11 @@ public class ContactsSQLiteController {
         return contacts;
     }
 
+    /**
+     * Inserta en la base de datos un contacto con los valores de las columnas pasados como
+     * parámetro a la función
+     * @param values Valores de las columnas del contacto.
+     */
     public void insert(Object... values) {
         db.execSQL("INSERT INTO " + tablename + '(' +
                 TextUtils.join(", ", columns) + ") VALUES(" +
@@ -63,11 +86,20 @@ public class ContactsSQLiteController {
                 ')', values);
     }
 
+    /**
+     * Elimina de la base de datos los contactos cuyas IDs se encuentren dentro del arreglo de
+     * IDs parado como parámetro.
+     * @param ids Arreglo de IDs de los contactos que se quiere eliminar.
+     */
     public void delete(Object... ids) {
         db.execSQL("DELETE FROM " + tablename + " WHERE " + columns[0] + " IN(" +
                 TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
     }
 
+    /**
+     * Crea una cadena válida para crear la tabla Contacto_Categoria en la base de datos.
+     * @return Cadena SQL para crear la tabla Contacto_Categoria.
+     */
     public static String createCategoryTable(){
         return "CREATE TABLE " + categoryTablename + '(' +
                 categoryColumns[0] + " INTEGER PRIMARY KEY, " +
@@ -75,6 +107,15 @@ public class ContactsSQLiteController {
                 categoryColumns[2] + " TEXT NOT NULL)";
     }
 
+    /**
+     * Obtiene de la base de datos un arreglo de categorías de contactos de acuerdo a los filtros y
+     * al límite de resultados pasados como parámetro a la función, y las ordena por nombre en orden
+     * ascendente.
+     * @param limit Límite de resultados a obtener.
+     * @param selection Cláusula SQL WHERE para filtrar los resultados.
+     * @param selectionArgs Parámetros de la cláusula SQL WHERE.
+     * @return Arreglo de categorías de contactos extraído de la base de datos.
+     */
     public ArrayList<ContactCategory> selectCategory(String limit, String selection,
                                                      String... selectionArgs) {
         ArrayList<ContactCategory> categories = new ArrayList<>();
@@ -90,6 +131,11 @@ public class ContactsSQLiteController {
         return categories;
     }
 
+    /**
+     * Inserta en la base de datos una categoría de contacto con los valores de las columnas pasados
+     * como parámetro a la función
+     * @param values Valores de las columnas de la categoría de contacto.
+     */
     public void insertCategory(Object... values) {
         db.execSQL("INSERT INTO " + categoryTablename + '(' +
                 TextUtils.join(", ", categoryColumns) + ") VALUES(" +
@@ -97,12 +143,20 @@ public class ContactsSQLiteController {
                         Collections.nCopies(categoryColumns.length, '?')) + ')', values);
     }
 
+    /**
+     * Elimina de la base de datos las categorías de contactos cuyas IDs se encuentren dentro del
+     * arreglo de IDs parado como parámetro.
+     * @param ids Arreglo de IDs de las categorías de contactos que se quiere eliminar.
+     */
     public void deleteCategory(Object... ids) {
         db.execSQL("DELETE FROM " + categoryTablename + " WHERE " +
                 categoryColumns[0] + " IN(" +
                 TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
     }
 
+    /**
+     * Método para cerrar cualquier conexión abierta a la base de datos.
+     */
     public void destroy() {
         usdbh.close();
     }

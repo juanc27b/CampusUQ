@@ -38,59 +38,60 @@ import java.util.Collections;
 import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
+import co.edu.uniquindio.campusuq.announcements.Announcement;
+import co.edu.uniquindio.campusuq.announcements.AnnouncementLink;
 import co.edu.uniquindio.campusuq.announcements.AnnouncementsActivity;
-import co.edu.uniquindio.campusuq.contacts.ContactsSQLiteController;
-import co.edu.uniquindio.campusuq.contacts.ContactsServiceController;
-import co.edu.uniquindio.campusuq.emails.EmailsActivity;
 import co.edu.uniquindio.campusuq.announcements.AnnouncementsSQLiteController;
 import co.edu.uniquindio.campusuq.announcements.AnnouncementsServiceController;
+import co.edu.uniquindio.campusuq.contacts.Contact;
+import co.edu.uniquindio.campusuq.contacts.ContactCategory;
+import co.edu.uniquindio.campusuq.contacts.ContactsSQLiteController;
+import co.edu.uniquindio.campusuq.contacts.ContactsServiceController;
+import co.edu.uniquindio.campusuq.dishes.Dish;
 import co.edu.uniquindio.campusuq.dishes.DishesSQLiteController;
 import co.edu.uniquindio.campusuq.dishes.DishesServiceController;
+import co.edu.uniquindio.campusuq.emails.Email;
+import co.edu.uniquindio.campusuq.emails.EmailsActivity;
 import co.edu.uniquindio.campusuq.emails.EmailsSQLiteController;
 import co.edu.uniquindio.campusuq.emails.EmailsServiceController;
 import co.edu.uniquindio.campusuq.events.CalendarActivity;
-import co.edu.uniquindio.campusuq.events.EventsSQLiteController;
-import co.edu.uniquindio.campusuq.events.EventsServiceController;
-import co.edu.uniquindio.campusuq.informations.InformationsSQLiteController;
-import co.edu.uniquindio.campusuq.informations.InformationsServiceController;
-import co.edu.uniquindio.campusuq.items.ItemsActivity;
-import co.edu.uniquindio.campusuq.items.ItemsPresenter;
-import co.edu.uniquindio.campusuq.news.NewsActivity;
-import co.edu.uniquindio.campusuq.notifications.NotificationsPresenter;
-import co.edu.uniquindio.campusuq.objects.ObjectsActivity;
-import co.edu.uniquindio.campusuq.news.NewsSQLiteController;
-import co.edu.uniquindio.campusuq.news.NewsServiceController;
-import co.edu.uniquindio.campusuq.announcements.Announcement;
-import co.edu.uniquindio.campusuq.announcements.AnnouncementLink;
-import co.edu.uniquindio.campusuq.objects.ObjectsSQLiteController;
-import co.edu.uniquindio.campusuq.objects.ObjectsServiceController;
-import co.edu.uniquindio.campusuq.programs.ProgramsSQLiteController;
-import co.edu.uniquindio.campusuq.programs.ProgramsServiceController;
-import co.edu.uniquindio.campusuq.quotas.QuotasSQLiteController;
-import co.edu.uniquindio.campusuq.quotas.QuotasServiceController;
-import co.edu.uniquindio.campusuq.contacts.Contact;
-import co.edu.uniquindio.campusuq.contacts.ContactCategory;
-import co.edu.uniquindio.campusuq.dishes.Dish;
-import co.edu.uniquindio.campusuq.emails.Email;
 import co.edu.uniquindio.campusuq.events.Event;
 import co.edu.uniquindio.campusuq.events.EventCategory;
 import co.edu.uniquindio.campusuq.events.EventDate;
 import co.edu.uniquindio.campusuq.events.EventPeriod;
 import co.edu.uniquindio.campusuq.events.EventRelation;
+import co.edu.uniquindio.campusuq.events.EventsSQLiteController;
+import co.edu.uniquindio.campusuq.events.EventsServiceController;
 import co.edu.uniquindio.campusuq.informations.Information;
 import co.edu.uniquindio.campusuq.informations.InformationCategory;
-import co.edu.uniquindio.campusuq.objects.LostObject;
+import co.edu.uniquindio.campusuq.informations.InformationsSQLiteController;
+import co.edu.uniquindio.campusuq.informations.InformationsServiceController;
+import co.edu.uniquindio.campusuq.items.ItemsActivity;
+import co.edu.uniquindio.campusuq.items.ItemsPresenter;
 import co.edu.uniquindio.campusuq.news.New;
 import co.edu.uniquindio.campusuq.news.NewCategory;
 import co.edu.uniquindio.campusuq.news.NewRelation;
-import co.edu.uniquindio.campusuq.users.UsersPresenter;
-import co.edu.uniquindio.campusuq.users.UsersSQLiteController;
-import co.edu.uniquindio.campusuq.users.UsersServiceController;
+import co.edu.uniquindio.campusuq.news.NewsActivity;
+import co.edu.uniquindio.campusuq.news.NewsSQLiteController;
+import co.edu.uniquindio.campusuq.news.NewsServiceController;
+import co.edu.uniquindio.campusuq.notifications.NotificationsPresenter;
+import co.edu.uniquindio.campusuq.objects.LostObject;
+import co.edu.uniquindio.campusuq.objects.ObjectsActivity;
+import co.edu.uniquindio.campusuq.objects.ObjectsSQLiteController;
+import co.edu.uniquindio.campusuq.objects.ObjectsServiceController;
 import co.edu.uniquindio.campusuq.programs.Program;
 import co.edu.uniquindio.campusuq.programs.ProgramCategory;
 import co.edu.uniquindio.campusuq.programs.ProgramFaculty;
+import co.edu.uniquindio.campusuq.programs.ProgramsSQLiteController;
+import co.edu.uniquindio.campusuq.programs.ProgramsServiceController;
 import co.edu.uniquindio.campusuq.quotas.Quota;
+import co.edu.uniquindio.campusuq.quotas.QuotasSQLiteController;
+import co.edu.uniquindio.campusuq.quotas.QuotasServiceController;
 import co.edu.uniquindio.campusuq.users.User;
+import co.edu.uniquindio.campusuq.users.UsersPresenter;
+import co.edu.uniquindio.campusuq.users.UsersSQLiteController;
+import co.edu.uniquindio.campusuq.users.UsersServiceController;
+import co.edu.uniquindio.campusuq.util.State;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
 /**
@@ -814,7 +815,7 @@ public class WebService extends JobIntentService {
                 for (Announcement announcement : announcements) _IDs.add(announcement.get_ID());
                 if (_IDs.isEmpty()) notify = false;
                 else category_date += '/'+announcements.get(0).getDate();
-                Utilities.State state = new Utilities.State(Utilities.FAILURE_STATE);
+                State state = new State(Utilities.FAILURE_STATE);
                 announcements = AnnouncementsServiceController
                         .getAnnouncements(context, category_date, state, _IDs);
 
@@ -954,7 +955,7 @@ public class WebService extends JobIntentService {
                     images.add(lostObject.getImage());
                 }
 
-                Utilities.State state = new Utilities.State(Utilities.FAILURE_STATE);
+                State state = new State(Utilities.FAILURE_STATE);
                 objects = ObjectsServiceController.getObjects(context,
                         _IDs.isEmpty() ? "" : '/'+objects.get(0).getDate(), state, _IDs, images);
 

@@ -10,10 +10,19 @@ import android.widget.ImageView;
 
 import co.edu.uniquindio.campusuq.R;
 
+/**
+ * Actividad de bienvenida de la aplicación en la que se muestra una corta animación con el logotipo
+ * de la Universidad del Quindío y luego redirige a la actividad de menú.
+ */
 public class StartActivity extends AppCompatActivity {
 
     public ImageView background;
 
+    /**
+     * Método llamado durante el ciclo de vida para crear la actividad, se encarga de establecer
+     * el diseño de la actividad y un fondo para la misma.
+     * @param savedInstanceState Parámetro usado para recuperar estados anteriores de la actividad.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +34,12 @@ public class StartActivity extends AppCompatActivity {
                 R.drawable.portrait_front : R.drawable.landscape_front);
     }
 
+    /**
+     * Método del ciclo de vida de la actividad llamado para reanudar la misma, en el que se crea
+     * una animación estilo "aparecer gradualmente", se le asigna un listener para abrir la
+     * actividad del menú al finalizar la animación, y por último se asigna esta animación al
+     * fondo de la actividad.
+     */
     @Override
     protected void onResume() {
         super.onResume();

@@ -159,47 +159,47 @@
     <string name="change_to_mapview">Cambiar a vista de mapa</string>
     <string name="change_to_streetview">Cambiar a vista de calle</string>
 
-    <string name="marker_a1">Edificio Administrativo 1</string>
-    <string name="marker_a2">Edificio Administrativo 2</string>
-    <string name="marker_b1">Ciencias Básicas</string>
-    <string name="marker_b2">Auditorio de Ciencias Básicas</string>
-    <string name="marker_b3">Biblioteca Infantil</string>
-    <string name="marker_b4">Precooperativa Juvenil</string>
-    <string name="marker_b5">Interdisciplinario de las Ciencias</string>
-    <string name="marker_b6">Edificio Aulas 50 Años</string>
-    <string name="marker_b7">Laboratorio de Suelos</string>
-    <string name="marker_b8">Laboratorio de Bioterio</string>
-    <string name="marker_b9">Jardin Botánico</string>
-    <string name="marker_b10">Futuro desarrollo</string>
-    <string name="marker_b11">Finca la Aldana</string>
-    <string name="marker_b12">Centro de Acopio</string>
-    <string name="marker_b13">Lombricultivo y Lobricultura</string>
-    <string name="marker_c1">Coliseo</string>
-    <string name="marker_c2">Bienestar Universitario</string>
-    <string name="marker_c3">Cafetería</string>
-    <string name="marker_c4">Canchas Múltiples</string>
-    <string name="marker_c5">Piscina</string>
-    <string name="marker_c6">Camerinos</string>
-    <string name="marker_c7">Cancha de Fútbol</string>
-    <string name="marker_c8">Futuro desarrollo</string>
-    <string name="marker_c9">Teatrino y Mediatorta</string>
-    <string name="marker_c10">Centro de Salud</string>
-    <string name="marker_d1">Futuro desarrollo</string>
-    <string name="marker_d2">Facultad de Ciencias de la Salud</string>
-    <string name="marker_d3">Laboratorio Biomédicas</string>
-    <string name="marker_d4">Facultad de Ingeniería</string>
-    <string name="marker_e1">Capilla Universitaria</string>
-    <string name="marker_e2">Zona de Estudio</string>
-    <string name="marker_e3">Biblioteca Euclides Jaramillo</string>
-    <string name="marker_e4">Auditorio Euclides Jaramillo</string>
-    <string name="marker_f1">Facultad de Educación</string>
-    <string name="marker_f2">Ciencias Económicas y Administrativas</string>
-    <string name="marker_f3">Facultad de Ciencias Económicas</string>
-    <string name="marker_f4">Planta Piloto</string>
-    <string name="marker_f5">Facultad de Ciencias Agroindustriales</string>
-    <string name="marker_f6">Laboratorio de Post Cosecha</string>
-    <string name="marker_f7">Futuro desarrollo</string>
-    <string name="marker_f8">Futuro desarrollo</string>
+    <string name="marker_a1" translatable="false">Edificio Administrativo 1</string>
+    <string name="marker_a2" translatable="false">Edificio Administrativo 2</string>
+    <string name="marker_b1" translatable="false">Ciencias Básicas</string>
+    <string name="marker_b2" translatable="false">Auditorio de Ciencias Básicas</string>
+    <string name="marker_b3" translatable="false">Biblioteca Infantil</string>
+    <string name="marker_b4" translatable="false">Precooperativa Juvenil</string>
+    <string name="marker_b5" translatable="false">Interdisciplinario de las Ciencias</string>
+    <string name="marker_b6" translatable="false">Edificio Aulas 50 Años</string>
+    <string name="marker_b7" translatable="false">Laboratorio de Suelos</string>
+    <string name="marker_b8" translatable="false">Laboratorio de Bioterio</string>
+    <string name="marker_b9" translatable="false">Jardin Botánico</string>
+    <string name="marker_b10" translatable="false">Futuro desarrollo</string>
+    <string name="marker_b11" translatable="false">Finca la Aldana</string>
+    <string name="marker_b12" translatable="false">Centro de Acopio</string>
+    <string name="marker_b13" translatable="false">Lombricultivo y Lobricultura</string>
+    <string name="marker_c1" translatable="false">Coliseo</string>
+    <string name="marker_c2" translatable="false">Bienestar Universitario</string>
+    <string name="marker_c3" translatable="false">Cafetería</string>
+    <string name="marker_c4" translatable="false">Canchas Múltiples</string>
+    <string name="marker_c5" translatable="false">Piscina</string>
+    <string name="marker_c6" translatable="false">Camerinos</string>
+    <string name="marker_c7" translatable="false">Cancha de Fútbol</string>
+    <string name="marker_c8" translatable="false">Futuro desarrollo</string>
+    <string name="marker_c9" translatable="false">Teatrino y Mediatorta</string>
+    <string name="marker_c10" translatable="false">Centro de Salud</string>
+    <string name="marker_d1" translatable="false">Futuro desarrollo</string>
+    <string name="marker_d2" translatable="false">Facultad de Ciencias de la Salud</string>
+    <string name="marker_d3" translatable="false">Laboratorio Biomédicas</string>
+    <string name="marker_d4" translatable="false">Facultad de Ingeniería</string>
+    <string name="marker_e1" translatable="false">Capilla Universitaria</string>
+    <string name="marker_e2" translatable="false">Zona de Estudio</string>
+    <string name="marker_e3" translatable="false">Biblioteca Euclides Jaramillo</string>
+    <string name="marker_e4" translatable="false">Auditorio Euclides Jaramillo</string>
+    <string name="marker_f1" translatable="false">Facultad de Educación</string>
+    <string name="marker_f2" translatable="false">Ciencias Económicas y Administrativas</string>
+    <string name="marker_f3" translatable="false">Facultad de Ciencias Económicas</string>
+    <string name="marker_f4" translatable="false">Planta Piloto</string>
+    <string name="marker_f5" translatable="false">Facultad de Ciencias Agroindustriales</string>
+    <string name="marker_f6" translatable="false">Laboratorio de Post Cosecha</string>
+    <string name="marker_f7" translatable="false">Futuro desarrollo</string>
+    <string name="marker_f8" translatable="false">Futuro desarrollo</string>
 
     <string name="web_notification_id">Campus UQ Web Service</string>
     <string name="web_notification_name">Servicio web de Campus UQ</string>
@@ -212,26 +212,26 @@
     <string name="radio_volume">Volumen</string>
     <string name="radio_error">No se puede reproducir en este momento</string>
 
-    <string name="facebook_app_id">291424651384761</string>
-    <string name="fb_login_protocol_scheme">fb291424651384761</string>
+    <string name="facebook_app_id" translatable="false">291424651384761</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb291424651384761</string>
 
-    <string name="com.twitter.sdk.android.CONSUMER_KEY">8kJV0FPVtPMNrLbx2STy9U5ea</string>
-    <string name="com.twitter.sdk.android.CONSUMER_SECRET">nwizCryvWRx8fkVX59ycRQA3RGbFTzSQFq44JPc4ySDupAiFHJ</string>
+    <string name="com.twitter.sdk.android.CONSUMER_KEY" translatable="false">8kJV0FPVtPMNrLbx2STy9U5ea</string>
+    <string name="com.twitter.sdk.android.CONSUMER_SECRET" translatable="false">nwizCryvWRx8fkVX59ycRQA3RGbFTzSQFq44JPc4ySDupAiFHJ</string>
 
-    <string name="web_page_url">https://www.uniquindio.edu.co/</string>
-    <string name="employment_exchange_url">http://trabajando.uniquindio.edu.co/</string>
-    <string name="digital_repository_url">https://bdigital.uniquindio.edu.co/</string>
-    <string name="public_catalog_url">http://catalogo.uniquindio.edu.co/</string>
-    <string name="databases_url">https://www.uniquindio.edu.co/biblioteca/publicaciones/bases_de_datos_pub</string>
-    <string name="pqrsd_system_url">https://uniquindio.sysaidit.com/SubmitSR.jsp?accountId=uniquindio</string>
-    <string name="ecotic_url">https://ecotic.uniquindio.edu.co/ecotic/#!/home</string>
-    <string name="normativity_url">https://www.uniquindio.edu.co/documentos.php?id=685</string>
+    <string name="web_page_url" translatable="false">https://www.uniquindio.edu.co/</string>
+    <string name="employment_exchange_url" translatable="false">http://trabajando.uniquindio.edu.co/</string>
+    <string name="digital_repository_url" translatable="false">https://bdigital.uniquindio.edu.co/</string>
+    <string name="public_catalog_url" translatable="false">http://catalogo.uniquindio.edu.co/</string>
+    <string name="databases_url" translatable="false">https://www.uniquindio.edu.co/biblioteca/publicaciones/bases_de_datos_pub</string>
+    <string name="pqrsd_system_url" translatable="false">https://uniquindio.sysaidit.com/SubmitSR.jsp?accountId=uniquindio</string>
+    <string name="ecotic_url" translatable="false">https://ecotic.uniquindio.edu.co/ecotic/#!/home</string>
+    <string name="normativity_url" translatable="false">https://www.uniquindio.edu.co/documentos.php?id=685</string>
 
-    <string name="mission_vision_url">http://campus-uq.000webhostapp.com/files/mision_vision.pdf</string>
-    <string name="quality_policy_url">http://campus-uq.000webhostapp.com/files/politica_calidad.pdf</string>
-    <string name="axes_pillars_objectives_url">http://campus-uq.000webhostapp.com/files/ejes_pilares_objetivos.pdf</string>
-    <string name="organization_chart_url">http://campus-uq.000webhostapp.com/files/organigrama.pdf</string>
-    <string name="pdf_viewer">http://campus-uq.000webhostapp.com/pdf/web/viewer.html?file=URL</string>
+    <string name="mission_vision_url" translatable="false">http://campus-uq.000webhostapp.com/files/mision_vision.pdf</string>
+    <string name="quality_policy_url" translatable="false">http://campus-uq.000webhostapp.com/files/politica_calidad.pdf</string>
+    <string name="axes_pillars_objectives_url" translatable="false">http://campus-uq.000webhostapp.com/files/ejes_pilares_objetivos.pdf</string>
+    <string name="organization_chart_url" translatable="false">http://campus-uq.000webhostapp.com/files/organigrama.pdf</string>
+    <string name="pdf_viewer" translatable="false">http://campus-uq.000webhostapp.com/pdf/web/viewer.html?file=URL</string>
 
     <string name="send">ENVIAR</string>
 
@@ -401,61 +401,61 @@
 
     <string name="oh_no">Oh no!</string>
 
-    <string name="analytics_news_category">Noticias</string>
-    <string name="analytics_informations_category">Informaciones</string>
-    <string name="analytics_contatcs_category">Contactos</string>
-    <string name="analytics_programs_category">Programas</string>
-    <string name="analytics_events_category">Eventos</string>
-    <string name="analytics_web_category">Web</string>
-    <string name="analytics_maps_category">Mapas</string>
-    <string name="analytics_radio_category">Radio</string>
-    <string name="analytics_objects_category">Objetos</string>
-    <string name="analytics_announcements_category">Anuncios</string>
-    <string name="analytics_dishes_category">Platos</string>
-    <string name="analytics_quotas_category">Cupos</string>
-    <string name="analytics_emails_category">Correos</string>
-    <string name="analytics_users_category">Usuarios</string>
-    <string name="analytics_notifications_category">Notificaciones</string>
+    <string name="analytics_news_category" translatable="false">Noticias</string>
+    <string name="analytics_informations_category" translatable="false">Informaciones</string>
+    <string name="analytics_contatcs_category" translatable="false">Contactos</string>
+    <string name="analytics_programs_category" translatable="false">Programas</string>
+    <string name="analytics_events_category" translatable="false">Eventos</string>
+    <string name="analytics_web_category" translatable="false">Web</string>
+    <string name="analytics_maps_category" translatable="false">Mapas</string>
+    <string name="analytics_radio_category" translatable="false">Radio</string>
+    <string name="analytics_objects_category" translatable="false">Objetos</string>
+    <string name="analytics_announcements_category" translatable="false">Anuncios</string>
+    <string name="analytics_dishes_category" translatable="false">Platos</string>
+    <string name="analytics_quotas_category" translatable="false">Cupos</string>
+    <string name="analytics_emails_category" translatable="false">Correos</string>
+    <string name="analytics_users_category" translatable="false">Usuarios</string>
+    <string name="analytics_notifications_category" translatable="false">Notificaciones</string>
 
-    <string name="analytics_events_label">Eventos</string>
-    <string name="analytics_news_label">Noticias</string>
-    <string name="analytics_mission_vision_label">Misión y visión</string>
-    <string name="analytics_quality_policy_label">Política de calidad</string>
-    <string name="analytics_axes_pillars_objectives_label">Ejes estratégicos, pilares y objetivos</string>
-    <string name="analytics_organization_chart_label">Organigrama</string>
-    <string name="analytics_normativity_label">Normatividad</string>
-    <string name="analytics_symbols_label">Símbolos</string>
-    <string name="analytics_directory_label">Directorio telefónico</string>
-    <string name="analytics_academic_offer_label">Oferta académica</string>
-    <string name="analytics_academic_calendar_label">Calendario académico</string>
-    <string name="analytics_employment_exchange_label">Bolsa de empleo</string>
-    <string name="analytics_institutional_welfare">Bienestar institucional</string>
-    <string name="analytics_university_map_label">Mapa de la universidad</string>
-    <string name="analytics_digital_repository_label">Repositorio digital</string>
-    <string name="analytics_public_catalog_label">Catálogo público</string>
-    <string name="analytics_databases_label">Bases de datos</string>
-    <string name="analytics_radio_label">Emisora institucional</string>
-    <string name="analytics_pqrsd_system_label">Sistema PQRSD</string>
-    <string name="analytics_lost_objects_label">Objetos perdidos</string>
-    <string name="analytics_security_system_label">Sistema de seguridad</string>
-    <string name="analytics_restaurant_label">Menú del restaurante</string>
-    <string name="analytics_billboard_information_label">Información de cartelera</string>
-    <string name="analytics_computer_rooms_label">Salas de cómputo</string>
-    <string name="analytics_parking_lots_label">Parqueaderos</string>
-    <string name="analytics_laboratories_label">Laboratorios</string>
-    <string name="analytics_study_areas_label">Zonas de estudio</string>
-    <string name="analytics_cultural_and_sport_label">Culturales y deportivos</string>
-    <string name="analytics_auditoriums_label">Auditorios</string>
-    <string name="analytics_institutional_mail_label">Correo institucional</string>
-    <string name="analytics_web_page_label">Página web</string>
-    <string name="analytics_ecotic_label">Ecotic</string>
-    <string name="analytics_adjust_notifications_label">Ajustar notificaciones</string>
-    <string name="analytics_login_label">Cuenta de usuario</string>
+    <string name="analytics_events_label" translatable="false">Eventos</string>
+    <string name="analytics_news_label" translatable="false">Noticias</string>
+    <string name="analytics_mission_vision_label" translatable="false">Misión y visión</string>
+    <string name="analytics_quality_policy_label" translatable="false">Política de calidad</string>
+    <string name="analytics_axes_pillars_objectives_label" translatable="false">Ejes estratégicos, pilares y objetivos</string>
+    <string name="analytics_organization_chart_label" translatable="false">Organigrama</string>
+    <string name="analytics_normativity_label" translatable="false">Normatividad</string>
+    <string name="analytics_symbols_label" translatable="false">Símbolos</string>
+    <string name="analytics_directory_label" translatable="false">Directorio telefónico</string>
+    <string name="analytics_academic_offer_label" translatable="false">Oferta académica</string>
+    <string name="analytics_academic_calendar_label" translatable="false">Calendario académico</string>
+    <string name="analytics_employment_exchange_label" translatable="false">Bolsa de empleo</string>
+    <string name="analytics_institutional_welfare" translatable="false">Bienestar institucional</string>
+    <string name="analytics_university_map_label" translatable="false">Mapa de la universidad</string>
+    <string name="analytics_digital_repository_label" translatable="false">Repositorio digital</string>
+    <string name="analytics_public_catalog_label" translatable="false">Catálogo público</string>
+    <string name="analytics_databases_label" translatable="false">Bases de datos</string>
+    <string name="analytics_radio_label" translatable="false">Emisora institucional</string>
+    <string name="analytics_pqrsd_system_label" translatable="false">Sistema PQRSD</string>
+    <string name="analytics_lost_objects_label" translatable="false">Objetos perdidos</string>
+    <string name="analytics_security_system_label" translatable="false">Sistema de seguridad</string>
+    <string name="analytics_restaurant_label" translatable="false">Menú del restaurante</string>
+    <string name="analytics_billboard_information_label" translatable="false">Información de cartelera</string>
+    <string name="analytics_computer_rooms_label" translatable="false">Salas de cómputo</string>
+    <string name="analytics_parking_lots_label" translatable="false">Parqueaderos</string>
+    <string name="analytics_laboratories_label" translatable="false">Laboratorios</string>
+    <string name="analytics_study_areas_label" translatable="false">Zonas de estudio</string>
+    <string name="analytics_cultural_and_sport_label" translatable="false">Culturales y deportivos</string>
+    <string name="analytics_auditoriums_label" translatable="false">Auditorios</string>
+    <string name="analytics_institutional_mail_label" translatable="false">Correo institucional</string>
+    <string name="analytics_web_page_label" translatable="false">Página web</string>
+    <string name="analytics_ecotic_label" translatable="false">Ecotic</string>
+    <string name="analytics_adjust_notifications_label" translatable="false">Ajustar notificaciones</string>
+    <string name="analytics_login_label" translatable="false">Cuenta de usuario</string>
 
-    <string name="analytics_create_action">Crear</string>
-    <string name="analytics_view_action">Ver</string>
-    <string name="analytics_modify_action">Modificar</string>
-    <string name="analytics_delete_action">Eliminar</string>
-    <string name="analytics_share_action">Compartir</string>
+    <string name="analytics_create_action" translatable="false">Crear</string>
+    <string name="analytics_view_action" translatable="false">Ver</string>
+    <string name="analytics_modify_action" translatable="false">Modificar</string>
+    <string name="analytics_delete_action" translatable="false">Eliminar</string>
+    <string name="analytics_share_action" translatable="false">Compartir</string>
 
 </resources>

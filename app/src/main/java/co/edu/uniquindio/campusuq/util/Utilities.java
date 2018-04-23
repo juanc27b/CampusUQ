@@ -51,38 +51,20 @@ public class Utilities {
     public static final int SUCCESS_STATE = 11;
     public static final int FAILURE_STATE = 12;
 
-    public static class State {
-        private int state;
-
-        public State(int state) {
-            this.state = state;
-        }
-
-        public void set(int state) {
-            this.state = state;
-        }
-
-        public int get() {
-            return state;
-        }
-    }
-
     public static void getKeyHash(Context context) {
         try {
-            PackageInfo info =
-                    context.getPackageManager().getPackageInfo(context.getPackageName(),
-                            PackageManager.GET_SIGNATURES);
+            PackageInfo info = context.getPackageManager()
+                    .getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
             for (Signature signature : info.signatures) {
                 MessageDigest md = MessageDigest.getInstance("SHA");
                 md.update(signature.toByteArray());
-                String sign = Base64.encodeToString(md.digest(),
-                        Base64.DEFAULT);
-                Log.d("HASH KEY:", sign);
+                String sign = Base64.encodeToString(md.digest(), Base64.DEFAULT);
+                Log.d("KeyHash:", sign);
             }
         } catch (PackageManager.NameNotFoundException e) {
-            Log.d("Test", "1 KeyHash Error: " + e.getMessage());
+            e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
-            Log.d("Test", "2 KeyHash Error: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

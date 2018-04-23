@@ -51,6 +51,12 @@ import co.edu.uniquindio.campusuq.web.WebService;
 import co.edu.uniquindio.campusuq.web.WebActivity;
 import co.edu.uniquindio.campusuq.web.WebContentActivity;
 
+/**
+ * Actividad principal de la que heredan la mayoría de actividades de la aplicación, la cual provee
+ * funciones básicas como el panel lateral de navegación, la flecha para retroceder, la opción para
+ * realizar búsquedas de ítems, el menú overflow, y la interacción mediante BroadcastReceiver para
+ * garantizar un correcto comportamiento de la navegación.
+ */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -59,10 +65,47 @@ public class MainActivity extends AppCompatActivity
 
     public ProgressDialog progressDialog;
 
-    public IntentFilter mainFilter = new IntentFilter();
-
     public Tracker mTracker;
 
+    /**
+     * Se define un filtro de intentos para el BroadcastReceiver principal.
+     */
+    public IntentFilter mainFilter = new IntentFilter();
+    /**
+     * Se define un BroadcastReceiver para que el servicio que se encarga de las operaciones web le
+     * pueda comunicar a la actividad que ha terminado de cargar/descargar los datos, y se define
+     * el callback para saber qué hacer cuando esto ocurre. El BroadcastReceiver de la actividad
+     * principal se encarga de abrir la actividad correspondiente a una funcionalidad que el usuario
+     * seleccionó en una situación previa en la que la aplicación no había descargado los datos
+     * necesarios, y lo hace cuando el servicio web le informa que estos datos se han recibido.
+     */
+    public BroadcastReceiver mainReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            WebService.PENDING_ACTION = WebService.ACTION_NONE;
+            if (progressDialog.isShowing()) switch (intent.getAction()) {
+                case WebService.ACTION_WELFARE:
+                    loadInformations(getString(R.string.institutional_welfare), MainActivity.this);
+                    break;
+                case WebService.ACTION_CONTACTS:
+                    loadContactCategories(MainActivity.this);
+                    break;
+                case WebService.ACTION_PROGRAMS:
+                    loadPrograms(MainActivity.this);
+                    break;
+                case WebService.ACTION_CALENDAR:
+                    loadEventCategories(MainActivity.this);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    /**
+     * Constructor de la actividad principal en el que se agregan las acciones a filtrar con el
+     * filtro de intentos del BroadcastReceiver principal.
+     */
     public MainActivity() {
         setHasSearch(true);
         setHasNavigationDrawerIcon(true);
@@ -73,17 +116,30 @@ public class MainActivity extends AppCompatActivity
         mainFilter.addAction(WebService.ACTION_CALENDAR);
     }
 
+    /**
+     * Método que adjunta el contexto necesario para el correcto funcionamiento de la opción de
+     * cambio de idioma.
+     * @param newBase Contexto a adjuntar.
+     */
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(Utilities.getLanguage(newBase));
     }
 
+    /**
+     * Método llamado durante el ciclo de vida para crear la actividad, se encarga de crear la barra
+     * de acción para la actividad, el panel lateral de navegación, el diálogo de progreso a mostrar
+     * cuando se está cargando contenido, inicializa las herramientas necesarias para utilizar
+     * Google Analytics, y por último llama al método que se encarga de añadir el contenido
+     * específico de la actividad.
+     * @param savedInstanceState Parámetro usado para recuperar estados anteriores de la actividad.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Get the intent, verify the action and get the query
+        // Se manejan acciones contenidas en el intento, como búsquedas de ítems.
         handleIntent(getIntent());
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -104,7 +160,7 @@ public class MainActivity extends AppCompatActivity
 
         progressDialog = Utilities.getProgressDialog(this, true);
 
-        // Obtain the shared Tracker instance.
+        // Se obtiene la instancia del rastreador compartido.
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mTracker = application.getDefaultTracker();
 
@@ -112,11 +168,20 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /**
+     * Método útilizado para cambiar la configuración de la actividad en un intento de abrirla
+     * nuevamente, ya que esto último no es posible para actividades lanzadas en modo SingleTop
+     * @param intent Intento usado para abrir nuevamente la actividad.
+     */
     @Override
     protected void onNewIntent(Intent intent) {
         handleIntent(intent);
     }
 
+    /**
+     * Método llamado cuando se navega hacia atrás, se encarga de cerrar primero el panel lateral de
+     * navegación en caso de que el mismo esté abierto.
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -127,24 +192,34 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Método llamado para crear los ítems del menú overflow, también crea la opción para buscar
+     * ítems y la muestra u oculta dependiendo del tipo de actividad que se esté creando.
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // Infla el menú, lo que añade ítems a la barra de acción si está presente.
         getMenuInflater().inflate(R.menu.main, menu);
 
-        // Get the SearchView and set the searchable configuration
+        // Se obtiene el SearchView y la configuración de búsqueda.
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        // Assumes current activity is the searchable activity
+        // Se asume que esta actividad será la que maneje las búsquedas.
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        //searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
 
+        // Se muestra u oculta la opción para buscar.
         MenuItem item = menu.findItem(R.id.action_search);
         item.setVisible(hasSearch);
 
         return true;
     }
 
+    /**
+     * Método llamado antes de que se muestre el menú overflow, se encarga de hacer visibles los
+     * íconos de los ítems del menú.
+     * @param menu Menú a mostrar.
+     * @return Verdadero o falso según se vaya a mostrar el menú.
+     */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (menu != null) {
@@ -163,13 +238,17 @@ public class MainActivity extends AppCompatActivity
         return super.onPrepareOptionsMenu(menu);
     }
 
+    /**
+     * Método útilizado para definir el comportamiento de los ítems del menú cuando los mismos son
+     * seleccionados por el usuario.
+     * @param item Ítem del menú que ha sido seleccionado.
+     * @return Verdadero o falso según se quiera procesar la acción.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        // Se manejan los clicks de los ítems de la barra de acción.
         switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
+            // Se responde al botón Home/Up de la barra de acción.
             case android.R.id.home: {
                 DrawerLayout drawer = findViewById(R.id.drawer_layout);
                 if (hasNavigationDrawerIcon) {
@@ -227,12 +306,18 @@ public class MainActivity extends AppCompatActivity
                 return true;
             }
             default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
+                // La acción no fue reconocida.
+                // Se invoca a la superclase para que la maneje.
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    /**
+     * Método que maneja los clicks en los ítems del panel lateral de navegación (Home).
+     * Se define un comportamiento para cada ítem del panel.
+     * @param item Ítem del panel de navegación en el que se ha hecho click.
+     * @return Verdadero o falso según se quiera procesar la acción.
+     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -418,6 +503,10 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Método utlizado para manejar acciones contenidas en el intento, como las búsquedas de ítems.
+     * @param intent Intento usado para abrir la actividad.
+     */
     public void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
@@ -426,65 +515,74 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Método usado para definir si la actividad tendrá la opción de realizar búsquedas o no.
+     * @param hasSearch Verdadero o falso según se quiera que la actividad maneje búsquedas.
+     */
     public void setHasSearch(boolean hasSearch) {
         this.hasSearch = hasSearch;
     }
 
+    /**
+     * Método usado para definir si la actividad tendrá un botón de Home (panel de navegación
+     * lateral) o un botón  de Up (flecha para retroceder), conservando en ambos casos la
+     * posibilidad de abrir el panel de navegación con un deslizamiento horizontal.
+     * @param hasNavigationDrawerIcon Verdadero para tener el botón Home y falso para el botón Up.
+     */
     public void setHasNavigationDrawerIcon(boolean hasNavigationDrawerIcon) {
         this.hasNavigationDrawerIcon = hasNavigationDrawerIcon;
     }
 
+    /**
+     * Método usado para establecer una imágen de fondo para la actividad según la orientación.
+     * @param portraitBackground Imágen de fondo para orientación vertical.
+     * @param landscapeBackground Imágen de fondo para orientación horizontal.
+     */
     public void setBackground(int portraitBackground, int landscapeBackground) {
         ImageView background = findViewById(R.id.background_image);
         background.setImageResource(getResources().getConfiguration().orientation ==
                 Configuration.ORIENTATION_PORTRAIT ? portraitBackground : landscapeBackground);
     }
 
+    /**
+     * Método usado para añadir el contenido específico de la actividad.
+     * @param savedInstanceState Parámetro usado para recuperar estados anteriores de la actividad.
+     */
     public void addContent(Bundle savedInstanceState) {
 
     }
 
-    // Define the callback for what to do when data is received
-    public BroadcastReceiver mainReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            WebService.PENDING_ACTION = WebService.ACTION_NONE;
-            if (progressDialog.isShowing()) switch (intent.getAction()) {
-                case WebService.ACTION_WELFARE:
-                    loadInformations(getString(R.string.institutional_welfare), MainActivity.this);
-                    break;
-                case WebService.ACTION_CONTACTS:
-                    loadContactCategories(MainActivity.this);
-                    break;
-                case WebService.ACTION_PROGRAMS:
-                    loadPrograms(MainActivity.this);
-                    break;
-                case WebService.ACTION_CALENDAR:
-                    loadEventCategories(MainActivity.this);
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
-
+    /**
+     * Método del ciclo de la actividad llamado para reanudar la misma, en el que se registra el
+     * BroadcastReceiver principal para abrir actividades previamente seleccionadas cuando se hayan
+     * descargado los datos necesarios.
+     */
     @Override
     protected void onResume() {
         super.onResume();
-        // Register for the particular broadcast based on ACTION string
         registerReceiver(mainReceiver, mainFilter);
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para pausar la misma, en el que se invalida el
+     * previo registro del BroadcastReceiver principal.
+     */
     @Override
     protected void onPause() {
         super.onPause();
-        // Unregister the listener when the application is paused
         unregisterReceiver(mainReceiver);
         if (progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
     }
 
+    /**
+     * Método encargado de obtener la información necesaria desde la base de datos local para las
+     * funcionalidades de Institución (Símbolos) y Bienestar institucional, y después abrir las
+     * actividades correspondientes o mostrar mensajes al usuario si no están disponibles los datos.
+     * @param type Tipo de información a cargar (Símbolos o Bienestar institucional).
+     * @param context Contexto necesario para cargar los datos.
+     */
     public static void loadInformations(String type, Context context) {
         ProgressDialog progressDialog = ((MainActivity) context).progressDialog;
         if (!progressDialog.isShowing()) progressDialog.show();
@@ -510,6 +608,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Método encargado de obtener las categorías de los contactos desde la base de datos local para
+     * la funcionalidad del Directorio telefónico, y después abrir la actividad correspondiente o
+     * mostrar mensajes al usuario si no están disponibles los datos.
+     * @param context Contexto necesario para cargar los datos.
+     */
     public static void loadContactCategories(Context context) {
         ProgressDialog progressDialog = ((MainActivity) context).progressDialog;
         if (!progressDialog.isShowing()) progressDialog.show();
@@ -527,6 +631,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Método encargado de obtener los programas desde la base de datos local para la funcionalidad
+     * de la Oferta académica, y despues abrir la actividad correpondiente o mostrar mensajes al
+     * usuario si no están disponibles los datos.
+     * @param context Contexto necesario para cargar los datos.
+     */
     public static void loadPrograms(Context context) {
         ProgressDialog progressDialog = ((MainActivity) context).progressDialog;
         if (!progressDialog.isShowing()) progressDialog.show();
@@ -544,6 +654,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Método encargado de obtener las categorías de los eventos del calendario desde la base de
+     * datos local para la funcionalidad del Calendario académico, y después abrir la actividad
+     * correspondiente o mostrar mensajes al usuario si no están disponibles los datos.
+     * @param context Contexto necesario para cargar los datos.
+     */
     public static void loadEventCategories(Context context) {
         ProgressDialog progressDialog = ((MainActivity) context).progressDialog;
         if (!progressDialog.isShowing()) progressDialog.show();
