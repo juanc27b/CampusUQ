@@ -25,34 +25,6 @@ import co.edu.uniquindio.campusuq.util.Utilities;
 
 public class InformationsServiceController {
 
-    /*public static ArrayList<Information> getInformations(Context context,
-                                                         @NonNull String category) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + "/informaciones" + category);
-        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        ArrayList<Information> informations = new ArrayList<>();
-
-        try {
-            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
-                    .execute(request).getEntity())).getJSONArray("datos");
-
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject object = array.getJSONObject(i);
-                informations.add(new Information(
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(InformationsSQLiteController.columns[0])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(InformationsSQLiteController.columns[1])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(InformationsSQLiteController.columns[2])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(InformationsSQLiteController.columns[3]))));
-            }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-
-        return informations;
-    }*/
     public static ArrayList<Information> getInformations(Context context,
                                                          @NonNull String category) {
         ArrayList<Information> informations = new ArrayList<>();
@@ -104,33 +76,6 @@ public class InformationsServiceController {
         return informations;
     }
 
-    /*public static ArrayList<InformationCategory> getInformationCategories(Context context) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + "/informacion_categorias");
-        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        ArrayList<InformationCategory> categories = new ArrayList<>();
-
-        try {
-            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
-                    .execute(request).getEntity())).getJSONArray("datos");
-
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject object = array.getJSONObject(i);
-                categories.add(new InformationCategory(
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(InformationsSQLiteController.categoryColumns[0])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(InformationsSQLiteController.categoryColumns[1])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(InformationsSQLiteController.categoryColumns[2])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(InformationsSQLiteController.categoryColumns[3]))));
-            }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-
-        return categories;
-    }*/
     public static ArrayList<InformationCategory> getInformationCategories(Context context) {
         ArrayList<InformationCategory> categories = new ArrayList<>();
 

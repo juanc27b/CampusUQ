@@ -41,40 +41,6 @@ public class AnnouncementsServiceController {
      *             arreglo si tambien estan en el servidor.
      * @return Arreglo de anuncios.
      */
-    /*public static ArrayList<Announcement> getAnnouncements(Context context,
-                                                           @NonNull String category_date,
-                                                           State state, ArrayList<String> _IDs) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + _ANNOUNCEMENTS + category_date);
-        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        ArrayList<Announcement> announcements = new ArrayList<>();
-
-        try {
-            JSONObject object = new JSONObject(EntityUtils.toString(HttpClientBuilder.create()
-                    .build().execute(request).getEntity()));
-            if (state != null) state.set(object.getInt("estado"));
-            JSONArray array = object.getJSONArray("datos");
-
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject obj = array.getJSONObject(i);
-                announcements.add(new Announcement(
-                        obj.getString(AnnouncementsSQLiteController.columns[0]),
-                        obj.getString(AnnouncementsSQLiteController.columns[1]),
-                        obj.getString(AnnouncementsSQLiteController.columns[2]),
-                        obj.getString(AnnouncementsSQLiteController.columns[3]),
-                        obj.getString(AnnouncementsSQLiteController.columns[4]),
-                        obj.getString(AnnouncementsSQLiteController.columns[5]), "0"));
-            }
-
-            if (_IDs != null) {
-                array = object.getJSONArray("_IDs");
-                for (int i = 0; i < array.length(); i++) _IDs.remove(array.getString(i));
-            }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-
-        return announcements;
-    }*/
     public static ArrayList<Announcement> getAnnouncements(Context context,
                                                            @NonNull String category_date,
                                                            State state, ArrayList<String> _IDs) {
@@ -138,20 +104,6 @@ public class AnnouncementsServiceController {
      * @param json Petición en formato JSON para insertar, actualizar o eliminar un anuncio.
      * @return Respuesta del servidor.
      */
-    /*public static String modifyAnnouncement(Context context, String json) {
-        HttpPost post = new HttpPost(Utilities.URL_SERVICIO + _ANNOUNCEMENTS);
-        post.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        post.setHeader(HTTP.CONTENT_TYPE, "application/json");
-        post.setEntity(new StringEntity(json, "UTF-8"));
-
-        try {
-            return EntityUtils
-                    .toString(HttpClientBuilder.create().build().execute(post).getEntity());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }*/
     public static String modifyAnnouncement(Context context, String json) {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(
@@ -200,31 +152,6 @@ public class AnnouncementsServiceController {
      *                      para obtener todos los enlaces de anuncios.
      * @return Arreglo de enlaces de anuncios.
      */
-    /*public static ArrayList<AnnouncementLink> getAnnouncementLinks(Context context,
-                                                                   @NonNull String _announcement) {
-        HttpGet request =
-                new HttpGet(Utilities.URL_SERVICIO + _ANNOUNCEMENT_LINKS + _announcement);
-        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        ArrayList<AnnouncementLink> links = new ArrayList<>();
-
-        try {
-            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
-                    .execute(request).getEntity())).getJSONArray("datos");
-
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject object = array.getJSONObject(i);
-                links.add(new AnnouncementLink(
-                        object.getString(AnnouncementsSQLiteController.linkColumns[0]),
-                        object.getString(AnnouncementsSQLiteController.linkColumns[1]),
-                        object.getString(AnnouncementsSQLiteController.linkColumns[2]),
-                        object.getString(AnnouncementsSQLiteController.linkColumns[3])));
-            }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-
-        return links;
-    }*/
     public static ArrayList<AnnouncementLink> getAnnouncementLinks(Context context,
                                                                    @NonNull String _announcement) {
         ArrayList<AnnouncementLink> links = new ArrayList<>();
@@ -281,20 +208,6 @@ public class AnnouncementsServiceController {
      *             anuncio.
      * @return Respuesta del servidor.
      */
-    /*public static String modifyAnnouncementLink(Context context, String json) {
-        HttpPost post = new HttpPost(Utilities.URL_SERVICIO + _ANNOUNCEMENT_LINKS);
-        post.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        post.setHeader(HTTP.CONTENT_TYPE, "application/json");
-        post.setEntity(new StringEntity(json, "UTF-8"));
-
-        try {
-            return new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
-                    .execute(post).getEntity())).getString("mensaje");
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }*/
     public static String modifyAnnouncementLink(Context context, String json) {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(

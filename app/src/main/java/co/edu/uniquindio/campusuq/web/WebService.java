@@ -359,8 +359,8 @@ public class WebService extends JobIntentService {
             case ACTION_NEWS:
             case ACTION_EVENTS:
                 resultIntent = new Intent(getApplicationContext(), NewsActivity.class);
-                resultIntent.putExtra("CATEGORY",
-                        (type.equals(ACTION_NEWS) ? getString(R.string.news) : getString(R.string.events)));
+                resultIntent.putExtra("CATEGORY", getString(
+                        ACTION_NEWS.equals(type) ? R.string.news : R.string.events));
                 stackBuilder.addParentStack(NewsActivity.class);
                 stackBuilder.editIntentAt(0).putExtra("CATEGORY", getString(R.string.app_title_menu));
                 stackBuilder.editIntentAt(1).putExtra("CATEGORY", getString(R.string.information_module));
@@ -381,18 +381,14 @@ public class WebService extends JobIntentService {
                 stackBuilder.editIntentAt(0).putExtra("CATEGORY", getString(R.string.app_title_menu));
                 break;
             case ACTION_INCIDENTS:
-                resultIntent = new Intent(getApplicationContext(), AnnouncementsActivity.class);
-                resultIntent.putExtra("CATEGORY", getString(R.string.security_system));
-                stackBuilder.addParentStack(AnnouncementsActivity.class);
-                stackBuilder.editIntentAt(0).putExtra("CATEGORY", getString(R.string.app_title_menu));
-                stackBuilder.editIntentAt(1).putExtra("CATEGORY", getString(R.string.services_module));
-                break;
             case ACTION_COMMUNIQUES:
                 resultIntent = new Intent(getApplicationContext(), AnnouncementsActivity.class);
-                resultIntent.putExtra("CATEGORY", getString(R.string.billboard_information));
+                resultIntent.putExtra("CATEGORY", getString(
+                        ACTION_INCIDENTS.equals(type) ? R.string.security_system : R.string.billboard_information));
                 stackBuilder.addParentStack(AnnouncementsActivity.class);
                 stackBuilder.editIntentAt(0).putExtra("CATEGORY", getString(R.string.app_title_menu));
-                stackBuilder.editIntentAt(1).putExtra("CATEGORY", getString(R.string.state_module));
+                stackBuilder.editIntentAt(1).putExtra("CATEGORY", getString(
+                        ACTION_INCIDENTS.equals(type) ? R.string.services_module : R.string.state_module));
                 break;
             case ACTION_EMAILS:
                 resultIntent = new Intent(getApplicationContext(), EmailsActivity.class);

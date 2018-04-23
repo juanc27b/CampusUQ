@@ -26,52 +26,6 @@ import co.edu.uniquindio.campusuq.util.Utilities;
 
 public class NewsServiceController {
 
-    /*public static ArrayList<New> getNews(Context context, @NonNull String category_date,
-                                         State state, ArrayList<String> _IDs,
-                                         ArrayList<String> images) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + "/noticias" + category_date);
-        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        ArrayList<New> news = new ArrayList<>();
-
-        try {
-            JSONObject object = new JSONObject(EntityUtils.toString(HttpClientBuilder.create()
-                    .build().execute(request).getEntity()));
-            if (state != null) state.set(object.getInt("estado"));
-            JSONArray array = object.getJSONArray("datos");
-
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject obj = array.getJSONObject(i);
-                news.add(new New(obj.getString(NewsSQLiteController.columns[0]),
-                        StringEscapeUtils
-                                .unescapeHtml4(obj.getString(NewsSQLiteController.columns[1])),
-                        obj.getString(NewsSQLiteController.columns[2]),
-                        obj.getString(NewsSQLiteController.columns[3]),
-                        StringEscapeUtils
-                                .unescapeHtml4(obj.getString(NewsSQLiteController.columns[4])),
-                        StringEscapeUtils
-                                .unescapeHtml4(obj.getString(NewsSQLiteController.columns[5])),
-                        obj.getString(NewsSQLiteController.columns[6]),
-                        obj.getString(NewsSQLiteController.columns[7])));
-            }
-
-            if (_IDs != null && images != null) {
-                array = object.getJSONArray("_IDs");
-
-                for (int i = 0; i < array.length(); i++) {
-                    int index = _IDs.indexOf(array.getString(i));
-
-                    if (index != -1) {
-                        _IDs.remove(index);
-                        images.remove(index);
-                    }
-                }
-            }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-
-        return news;
-    }*/
     public static ArrayList<New> getNews(Context context, @NonNull String category_date,
                                          State state, ArrayList<String> _IDs,
                                          ArrayList<String> images) {
@@ -139,84 +93,7 @@ public class NewsServiceController {
 
         return news;
     }
-    /*public static ArrayList<New> getNews(Context context, @NonNull String category_date,
-                                         State state, ArrayList<String> _IDs,
-                                         ArrayList<String> images) {
-        Request request = new Request.Builder()
-                .url(Utilities.URL_SERVICIO + "/noticias" + category_date)
-                .header("Authorization", UsersPresenter.loadUser(context).getApiKey())
-                .get()
-                .build();
 
-        ArrayList<New> news = new ArrayList<>();
-
-        try {
-            Response response = new OkHttpClient().newCall(request).execute();
-            if (!response.isSuccessful()) {
-                Log.e("getNews", "Unexpected code " + response);
-                Log.e("getNews", response.body().string());
-            }
-
-            JSONObject object = new JSONObject(response.body().string());
-            if (state != null) state.set(object.getInt("estado"));
-            JSONArray array = object.getJSONArray("datos");
-
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject obj = array.getJSONObject(i);
-                news.add(new New(obj.getString(NewsSQLiteController.columns[0]),
-                        StringEscapeUtils
-                                .unescapeHtml4(obj.getString(NewsSQLiteController.columns[1])),
-                        obj.getString(NewsSQLiteController.columns[2]),
-                        obj.getString(NewsSQLiteController.columns[3]),
-                        StringEscapeUtils
-                                .unescapeHtml4(obj.getString(NewsSQLiteController.columns[4])),
-                        StringEscapeUtils
-                                .unescapeHtml4(obj.getString(NewsSQLiteController.columns[5])),
-                        obj.getString(NewsSQLiteController.columns[6]),
-                        obj.getString(NewsSQLiteController.columns[7])));
-            }
-
-            if (_IDs != null && images != null) {
-                array = object.getJSONArray("_IDs");
-
-                for (int i = 0; i < array.length(); i++) {
-                    int index = _IDs.indexOf(array.getString(i));
-
-                    if (index != -1) {
-                        _IDs.remove(index);
-                        images.remove(index);
-                    }
-                }
-            }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-
-        return news;
-    }*/
-
-    /*public static ArrayList<NewCategory> getNewCategories(Context context) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + "/noticia_categorias");
-        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        ArrayList<NewCategory> categories = new ArrayList<>();
-
-        try {
-            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
-                    .execute(request).getEntity())).getJSONArray("datos");
-
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject object = array.getJSONObject(i);
-                categories.add(new NewCategory(
-                        object.getString(NewsSQLiteController.categoryColumns[0]),
-                        object.getString(NewsSQLiteController.categoryColumns[1]),
-                        object.getString(NewsSQLiteController.categoryColumns[2])));
-            }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-
-        return categories;
-    }*/
     public static ArrayList<NewCategory> getNewCategories(Context context) {
         ArrayList<NewCategory> categories = new ArrayList<>();
 
@@ -262,27 +139,6 @@ public class NewsServiceController {
         return categories;
     }
 
-    /*public static ArrayList<NewRelation> getNewRelations(Context context, String idNew) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + "/noticia_relaciones" + idNew);
-        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        ArrayList<NewRelation> relations = new ArrayList<>();
-
-        try {
-            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
-                    .execute(request).getEntity())).getJSONArray("datos");
-
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject object = array.getJSONObject(i);
-                relations.add(new NewRelation(
-                        object.getString(NewsSQLiteController.relationColumns[0]),
-                        object.getString(NewsSQLiteController.relationColumns[1])));
-            }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-
-        return relations;
-    }*/
     public static ArrayList<NewRelation> getNewRelations(Context context, String idNew) {
         ArrayList<NewRelation> relations = new ArrayList<>();
 

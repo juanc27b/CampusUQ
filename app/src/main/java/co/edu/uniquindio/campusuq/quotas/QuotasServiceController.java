@@ -31,28 +31,6 @@ public class QuotasServiceController {
      *                iniciado sesion.
      * @return Arreglo de cupos.
      */
-    /*public static ArrayList<Quota> getQuotas(Context context) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + _QUOTAS);
-        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        ArrayList<Quota> quotas = new ArrayList<>();
-
-        try {
-            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
-                    .execute(request).getEntity())).getJSONArray("datos");
-
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject object = array.getJSONObject(i);
-                quotas.add(new Quota(object.getString(QuotasSQLiteController.columns[0]),
-                        object.getString(QuotasSQLiteController.columns[1]),
-                        object.getString(QuotasSQLiteController.columns[2]),
-                        object.getString(QuotasSQLiteController.columns[3])));
-            }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-
-        return quotas;
-    }*/
     public static ArrayList<Quota> getQuotas(Context context) {
         ArrayList<Quota> quotas = new ArrayList<>();
 
@@ -105,20 +83,6 @@ public class QuotasServiceController {
      * @param json Petición en formato JSON para insertar, actualizar o eliminar un cupo.
      * @return Respuesta del servidor.
      */
-    /*public static String modifyQuota(Context context, String json) {
-        HttpPost post = new HttpPost(Utilities.URL_SERVICIO + _QUOTAS);
-        post.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        post.setHeader(HTTP.CONTENT_TYPE, "application/json");
-        post.setEntity(new StringEntity(json, "UTF-8"));
-
-        try {
-            return new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
-                    .execute(post).getEntity())).getString("mensaje");
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }*/
     public static String modifyQuota(Context context, String json) {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(

@@ -24,59 +24,6 @@ import co.edu.uniquindio.campusuq.util.Utilities;
 
 public class ProgramsServiceController {
 
-    /*public static ArrayList<Program> getPrograms(Context context) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + "/programas");
-        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        ArrayList<Program> programs = new ArrayList<>();
-
-        try {
-            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
-                    .execute(request).getEntity())).getJSONArray("datos");
-
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject object = array.getJSONObject(i);
-                programs.add(new Program(
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.columns[0])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.columns[1])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.columns[2])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.columns[3])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.columns[4])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.columns[5])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.columns[6])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.columns[7])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.columns[8])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.columns[9])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.columns[10])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.columns[11])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.columns[12])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.columns[13])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.columns[14])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.columns[15])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.columns[16]))));
-            }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-
-        return programs;
-    }*/
     public static ArrayList<Program> getPrograms(Context context) {
         ArrayList<Program> programs = new ArrayList<>();
 
@@ -153,29 +100,6 @@ public class ProgramsServiceController {
         return programs;
     }
 
-    /*public static ArrayList<ProgramCategory> getProgramCategories(Context context) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + "/programa_categorias");
-        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        ArrayList<ProgramCategory> categories = new ArrayList<>();
-
-        try {
-            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
-                    .execute(request).getEntity())).getJSONArray("datos");
-
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject object = array.getJSONObject(i);
-                categories.add(new ProgramCategory(
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.categoryColumns[0])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.categoryColumns[1]))));
-            }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-
-        return categories;
-    }*/
     public static ArrayList<ProgramCategory> getProgramCategories(Context context) {
         ArrayList<ProgramCategory> categories = new ArrayList<>();
 
@@ -222,29 +146,6 @@ public class ProgramsServiceController {
         return categories;
     }
 
-    /*public static ArrayList<ProgramFaculty> getProgramFaculties(Context context) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + "/programa_facultades");
-        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        ArrayList<ProgramFaculty> faculties = new ArrayList<>();
-
-        try {
-            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
-                    .execute(request).getEntity())).getJSONArray("datos");
-
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject object = array.getJSONObject(i);
-                faculties.add(new ProgramFaculty(
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.facultyColumns[0])),
-                        StringEscapeUtils.unescapeHtml4(
-                                object.getString(ProgramsSQLiteController.facultyColumns[1]))));
-            }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-
-        return faculties;
-    }*/
     public static ArrayList<ProgramFaculty> getProgramFaculties(Context context) {
         ArrayList<ProgramFaculty> faculties = new ArrayList<>();
 

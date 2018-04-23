@@ -35,9 +35,11 @@ public class ObjectsPresenter {
                     ObjectsSQLiteController.columns[1] + " = ?", user.get_ID());
             limit = limit - objects.size();
             if (limit > 0) objects.addAll(dbController.select("" + limit,
-                    ObjectsSQLiteController.columns[1] + " != ? AND " +
-                            ObjectsSQLiteController.columns[8] + " IS NULL AND " +
-                            ObjectsSQLiteController.columns[9] + " = 0", user.get_ID()));
+                    ObjectsSQLiteController.columns[1] + " != ? AND (" +
+                            ObjectsSQLiteController.columns[8] + " IS NULL OR " +
+                            ObjectsSQLiteController.columns[8] + " = ?) AND " +
+                            ObjectsSQLiteController.columns[9] + " = 0",
+                    user.get_ID(), user.get_ID()));
         }
 
         dbController.destroy();

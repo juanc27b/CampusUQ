@@ -42,53 +42,6 @@ public class ObjectsServiceController {
      *                remoberan de dicho arreglo si tambien estan en el servidor.
      * @return Arreglo de objetos perdidos.
      */
-    /*public static ArrayList<LostObject> getObjects(Context context, @NonNull String date,
-                                                   State state, ArrayList<String> _IDs,
-                                                   ArrayList<String> images) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + _OBJECTS + date);
-        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        ArrayList<LostObject> objects = new ArrayList<>();
-
-        try {
-            JSONObject object = new JSONObject(EntityUtils.toString(HttpClientBuilder.create()
-                    .build().execute(request).getEntity()));
-            if (state != null) state.set(object.getInt("estado"));
-            JSONArray array = object.getJSONArray("datos");
-
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject obj = array.getJSONObject(i);
-                objects.add(new LostObject(obj.getString(ObjectsSQLiteController.columns[0]),
-                        obj.getString(ObjectsSQLiteController.columns[1]),
-                        obj.getString(ObjectsSQLiteController.columns[2]),
-                        obj.getString(ObjectsSQLiteController.columns[3]),
-                        obj.getString(ObjectsSQLiteController.columns[4]),
-                        obj.getString(ObjectsSQLiteController.columns[5]),
-                        obj.getString(ObjectsSQLiteController.columns[6]),
-                        obj.isNull(ObjectsSQLiteController.columns[7]) ?
-                                null : obj.getString(ObjectsSQLiteController.columns[7]),
-                        obj.isNull(ObjectsSQLiteController.columns[8]) ?
-                                null : obj.getString(ObjectsSQLiteController.columns[8]),
-                        "0"));
-            }
-
-            if (_IDs != null && images != null) {
-                array = object.getJSONArray("_IDs");
-
-                for (int i = 0; i < array.length(); i++) {
-                    int index = _IDs.indexOf(array.getString(i));
-
-                    if (index != -1) {
-                        _IDs.remove(index);
-                        images.remove(index);
-                    }
-                }
-            }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-
-        return objects;
-    }*/
     public static ArrayList<LostObject> getObjects(Context context, @NonNull String date,
                                                    State state, ArrayList<String> _IDs,
                                                    ArrayList<String> images) {
@@ -165,20 +118,6 @@ public class ObjectsServiceController {
      * @param json Petición en formato JSON para insertar, actualizar o eliminar un objeto perdido.
      * @return Respuesta del servidor.
      */
-    /*public static String modifyObject(Context context, String json) {
-        HttpPost post = new HttpPost(Utilities.URL_SERVICIO + _OBJECTS);
-        post.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        post.setHeader(HTTP.CONTENT_TYPE, "application/json");
-        post.setEntity(new StringEntity(json, "UTF-8"));
-
-        try {
-            return new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
-                    .execute(post).getEntity())).getString("mensaje");
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }*/
     public static String modifyObject(Context context, String json) {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(
