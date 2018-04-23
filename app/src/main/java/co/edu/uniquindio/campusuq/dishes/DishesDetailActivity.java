@@ -208,11 +208,18 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
         if (requestCode == REQUEST_IMAGE && resultCode == RESULT_OK) try {
             imageFile = new File(Utilities.getPath(this, data.getData()));
 
-            if (imageFile.exists()) {
-                image.setImageBitmap(Utilities
-                        .getResizedBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath())));
+            if (imageFile.length() <= Utilities.UPLOAD_FILE_MAX_MB * 1024 * 1024) {
+                if (imageFile.exists()) {
+                    image.setImageBitmap(Utilities.getResizedBitmap(BitmapFactory
+                            .decodeFile(imageFile.getAbsolutePath())));
+                } else {
+                    image.setImageResource(R.drawable.rectangle_gray);
+                }
             } else {
-                image.setImageResource(R.drawable.rectangle_gray);
+                Toast.makeText(this,
+                        getString(R.string.too_large_file) +
+                                ' ' + Utilities.UPLOAD_FILE_MAX_MB + " MB",
+                        Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             e.printStackTrace();

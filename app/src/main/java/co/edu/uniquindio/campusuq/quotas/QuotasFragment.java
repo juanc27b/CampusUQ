@@ -115,11 +115,11 @@ public class QuotasFragment extends DialogFragment implements View.OnClickListen
         switch (view.getId()) {
             case R.id.quota_dialog_minus:
                 quota.setText(String.valueOf(Math
-                        .min(Math.max(Integer.parseInt(quota.getText().toString()) - 1, 0), 99)));
+                        .min(Math.max(Integer.parseInt(quota.getText().toString()) - 1, 0), 999)));
                 break;
             case R.id.quota_dialog_plus:
                 quota.setText(String.valueOf(Math
-                        .min(Math.max(Integer.parseInt(quota.getText().toString()) + 1, 0), 99)));
+                        .min(Math.max(Integer.parseInt(quota.getText().toString()) + 1, 0), 999)));
                 break;
             case R.id.quota_dialog_ok:
             case R.id.dialog_ok:

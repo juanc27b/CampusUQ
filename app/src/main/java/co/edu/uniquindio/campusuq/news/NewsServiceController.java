@@ -6,15 +6,19 @@ import android.util.Log;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
+import co.edu.uniquindio.campusuq.util.State;
 import co.edu.uniquindio.campusuq.util.Utilities;
-import cz.msebera.android.httpclient.client.methods.HttpGet;
-import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
-import cz.msebera.android.httpclient.util.EntityUtils;
 
 /**
  * Created by Juan Camilo on 13/02/2018.
@@ -23,14 +27,37 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 public class NewsServiceController {
 
     public static ArrayList<New> getNews(Context context, @NonNull String category_date,
-                                         ArrayList<String> _IDs, ArrayList<String> images) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO+"/noticias"+category_date);
-        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
+                                         State state, ArrayList<String> _IDs,
+                                         ArrayList<String> images) {
         ArrayList<New> news = new ArrayList<>();
 
         try {
-            JSONObject object = new JSONObject(EntityUtils.toString(HttpClientBuilder.create()
-                    .build().execute(request).getEntity()));
+            HttpURLConnection connection = (HttpURLConnection) new URL(
+                    Utilities.URL_SERVICIO + "/noticias" + category_date).openConnection();
+            connection.setRequestProperty("Authorization",
+                    UsersPresenter.loadUser(context).getApiKey());
+
+            InputStream inputStream;
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            try {
+                inputStream = connection.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("ResponseCode", "" + connection.getResponseCode());
+                InputStream errorStream = connection.getErrorStream();
+
+                if (errorStream != null) {
+                    Utilities.copy(errorStream, byteArrayOutputStream);
+                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                }
+
+                return news;
+            }
+
+            Utilities.copy(inputStream, byteArrayOutputStream);
+            JSONObject object = new JSONObject(byteArrayOutputStream.toString());
+            if (state != null) state.set(object.getInt("estado"));
             JSONArray array = object.getJSONArray("datos");
 
             for (int i = 0; i < array.length(); i++) {
@@ -53,25 +80,50 @@ public class NewsServiceController {
 
                 for (int i = 0; i < array.length(); i++) {
                     int index = _IDs.indexOf(array.getString(i));
-                    _IDs.remove(index);
-                    images.remove(index);
+
+                    if (index != -1) {
+                        _IDs.remove(index);
+                        images.remove(index);
+                    }
                 }
             }
-        } catch (Exception e) {
-            Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
         }
 
         return news;
     }
 
     public static ArrayList<NewCategory> getNewCategories(Context context) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO+"/noticia_categorias");
-        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         ArrayList<NewCategory> categories = new ArrayList<>();
 
         try {
-            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
-                    .execute(request).getEntity())).getJSONArray("datos");
+            HttpURLConnection connection = (HttpURLConnection) new URL(
+                    Utilities.URL_SERVICIO + "/noticia_categorias").openConnection();
+            connection.setRequestProperty("Authorization",
+                    UsersPresenter.loadUser(context).getApiKey());
+
+            InputStream inputStream;
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            try {
+                inputStream = connection.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("ResponseCode", "" + connection.getResponseCode());
+                InputStream errorStream = connection.getErrorStream();
+
+                if (errorStream != null) {
+                    Utilities.copy(errorStream, byteArrayOutputStream);
+                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                }
+
+                return categories;
+            }
+
+            Utilities.copy(inputStream, byteArrayOutputStream);
+            JSONArray array =
+                    new JSONObject(byteArrayOutputStream.toString()).getJSONArray("datos");
 
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
@@ -80,21 +132,43 @@ public class NewsServiceController {
                         object.getString(NewsSQLiteController.categoryColumns[1]),
                         object.getString(NewsSQLiteController.categoryColumns[2])));
             }
-        } catch (Exception e) {
-            Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
         }
 
         return categories;
     }
 
     public static ArrayList<NewRelation> getNewRelations(Context context, String idNew) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO+"/noticia_relaciones"+idNew);
-        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         ArrayList<NewRelation> relations = new ArrayList<>();
 
         try {
-            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
-                    .execute(request).getEntity())).getJSONArray("datos");
+            HttpURLConnection connection = (HttpURLConnection) new URL(
+                    Utilities.URL_SERVICIO + "/noticia_relaciones" + idNew).openConnection();
+            connection.setRequestProperty("Authorization",
+                    UsersPresenter.loadUser(context).getApiKey());
+
+            InputStream inputStream;
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            try {
+                inputStream = connection.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("ResponseCode", "" + connection.getResponseCode());
+                InputStream errorStream = connection.getErrorStream();
+
+                if (errorStream != null) {
+                    Utilities.copy(errorStream, byteArrayOutputStream);
+                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                }
+
+                return relations;
+            }
+
+            Utilities.copy(inputStream, byteArrayOutputStream);
+            JSONArray array =
+                    new JSONObject(byteArrayOutputStream.toString()).getJSONArray("datos");
 
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
@@ -102,8 +176,8 @@ public class NewsServiceController {
                         object.getString(NewsSQLiteController.relationColumns[0]),
                         object.getString(NewsSQLiteController.relationColumns[1])));
             }
-        } catch (Exception e) {
-            Log.e(NewsServiceController.class.getSimpleName(), e.getMessage());
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
         }
 
         return relations;

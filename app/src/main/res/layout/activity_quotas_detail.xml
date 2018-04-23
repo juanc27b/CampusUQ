@@ -66,7 +66,7 @@
                 android:layout_marginBottom="10dp"
                 android:textSize="15sp"
                 android:inputType="number"
-                android:maxLength="2"
+                android:maxLength="3"
                 android:hint="@string/quota_detail_quota_hint"/>
 
             <Button

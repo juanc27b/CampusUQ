@@ -2,23 +2,23 @@ package co.edu.uniquindio.campusuq.announcements;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.State;
 import co.edu.uniquindio.campusuq.util.Utilities;
-import cz.msebera.android.httpclient.client.methods.HttpGet;
-import cz.msebera.android.httpclient.client.methods.HttpPost;
-import cz.msebera.android.httpclient.entity.StringEntity;
-import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
-import cz.msebera.android.httpclient.protocol.HTTP;
-import cz.msebera.android.httpclient.util.EntityUtils;
 
 /**
  * Controlador del servicio de anuncios que permite enviar y recivir anuncios desde y hacia el
@@ -43,15 +43,35 @@ public class AnnouncementsServiceController {
      */
     public static ArrayList<Announcement> getAnnouncements(Context context,
                                                            @NonNull String category_date,
-                                                           State state,
-                                                           ArrayList<String> _IDs) {
-        HttpGet request = new HttpGet(Utilities.URL_SERVICIO + _ANNOUNCEMENTS + category_date);
-        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
+                                                           State state, ArrayList<String> _IDs) {
         ArrayList<Announcement> announcements = new ArrayList<>();
 
         try {
-            JSONObject object = new JSONObject(EntityUtils.toString(HttpClientBuilder.create()
-                    .build().execute(request).getEntity()));
+            HttpURLConnection connection = (HttpURLConnection) new URL(
+                    Utilities.URL_SERVICIO + _ANNOUNCEMENTS + category_date).openConnection();
+            connection.setRequestProperty("Authorization",
+                    UsersPresenter.loadUser(context).getApiKey());
+
+            InputStream inputStream;
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            try {
+                inputStream = connection.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("ResponseCode", "" + connection.getResponseCode());
+                InputStream errorStream = connection.getErrorStream();
+
+                if (errorStream != null) {
+                    Utilities.copy(errorStream, byteArrayOutputStream);
+                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                }
+
+                return announcements;
+            }
+
+            Utilities.copy(inputStream, byteArrayOutputStream);
+            JSONObject object = new JSONObject(byteArrayOutputStream.toString());
             if (state != null) state.set(object.getInt("estado"));
             JSONArray array = object.getJSONArray("datos");
 
@@ -85,14 +105,38 @@ public class AnnouncementsServiceController {
      * @return Respuesta del servidor.
      */
     public static String modifyAnnouncement(Context context, String json) {
-        HttpPost post = new HttpPost(Utilities.URL_SERVICIO + _ANNOUNCEMENTS);
-        post.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        post.setHeader(HTTP.CONTENT_TYPE, "application/json");
-        post.setEntity(new StringEntity(json, "UTF-8"));
-
         try {
-            return EntityUtils
-                    .toString(HttpClientBuilder.create().build().execute(post).getEntity());
+            HttpURLConnection connection = (HttpURLConnection) new URL(
+                    Utilities.URL_SERVICIO + _ANNOUNCEMENTS).openConnection();
+            connection.setRequestProperty("Authorization",
+                    UsersPresenter.loadUser(context).getApiKey());
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+
+            try (OutputStream outputStream = connection.getOutputStream()) {
+                outputStream.write(json.getBytes());
+            }
+
+            InputStream inputStream;
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            try {
+                inputStream = connection.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("ResponseCode", "" + connection.getResponseCode());
+                InputStream errorStream = connection.getErrorStream();
+
+                if (errorStream != null) {
+                    Utilities.copy(errorStream, byteArrayOutputStream);
+                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                }
+
+                return null;
+            }
+
+            Utilities.copy(inputStream, byteArrayOutputStream);
+            return byteArrayOutputStream.toString();
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -110,14 +154,36 @@ public class AnnouncementsServiceController {
      */
     public static ArrayList<AnnouncementLink> getAnnouncementLinks(Context context,
                                                                    @NonNull String _announcement) {
-        HttpGet request =
-                new HttpGet(Utilities.URL_SERVICIO + _ANNOUNCEMENT_LINKS + _announcement);
-        request.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
         ArrayList<AnnouncementLink> links = new ArrayList<>();
 
         try {
-            JSONArray array = new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
-                    .execute(request).getEntity())).getJSONArray("datos");
+            HttpURLConnection connection = (HttpURLConnection) new URL(
+                    Utilities.URL_SERVICIO + _ANNOUNCEMENT_LINKS + _announcement)
+                    .openConnection();
+            connection.setRequestProperty("Authorization",
+                    UsersPresenter.loadUser(context).getApiKey());
+
+            InputStream inputStream;
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            try {
+                inputStream = connection.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("ResponseCode", "" + connection.getResponseCode());
+                InputStream errorStream = connection.getErrorStream();
+
+                if (errorStream != null) {
+                    Utilities.copy(errorStream, byteArrayOutputStream);
+                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                }
+
+                return links;
+            }
+
+            Utilities.copy(inputStream, byteArrayOutputStream);
+            JSONArray array =
+                    new JSONObject(byteArrayOutputStream.toString()).getJSONArray("datos");
 
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
@@ -143,14 +209,38 @@ public class AnnouncementsServiceController {
      * @return Respuesta del servidor.
      */
     public static String modifyAnnouncementLink(Context context, String json) {
-        HttpPost post = new HttpPost(Utilities.URL_SERVICIO + _ANNOUNCEMENT_LINKS);
-        post.setHeader("Authorization", UsersPresenter.loadUser(context).getApiKey());
-        post.setHeader(HTTP.CONTENT_TYPE, "application/json");
-        post.setEntity(new StringEntity(json, "UTF-8"));
-
         try {
-            return new JSONObject(EntityUtils.toString(HttpClientBuilder.create().build()
-                    .execute(post).getEntity())).getString("mensaje");
+            HttpURLConnection connection = (HttpURLConnection) new URL(
+                    Utilities.URL_SERVICIO + _ANNOUNCEMENT_LINKS).openConnection();
+            connection.setRequestProperty("Authorization",
+                    UsersPresenter.loadUser(context).getApiKey());
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+
+            try (OutputStream outputStream = connection.getOutputStream()) {
+                outputStream.write(json.getBytes());
+            }
+
+            InputStream inputStream;
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            try {
+                inputStream = connection.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("ResponseCode", "" + connection.getResponseCode());
+                InputStream errorStream = connection.getErrorStream();
+
+                if (errorStream != null) {
+                    Utilities.copy(errorStream, byteArrayOutputStream);
+                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                }
+
+                return null;
+            }
+
+            Utilities.copy(inputStream, byteArrayOutputStream);
+            return new JSONObject(byteArrayOutputStream.toString()).getString("mensaje");
         } catch (IOException | JSONException e) {
             e.printStackTrace();
             return null;

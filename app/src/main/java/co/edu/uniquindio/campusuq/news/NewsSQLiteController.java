@@ -105,6 +105,18 @@ public class NewsSQLiteController {
                         Collections.nCopies(categoryColumns.length, '?')) + ')', values);
     }
 
+    public void updateCategory(Object... values) {
+        db.execSQL("UPDATE " + categoryTablename + " SET " +
+                TextUtils.join(" = ?, ", categoryColumns) + " = ? WHERE " +
+                categoryColumns[0] + " = ?", values);
+    }
+
+    public void deleteCategory(Object... ids) {
+        db.execSQL("DELETE FROM " + categoryTablename + " WHERE " +
+                categoryColumns[0] + " IN(" +
+                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
+    }
+
     public static String createRelationTable(){
         return "CREATE TABLE " + relationTablename + '(' +
                 relationColumns[0] + " INTEGER NOT NULL REFERENCES " + categoryTablename + '(' +

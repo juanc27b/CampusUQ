@@ -1,5 +1,6 @@
 package co.edu.uniquindio.campusuq.util;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -21,7 +22,9 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.MessageDigest;
@@ -50,6 +53,8 @@ public class Utilities {
 
     public static final int SUCCESS_STATE = 11;
     public static final int FAILURE_STATE = 12;
+
+    public static final long UPLOAD_FILE_MAX_MB = 11;
 
     public static void getKeyHash(Context context) {
         try {
@@ -98,29 +103,20 @@ public class Utilities {
         return pDialog;
     }
 
-    public static String saveImage(String spec, String path, Context context) {
+    public static String saveMedia(String spec, String path, Context context) {
         String imagePath = null;
 
         if (spec != null) try {
-            URLConnection connection = new URL(spec).openConnection();
-            connection.connect();
-            InputStream input = connection.getInputStream();
-
             File dir = new File(Environment.getExternalStorageDirectory()
                     .getAbsolutePath() + "/CampusUQ/Media" + path);
             dir.mkdirs();
             File file = new File(dir, spec.substring(spec.lastIndexOf('/') + 1));
-            FileOutputStream output = new FileOutputStream(file);
 
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = input.read(buffer)) != -1) output.write(buffer, 0, bytesRead);
-            input.close();
-            output.close();
+            copy(new URL(spec).openConnection().getInputStream(), new FileOutputStream(file));
 
             imagePath = file.getPath();
-            MediaScannerConnection.scanFile(context, new String[]{imagePath}, null,
-                    null);
+            MediaScannerConnection
+                    .scanFile(context, new String[]{imagePath}, null, null);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -128,11 +124,28 @@ public class Utilities {
         return imagePath;
     }
 
+    public static void copy(InputStream inputStream, OutputStream outputStream) throws IOException {
+        try {
+            for (byte[] buffer = new byte[4096]; ; ) {
+                int bytesRead = inputStream.read(buffer);
+                if (bytesRead == -1) break;
+                outputStream.write(buffer, 0, bytesRead);
+            }
+        } finally {
+            try {
+                inputStream.close();
+            } finally {
+                outputStream.close();
+            }
+        }
+    }
+
     public static void deleteHistory(Context context) {
         ObjectsPresenter.deleteHistory(context);
         AnnouncementsPresenter.deleteHistory(context);
     }
 
+    @SuppressLint("ApplySharedPref")
     public static void changeLanguage(Context context) {
         SharedPreferences sharedPreferences =
                 context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);

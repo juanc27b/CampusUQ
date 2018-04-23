@@ -339,4 +339,6 @@
 
     <string name="oh_no">Oh no!</string>
 
+    <string name="too_large_file">The file is too large, can not be larger than</string>
+
 </resources>
