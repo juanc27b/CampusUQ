@@ -1,9 +1,5 @@
 package co.edu.uniquindio.campusuq.events;
 
-/**
- * Created by Juan Camilo on 1/03/2018.
- */
-
 public class CalendarDetailItem {
 
     private String period;

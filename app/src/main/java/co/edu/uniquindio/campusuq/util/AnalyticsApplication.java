@@ -1,9 +1,5 @@
 package co.edu.uniquindio.campusuq.util;
 
-/**
- * Created by Juan Camilo on 29/03/2018.
- */
-
 import android.app.Application;
 
 import com.google.android.gms.analytics.GoogleAnalytics;

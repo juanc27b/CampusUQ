@@ -4,10 +4,6 @@ import android.content.Context;
 
 import java.util.ArrayList;
 
-/**
- * Created by Juan Camilo on 15/03/2018.
- */
-
 public class UsersPresenter {
 
     public static User loadUser(Context context) {

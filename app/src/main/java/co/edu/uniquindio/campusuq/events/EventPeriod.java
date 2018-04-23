@@ -1,9 +1,5 @@
 package co.edu.uniquindio.campusuq.events;
 
-/**
- * Created by Juan Camilo on 28/02/2018.
- */
-
 public class EventPeriod {
 
     private String _ID;

@@ -28,10 +28,6 @@ import java.util.List;
 
 import co.edu.uniquindio.campusuq.R;
 
-/**
- * Created by Juan Camilo on 18/02/2018.
- */
-
 public class MediaPlaybackService extends MediaBrowserServiceCompat {
 
     public final static String stream = "http://72.29.81.205:9030/;";

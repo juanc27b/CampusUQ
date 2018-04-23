@@ -19,10 +19,6 @@ import co.edu.uniquindio.campusuq.programs.Program;
 import co.edu.uniquindio.campusuq.programs.ProgramCategory;
 import co.edu.uniquindio.campusuq.programs.ProgramFaculty;
 
-/**
- * Created by Juan Camilo on 20/02/2018.
- */
-
 public class ItemsPresenter {
 
     private ArrayList<Item> informationItems;

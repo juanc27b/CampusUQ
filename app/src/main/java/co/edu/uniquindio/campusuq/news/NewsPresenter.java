@@ -8,10 +8,6 @@ import java.util.Collections;
 
 import co.edu.uniquindio.campusuq.web.WebService;
 
-/**
- * Created by Juan Camilo on 23/02/2018.
- */
-
 class NewsPresenter {
 
     static ArrayList<New> loadNews(String type, Context context, int limit) {

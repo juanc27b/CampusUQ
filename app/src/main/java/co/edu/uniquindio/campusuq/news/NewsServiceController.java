@@ -20,10 +20,6 @@ import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.State;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
-/**
- * Created by Juan Camilo on 13/02/2018.
- */
-
 public class NewsServiceController {
 
     public static ArrayList<New> getNews(Context context, @NonNull String category_date,

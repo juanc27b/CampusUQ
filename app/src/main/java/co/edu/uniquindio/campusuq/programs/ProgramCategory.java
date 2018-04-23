@@ -1,9 +1,5 @@
 package co.edu.uniquindio.campusuq.programs;
 
-/**
- * Created by Juan Camilo on 28/02/2018.
- */
-
 public class ProgramCategory {
 
     private String _ID;

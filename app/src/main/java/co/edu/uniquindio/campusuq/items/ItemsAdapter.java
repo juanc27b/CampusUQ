@@ -12,10 +12,6 @@ import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
 
-/**
- * Created by Juan Camilo on 7/02/2018.
- */
-
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
 
     private ArrayList<Item> items;

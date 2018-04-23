@@ -19,10 +19,6 @@ import java.util.ArrayList;
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
-/**
- * Created by Juan Camilo on 28/02/2018.
- */
-
 public class EventsServiceController {
 
     public static ArrayList<Event> getEvents(Context context) {

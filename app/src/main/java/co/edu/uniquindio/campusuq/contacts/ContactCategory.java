@@ -1,9 +1,5 @@
 package co.edu.uniquindio.campusuq.contacts;
 
-/**
- * Created by Juan Camilo on 23/02/2018.
- */
-
 public class ContactCategory {
 
     private String _ID;

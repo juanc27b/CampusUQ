@@ -1,9 +1,5 @@
 package co.edu.uniquindio.campusuq.notifications;
 
-/**
- * Created by Juan Camilo on 22/03/2018.
- */
-
 public class Notification {
 
     private String _ID;

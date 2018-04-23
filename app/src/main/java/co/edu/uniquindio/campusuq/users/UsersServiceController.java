@@ -14,10 +14,6 @@ import java.net.URL;
 
 import co.edu.uniquindio.campusuq.util.Utilities;
 
-/**
- * Created by Juan Camilo on 15/03/2018.
- */
-
 public class UsersServiceController {
 
     public static User login(String json) {

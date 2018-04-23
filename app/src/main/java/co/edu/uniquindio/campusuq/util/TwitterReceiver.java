@@ -7,10 +7,6 @@ import android.widget.Toast;
 
 import com.twitter.sdk.android.tweetcomposer.TweetUploadService;
 
-/**
- * Created by Juan Camilo on 29/03/2018.
- */
-
 public class TwitterReceiver extends BroadcastReceiver {
 
     @Override

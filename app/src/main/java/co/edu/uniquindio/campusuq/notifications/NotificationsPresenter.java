@@ -6,10 +6,6 @@ import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.web.WebService;
 
-/**
- * Created by Juan Camilo on 22/03/2018.
- */
-
 public class NotificationsPresenter {
 
     public static ArrayList<Notification> loadNotifications(Context context) {

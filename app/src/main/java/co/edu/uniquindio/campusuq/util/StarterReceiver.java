@@ -8,10 +8,6 @@ import android.content.Intent;
 
 import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 
-/**
- * Created by Juan Camilo on 21/02/2018.
- */
-
 public class StarterReceiver extends BroadcastReceiver {
 
     @Override

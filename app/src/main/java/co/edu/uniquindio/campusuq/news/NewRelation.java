@@ -1,9 +1,5 @@
 package co.edu.uniquindio.campusuq.news;
 
-/**
- * Created by Juan Camilo on 13/02/2018.
- */
-
 public class NewRelation {
 
     private String category_ID;

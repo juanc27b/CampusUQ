@@ -17,10 +17,6 @@ import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
 
-/**
- * Created by Juan Camilo on 8/02/2018.
- */
-
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewViewHolder> {
 
     static final String NOTICE    = "notice";

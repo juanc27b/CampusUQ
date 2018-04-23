@@ -19,10 +19,6 @@ import java.util.ArrayList;
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
-/**
- * Created by Juan Camilo on 20/02/2018.
- */
-
 public class InformationsServiceController {
 
     public static ArrayList<Information> getInformations(Context context,

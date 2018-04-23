@@ -17,10 +17,6 @@ import co.edu.uniquindio.campusuq.programs.ProgramsSQLiteController;
 import co.edu.uniquindio.campusuq.quotas.QuotasSQLiteController;
 import co.edu.uniquindio.campusuq.users.UsersSQLiteController;
 
-/**
- * Created by Juan Camilo on 13/02/2018.
- */
-
 public class SQLiteHelper extends SQLiteOpenHelper {
 
     public SQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory,

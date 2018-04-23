@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
@@ -35,10 +34,6 @@ import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.announcements.AnnouncementsPresenter;
 import co.edu.uniquindio.campusuq.objects.ObjectsPresenter;
 import co.edu.uniquindio.campusuq.web.WebService;
-
-/**
- * Created by Juan Camilo on 8/02/2018.
- */
 
 public class Utilities {
 

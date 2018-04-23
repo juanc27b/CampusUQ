@@ -3,10 +3,6 @@ package co.edu.uniquindio.campusuq.items;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by Juan Camilo on 7/02/2018.
- */
-
 public class Item implements Parcelable {
 
     private int background;

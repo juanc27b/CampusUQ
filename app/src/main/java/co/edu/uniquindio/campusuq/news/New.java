@@ -1,9 +1,5 @@
 package co.edu.uniquindio.campusuq.news;
 
-/**
- * Created by Juan Camilo on 8/02/2018.
- */
-
 public class New {
 
     private String _ID;

@@ -5,10 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-/**
- * Created by Juan Camilo on 21/02/2018.
- */
-
 public class WebBroadcastReceiver extends BroadcastReceiver {
 
     public static final String ACTION_START_WEB_SERVICE = "co.edu.uniquindio.campusuq.ACTION_START_WEB_SERVICE";

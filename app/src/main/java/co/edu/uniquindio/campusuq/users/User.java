@@ -3,10 +3,6 @@ package co.edu.uniquindio.campusuq.users;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by Juan Camilo on 15/03/2018.
- */
-
 public class User implements Parcelable {
 
     private String _ID;

@@ -11,10 +11,6 @@ import java.util.Collections;
 import co.edu.uniquindio.campusuq.util.SQLiteHelper;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
-/**
- * Created by Juan Camilo on 21/02/2018.
- */
-
 public class InformationsSQLiteController {
 
     private static final String tablename = "Informacion";

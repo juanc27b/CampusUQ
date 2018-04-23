@@ -9,10 +9,6 @@ import java.util.Date;
 
 import co.edu.uniquindio.campusuq.R;
 
-/**
- * Created by Juan Camilo on 1/03/2018.
- */
-
 class CalendarPresenter {
 
     static ArrayList<CalendarItem> getCalendarItems(String categoryName, Context context) {

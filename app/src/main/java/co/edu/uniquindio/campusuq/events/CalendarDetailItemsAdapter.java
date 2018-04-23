@@ -12,10 +12,6 @@ import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
 
-/**
- * Created by Juan Camilo on 1/03/2018.
- */
-
 public class CalendarDetailItemsAdapter extends
         RecyclerView.Adapter<CalendarDetailItemsAdapter.CalendarDetailItemViewHolder> {
 

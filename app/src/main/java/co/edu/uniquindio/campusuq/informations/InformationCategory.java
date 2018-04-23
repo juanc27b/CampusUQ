@@ -1,9 +1,5 @@
 package co.edu.uniquindio.campusuq.informations;
 
-/**
- * Created by Juan Camilo on 20/02/2018.
- */
-
 public class InformationCategory {
 
     private String _ID;
