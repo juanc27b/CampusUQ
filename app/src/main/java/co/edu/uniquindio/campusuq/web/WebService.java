@@ -1262,7 +1262,7 @@ public class WebService extends JobIntentService {
         int inserted = 0;
 
         if (Utilities.haveNetworkConnection(getApplicationContext())) {
-            switch(method) {
+            switch (method) {
                 case METHOD_POST:
                 case METHOD_PUT:
                 case METHOD_DELETE:
@@ -1286,11 +1286,8 @@ public class WebService extends JobIntentService {
                     }
                     break;
                 case METHOD_GET:
-                    boolean notify = "S".equals(NotificationsPresenter
-                            .getNotification(getApplicationContext(), "6").getActivated());
-                    NotificationManager manager =
-                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                     User user = UsersPresenter.loadUser(getApplicationContext());
+
                     if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail())) {
                         EmailsSQLiteController dbController =
                                 new EmailsSQLiteController(getApplicationContext(), 1);
@@ -1298,21 +1295,26 @@ public class WebService extends JobIntentService {
                         ArrayList<String> oldIDs = new ArrayList<>();
                         ArrayList<Email> olds = dbController.select("50");
                         for (Email old : olds) oldIDs.add(old.get_ID());
+
+                        NotificationManager manager = "S".equals(NotificationsPresenter
+                                .getNotification(getApplicationContext(), "6")
+                                .getActivated()) && !oldIDs.isEmpty() ? (NotificationManager)
+                                getSystemService(Context.NOTIFICATION_SERVICE) : null;
+
                         try {
-                            ArrayList<Email> emails = EmailsServiceController.getEmails(
+                            for (Email email : EmailsServiceController.getEmails(
                                     getApplicationContext(),
-                                    !olds.isEmpty() ? olds.get(0).getHistoryID() : null);
-                            notify = emails.size() > 0 && notify;
-                            for (Email email : emails) {
+                                    !olds.isEmpty() ? olds.get(0).getHistoryID() : null)) {
                                 int index = oldIDs.indexOf(email.get_ID());
+
                                 if (index == -1) {
                                     oldIDs.add(email.get_ID());
                                     dbController.insert(email.get_ID(), email.getName(),
                                             email.getFrom(), email.getTo(), email.getDate(),
                                             email.getSnippet(), email.getContent(),
-                                            ""+email.getHistoryID());
-                                    inserted ++;
-                                    if (manager != null && notify && inserted <= 5) {
+                                            "" + email.getHistoryID());
+
+                                    if (++inserted <= 5 && manager != null) {
                                         manager.notify(email.getName(), mNotificationId,
                                                 buildNotification(ACTION_EMAILS, email));
                                     }
