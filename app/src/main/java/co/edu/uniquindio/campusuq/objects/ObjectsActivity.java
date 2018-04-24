@@ -26,6 +26,7 @@ import co.edu.uniquindio.campusuq.users.LoginActivity;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
 import co.edu.uniquindio.campusuq.users.UsersActivity;
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
+import co.edu.uniquindio.campusuq.users.UsersSQLiteController;
 import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
@@ -45,16 +46,27 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
     private RecyclerView.LayoutManager layoutManager;
     private boolean oldObjects = true;
 
-    private IntentFilter objectsFilter = new IntentFilter(WebService.ACTION_OBJECTS);
+    private IntentFilter objectsFilter = new IntentFilter();
     private BroadcastReceiver objectsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            loadObjects(intent.getIntExtra("INSERTED", 0));
-            String response = intent.getStringExtra("RESPONSE");
+            if (WebService.ACTION_OBJECTS.equals(intent.getAction())) {
+                loadObjects(intent.getIntExtra("INSERTED", 0));
+                String response = intent.getStringExtra("RESPONSE");
 
-            if (response != null) {
-                Toast.makeText(context, response, Toast.LENGTH_SHORT).show();
-                Log.i(ObjectsActivity.class.getSimpleName(), response);
+                if (response != null) {
+                    Toast.makeText(context, response, Toast.LENGTH_SHORT).show();
+                    Log.i(ObjectsActivity.class.getSimpleName(), response);
+                }
+            } else if (progressDialog.isShowing()) {
+                User userFound = intent.getParcelableExtra("USER");
+
+                if (userFound != null) {
+                    startActivity(
+                            new Intent(ObjectsActivity.this, UsersActivity.class)
+                            .putExtra("CATEGORY", getString(R.string.object_view_contact))
+                            .putExtra("USER", userFound));
+                }
             }
         }
     };
@@ -64,6 +76,9 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
      */
     public ObjectsActivity() {
         super.setHasNavigationDrawerIcon(false);
+
+        objectsFilter.addAction(WebService.ACTION_OBJECTS);
+        objectsFilter.addAction(WebService.ACTION_USERS);
     }
 
     /**
@@ -199,7 +214,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
             case ObjectsAdapter.OBJECT:
                 if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail()) &&
                         ("S".equals(user.getAdministrator()) ||
-                                object.getUserLost_ID().equals(user.get_ID()))) {
+                                user.get_ID().equals(object.getUserLost_ID()))) {
                     ObjectsFragment
                             .newInstance(object).show(getSupportFragmentManager(), null);
                 } else {
@@ -209,12 +224,21 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                 }
                 break;
             case ObjectsAdapter.IMAGE:
-                startActivity(new Intent(Intent.ACTION_VIEW)
-                        .setDataAndType(FileProvider.getUriForFile(this,
-                                "co.edu.uniquindio.campusuq.provider",
-                                new File("" + objects.get(index).getImage())),
-                                "image/*")
-                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+                try {
+                    String image = objects.get(index).getImage();
+
+                    if (image != null) {
+                        startActivity(new Intent(Intent.ACTION_VIEW)
+                                .setDataAndType(FileProvider.getUriForFile(this,
+                                        "co.edu.uniquindio.campusuq.provider",
+                                        new File(image)), "image/*")
+                                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+                    }
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, e.getLocalizedMessage(),
+                            Toast.LENGTH_SHORT).show();
+                }
                 break;
             case ObjectsAdapter.READED: {
                 ObjectsSQLiteController dbController =
@@ -247,8 +271,8 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                 break;
             case ObjectsAdapter.NOT_FOUND:
                 if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail()) &&
-                        object.getUserFound_ID() != null &&
-                        object.getUserFound_ID().equals(user.get_ID())) {
+                        (user.get_ID().equals(object.getUserLost_ID()) ||
+                                user.get_ID().equals(object.getUserFound_ID()))) {
                     try {
                         WebBroadcastReceiver.scheduleJob(this,
                                 WebService.ACTION_OBJECTS,
@@ -271,11 +295,22 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                 break;
             case ObjectsAdapter.CONTACT:
                 if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail()) &&
-                        object.getUserLost_ID().equals(user.get_ID()) &&
+                        user.get_ID().equals(object.getUserLost_ID()) &&
                         object.getUserFound_ID() != null) {
-                    startActivity(new Intent(this, UsersActivity.class)
-                            .putExtra("CATEGORY", getString(R.string.object_view_contact))
-                            .putExtra("USER", user));
+                    try {
+                        WebBroadcastReceiver.scheduleJob(this,
+                                WebService.ACTION_USERS,
+                                WebService.METHOD_GET,
+                                new JSONObject()
+                                        .put(UsersSQLiteController.columns[0],
+                                                object.getUserFound_ID())
+                                        .toString());
+                        progressDialog.show();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Toast.makeText(this, e.getLocalizedMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
                 }
                 break;
             default:

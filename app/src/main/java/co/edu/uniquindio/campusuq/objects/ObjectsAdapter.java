@@ -67,7 +67,11 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
         private TextView timeLost;
         private ImageView image;
         private TextView description;
+        private TextView readed;
         private TextView found;
+
+        private String readed_action;
+        private String found_action;
 
         /**
          * Obtiene los objetos de vista a partir de sus identificadores y asigna los listener de
@@ -85,11 +89,13 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
             timeLost = view.findViewById(R.id.object_time_lost);
             image = view.findViewById(R.id.object_image);
             description = view.findViewById(R.id.object_description);
+            readed = view.findViewById(R.id.object_readed);
             found = view.findViewById(R.id.object_found);
 
             view.findViewById(R.id.object_layout).setOnClickListener(this);
             image.setOnClickListener(this);
-            view.findViewById(R.id.object_readed).setOnClickListener(this);
+            readed.setOnClickListener(this);
+            found.setOnClickListener(this);
         }
 
         /**
@@ -121,33 +127,33 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
             description.setText(object.getDescription());
 
             if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail()) &&
-                    object.getUserFound_ID() != null &&
-                    object.getUserFound_ID().equals(user.get_ID())) {
-                found.setText(R.string.object_not_found);
-                found.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        listener.onObjectClick(getAdapterPosition(), NOT_FOUND);
-                    }
-                });
+                    user.get_ID().equals(object.getUserLost_ID())) {
+                if (object.getUserFound_ID() == null) {
+                    readed.setVisibility(View.GONE);
+                    found.setVisibility(View.GONE);
+                } else {
+                    readed.setText(R.string.object_no_found);
+                    readed.setVisibility(View.VISIBLE);
+                    readed_action = NOT_FOUND;
+                    found.setText(R.string.object_view_contact);
+                    found.setVisibility(View.VISIBLE);
+                    found_action = CONTACT;
+                }
             } else if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail()) &&
-                    object.getUserLost_ID().equals(user.get_ID()) &&
-                    object.getUserFound_ID() != null) {
-                found.setText(R.string.object_view_contact);
-                found.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        listener.onObjectClick(getAdapterPosition(), CONTACT);
-                    }
-                });
+                    user.get_ID().equals(object.getUserFound_ID())) {
+                readed.setText(R.string.object_readed);
+                readed.setVisibility(View.VISIBLE);
+                readed_action = READED;
+                found.setText(R.string.object_not_found);
+                found.setVisibility(View.VISIBLE);
+                found_action = NOT_FOUND;
             } else {
+                readed.setText(R.string.object_readed);
+                readed.setVisibility(View.VISIBLE);
+                readed_action = READED;
                 found.setText(R.string.object_report_found);
-                found.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        listener.onObjectClick(getAdapterPosition(), FOUND);
-                    }
-                });
+                found.setVisibility(View.VISIBLE);
+                found_action = FOUND;
             }
         }
 
@@ -161,10 +167,11 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
             String action;
 
             switch (view.getId()) {
-                case R.id.object_layout: action = OBJECT     ; break;
-                case R.id.object_image : action = IMAGE      ; break;
-                case R.id.object_readed: action = READED     ; break;
-                default                : action = "undefined"; break;
+                case R.id.object_layout: action = OBJECT       ; break;
+                case R.id.object_image : action = IMAGE        ; break;
+                case R.id.object_readed: action = readed_action; break;
+                case R.id.object_found : action = found_action ; break;
+                default                : action = "undefined"  ; break;
             }
 
             listener.onObjectClick(getAdapterPosition(), action);

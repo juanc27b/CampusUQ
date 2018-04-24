@@ -204,12 +204,21 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
                 break;
             }
             case DishesAdapter.IMAGE:
-                startActivity(new Intent(Intent.ACTION_VIEW)
-                        .setDataAndType(FileProvider.getUriForFile(this,
-                                "co.edu.uniquindio.campusuq.provider",
-                                new File("" + dishes.get(index).getImage())),
-                                "image/*")
-                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+                try {
+                    String image = dishes.get(index).getImage();
+
+                    if (image != null) {
+                        startActivity(new Intent(Intent.ACTION_VIEW)
+                                .setDataAndType(FileProvider.getUriForFile(this,
+                                        "co.edu.uniquindio.campusuq.provider",
+                                        new File(image)), "image/*")
+                                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+                    }
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, e.getLocalizedMessage(),
+                            Toast.LENGTH_SHORT).show();
+                }
                 break;
             default:
                 break;

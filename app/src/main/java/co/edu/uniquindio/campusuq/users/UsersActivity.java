@@ -46,6 +46,7 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
         @Override
         public void onReceive(Context context, Intent intent) {
             User user = intent.getParcelableExtra("USER");
+
             if (user == null) {
                 Toast.makeText(context, R.string.registration_wrong, Toast.LENGTH_SHORT).show();
             } else {
@@ -53,7 +54,8 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
                         Toast.LENGTH_SHORT).show();
                 finish();
             }
-            if(progressDialog.isShowing()) progressDialog.dismiss();
+
+            if (progressDialog.isShowing()) progressDialog.dismiss();
         }
     };
 
@@ -222,14 +224,17 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
         phone.setCursorVisible(edit);
         phone.setFocusable(edit);
         phone.setFocusableInTouchMode(edit);
+        phone.setHint(edit ? getString(R.string.user_detail_phone_hint) : null);
         address.setClickable(edit);
         address.setCursorVisible(edit);
         address.setFocusable(edit);
         address.setFocusableInTouchMode(edit);
+        address.setHint(edit ? getString(R.string.user_detail_address_hint) : null);
         document.setClickable(edit);
         document.setCursorVisible(edit);
         document.setFocusable(edit);
         document.setFocusableInTouchMode(edit);
+        document.setHint(edit ? getString(R.string.user_detail_document_hint) : null);
     }
 
     @Override

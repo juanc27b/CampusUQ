@@ -299,8 +299,9 @@ public class AnnouncementsActivity extends MainActivity implements
                 if (user != null && "S".equals(user.getAdministrator())) {
                     AnnouncementsFragment.newInstance(announcements.get(index), this.action)
                             .show(getSupportFragmentManager(), null);
-                } else if (user != null && WebService.ACTION_INCIDENTS.equals(action)) {
-                    if (user.get_ID().equals(announcements.get(index).getUser_ID())) {
+                } else if (WebService.ACTION_INCIDENTS.equals(this.action)) {
+                    if (user != null &&
+                            user.get_ID().equals(announcements.get(index).getUser_ID())) {
                         AnnouncementsFragment.newInstance(announcements.get(index), this.action)
                                 .show(getSupportFragmentManager(), null);
                     } else {
@@ -324,23 +325,31 @@ public class AnnouncementsActivity extends MainActivity implements
             case AnnouncementsAdapter.IMAGE_6:
             case AnnouncementsAdapter.IMAGE_7:
             case AnnouncementsAdapter.IMAGE_8:
-            case AnnouncementsAdapter.IMAGE_9: {
-                String _ID = announcements.get(index).get_ID();
-                int link = Integer.parseInt(action.substring(action.length()-1));
+            case AnnouncementsAdapter.IMAGE_9:
+                try {
+                    String _ID = announcements.get(index).get_ID();
+                    int link = Integer.parseInt(action.substring(action.length() - 1));
 
-                for (AnnouncementLink announcementLink : announcementsLinks) {
-                    if (announcementLink.getAnnouncement_ID().equals(_ID) && link-- == 0) {
-                        startActivity(new Intent(Intent.ACTION_VIEW)
-                                .setDataAndType(FileProvider.getUriForFile(this,
-                                        "co.edu.uniquindio.campusuq.provider",
-                                        new File(announcementLink.getLink())),
-                                        "I".equals(announcementLink.getType()) ?
-                                                "image/*" : "video/*")
-                                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+                    for (AnnouncementLink announcementLink : announcementsLinks) {
+                        if (announcementLink.getAnnouncement_ID().equals(_ID) && link-- == 0) {
+                            if (announcementLink.getLink() != null) {
+                                startActivity(new Intent(Intent.ACTION_VIEW)
+                                        .setDataAndType(FileProvider.getUriForFile(this,
+                                                "co.edu.uniquindio.campusuq.provider",
+                                                new File(announcementLink.getLink())),
+                                                "I".equals(announcementLink.getType()) ?
+                                                        "image/*" : "video/*")
+                                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+                            }
+                            break;
+                        }
                     }
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, e.getLocalizedMessage(),
+                            Toast.LENGTH_SHORT).show();
                 }
                 break;
-            }
             case AnnouncementsAdapter.READ: {
                 AnnouncementsPresenter.readed(this, announcements.get(index).get_ID());
                 loadAnnouncements(0);

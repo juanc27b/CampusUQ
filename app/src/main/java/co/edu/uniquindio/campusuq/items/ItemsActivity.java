@@ -238,6 +238,7 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
             intent.putExtra("CATEGORY", getString(R.string.auditoriums));
         } else if (getString(R.string.institutional_mail).equals(title)) {
             User user = UsersPresenter.loadUser(this);
+
             if (user != null) {
                 if (user.getEmail().equals("campusuq@uniquindio.edu.co")) {
                     category = getString(R.string.analytics_users_category);

@@ -27,7 +27,7 @@ public class Announcement implements Parcelable {
      * @param name Nombre del anuncio.
      * @param date Fecha en que se publicó el anuncio.
      * @param description Descripción del anuncio.
-     * @param read Verdadero o falso según se haya marcado el anuncio como leído.
+     * @param read Marcación de leído sobre el anuncio.
      */
     Announcement(String _ID, String user_ID, String type, String name, String date,
                  String description, String read) {
