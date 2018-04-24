@@ -17,9 +17,18 @@ import java.util.ArrayList;
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
-
+/**
+ * Controlador del servicio de contactos que permite descargar contactos y categorías de contactos
+ * desde el servidor.
+ */
 public class ContactsServiceController {
 
+    /**
+     * Hace una petición GET al servidor para obtener los contactos almacenados en el mismo, y
+     * los extrae de la respuesta en formato JSON para retornar un arreglo de contactos.
+     * @param context Contexto necesario para obtener la clave de API para el servicio.
+     * @return Arreglo de contactos obtenido desde el servidor.
+     */
     public static ArrayList<Contact> getContacts(Context context) {
         ArrayList<Contact> contacts = new ArrayList<>();
 
@@ -68,6 +77,12 @@ public class ContactsServiceController {
         return contacts;
     }
 
+    /**
+     * Hace una peticiñon GET al servidor para obtener las categorías de contactos almacenadas en
+     * el mismo, y las extrae de la respuesta en formato JSON para retornar un arreglo de categorías.
+     * @param context Contexto necesario para obtener la clave de API para el servicio.
+     * @return Arreglo de categorías de contactos obtenido desde el servidor.
+     */
     public static ArrayList<ContactCategory> getContactCategories(Context context) {
         ArrayList<ContactCategory> categories = new ArrayList<>();
 

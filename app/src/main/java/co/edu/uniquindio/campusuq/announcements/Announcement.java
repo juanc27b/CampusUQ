@@ -5,8 +5,8 @@ import android.os.Parcelable;
 
 /**
  * Clase que almacena la informacion de un anuncio (objeto de valor para las funcionalidades de
- * Sistema de seguridad e Información de cartelera), y permite transmitirlo a través del servidor
- * y la base de datos local.
+ * Sistema de seguridad e Información de cartelera), y permite transmitirlo entre el servidor y
+ * la base de datos local.
  */
 public class Announcement implements Parcelable {
 
