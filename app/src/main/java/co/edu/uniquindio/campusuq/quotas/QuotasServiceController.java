@@ -108,7 +108,9 @@ public class QuotasServiceController {
 
                 if (errorStream != null) {
                     Utilities.copy(errorStream, byteArrayOutputStream);
-                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                    String error = byteArrayOutputStream.toString();
+                    Log.e("ErrorStream", error);
+                    return new JSONObject(error).getString("mensaje");
                 }
 
                 return null;

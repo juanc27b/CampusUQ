@@ -129,7 +129,9 @@ public class AnnouncementsServiceController {
 
                 if (errorStream != null) {
                     Utilities.copy(errorStream, byteArrayOutputStream);
-                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                    String error = byteArrayOutputStream.toString();
+                    Log.e("ErrorStream", error);
+                    return error;
                 }
 
                 return null;
@@ -233,7 +235,9 @@ public class AnnouncementsServiceController {
 
                 if (errorStream != null) {
                     Utilities.copy(errorStream, byteArrayOutputStream);
-                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                    String error = byteArrayOutputStream.toString();
+                    Log.e("ErrorStream", error);
+                    return new JSONObject(error).getString("mensaje");
                 }
 
                 return null;

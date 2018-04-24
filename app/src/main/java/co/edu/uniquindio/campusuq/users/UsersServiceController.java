@@ -58,9 +58,12 @@ public class UsersServiceController {
                             null : object.getString(UsersSQLiteController.columns[4]),
                     object.isNull(UsersSQLiteController.columns[5]) ?
                             null : object.getString(UsersSQLiteController.columns[5]),
-                    object.getString(UsersSQLiteController.columns[6]),
-                    object.getString(UsersSQLiteController.columns[7]),
-                    object.getString(UsersSQLiteController.columns[8]));
+                    object.isNull(UsersSQLiteController.columns[6]) ?
+                            null : object.getString(UsersSQLiteController.columns[6]),
+                    object.isNull(UsersSQLiteController.columns[7]) ?
+                            null : object.getString(UsersSQLiteController.columns[7]),
+                    object.isNull(UsersSQLiteController.columns[8]) ?
+                            null : object.getString(UsersSQLiteController.columns[8]));
         } catch (IOException | JSONException e) {
             e.printStackTrace();
             return null;
@@ -90,7 +93,9 @@ public class UsersServiceController {
 
                 if (errorStream != null) {
                     Utilities.copy(errorStream, byteArrayOutputStream);
-                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                    String error = byteArrayOutputStream.toString();
+                    Log.e("ErrorStream", error);
+                    return error;
                 }
 
                 return null;

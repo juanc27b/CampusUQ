@@ -167,10 +167,17 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                 break;
             }
             case NewsAdapter.IMAGE:
-                startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(FileProvider
-                        .getUriForFile(this, "co.edu.uniquindio.campusuq.provider",
-                                new File("" + news.get(index).getImage())),
-                        "image/*").addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW)
+                            .setDataAndType(FileProvider.getUriForFile(this,
+                                    "co.edu.uniquindio.campusuq.provider",
+                                    new File(news.get(index).getImage())), "image/*")
+                            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, e.getLocalizedMessage(),
+                            Toast.LENGTH_SHORT).show();
+                }
                 break;
             case NewsAdapter.FACEBOOK:
                 if (Utilities.haveNetworkConnection(this)) {

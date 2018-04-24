@@ -153,16 +153,14 @@ public class WebService extends JobIntentService {
                     NotificationsPresenter.loadNotifications(getApplicationContext());
 
             if (Utilities.haveNetworkConnection(getApplicationContext())) {
-                if (user == null) {
-                    JSONObject json = new JSONObject();
-                    try {
-                        json.put(UsersSQLiteController.columns[2],
-                                "campusuq@uniquindio.edu.co");
-                        json.put(UsersSQLiteController.columns[6], "campusuq");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    loadUsers(METHOD_GET, json.toString());
+                if (user == null) try {
+                    loadUsers(METHOD_GET, new JSONObject()
+                            .put(UsersSQLiteController.columns[2],
+                                    "campusuq@uniquindio.edu.co")
+                            .put(UsersSQLiteController.columns[6], "campusuq")
+                            .toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
 
                 if (notifications.size() < NOTIFICATIONS.length) {
@@ -1211,13 +1209,16 @@ public class WebService extends JobIntentService {
         if (Utilities.haveNetworkConnection(getApplicationContext())) {
             UsersSQLiteController dbController =
                     new UsersSQLiteController(getApplicationContext(), 1);
+
             switch (method) {
                 case METHOD_POST:
                 case METHOD_PUT:
                     String respStr = UsersServiceController.modifyUser(object);
+
                     try {
                         JSONObject jsonResp = new JSONObject(respStr);
                         int estado = jsonResp.getInt("estado");
+
                         if (estado == 5) {
                             user = UsersPresenter.loadUser(getApplicationContext());
                         } else {
@@ -1237,13 +1238,16 @@ public class WebService extends JobIntentService {
                     break;
                 case METHOD_GET:
                     user = UsersServiceController.login(object);
-                    if (user != null) {
+
+                    if (user != null && user.getPassword() != null && user.getApiKey() != null &&
+                            user.getAdministrator() != null) {
                         dbController.insert(user.get_ID(), user.getName(), user.getEmail(),
                                 user.getPhone(), user.getAddress(), user.getDocument(),
                                 user.getPassword(), user.getApiKey(), user.getAdministrator());
                     }
                     break;
             }
+
             dbController.destroy();
         }
 
