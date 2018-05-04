@@ -154,7 +154,7 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
                                 !recyclerView.canScrollVertically(1)) {
                             if (Utilities.haveNetworkConnection(QuotasActivity.this)) {
                                 progressDialog.show();
-                                WebBroadcastReceiver.scheduleJob(QuotasActivity.this,
+                                WebBroadcastReceiver.startService(QuotasActivity.this,
                                         WebService.ACTION_QUOTAS, WebService.METHOD_GET,
                                         null);
                             } else {

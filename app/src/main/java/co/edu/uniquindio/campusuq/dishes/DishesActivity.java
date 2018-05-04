@@ -156,7 +156,7 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
                             if (Utilities.haveNetworkConnection(DishesActivity.this)) {
                                 oldDishes = false;
                                 progressDialog.show();
-                                WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                                WebBroadcastReceiver.startService(getApplicationContext(),
                                         WebService.ACTION_DISHES, WebService.METHOD_GET,
                                         null);
                             } else {

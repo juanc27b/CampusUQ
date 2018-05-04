@@ -3,6 +3,7 @@ package co.edu.uniquindio.campusuq.web;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 
 public class WebBroadcastReceiver extends BroadcastReceiver {
@@ -25,12 +26,25 @@ public class WebBroadcastReceiver extends BroadcastReceiver {
     }
 
     public static void scheduleJob(Context context, String action, String method, String object) {
+        Intent intent = new Intent(context, WebJobService.class);
+        intent.putExtra("ACTION", action);
+        intent.putExtra("METHOD", method);
+        intent.putExtra("OBJECT", object);
+        WebJobService.enqueueWork(context, intent);
+        Log.i(WebBroadcastReceiver.class.getSimpleName(), "Job scheduled!");
+    }
+
+    public static void startService(Context context, String action, String method, String object) {
         Intent intent = new Intent(context, WebService.class);
         intent.putExtra("ACTION", action);
         intent.putExtra("METHOD", method);
         intent.putExtra("OBJECT", object);
-        WebService.enqueueWork(context, intent);
-        Log.i(WebBroadcastReceiver.class.getSimpleName(), "Job scheduled!");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent);
+        } else {
+            context.startService(intent);
+        }
+        Log.i(WebBroadcastReceiver.class.getSimpleName(), "Service called!");
     }
 
 }

@@ -258,7 +258,7 @@ public class AnnouncementsActivity extends MainActivity implements
                                     .haveNetworkConnection(AnnouncementsActivity.this)) {
                                 oldAnnouncements = false;
                                 progressDialog.show();
-                                WebBroadcastReceiver.scheduleJob(AnnouncementsActivity.this,
+                                WebBroadcastReceiver.startService(AnnouncementsActivity.this,
                                         action, WebService.METHOD_GET, null);
                             } else {
                                 Toast.makeText(AnnouncementsActivity.this,

@@ -19,6 +19,7 @@ import co.edu.uniquindio.campusuq.items.ItemsActivity;
 import co.edu.uniquindio.campusuq.util.StarterReceiver;
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
+import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 import co.edu.uniquindio.campusuq.users.User;
 
@@ -162,7 +163,9 @@ public class MenuActivity extends MainActivity {
             Log.i(MenuActivity.class.getSimpleName(), "Activando alarma");
             if (!progressDialog.isShowing()) progressDialog.show();
             StarterReceiver.cancelAlarm(getApplicationContext());
-            StarterReceiver.scheduleAlarm(getApplicationContext());
+            StarterReceiver.scheduleAlarm(getApplicationContext(), true);
+            WebBroadcastReceiver.startService(getApplicationContext(),
+                    WebService.ACTION_ALL, WebService.METHOD_GET, null);
         }
     }
 

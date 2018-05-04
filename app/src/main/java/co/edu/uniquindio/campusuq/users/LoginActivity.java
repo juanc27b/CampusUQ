@@ -108,7 +108,7 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
                         e.printStackTrace();
                     }
                     progressDialog.show();
-                    WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                    WebBroadcastReceiver.startService(getApplicationContext(),
                             WebService.ACTION_USERS, WebService.METHOD_GET, json.toString());
                 } else {
                     Toast.makeText(LoginActivity.this, R.string.no_internet,

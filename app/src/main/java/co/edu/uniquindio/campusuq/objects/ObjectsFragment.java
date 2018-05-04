@@ -107,7 +107,7 @@ public class ObjectsFragment extends DialogFragment implements View.OnClickListe
                                 .build());
 
                         try {
-                            WebBroadcastReceiver.scheduleJob(objectsActivity,
+                            WebBroadcastReceiver.startService(objectsActivity,
                                     WebService.ACTION_OBJECTS,
                                     WebService.METHOD_DELETE,
                                     new JSONObject()

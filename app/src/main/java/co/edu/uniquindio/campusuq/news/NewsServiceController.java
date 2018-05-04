@@ -28,28 +28,36 @@ public class NewsServiceController {
         ArrayList<New> news = new ArrayList<>();
 
         try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(
-                    Utilities.URL_SERVICIO + "/noticias" + category_date).openConnection();
-            connection.setRequestProperty("Authorization",
-                    UsersPresenter.loadUser(context).getApiKey());
+            int retry = 0;
+            InputStream inputStream = null;
+            ByteArrayOutputStream byteArrayOutputStream ;
 
-            InputStream inputStream;
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            do {
+                HttpURLConnection connection = (HttpURLConnection) new URL(
+                        Utilities.URL_SERVICIO + "/noticias" + category_date).openConnection();
+                connection.setRequestProperty("Authorization",
+                        UsersPresenter.loadUser(context).getApiKey());
 
-            try {
-                inputStream = connection.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("ResponseCode", "" + connection.getResponseCode());
-                InputStream errorStream = connection.getErrorStream();
+                byteArrayOutputStream = new ByteArrayOutputStream();
 
-                if (errorStream != null) {
-                    Utilities.copy(errorStream, byteArrayOutputStream);
-                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                try {
+                    inputStream = connection.getInputStream();
+                    retry = 0;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e("ResponseCode", "" + connection.getResponseCode());
+                    InputStream errorStream = connection.getErrorStream();
+
+                    if (errorStream != null) {
+                        Utilities.copy(errorStream, byteArrayOutputStream);
+                        Log.e("ErrorStream", byteArrayOutputStream.toString());
+                    }
+
+                    retry++;
                 }
+            } while (retry > 0 && retry < 10);
 
-                return news;
-            }
+            if (retry >= 10) return news;
 
             Utilities.copy(inputStream, byteArrayOutputStream);
             JSONObject object = new JSONObject(byteArrayOutputStream.toString());
@@ -94,28 +102,36 @@ public class NewsServiceController {
         ArrayList<NewCategory> categories = new ArrayList<>();
 
         try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(
-                    Utilities.URL_SERVICIO + "/noticia_categorias").openConnection();
-            connection.setRequestProperty("Authorization",
-                    UsersPresenter.loadUser(context).getApiKey());
+            int retry = 0;
+            InputStream inputStream = null;
+            ByteArrayOutputStream byteArrayOutputStream ;
 
-            InputStream inputStream;
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            do {
+                HttpURLConnection connection = (HttpURLConnection) new URL(
+                        Utilities.URL_SERVICIO + "/noticia_categorias").openConnection();
+                connection.setRequestProperty("Authorization",
+                        UsersPresenter.loadUser(context).getApiKey());
 
-            try {
-                inputStream = connection.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("ResponseCode", "" + connection.getResponseCode());
-                InputStream errorStream = connection.getErrorStream();
+                byteArrayOutputStream = new ByteArrayOutputStream();
 
-                if (errorStream != null) {
-                    Utilities.copy(errorStream, byteArrayOutputStream);
-                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                try {
+                    inputStream = connection.getInputStream();
+                    retry = 0;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e("ResponseCode", "" + connection.getResponseCode());
+                    InputStream errorStream = connection.getErrorStream();
+
+                    if (errorStream != null) {
+                        Utilities.copy(errorStream, byteArrayOutputStream);
+                        Log.e("ErrorStream", byteArrayOutputStream.toString());
+                    }
+
+                    retry++;
                 }
+            } while (retry > 0 && retry < 10);
 
-                return categories;
-            }
+            if (retry >= 10) return categories;
 
             Utilities.copy(inputStream, byteArrayOutputStream);
             JSONArray array =
@@ -139,28 +155,36 @@ public class NewsServiceController {
         ArrayList<NewRelation> relations = new ArrayList<>();
 
         try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(
-                    Utilities.URL_SERVICIO + "/noticia_relaciones" + idNew).openConnection();
-            connection.setRequestProperty("Authorization",
-                    UsersPresenter.loadUser(context).getApiKey());
+            int retry = 0;
+            InputStream inputStream = null;
+            ByteArrayOutputStream byteArrayOutputStream ;
 
-            InputStream inputStream;
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            do {
+                HttpURLConnection connection = (HttpURLConnection) new URL(
+                        Utilities.URL_SERVICIO + "/noticia_relaciones" + idNew).openConnection();
+                connection.setRequestProperty("Authorization",
+                        UsersPresenter.loadUser(context).getApiKey());
 
-            try {
-                inputStream = connection.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("ResponseCode", "" + connection.getResponseCode());
-                InputStream errorStream = connection.getErrorStream();
+                byteArrayOutputStream = new ByteArrayOutputStream();
 
-                if (errorStream != null) {
-                    Utilities.copy(errorStream, byteArrayOutputStream);
-                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                try {
+                    inputStream = connection.getInputStream();
+                    retry = 0;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e("ResponseCode", "" + connection.getResponseCode());
+                    InputStream errorStream = connection.getErrorStream();
+
+                    if (errorStream != null) {
+                        Utilities.copy(errorStream, byteArrayOutputStream);
+                        Log.e("ErrorStream", byteArrayOutputStream.toString());
+                    }
+
+                    retry++;
                 }
+            } while (retry > 0 && retry < 10);
 
-                return relations;
-            }
+            if (retry >= 10) return relations;
 
             Utilities.copy(inputStream, byteArrayOutputStream);
             JSONArray array =

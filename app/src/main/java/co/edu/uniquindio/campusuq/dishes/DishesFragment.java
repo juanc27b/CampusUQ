@@ -107,7 +107,7 @@ public class DishesFragment extends DialogFragment implements View.OnClickListen
                                 .build());
 
                         try {
-                            WebBroadcastReceiver.scheduleJob(dishesActivity,
+                            WebBroadcastReceiver.startService(dishesActivity,
                                     WebService.ACTION_DISHES,
                                     WebService.METHOD_DELETE,
                                     new JSONObject()

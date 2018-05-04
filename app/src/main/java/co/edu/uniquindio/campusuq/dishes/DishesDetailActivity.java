@@ -169,7 +169,7 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
                                 json.put("imageString", imageFile.getAbsolutePath());
                             }
 
-                            WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                            WebBroadcastReceiver.startService(getApplicationContext(),
                                     WebService.ACTION_DISHES, WebService.METHOD_PUT,
                                     json.toString());
                             setResult(RESULT_OK, intent);

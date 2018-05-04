@@ -120,7 +120,7 @@ public class QuotasDetailActivity extends MainActivity implements View.OnClickLi
                             json.put(QuotasSQLiteController.columns[1], q.getType());
                             json.put(QuotasSQLiteController.columns[2], name.getText());
                             json.put(QuotasSQLiteController.columns[3], quota.getText());
-                            WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                            WebBroadcastReceiver.startService(getApplicationContext(),
                                     WebService.ACTION_QUOTAS, WebService.METHOD_POST,
                                     json.toString());
                             setResult(RESULT_OK, intent);

@@ -272,7 +272,7 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
                             }
 
                             json.put("links", links);
-                            WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                            WebBroadcastReceiver.startService(getApplicationContext(),
                                     "I".equals(type) ? WebService.ACTION_INCIDENTS :
                                             WebService.ACTION_COMMUNIQUES,
                                     WebService.METHOD_POST, json.toString());

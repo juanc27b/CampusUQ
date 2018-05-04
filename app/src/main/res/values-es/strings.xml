@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Campus UQ</string>
+
+    <string name="app_description">Aplicación Móvil para la interacción con la Universidad del Quindío</string>
     <string name="author">Juan Camilo González Idárraga</string>
+    <string name="program">Ingeniería de Sistemas y Computación</string>
+    <string name="university">Universidad del Quindío</string>
+    <string name="city">Armenia - Quindío</string>
+    <string name="country">Colombia</string>
+    <string name="university_mail">Correo Institucional: jcgonzalezi@uqvirtual.edu.co</string>
+    <string name="personal_mail">Correo Personal: juancamilo96b@hotmail.com</string>
 
     <string name="app_title_menu">Menú</string>
     <string name="function_menu">Menú de Funciones</string>
@@ -147,6 +155,7 @@
     <string name="action_adjust_notifications">Ajustar notificaciones</string>
     <string name="action_delete_history">Eliminar historial</string>
     <string name="action_login">Cuenta de usuario</string>
+    <string name="action_credits">Créditos</string>
 
     <string name="loading_content">Cargando conteido</string>
     <string name="please_wait">Por favor espere …</string>

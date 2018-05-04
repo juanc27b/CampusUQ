@@ -118,7 +118,7 @@ public class AnnouncementsFragment extends DialogFragment implements View.OnClic
                                 .build());
 
                         try {
-                            WebBroadcastReceiver.scheduleJob(announcementsActivity,
+                            WebBroadcastReceiver.startService(announcementsActivity,
                                     action,
                                     WebService.METHOD_DELETE,
                                     new JSONObject()

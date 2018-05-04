@@ -339,7 +339,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
 
         NotificationCompat.Builder builder;
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager mNotificationManager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             // The id of the channel.

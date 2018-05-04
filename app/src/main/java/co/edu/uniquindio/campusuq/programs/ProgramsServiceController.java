@@ -24,28 +24,36 @@ public class ProgramsServiceController {
         ArrayList<Program> programs = new ArrayList<>();
 
         try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(
-                    Utilities.URL_SERVICIO + "/programas").openConnection();
-            connection.setRequestProperty("Authorization",
-                    UsersPresenter.loadUser(context).getApiKey());
+            int retry = 0;
+            InputStream inputStream = null;
+            ByteArrayOutputStream byteArrayOutputStream ;
 
-            InputStream inputStream;
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            do {
+                HttpURLConnection connection = (HttpURLConnection) new URL(
+                        Utilities.URL_SERVICIO + "/programas").openConnection();
+                connection.setRequestProperty("Authorization",
+                        UsersPresenter.loadUser(context).getApiKey());
 
-            try {
-                inputStream = connection.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("ResponseCode", "" + connection.getResponseCode());
-                InputStream errorStream = connection.getErrorStream();
+                byteArrayOutputStream = new ByteArrayOutputStream();
 
-                if (errorStream != null) {
-                    Utilities.copy(errorStream, byteArrayOutputStream);
-                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                try {
+                    inputStream = connection.getInputStream();
+                    retry = 0;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e("ResponseCode", "" + connection.getResponseCode());
+                    InputStream errorStream = connection.getErrorStream();
+
+                    if (errorStream != null) {
+                        Utilities.copy(errorStream, byteArrayOutputStream);
+                        Log.e("ErrorStream", byteArrayOutputStream.toString());
+                    }
+
+                    retry++;
                 }
+            } while (retry > 0 && retry < 10);
 
-                return programs;
-            }
+            if (retry >= 10) return programs;
 
             Utilities.copy(inputStream, byteArrayOutputStream);
             JSONArray array =
@@ -100,28 +108,36 @@ public class ProgramsServiceController {
         ArrayList<ProgramCategory> categories = new ArrayList<>();
 
         try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(
-                    Utilities.URL_SERVICIO + "/programa_categorias").openConnection();
-            connection.setRequestProperty("Authorization",
-                    UsersPresenter.loadUser(context).getApiKey());
+            int retry = 0;
+            InputStream inputStream = null;
+            ByteArrayOutputStream byteArrayOutputStream ;
 
-            InputStream inputStream;
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            do {
+                HttpURLConnection connection = (HttpURLConnection) new URL(
+                        Utilities.URL_SERVICIO + "/programa_categorias").openConnection();
+                connection.setRequestProperty("Authorization",
+                        UsersPresenter.loadUser(context).getApiKey());
 
-            try {
-                inputStream = connection.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("ResponseCode", "" + connection.getResponseCode());
-                InputStream errorStream = connection.getErrorStream();
+                byteArrayOutputStream = new ByteArrayOutputStream();
 
-                if (errorStream != null) {
-                    Utilities.copy(errorStream, byteArrayOutputStream);
-                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                try {
+                    inputStream = connection.getInputStream();
+                    retry = 0;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e("ResponseCode", "" + connection.getResponseCode());
+                    InputStream errorStream = connection.getErrorStream();
+
+                    if (errorStream != null) {
+                        Utilities.copy(errorStream, byteArrayOutputStream);
+                        Log.e("ErrorStream", byteArrayOutputStream.toString());
+                    }
+
+                    retry++;
                 }
+            } while (retry > 0 && retry < 10);
 
-                return categories;
-            }
+            if (retry >= 10) return categories;
 
             Utilities.copy(inputStream, byteArrayOutputStream);
             JSONArray array =
@@ -146,28 +162,36 @@ public class ProgramsServiceController {
         ArrayList<ProgramFaculty> faculties = new ArrayList<>();
 
         try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(
-                    Utilities.URL_SERVICIO + "/programa_facultades").openConnection();
-            connection.setRequestProperty("Authorization",
-                    UsersPresenter.loadUser(context).getApiKey());
+            int retry = 0;
+            InputStream inputStream = null;
+            ByteArrayOutputStream byteArrayOutputStream ;
 
-            InputStream inputStream;
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            do {
+                HttpURLConnection connection = (HttpURLConnection) new URL(
+                        Utilities.URL_SERVICIO + "/programa_facultades").openConnection();
+                connection.setRequestProperty("Authorization",
+                        UsersPresenter.loadUser(context).getApiKey());
 
-            try {
-                inputStream = connection.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("ResponseCode", "" + connection.getResponseCode());
-                InputStream errorStream = connection.getErrorStream();
+                byteArrayOutputStream = new ByteArrayOutputStream();
 
-                if (errorStream != null) {
-                    Utilities.copy(errorStream, byteArrayOutputStream);
-                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                try {
+                    inputStream = connection.getInputStream();
+                    retry = 0;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e("ResponseCode", "" + connection.getResponseCode());
+                    InputStream errorStream = connection.getErrorStream();
+
+                    if (errorStream != null) {
+                        Utilities.copy(errorStream, byteArrayOutputStream);
+                        Log.e("ErrorStream", byteArrayOutputStream.toString());
+                    }
+
+                    retry++;
                 }
+            } while (retry > 0 && retry < 10);
 
-                return faculties;
-            }
+            if (retry >= 10) return faculties;
 
             Utilities.copy(inputStream, byteArrayOutputStream);
             JSONArray array =

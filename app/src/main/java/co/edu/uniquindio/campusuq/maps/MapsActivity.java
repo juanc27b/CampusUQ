@@ -29,6 +29,11 @@ import java.util.ArrayList;
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
 
+/**
+ * Actividad para la funcionalidad de Mapa de la universidad, utiliza fragmentos para mostrar el
+ * mapa mediante Google Maps y la vista mediante Google Street View. La actividad cuenta con un
+ * botón para intercambiar entre el mapa y la vista de calle.
+ */
 public class MapsActivity extends MainActivity implements OnMapReadyCallback,
         OnStreetViewPanoramaReadyCallback {
 
@@ -44,6 +49,10 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
     public ArrayList<String> tags;
     public ArrayList<LatLng> locations;
 
+    /**
+     * Constructor de la actividad que establece que no se va a usar el botón del panel de
+     * navegación lateral e inicializa variables de la actividad.
+     */
     public MapsActivity() {
         super.setHasNavigationDrawerIcon(false);
 
@@ -52,6 +61,13 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
         locations = new ArrayList<>();
     }
 
+    /**
+     * Establece el fondo de la actividad, asigna estiquetas y localizaciones para los marcadores
+     * del mapa, asigna un listener para el botón de cambio entre mapa y vista de calle, y por
+     * último obtiene los fragmentos de mapa y vista de calle y carga su contenido de forma
+     * asíncrona notificando cuando estén disponibles.
+     * @param savedInstanceState Parámetro usado para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
@@ -84,11 +100,12 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
             }
         });
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        // Se obtiene el SupportMapFragment y se notifica cuando el mapa esté listo para usarse.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        // Se obtiene el StreetViewPanoramaFragment y se notifica cuando la vista esté disponible.
         StreetViewPanoramaFragment streetViewPanoramaFragment =
                 (StreetViewPanoramaFragment) getFragmentManager()
                         .findFragmentById(R.id.streetviewpanorama);

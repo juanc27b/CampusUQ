@@ -13,221 +13,236 @@
         android:text="@string/notifications_text"
         android:textSize="12sp"/>
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:gravity="center_vertical">
+        android:layout_height="match_parent"
+        android:layout_marginBottom="20dp"
+        android:scrollbars="vertical">
 
-        <ImageView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/ic_menu_events"
-            android:contentDescription="@string/events_description" />
+            android:orientation="vertical">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="10dp"
-            android:text="@string/events"
-            android:textSize="15sp"
-            android:textColor="@android:color/black"/>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center_vertical">
 
-        <Switch
-            android:id="@+id/notifications_events"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:thumbTint="@color/colorPrimary"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_menu_events"
+                    android:contentDescription="@string/events_description" />
 
-    </LinearLayout>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    android:text="@string/events"
+                    android:textSize="15sp"
+                    android:textColor="@android:color/black"/>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:gravity="center_vertical">
+                <Switch
+                    android:id="@+id/notifications_events"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="@color/colorPrimary"/>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/ic_menu_news"
-            android:contentDescription="@string/news_description" />
+            </LinearLayout>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="10dp"
-            android:text="@string/news"
-            android:textSize="15sp"
-            android:textColor="@android:color/black"/>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center_vertical">
 
-        <Switch
-            android:id="@+id/notifications_news"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:thumbTint="@color/colorPrimary"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_menu_news"
+                    android:contentDescription="@string/news_description" />
 
-    </LinearLayout>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    android:text="@string/news"
+                    android:textSize="15sp"
+                    android:textColor="@android:color/black"/>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:gravity="center_vertical">
+                <Switch
+                    android:id="@+id/notifications_news"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="@color/colorPrimary"/>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/ic_menu_academic_calendar"
-            android:contentDescription="@string/academic_calendar_description" />
+            </LinearLayout>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="10dp"
-            android:text="@string/academic_calendar"
-            android:textSize="15sp"
-            android:textColor="@android:color/black"/>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center_vertical">
 
-        <Switch
-            android:id="@+id/notifications_academic_calendar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:thumbTint="@color/colorPrimary"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_menu_academic_calendar"
+                    android:contentDescription="@string/academic_calendar_description" />
 
-    </LinearLayout>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    android:text="@string/academic_calendar"
+                    android:textSize="15sp"
+                    android:textColor="@android:color/black"/>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:gravity="center_vertical">
+                <Switch
+                    android:id="@+id/notifications_academic_calendar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="@color/colorPrimary"/>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/ic_menu_lost_objects"
-            android:contentDescription="@string/lost_objects_description" />
+            </LinearLayout>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="10dp"
-            android:text="@string/lost_objects"
-            android:textSize="15sp"
-            android:textColor="@android:color/black"/>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center_vertical">
 
-        <Switch
-            android:id="@+id/notifications_lost_objects"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:thumbTint="@color/colorPrimary"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_menu_lost_objects"
+                    android:contentDescription="@string/lost_objects_description" />
 
-    </LinearLayout>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    android:text="@string/lost_objects"
+                    android:textSize="15sp"
+                    android:textColor="@android:color/black"/>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:gravity="center_vertical">
+                <Switch
+                    android:id="@+id/notifications_lost_objects"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="@color/colorPrimary"/>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/ic_menu_security_system"
-            android:contentDescription="@string/security_system_description" />
+            </LinearLayout>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="10dp"
-            android:text="@string/security_system"
-            android:textSize="15sp"
-            android:textColor="@android:color/black"/>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center_vertical">
 
-        <Switch
-            android:id="@+id/notifications_security_system"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:thumbTint="@color/colorPrimary"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_menu_security_system"
+                    android:contentDescription="@string/security_system_description" />
 
-    </LinearLayout>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    android:text="@string/security_system"
+                    android:textSize="15sp"
+                    android:textColor="@android:color/black"/>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:gravity="center_vertical">
+                <Switch
+                    android:id="@+id/notifications_security_system"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="@color/colorPrimary"/>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/ic_menu_billboard_information"
-            android:contentDescription="@string/billboard_information_description" />
+            </LinearLayout>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="10dp"
-            android:text="@string/billboard_information"
-            android:textSize="15sp"
-            android:textColor="@android:color/black"/>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center_vertical">
 
-        <Switch
-            android:id="@+id/notifications_billboard_information"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:thumbTint="@color/colorPrimary"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_menu_billboard_information"
+                    android:contentDescription="@string/billboard_information_description" />
 
-    </LinearLayout>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    android:text="@string/billboard_information"
+                    android:textSize="15sp"
+                    android:textColor="@android:color/black"/>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:gravity="center_vertical">
+                <Switch
+                    android:id="@+id/notifications_billboard_information"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="@color/colorPrimary"/>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/ic_menu_institutional_mail"
-            android:contentDescription="@string/institutional_mail_description" />
+            </LinearLayout>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="10dp"
-            android:text="@string/institutional_mail"
-            android:textSize="15sp"
-            android:textColor="@android:color/black"/>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center_vertical">
 
-        <Switch
-            android:id="@+id/notifications_institutional_mail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:thumbTint="@color/colorPrimary"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_menu_institutional_mail"
+                    android:contentDescription="@string/institutional_mail_description" />
 
-    </LinearLayout>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    android:text="@string/institutional_mail"
+                    android:textSize="15sp"
+                    android:textColor="@android:color/black"/>
+
+                <Switch
+                    android:id="@+id/notifications_institutional_mail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:thumbTint="@color/colorPrimary"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

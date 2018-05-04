@@ -123,7 +123,7 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
                 e.printStackTrace();
             }
             progressDialog.show();
-            WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+            WebBroadcastReceiver.startService(getApplicationContext(),
                     WebService.ACTION_EMAILS, WebService.METHOD_POST, json.toString());
         } else {
             Toast.makeText(this, R.string.no_internet, Toast.LENGTH_SHORT)

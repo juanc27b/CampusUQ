@@ -222,7 +222,7 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
                             }
 
                             json.put(ObjectsSQLiteController.columns[8], object.getUserFound_ID());
-                            WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                            WebBroadcastReceiver.startService(getApplicationContext(),
                                     WebService.ACTION_OBJECTS, WebService.METHOD_POST,
                                     json.toString());
                             setResult(RESULT_OK, intent);

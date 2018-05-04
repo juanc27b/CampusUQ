@@ -1,5 +1,6 @@
 package co.edu.uniquindio.campusuq.web;
 
+import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -10,8 +11,6 @@ import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.v4.app.JobIntentService;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.text.TextUtils;
@@ -39,58 +38,58 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
-import co.edu.uniquindio.campusuq.announcements.AnnouncementsActivity;
-import co.edu.uniquindio.campusuq.contacts.ContactsSQLiteController;
-import co.edu.uniquindio.campusuq.contacts.ContactsServiceController;
-import co.edu.uniquindio.campusuq.emails.EmailsActivity;
-import co.edu.uniquindio.campusuq.announcements.AnnouncementsSQLiteController;
-import co.edu.uniquindio.campusuq.announcements.AnnouncementsServiceController;
-import co.edu.uniquindio.campusuq.dishes.DishesSQLiteController;
-import co.edu.uniquindio.campusuq.dishes.DishesServiceController;
-import co.edu.uniquindio.campusuq.emails.EmailsSQLiteController;
-import co.edu.uniquindio.campusuq.emails.EmailsServiceController;
-import co.edu.uniquindio.campusuq.events.EventsSQLiteController;
-import co.edu.uniquindio.campusuq.events.EventsServiceController;
-import co.edu.uniquindio.campusuq.informations.InformationsSQLiteController;
-import co.edu.uniquindio.campusuq.informations.InformationsServiceController;
-import co.edu.uniquindio.campusuq.items.ItemsActivity;
-import co.edu.uniquindio.campusuq.items.ItemsPresenter;
-import co.edu.uniquindio.campusuq.news.NewsActivity;
-import co.edu.uniquindio.campusuq.notifications.NotificationsPresenter;
-import co.edu.uniquindio.campusuq.objects.ObjectsActivity;
-import co.edu.uniquindio.campusuq.news.NewsSQLiteController;
-import co.edu.uniquindio.campusuq.news.NewsServiceController;
 import co.edu.uniquindio.campusuq.announcements.Announcement;
 import co.edu.uniquindio.campusuq.announcements.AnnouncementLink;
-import co.edu.uniquindio.campusuq.objects.ObjectsSQLiteController;
-import co.edu.uniquindio.campusuq.objects.ObjectsServiceController;
-import co.edu.uniquindio.campusuq.programs.ProgramsSQLiteController;
-import co.edu.uniquindio.campusuq.programs.ProgramsServiceController;
-import co.edu.uniquindio.campusuq.quotas.QuotasSQLiteController;
-import co.edu.uniquindio.campusuq.quotas.QuotasServiceController;
+import co.edu.uniquindio.campusuq.announcements.AnnouncementsActivity;
+import co.edu.uniquindio.campusuq.announcements.AnnouncementsSQLiteController;
+import co.edu.uniquindio.campusuq.announcements.AnnouncementsServiceController;
 import co.edu.uniquindio.campusuq.contacts.Contact;
 import co.edu.uniquindio.campusuq.contacts.ContactCategory;
+import co.edu.uniquindio.campusuq.contacts.ContactsSQLiteController;
+import co.edu.uniquindio.campusuq.contacts.ContactsServiceController;
 import co.edu.uniquindio.campusuq.dishes.Dish;
+import co.edu.uniquindio.campusuq.dishes.DishesSQLiteController;
+import co.edu.uniquindio.campusuq.dishes.DishesServiceController;
 import co.edu.uniquindio.campusuq.emails.Email;
+import co.edu.uniquindio.campusuq.emails.EmailsActivity;
+import co.edu.uniquindio.campusuq.emails.EmailsSQLiteController;
+import co.edu.uniquindio.campusuq.emails.EmailsServiceController;
 import co.edu.uniquindio.campusuq.events.Event;
 import co.edu.uniquindio.campusuq.events.EventCategory;
 import co.edu.uniquindio.campusuq.events.EventDate;
 import co.edu.uniquindio.campusuq.events.EventPeriod;
 import co.edu.uniquindio.campusuq.events.EventRelation;
+import co.edu.uniquindio.campusuq.events.EventsSQLiteController;
+import co.edu.uniquindio.campusuq.events.EventsServiceController;
 import co.edu.uniquindio.campusuq.informations.Information;
 import co.edu.uniquindio.campusuq.informations.InformationCategory;
-import co.edu.uniquindio.campusuq.objects.LostObject;
+import co.edu.uniquindio.campusuq.informations.InformationsSQLiteController;
+import co.edu.uniquindio.campusuq.informations.InformationsServiceController;
+import co.edu.uniquindio.campusuq.items.ItemsActivity;
+import co.edu.uniquindio.campusuq.items.ItemsPresenter;
 import co.edu.uniquindio.campusuq.news.New;
 import co.edu.uniquindio.campusuq.news.NewCategory;
 import co.edu.uniquindio.campusuq.news.NewRelation;
-import co.edu.uniquindio.campusuq.users.UsersPresenter;
-import co.edu.uniquindio.campusuq.users.UsersSQLiteController;
-import co.edu.uniquindio.campusuq.users.UsersServiceController;
+import co.edu.uniquindio.campusuq.news.NewsActivity;
+import co.edu.uniquindio.campusuq.news.NewsSQLiteController;
+import co.edu.uniquindio.campusuq.news.NewsServiceController;
+import co.edu.uniquindio.campusuq.notifications.NotificationsPresenter;
+import co.edu.uniquindio.campusuq.objects.LostObject;
+import co.edu.uniquindio.campusuq.objects.ObjectsActivity;
+import co.edu.uniquindio.campusuq.objects.ObjectsSQLiteController;
+import co.edu.uniquindio.campusuq.objects.ObjectsServiceController;
 import co.edu.uniquindio.campusuq.programs.Program;
 import co.edu.uniquindio.campusuq.programs.ProgramCategory;
 import co.edu.uniquindio.campusuq.programs.ProgramFaculty;
+import co.edu.uniquindio.campusuq.programs.ProgramsSQLiteController;
+import co.edu.uniquindio.campusuq.programs.ProgramsServiceController;
 import co.edu.uniquindio.campusuq.quotas.Quota;
+import co.edu.uniquindio.campusuq.quotas.QuotasSQLiteController;
+import co.edu.uniquindio.campusuq.quotas.QuotasServiceController;
 import co.edu.uniquindio.campusuq.users.User;
+import co.edu.uniquindio.campusuq.users.UsersPresenter;
+import co.edu.uniquindio.campusuq.users.UsersSQLiteController;
+import co.edu.uniquindio.campusuq.users.UsersServiceController;
 import co.edu.uniquindio.campusuq.util.State;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
@@ -99,7 +98,7 @@ import co.edu.uniquindio.campusuq.util.Utilities;
  * ademas tambien permite enviar peticiones al servidor para insertar, actualizar o eliminar items
  * de algunas de las tablas.
  */
-public class WebService extends JobIntentService {
+public class WebService extends IntentService {
 
     public static final String ACTION_NONE        = "co.edu.uniquindio.campusuq.ACTION_NONE";
     public static final String ACTION_ALL         = "co.edu.uniquindio.campusuq.ACTION_ALL";
@@ -123,29 +122,44 @@ public class WebService extends JobIntentService {
     public static final String METHOD_PUT    = "co.edu.uniquindio.campusuq.METHOD_PUT";
     public static final String METHOD_DELETE = "co.edu.uniquindio.campusuq.METHOD_DELETE";
 
+    public static final String FOREGROUND_NOTIFICATION = "co.edu.uniquindio.campusuq.FOREGROUND_NOTIFICATION";
+
     public static String PENDING_ACTION = ACTION_NONE;
 
     public static final String[] NOTIFICATIONS = {"Events", "News", "Academic Calendar",
             "Lost Objects", "Security System", "Billboard Information", "Institutional Mail"};
 
-    private static final int mNotificationId = 1;
+    private static final int foregroundNotificationId = 1;
+    private static final int mNotificationId = 2;
 
     private static final String TAG = WebService.class.getSimpleName();
-    boolean isWorking = false;
-    boolean jobCancelled = false;
 
     /**
-     * Convenience method for enqueuing work in to this service.
+     * A constructor is required, and must call the super IntentService(String)
+     * constructor with a name for the worker thread.
      */
-    public static void enqueueWork(Context context, Intent work) {
-        enqueueWork(context, WebService.class, WebBroadcastReceiver.JOB_ID, work);
+    public WebService() {
+        super("WebService");
     }
 
     @Override
-    protected void onHandleWork(@NonNull Intent intent) {
-        Log.i(TAG, "Job started!");
-        isWorking = true;
-        jobCancelled = false;
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i(TAG, "Service starting");
+
+        Notification notification = buildNotification(FOREGROUND_NOTIFICATION, null);
+        startForeground(foregroundNotificationId, notification);
+
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    /**
+     * The IntentService calls this method from the default worker thread with
+     * the intent that started the service. When this method returns, IntentService
+     * stops the service, as appropriate.
+     */
+    @Override
+    protected void onHandleIntent(Intent intent) {
+        Log.i(TAG, "Service started!");
 
         try {
             User user = UsersPresenter.loadUser(getApplicationContext());
@@ -171,20 +185,13 @@ public class WebService extends JobIntentService {
                 PENDING_ACTION = ACTION_NONE;
             }
         } catch (Exception e) {
-            Log.e(TAG, "Exception in Job");
+            Log.e(TAG, "Exception in Service");
             e.printStackTrace();
         }
     }
 
-    @Override
-    public boolean onStopCurrentWork() {
-        Log.i(TAG, "Job cancelled before being completed.");
-        jobCancelled = true;
-        return isWorking;
-    }
-
     private void doWork(Intent intent) {
-        Log.i(TAG, "entrando a doWork");
+        Log.i(TAG, "Working");
         String action = intent.getStringExtra("ACTION");
         String method = intent.getStringExtra("METHOD");
         String object = intent.getStringExtra("OBJECT");
@@ -249,16 +256,13 @@ public class WebService extends JobIntentService {
                 break;
         }
 
-        // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled) return;
-        Log.i(TAG, "Job finished!");
-        isWorking = false;
+        Log.i(TAG, "Work finished!");
     }
 
     private Notification buildNotification(String type, Object object) {
         NotificationCompat.Builder builder;
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager mNotificationManager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             String nId = getString(R.string.web_notification_id);
@@ -299,8 +303,8 @@ public class WebService extends JobIntentService {
             }
             case ACTION_CALENDAR: {
                 Event event = (Event) object;
-                builder.setContentTitle(getString(R.string.app_name) + " - " +
-                        getString(R.string.academic_calendar))
+                builder
+                        .setContentTitle(getString(R.string.app_name) + " - " + getString(R.string.academic_calendar))
                         .setContentText(event.getName());
                 break;
             }
@@ -332,6 +336,10 @@ public class WebService extends JobIntentService {
                 break;
             }
             default:
+                builder
+                        .setContentTitle(getString(R.string.app_name))
+                        .setContentText(getString(R.string.loading_content))
+                        .setUsesChronometer(true);
                 break;
         }
 
@@ -342,10 +350,13 @@ public class WebService extends JobIntentService {
                     .decodeResource(getApplicationContext().getResources(), R.drawable.app_icon));
         }
 
+        if (!FOREGROUND_NOTIFICATION.equals(type)) {
+            builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                    .setContentIntent(buildPendingIntent(type))
+                    .setAutoCancel(true);
+        }
+
         return builder.setSmallIcon(R.mipmap.ic_launcher)
-                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setContentIntent(buildPendingIntent(type))
-                .setAutoCancel(true)
                 .build();
     }
 
@@ -404,8 +415,6 @@ public class WebService extends JobIntentService {
     }
 
     private void loadNews(String type) {
-        // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled) return;
         Context context = getApplicationContext();
         int inserted = 0;
 
@@ -543,8 +552,6 @@ public class WebService extends JobIntentService {
     }
 
     private void loadInformations() {
-        // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled) return;
         Context context = getApplicationContext();
 
         if (Utilities.haveNetworkConnection(context)) {
@@ -597,8 +604,6 @@ public class WebService extends JobIntentService {
     }
 
     private void loadContacts() {
-        // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled) return;
         Context context = getApplicationContext();
 
         if (Utilities.haveNetworkConnection(context)) {
@@ -627,10 +632,6 @@ public class WebService extends JobIntentService {
     }
 
     private void loadPrograms() {
-        // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled)
-            return;
-
         ProgramsSQLiteController dbController =
                 new ProgramsSQLiteController(getApplicationContext(), 1);
 
@@ -687,8 +688,6 @@ public class WebService extends JobIntentService {
     }
 
     private void loadCalendar() {
-        // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled) return;
         Context context = getApplicationContext();
         EventsSQLiteController dbController = new EventsSQLiteController(context, 1);
 
@@ -799,8 +798,6 @@ public class WebService extends JobIntentService {
      *               eliminación.
      */
     private void loadAnnouncements(String type, String method, String object) {
-        // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled) return;
         String response = null;
         int inserted = 0;
         Context context = getApplicationContext();
@@ -965,8 +962,6 @@ public class WebService extends JobIntentService {
      *               eliminación.
      */
     private void loadObjects(String method, String object) {
-        // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled) return;
         Context context = getApplicationContext();
         String response = null;
         int inserted = 0;
@@ -1066,8 +1061,6 @@ public class WebService extends JobIntentService {
      *               eliminación.
      */
     private void loadDishes(String method, String object) {
-        // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled) return;
         Context context = getApplicationContext();
         String response = null;
         int inserted = 0;
@@ -1158,8 +1151,6 @@ public class WebService extends JobIntentService {
      *               eliminación.
      */
     private void loadQuotas(String method, String object) {
-        // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled) return;
         Context context = getApplicationContext();
         String response = null;
 
@@ -1237,7 +1228,7 @@ public class WebService extends JobIntentService {
                     }
                     break;
                 case METHOD_GET:
-                    user = UsersServiceController.login(object);
+                    user = UsersServiceController.getUser(object);
 
                     if (user != null && user.getPassword() != null && user.getApiKey() != null &&
                             user.getAdministrator() != null) {
@@ -1256,8 +1247,6 @@ public class WebService extends JobIntentService {
     }
 
     private void loadEmails(String method, String object) {
-        // If the job has been cancelled, stop working; the job will be rescheduled.
-        if (jobCancelled) return;
         Intent intent = null;
         int inserted = 0;
 
@@ -1337,7 +1326,8 @@ public class WebService extends JobIntentService {
 
     @Override
     public void onDestroy() {
-        Log.i(WebBroadcastReceiver.class.getSimpleName(), "destruyendo el web service");
+        Log.i(WebService.class.getSimpleName(), "Service destroyed!");
+        stopForeground(true);
         super.onDestroy();
     }
 

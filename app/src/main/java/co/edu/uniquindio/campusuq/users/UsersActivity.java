@@ -136,7 +136,7 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
                             .build());
                     progressDialog.show();
                     emailsPresenter.deleteEmails();
-                    WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                    WebBroadcastReceiver.startService(getApplicationContext(),
                             WebService.ACTION_USERS, WebService.METHOD_POST, json.toString());
                 } else {
                     Toast.makeText(UsersActivity.this, R.string.no_internet,
@@ -150,7 +150,7 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
             @Override
             public void onClick(View v) {
                 emailsPresenter.deleteEmails();
-                WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                WebBroadcastReceiver.startService(getApplicationContext(),
                         WebService.ACTION_USERS, WebService.METHOD_DELETE, null);
                 finish();
             }

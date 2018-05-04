@@ -275,7 +275,7 @@ public class MainActivity extends AppCompatActivity
                         .setValue(1)
                         .build());
                 Intent intent = new Intent(this, NotificationsActivity.class);
-                intent.putExtra("CATEGORY", getString(R.string.log_in));
+                intent.putExtra("CATEGORY", getString(R.string.action_adjust_notifications));
                 startActivity(intent);
                 return true;
             }
@@ -303,6 +303,12 @@ public class MainActivity extends AppCompatActivity
                     }
                     startActivity(intent);
                 }
+                return true;
+            }
+            case R.id.action_credits: {
+                Intent intent = new Intent(this, CreditsActivity.class);
+                intent.putExtra("CATEGORY", getString(R.string.action_credits));
+                startActivity(intent);
                 return true;
             }
             default:

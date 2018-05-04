@@ -21,12 +21,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <provider
+            android:name="android.support.v4.content.FileProvider"
             android:authorities="co.edu.uniquindio.campusuq.provider"
             android:exported="false"
-            android:grantUriPermissions="true"
-            android:name="android.support.v4.content.FileProvider">
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
@@ -45,7 +44,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".activity.StartActivity"
             android:label="@string/app_name"
@@ -57,7 +55,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activity.MenuActivity"
             android:label="@string/app_name"
@@ -71,7 +68,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".items.ItemsActivity"
             android:label="@string/app_name"
@@ -90,7 +86,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".news.NewsActivity"
             android:label="@string/app_name"
@@ -132,7 +127,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".web.WebContentActivity"
             android:label="@string/app_name"
@@ -151,7 +145,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".web.WebActivity"
             android:label="@string/app_name"
@@ -162,7 +155,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".items.ItemsActivity" />
         </activity>
-
         <activity
             android:name=".events.CalendarActivity"
             android:label="@string/app_name"
@@ -181,7 +173,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".events.CalendarDetailActivity"
             android:label="@string/app_name"
@@ -223,7 +214,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".radio.RadioActivity"
             android:label="@string/app_name"
@@ -278,7 +268,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".objects.ObjectsDetailActivity"
             android:label="@string/app_name"
@@ -297,7 +286,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".announcements.AnnouncementsActivity"
             android:label="@string/app_name"
@@ -316,7 +304,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".announcements.AnnouncementsDetailActivity"
             android:label="@string/app_name"
@@ -335,7 +322,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".dishes.DishesActivity"
             android:label="@string/app_name"
@@ -354,7 +340,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".dishes.DishesDetailActivity"
             android:label="@string/app_name"
@@ -373,7 +358,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".quotas.QuotasActivity"
             android:label="@string/app_name"
@@ -392,7 +376,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".quotas.QuotasDetailActivity"
             android:label="@string/app_name"
@@ -411,16 +394,15 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".users.UsersActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.MainActivity"
+            android:parentActivityName=".activity.MenuActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
+                android:value=".activity.MenuActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -430,16 +412,15 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".users.LoginActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.MainActivity"
+            android:parentActivityName=".activity.MenuActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
+                android:value=".activity.MenuActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -449,7 +430,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".emails.EmailsActivity"
             android:label="@string/app_name"
@@ -468,7 +448,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".emails.EmailsContentActivity"
             android:label="@string/app_name"
@@ -487,7 +466,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".emails.EmailsDetailActivity"
             android:label="@string/app_name"
@@ -506,16 +484,33 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".notifications.NotificationsActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.MainActivity"
+            android:parentActivityName=".activity.MenuActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
+                android:value=".activity.MenuActivity" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+        <activity
+            android:name=".activity.CreditsActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:parentActivityName=".activity.MenuActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.MenuActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -527,9 +522,12 @@
         </activity>
 
         <service
-            android:name=".web.WebService"
+            android:name=".web.WebJobService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name=".web.WebService"
+            android:exported="false" />
 
         <receiver
             android:name=".web.WebBroadcastReceiver"
@@ -539,7 +537,6 @@
                 <action android:name="co.edu.uniquindio.campusuq.ACTION_STOP_WEB_SERVICE" />
             </intent-filter>
         </receiver>
-
         <receiver android:name=".util.StarterReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -556,7 +553,6 @@
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name" />
-
         <activity
             android:name="com.facebook.CustomTabActivity"
             android:exported="true">
@@ -579,9 +575,9 @@
             android:name=".util.TwitterReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.twitter.sdk.android.tweetcomposer.UPLOAD_SUCCESS"/>
-                <action android:name="com.twitter.sdk.android.tweetcomposer.UPLOAD_FAILURE"/>
-                <action android:name="com.twitter.sdk.android.tweetcomposer.TWEET_COMPOSE_CANCEL"/>
+                <action android:name="com.twitter.sdk.android.tweetcomposer.UPLOAD_SUCCESS" />
+                <action android:name="com.twitter.sdk.android.tweetcomposer.UPLOAD_FAILURE" />
+                <action android:name="com.twitter.sdk.android.tweetcomposer.TWEET_COMPOSE_CANCEL" />
             </intent-filter>
         </receiver>
 

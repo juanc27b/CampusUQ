@@ -27,4 +27,9 @@
         android:icon="@drawable/ic_menu_admin_login"
         android:title="@string/action_login"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_credits"
+        android:icon="@drawable/ic_menu_credits"
+        android:title="@string/action_credits"
+        app:showAsAction="never" />
 </menu>

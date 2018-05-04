@@ -127,7 +127,7 @@ public class QuotasFragment extends DialogFragment implements View.OnClickListen
                     if (fragment_quotas) {
                         try {
                             quotasActivity.progressDialog.show();
-                            WebBroadcastReceiver.scheduleJob(quotasActivity,
+                            WebBroadcastReceiver.startService(quotasActivity,
                                     WebService.ACTION_QUOTAS, WebService.METHOD_PUT,
                                     new JSONObject()
                                             .put("UPDATE_ID", q.get_ID())
@@ -159,7 +159,7 @@ public class QuotasFragment extends DialogFragment implements View.OnClickListen
                                 .build());
 
                         try {
-                            WebBroadcastReceiver.scheduleJob(quotasActivity,
+                            WebBroadcastReceiver.startService(quotasActivity,
                                     WebService.ACTION_QUOTAS, WebService.METHOD_DELETE,
                                     new JSONObject()
                                             .put("DELETE_ID", q.get_ID())

@@ -16,34 +16,42 @@ import co.edu.uniquindio.campusuq.util.Utilities;
 
 public class UsersServiceController {
 
-    public static User login(String json) {
+    public static User getUser(String json) {
         try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(
-                    Utilities.URL_SERVICIO + "/usuarios/login").openConnection();
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setDoOutput(true);
+            int retry = 0;
+            InputStream inputStream = null;
+            ByteArrayOutputStream byteArrayOutputStream ;
 
-            try (OutputStream outputStream = connection.getOutputStream()) {
-                outputStream.write(json.getBytes());
-            }
+            do {
+                HttpURLConnection connection = (HttpURLConnection) new URL(
+                        Utilities.URL_SERVICIO + "/usuarios/login").openConnection();
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setDoOutput(true);
 
-            InputStream inputStream;
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-            try {
-                inputStream = connection.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("ResponseCode", "" + connection.getResponseCode());
-                InputStream errorStream = connection.getErrorStream();
-
-                if (errorStream != null) {
-                    Utilities.copy(errorStream, byteArrayOutputStream);
-                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                try (OutputStream outputStream = connection.getOutputStream()) {
+                    outputStream.write(json.getBytes());
                 }
 
-                return null;
-            }
+                byteArrayOutputStream = new ByteArrayOutputStream();
+
+                try {
+                    inputStream = connection.getInputStream();
+                    retry = 0;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e("ResponseCode", "" + connection.getResponseCode());
+                    InputStream errorStream = connection.getErrorStream();
+
+                    if (errorStream != null) {
+                        Utilities.copy(errorStream, byteArrayOutputStream);
+                        Log.e("ErrorStream", byteArrayOutputStream.toString());
+                    }
+
+                    retry++;
+                }
+            } while (retry > 0 && retry < 10);
+
+            if (retry >= 10) return null;
 
             Utilities.copy(inputStream, byteArrayOutputStream);
             JSONObject object =
@@ -72,34 +80,42 @@ public class UsersServiceController {
 
     public static String modifyUser(String json) {
         try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(
-                    Utilities.URL_SERVICIO + "/usuarios").openConnection();
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setDoOutput(true);
+            int retry = 0;
+            InputStream inputStream = null;
+            ByteArrayOutputStream byteArrayOutputStream ;
 
-            try (OutputStream outputStream = connection.getOutputStream()) {
-                outputStream.write(json.getBytes());
-            }
+            do {
+                HttpURLConnection connection = (HttpURLConnection) new URL(
+                        Utilities.URL_SERVICIO + "/usuarios").openConnection();
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setDoOutput(true);
 
-            InputStream inputStream;
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-            try {
-                inputStream = connection.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("ResponseCode", "" + connection.getResponseCode());
-                InputStream errorStream = connection.getErrorStream();
-
-                if (errorStream != null) {
-                    Utilities.copy(errorStream, byteArrayOutputStream);
-                    String error = byteArrayOutputStream.toString();
-                    Log.e("ErrorStream", error);
-                    return error;
+                try (OutputStream outputStream = connection.getOutputStream()) {
+                    outputStream.write(json.getBytes());
                 }
 
-                return null;
-            }
+                byteArrayOutputStream = new ByteArrayOutputStream();
+
+                try {
+                    inputStream = connection.getInputStream();
+                    retry = 0;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e("ResponseCode", "" + connection.getResponseCode());
+                    InputStream errorStream = connection.getErrorStream();
+
+                    if (errorStream != null) {
+                        Utilities.copy(errorStream, byteArrayOutputStream);
+                        String error = byteArrayOutputStream.toString();
+                        Log.e("ErrorStream", error);
+                        return error;
+                    }
+
+                    retry++;
+                }
+            } while (retry > 0 && retry < 10);
+
+            if (retry >= 10) return null;
 
             Utilities.copy(inputStream, byteArrayOutputStream);
             return byteArrayOutputStream.toString();

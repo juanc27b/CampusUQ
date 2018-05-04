@@ -159,7 +159,7 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
                             if (Utilities.haveNetworkConnection(EmailsActivity.this)) {
                                 oldEmails = false;
                                 progressDialog.show();
-                                WebBroadcastReceiver.scheduleJob(EmailsActivity.this,
+                                WebBroadcastReceiver.startService(EmailsActivity.this,
                                         WebService.ACTION_EMAILS, WebService.METHOD_GET,
                                         null);
                             } else {
@@ -180,7 +180,7 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
 
         if (emails.isEmpty() && !WebService.PENDING_ACTION.equals(WebService.ACTION_EMAILS)) {
             WebService.PENDING_ACTION = WebService.ACTION_EMAILS;
-            WebBroadcastReceiver.scheduleJob(this, WebService.ACTION_EMAILS,
+            WebBroadcastReceiver.startService(this, WebService.ACTION_EMAILS,
                     WebService.METHOD_GET, null);
         }
 
@@ -236,7 +236,7 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
             case EmailsPresenter.REQUEST_AUTHORIZATION:
                 if (resultCode == RESULT_OK) {
                     progressDialog.show();
-                    WebBroadcastReceiver.scheduleJob(this, WebService.ACTION_EMAILS,
+                    WebBroadcastReceiver.startService(this, WebService.ACTION_EMAILS,
                             WebService.METHOD_GET, null);
                 } else {
                     Toast.makeText(this,

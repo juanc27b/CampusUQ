@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Campus UQ</string>
+
+    <string name="app_description">Mobile Application for interaction with the University of Quindio</string>
     <string name="author">Juan Camilo González Idárraga</string>
+    <string name="program">Ingeniería de Sistemas y Computación</string>
+    <string name="university">Systems and Computing Engineering</string>
+    <string name="city">Armenia - Quindio</string>
+    <string name="country">Colombia</string>
+    <string name="university_mail">Institutional Email: jcgonzalezi@uqvirtual.edu.co</string>
+    <string name="personal_mail">Personal Email: juancamilo96b@hotmail.com</string>
 
     <string name="app_title_menu">Menu</string>
     <string name="function_menu">Function Menu</string>
@@ -147,6 +155,7 @@
     <string name="action_adjust_notifications">Adjust notifications</string>
     <string name="action_delete_history">Delete history</string>
     <string name="action_login">User account</string>
+    <string name="action_credits">Credits</string>
 
     <string name="loading_content">Loading content</string>
     <string name="please_wait">Please wait …</string>

@@ -310,7 +310,7 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                             if (Utilities.haveNetworkConnection(NewsActivity.this)) {
                                 oldNews = false;
                                 progressDialog.show();
-                                WebBroadcastReceiver.scheduleJob(getApplicationContext(),
+                                WebBroadcastReceiver.startService(getApplicationContext(),
                                         action, WebService.METHOD_GET, null);
                             } else {
                                 Toast.makeText(NewsActivity.this,

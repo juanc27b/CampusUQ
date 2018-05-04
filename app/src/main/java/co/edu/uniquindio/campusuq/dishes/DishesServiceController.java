@@ -35,28 +35,36 @@ public class DishesServiceController {
         ArrayList<Dish> dishes = new ArrayList<>();
 
         try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(
-                    Utilities.URL_SERVICIO + _DISHES).openConnection();
-            connection.setRequestProperty("Authorization",
-                    UsersPresenter.loadUser(context).getApiKey());
+            int retry = 0;
+            InputStream inputStream = null;
+            ByteArrayOutputStream byteArrayOutputStream ;
 
-            InputStream inputStream;
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            do {
+                HttpURLConnection connection = (HttpURLConnection) new URL(
+                        Utilities.URL_SERVICIO + _DISHES).openConnection();
+                connection.setRequestProperty("Authorization",
+                        UsersPresenter.loadUser(context).getApiKey());
 
-            try {
-                inputStream = connection.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("ResponseCode", "" + connection.getResponseCode());
-                InputStream errorStream = connection.getErrorStream();
+                byteArrayOutputStream = new ByteArrayOutputStream();
 
-                if (errorStream != null) {
-                    Utilities.copy(errorStream, byteArrayOutputStream);
-                    Log.e("ErrorStream", byteArrayOutputStream.toString());
+                try {
+                    inputStream = connection.getInputStream();
+                    retry = 0;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e("ResponseCode", "" + connection.getResponseCode());
+                    InputStream errorStream = connection.getErrorStream();
+
+                    if (errorStream != null) {
+                        Utilities.copy(errorStream, byteArrayOutputStream);
+                        Log.e("ErrorStream", byteArrayOutputStream.toString());
+                    }
+
+                    retry++;
                 }
+            } while (retry > 0 && retry < 10);
 
-                return dishes;
-            }
+            if (retry >= 10) return dishes;
 
             Utilities.copy(inputStream, byteArrayOutputStream);
             JSONArray array =
@@ -87,36 +95,44 @@ public class DishesServiceController {
      */
     public static String modifyDish(Context context, String json) {
         try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(
-                    Utilities.URL_SERVICIO + _DISHES).openConnection();
-            connection.setRequestProperty("Authorization",
-                    UsersPresenter.loadUser(context).getApiKey());
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setDoOutput(true);
+            int retry = 0;
+            InputStream inputStream = null;
+            ByteArrayOutputStream byteArrayOutputStream ;
 
-            try (OutputStream outputStream = connection.getOutputStream()) {
-                outputStream.write(json.getBytes());
-            }
+            do {
+                HttpURLConnection connection = (HttpURLConnection) new URL(
+                        Utilities.URL_SERVICIO + _DISHES).openConnection();
+                connection.setRequestProperty("Authorization",
+                        UsersPresenter.loadUser(context).getApiKey());
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setDoOutput(true);
 
-            InputStream inputStream;
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-            try {
-                inputStream = connection.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("ResponseCode", "" + connection.getResponseCode());
-                InputStream errorStream = connection.getErrorStream();
-
-                if (errorStream != null) {
-                    Utilities.copy(errorStream, byteArrayOutputStream);
-                    String error = byteArrayOutputStream.toString();
-                    Log.e("ErrorStream", error);
-                    return new JSONObject(error).getString("mensaje");
+                try (OutputStream outputStream = connection.getOutputStream()) {
+                    outputStream.write(json.getBytes());
                 }
 
-                return null;
-            }
+                byteArrayOutputStream = new ByteArrayOutputStream();
+
+                try {
+                    inputStream = connection.getInputStream();
+                    retry = 0;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e("ResponseCode", "" + connection.getResponseCode());
+                    InputStream errorStream = connection.getErrorStream();
+
+                    if (errorStream != null) {
+                        Utilities.copy(errorStream, byteArrayOutputStream);
+                        String error = byteArrayOutputStream.toString();
+                        Log.e("ErrorStream", error);
+                        return new JSONObject(error).getString("mensaje");
+                    }
+
+                    retry++;
+                }
+            } while (retry > 0 && retry < 10);
+
+            if (retry >= 10) return null;
 
             Utilities.copy(inputStream, byteArrayOutputStream);
             return new JSONObject(byteArrayOutputStream.toString()).getString("mensaje");

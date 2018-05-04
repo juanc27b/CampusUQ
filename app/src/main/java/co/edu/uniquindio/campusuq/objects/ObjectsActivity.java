@@ -170,7 +170,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                             if (Utilities.haveNetworkConnection(ObjectsActivity.this)) {
                                 oldObjects = false;
                                 progressDialog.show();
-                                WebBroadcastReceiver.scheduleJob(ObjectsActivity.this,
+                                WebBroadcastReceiver.startService(ObjectsActivity.this,
                                         WebService.ACTION_OBJECTS, WebService.METHOD_GET,
                                         null);
                             } else {
@@ -251,7 +251,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
             case ObjectsAdapter.FOUND:
                 if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail())) {
                     try {
-                        WebBroadcastReceiver.scheduleJob(this,
+                        WebBroadcastReceiver.startService(this,
                                 WebService.ACTION_OBJECTS,
                                 WebService.METHOD_DELETE,
                                 new JSONObject()
@@ -274,7 +274,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                         (user.get_ID().equals(object.getUserLost_ID()) ||
                                 user.get_ID().equals(object.getUserFound_ID()))) {
                     try {
-                        WebBroadcastReceiver.scheduleJob(this,
+                        WebBroadcastReceiver.startService(this,
                                 WebService.ACTION_OBJECTS,
                                 WebService.METHOD_DELETE,
                                 new JSONObject()
@@ -298,7 +298,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                         user.get_ID().equals(object.getUserLost_ID()) &&
                         object.getUserFound_ID() != null) {
                     try {
-                        WebBroadcastReceiver.scheduleJob(this,
+                        WebBroadcastReceiver.startService(this,
                                 WebService.ACTION_USERS,
                                 WebService.METHOD_GET,
                                 new JSONObject()
