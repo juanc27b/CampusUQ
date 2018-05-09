@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +15,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Toast;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 
@@ -35,10 +38,10 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
     static final int REQUEST_QUOTAS_DETAIL = 1001;
 
     private String type;
+    SwipeRefreshLayout swipeRefreshLayout;
     private ArrayList<Quota> quotas = new ArrayList<>();
     private boolean newActivity = true;
-    private QuotasAdapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
+    private RecyclerView recyclerView;
 
     private IntentFilter quotasFilter = new IntentFilter(WebService.ACTION_QUOTAS);
     private BroadcastReceiver quotasReceiver = new BroadcastReceiver() {
@@ -78,10 +81,12 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
         viewStub.inflate();
 
         FloatingActionButton insert = findViewById(R.id.fab);
+        swipeRefreshLayout = findViewById(R.id.quotas_swipe_refresh);
 
         insert.setOnClickListener(this);
         User user = UsersPresenter.loadUser(this);
         if (user != null && "S".equals(user.getAdministrator())) insert.setVisibility(View.VISIBLE);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
 
         loadQuotas();
     }
@@ -97,8 +102,9 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
             String query = intent.getStringExtra(SearchManager.QUERY);
 
             for (Quota quota : quotas) {
-                if (quota.getName().toLowerCase().contains(query.trim().toLowerCase())) {
-                    layoutManager.scrollToPosition(quotas.indexOf(quota));
+                if (StringUtils.stripAccents(quota.getName()).toLowerCase()
+                        .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
+                    recyclerView.getLayoutManager().scrollToPosition(quotas.indexOf(quota));
                     return;
                 }
             }
@@ -131,45 +137,35 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
      * realiza el proceso.
      */
     private void loadQuotas() {
-        if (!progressDialog.isShowing()) progressDialog.show();
+        swipeRefreshLayout.setRefreshing(true);
 
         quotas = QuotasPresenter.loadQuotas(this, type);
 
         if (newActivity) {
             newActivity = false;
-            adapter = new QuotasAdapter(quotas, this);
-            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,
-                    false);
-
-            RecyclerView recyclerView = findViewById(R.id.quotas_recycler_view);
+            recyclerView = findViewById(R.id.quotas_recycler_view);
             recyclerView.setHasFixedSize(true);
-            recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(layoutManager);
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            recyclerView.setAdapter(new QuotasAdapter(quotas, this));
+            recyclerView.setLayoutManager(new LinearLayoutManager(this,
+                    LinearLayoutManager.VERTICAL, false));
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
-                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
-                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                        if (!recyclerView.canScrollVertically(-1) ||
-                                !recyclerView.canScrollVertically(1)) {
-                            if (Utilities.haveNetworkConnection(QuotasActivity.this)) {
-                                progressDialog.show();
-                                WebBroadcastReceiver.startService(QuotasActivity.this,
-                                        WebService.ACTION_QUOTAS, WebService.METHOD_GET,
-                                        null);
-                            } else {
-                                Toast.makeText(QuotasActivity.this,
-                                        R.string.no_internet, Toast.LENGTH_SHORT).show();
-                            }
-                        }
+                public void onRefresh() {
+                    if (Utilities.haveNetworkConnection(QuotasActivity.this)) {
+                        WebBroadcastReceiver.startService(QuotasActivity.this,
+                                WebService.ACTION_QUOTAS, WebService.METHOD_GET,
+                                null);
+                    } else {
+                        Toast.makeText(QuotasActivity.this,
+                                R.string.no_internet, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
         } else {
-            adapter.setQuotas(quotas);
+            ((QuotasAdapter) recyclerView.getAdapter()).setQuotas(quotas);
         }
 
-        if (progressDialog.isShowing() && quotas.size() > 0) progressDialog.dismiss();
+        if (!quotas.isEmpty()) swipeRefreshLayout.setRefreshing(false);
     }
 
     /**
@@ -228,9 +224,8 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_QUOTAS_DETAIL && resultCode  == RESULT_OK &&
-                !progressDialog.isShowing()) {
-            progressDialog.show();
+        if (requestCode == REQUEST_QUOTAS_DETAIL && resultCode  == RESULT_OK) {
+            swipeRefreshLayout.setRefreshing(true);
         }
     }
 

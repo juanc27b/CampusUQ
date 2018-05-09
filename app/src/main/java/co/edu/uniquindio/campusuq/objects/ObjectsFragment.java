@@ -113,7 +113,7 @@ public class ObjectsFragment extends DialogFragment implements View.OnClickListe
                                     new JSONObject()
                                             .put("DELETE_ID", object.get_ID())
                                             .toString());
-                            objectsActivity.progressDialog.show();
+                            objectsActivity.swipeRefreshLayout.setRefreshing(true);
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(objectsActivity, e.getLocalizedMessage(),

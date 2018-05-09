@@ -1,5 +1,6 @@
 package co.edu.uniquindio.campusuq.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import co.edu.uniquindio.campusuq.R;
+import co.edu.uniquindio.campusuq.util.Utilities;
 
 /**
  * Actividad de bienvenida de la aplicación en la que se muestra una corta animación con el logotipo
@@ -17,6 +19,16 @@ import co.edu.uniquindio.campusuq.R;
 public class StartActivity extends AppCompatActivity {
 
     public ImageView background;
+
+    /**
+     * Método que adjunta el contexto necesario para el correcto funcionamiento de la opción de
+     * cambio de idioma.
+     * @param newBase Contexto a adjuntar.
+     */
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(Utilities.getLanguage(newBase));
+    }
 
     /**
      * Método llamado durante el ciclo de vida para crear la actividad, se encarga de establecer

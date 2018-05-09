@@ -126,7 +126,7 @@ public class QuotasFragment extends DialogFragment implements View.OnClickListen
                 if (Utilities.haveNetworkConnection(quotasActivity)) {
                     if (fragment_quotas) {
                         try {
-                            quotasActivity.progressDialog.show();
+                            quotasActivity.swipeRefreshLayout.setRefreshing(true);
                             WebBroadcastReceiver.startService(quotasActivity,
                                     WebService.ACTION_QUOTAS, WebService.METHOD_PUT,
                                     new JSONObject()
@@ -164,7 +164,7 @@ public class QuotasFragment extends DialogFragment implements View.OnClickListen
                                     new JSONObject()
                                             .put("DELETE_ID", q.get_ID())
                                             .toString());
-                            quotasActivity.progressDialog.show();
+                            quotasActivity.swipeRefreshLayout.setRefreshing(true);
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(quotasActivity, e.getLocalizedMessage(),

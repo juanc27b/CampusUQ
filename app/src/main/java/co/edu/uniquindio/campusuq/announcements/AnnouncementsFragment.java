@@ -124,7 +124,7 @@ public class AnnouncementsFragment extends DialogFragment implements View.OnClic
                                     new JSONObject()
                                             .put("DELETE_ID", announcement.get_ID())
                                             .toString());
-                            announcementsActivity.progressDialog.show();
+                            announcementsActivity.swipeRefreshLayout.setRefreshing(true);
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(announcementsActivity, e.getLocalizedMessage(),

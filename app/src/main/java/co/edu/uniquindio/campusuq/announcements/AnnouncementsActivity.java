@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.FileProvider;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -39,6 +40,8 @@ import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import com.twitter.sdk.android.tweetcomposer.ComposerActivity;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,11 +66,11 @@ public class AnnouncementsActivity extends MainActivity implements
     private String action;
     private Button report;
     private FloatingActionButton fab;
+    SwipeRefreshLayout swipeRefreshLayout;
     private ArrayList<Announcement> announcements = new ArrayList<>();
     private ArrayList<AnnouncementLink> announcementsLinks;
     private boolean newActivity = true;
-    private AnnouncementsAdapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
+    private RecyclerView recyclerView;
     private boolean oldAnnouncements = true;
 
     private String socialNetwork = AnnouncementsAdapter.UNDEFINED;
@@ -115,12 +118,15 @@ public class AnnouncementsActivity extends MainActivity implements
         ViewStub viewStub = findViewById(R.id.layout_stub);
         viewStub.setLayoutResource(R.layout.content_announcements);
         viewStub.inflate();
+
         report = findViewById(R.id.report_incident);
         fab = findViewById(R.id.fab);
+        swipeRefreshLayout = findViewById(R.id.announcements_swipe_refresh);
 
         report.setOnClickListener(this);
         fab.setOnClickListener(this);
         changeConfiguration();
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
@@ -175,8 +181,10 @@ public class AnnouncementsActivity extends MainActivity implements
             String query = intent.getStringExtra(SearchManager.QUERY);
 
             for (Announcement announcement : announcements) {
-                if (announcement.getName().toLowerCase().contains(query.trim().toLowerCase())) {
-                    layoutManager.scrollToPosition(announcements.indexOf(announcement));
+                if (StringUtils.stripAccents(announcement.getName()).toLowerCase()
+                        .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
+                    recyclerView.getLayoutManager()
+                            .scrollToPosition(announcements.indexOf(announcement));
                     return;
                 }
             }
@@ -221,7 +229,7 @@ public class AnnouncementsActivity extends MainActivity implements
      * @param inserted Indica la cantidad de objetos perdidos insertados.
      */
     private void loadAnnouncements(int inserted) {
-        if (!progressDialog.isShowing()) progressDialog.show();
+        swipeRefreshLayout.setRefreshing(true);
 
         int scrollTo = oldAnnouncements ?
                 (newActivity ? 0 : announcements.size() - 1) :
@@ -239,44 +247,44 @@ public class AnnouncementsActivity extends MainActivity implements
 
         if (newActivity) {
             newActivity = false;
-            adapter = new AnnouncementsAdapter(announcements, announcementsLinks,
-                    this);
-            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,
-                    false);
-
-            RecyclerView recyclerView = findViewById(R.id.announcements_recycler_view);
+            recyclerView = findViewById(R.id.announcements_recycler_view);
             recyclerView.setHasFixedSize(true);
-            recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(new AnnouncementsAdapter(announcements,
+                    announcementsLinks, this));
+            recyclerView.setLayoutManager(new LinearLayoutManager(this,
+                    LinearLayoutManager.VERTICAL, false));
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
-                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                        if (!recyclerView.canScrollVertically(-1)) {
-                            if (Utilities
-                                    .haveNetworkConnection(AnnouncementsActivity.this)) {
-                                oldAnnouncements = false;
-                                progressDialog.show();
-                                WebBroadcastReceiver.startService(AnnouncementsActivity.this,
-                                        action, WebService.METHOD_GET, null);
-                            } else {
-                                Toast.makeText(AnnouncementsActivity.this,
-                                        R.string.no_internet, Toast.LENGTH_SHORT).show();
-                            }
-                        } else if (!recyclerView.canScrollVertically(1)) {
-                            oldAnnouncements = true;
-                            loadAnnouncements(0);
-                        }
+
+                    if (newState == RecyclerView.SCROLL_STATE_SETTLING &&
+                            !recyclerView.canScrollVertically(1)) {
+                        oldAnnouncements = true;
+                        loadAnnouncements(0);
+                    }
+                }
+            });
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    if (Utilities.haveNetworkConnection(AnnouncementsActivity.this)) {
+                        oldAnnouncements = false;
+                        WebBroadcastReceiver.startService(AnnouncementsActivity.this,
+                                action, WebService.METHOD_GET, null);
+                    } else {
+                        Toast.makeText(AnnouncementsActivity.this,
+                                R.string.no_internet, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
         } else {
-            adapter.setAnnouncements(announcements, announcementsLinks);
-            layoutManager.scrollToPosition(scrollTo);
+            ((AnnouncementsAdapter) recyclerView.getAdapter())
+                    .setAnnouncements(announcements, announcementsLinks);
+            recyclerView.getLayoutManager().scrollToPosition(scrollTo);
         }
 
-        if (progressDialog.isShowing() && announcements.size() > 0) progressDialog.dismiss();
+        if (!announcements.isEmpty()) swipeRefreshLayout.setRefreshing(false);
     }
 
     /**
@@ -483,7 +491,7 @@ public class AnnouncementsActivity extends MainActivity implements
 
         switch (requestCode) {
             case REQUEST_ANNOUNCEMENT_DETAIL:
-                if (resultCode  == RESULT_OK && !progressDialog.isShowing()) progressDialog.show();
+                if (resultCode  == RESULT_OK) swipeRefreshLayout.setRefreshing(true);
                 break;
             default:
                 switch (socialNetwork) {

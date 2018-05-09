@@ -9,6 +9,8 @@ import android.view.ViewStub;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
@@ -61,7 +63,8 @@ public class CalendarActivity extends MainActivity implements
             String query = intent.getStringExtra(SearchManager.QUERY);
 
             for (CalendarItem item : items) {
-                if (item.getEvent().toLowerCase().contains(query.trim().toLowerCase())) {
+                if (StringUtils.stripAccents(item.getEvent()).toLowerCase()
+                        .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
                     mLayoutManager.scrollToPosition(items.indexOf(item));
                     return;
                 }

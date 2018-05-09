@@ -24,6 +24,8 @@ import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
@@ -179,8 +181,8 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
             String query = intent.getStringExtra(SearchManager.QUERY);
             boolean found = false;
             for (int i = 0; i < 41; i++) {
-                if (query.trim().toLowerCase().equals(tags.get(i).toLowerCase()) ||
-                        tags.get(i).toLowerCase().contains(query.trim().toLowerCase())) {
+                if (StringUtils.stripAccents(tags.get(i)).toLowerCase()
+                        .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
                     if (isMapEnabled) {
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locations.get(i),
                                 16));

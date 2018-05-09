@@ -64,10 +64,9 @@ public class QuotasAdapter extends RecyclerView.Adapter<QuotasAdapter.QuotaViewH
          * @param q Cupo a visualizar.
          */
         void bindItem(Quota q) {
-            icon.setImageResource(q.getQuota().equals("0") ?
+            icon.setImageResource("0".equals(q.getQuota()) ?
                     R.drawable.circle_gray : R.drawable.circle_green);
             name.setText(q.getName());
-            name.setTextSize(q.getType().equals("S")? 20 : 15);
             quota.setText(q.getQuota());
         }
 

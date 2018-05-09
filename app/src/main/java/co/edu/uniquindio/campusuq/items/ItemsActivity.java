@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
@@ -100,7 +102,8 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
             String query = intent.getStringExtra(SearchManager.QUERY);
 
             for (Item item : items) {
-                if (item.getTitle().toLowerCase().contains(query.trim().toLowerCase())) {
+                if (StringUtils.stripAccents(item.getTitle()).toLowerCase()
+                        .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
                     //items.add(0, items.remove(items.indexOf(item)));
                     //mAdapter.setItems(items);
                     mLayoutManager.scrollToPosition(items.indexOf(item));

@@ -113,7 +113,7 @@ public class DishesFragment extends DialogFragment implements View.OnClickListen
                                     new JSONObject()
                                             .put("DELETE_ID", dish.get_ID())
                                             .toString());
-                            dishesActivity.progressDialog.show();
+                            dishesActivity.swipeRefreshLayout.setRefreshing(true);
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(dishesActivity, e.getLocalizedMessage(),

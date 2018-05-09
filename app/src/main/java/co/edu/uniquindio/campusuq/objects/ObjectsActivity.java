@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.FileProvider;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.Toast;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -40,10 +42,10 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
 
     static final int REQUEST_OBJECTS_DETAIL = 1001;
 
+    SwipeRefreshLayout swipeRefreshLayout;
     private ArrayList<LostObject> objects = new ArrayList<>();
     private boolean newActivity = true;
-    private ObjectsAdapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
+    private RecyclerView recyclerView;
     private boolean oldObjects = true;
 
     private IntentFilter objectsFilter = new IntentFilter();
@@ -58,7 +60,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                     Toast.makeText(context, response, Toast.LENGTH_SHORT).show();
                     Log.i(ObjectsActivity.class.getSimpleName(), response);
                 }
-            } else if (progressDialog.isShowing()) {
+            } else if (swipeRefreshLayout.isRefreshing()) {
                 User userFound = intent.getParcelableExtra("USER");
 
                 if (userFound != null) {
@@ -96,7 +98,10 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         viewStub.setLayoutResource(R.layout.content_objects);
         viewStub.inflate();
 
+        swipeRefreshLayout = findViewById(R.id.objects_swipe_refresh);
+
         findViewById(R.id.object_report).setOnClickListener(this);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
 
         loadObjects(0);
     }
@@ -112,8 +117,9 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
             String query = intent.getStringExtra(SearchManager.QUERY);
 
             for (LostObject object : objects) {
-                if (object.getName().toLowerCase().contains(query.trim().toLowerCase())) {
-                    layoutManager.scrollToPosition(objects.indexOf(object));
+                if (StringUtils.stripAccents(object.getName()).toLowerCase()
+                        .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
+                    recyclerView.getLayoutManager().scrollToPosition(objects.indexOf(object));
                     return;
                 }
             }
@@ -142,7 +148,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
      * @param inserted Indica la cantidad de objetos perdidos insertados.
      */
     private void loadObjects(int inserted) {
-        if (!progressDialog.isShowing()) progressDialog.show();
+        swipeRefreshLayout.setRefreshing(true);
 
         int scrollTo = oldObjects ?
                 (newActivity ? 0 : objects.size() - 1) :
@@ -153,43 +159,43 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
 
         if (newActivity) {
             newActivity = false;
-            adapter = new ObjectsAdapter(objects, this);
-            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,
-                    false);
-
-            RecyclerView recyclerView = findViewById(R.id.objects_recycler_view);
+            recyclerView = findViewById(R.id.objects_recycler_view);
             recyclerView.setHasFixedSize(true);
-            recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(new ObjectsAdapter(objects, this));
+            recyclerView.setLayoutManager(new LinearLayoutManager(this,
+                    LinearLayoutManager.VERTICAL, false));
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
-                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                        if (!recyclerView.canScrollVertically(-1)) {
-                            if (Utilities.haveNetworkConnection(ObjectsActivity.this)) {
-                                oldObjects = false;
-                                progressDialog.show();
-                                WebBroadcastReceiver.startService(ObjectsActivity.this,
-                                        WebService.ACTION_OBJECTS, WebService.METHOD_GET,
-                                        null);
-                            } else {
-                                Toast.makeText(ObjectsActivity.this,
-                                        R.string.no_internet, Toast.LENGTH_SHORT).show();
-                            }
-                        } else if (!recyclerView.canScrollVertically(1)) {
-                            oldObjects = true;
-                            loadObjects(0);
-                        }
+
+                    if (newState == RecyclerView.SCROLL_STATE_SETTLING &&
+                            !recyclerView.canScrollVertically(1)) {
+                        oldObjects = true;
+                        loadObjects(0);
+                    }
+                }
+            });
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    if (Utilities.haveNetworkConnection(ObjectsActivity.this)) {
+                        oldObjects = false;
+                        WebBroadcastReceiver.startService(ObjectsActivity.this,
+                                WebService.ACTION_OBJECTS, WebService.METHOD_GET,
+                                null);
+                    } else {
+                        Toast.makeText(ObjectsActivity.this,
+                                R.string.no_internet, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
         } else {
-            adapter.setObjects(objects);
-            layoutManager.scrollToPosition(scrollTo);
+            ((ObjectsAdapter) recyclerView.getAdapter()).setObjects(objects);
+            recyclerView.getLayoutManager().scrollToPosition(scrollTo);
         }
 
-        if (progressDialog.isShowing() && objects.size() > 0) progressDialog.dismiss();
+        if (!objects.isEmpty()) swipeRefreshLayout.setRefreshing(false);
     }
 
     /**
@@ -258,7 +264,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                                         .put("UPDATE_ID", object.get_ID())
                                         .put(ObjectsSQLiteController.columns[8], user.get_ID())
                                         .toString());
-                        progressDialog.show();
+                        swipeRefreshLayout.setRefreshing(true);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Toast.makeText(this, e.getLocalizedMessage(),
@@ -281,7 +287,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                                         .put("UPDATE_ID", object.get_ID())
                                         .put(ObjectsSQLiteController.columns[8], JSONObject.NULL)
                                         .toString());
-                        progressDialog.show();
+                        swipeRefreshLayout.setRefreshing(true);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Toast.makeText(this, e.getLocalizedMessage(),
@@ -305,7 +311,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                                         .put(UsersSQLiteController.columns[0],
                                                 object.getUserFound_ID())
                                         .toString());
-                        progressDialog.show();
+                        swipeRefreshLayout.setRefreshing(true);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Toast.makeText(this, e.getLocalizedMessage(),
@@ -361,9 +367,8 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_OBJECTS_DETAIL && resultCode  == RESULT_OK &&
-                !progressDialog.isShowing()) {
-            progressDialog.show();
+        if (requestCode == REQUEST_OBJECTS_DETAIL && resultCode  == RESULT_OK) {
+            swipeRefreshLayout.setRefreshing(true);
         }
     }
 

@@ -2,6 +2,7 @@
     <string name="app_name">Campus UQ</string>
 
     <string name="app_description">Aplicación Móvil para la interacción con la Universidad del Quindío</string>
+    <string name="developed_by">Desarrollado por:</string>
     <string name="author">Juan Camilo González Idárraga</string>
     <string name="program">Ingeniería de Sistemas y Computación</string>
     <string name="university">Universidad del Quindío</string>
@@ -156,7 +157,7 @@
     <string name="action_login">Cuenta de usuario</string>
     <string name="action_credits">Créditos</string>
 
-    <string name="loading_content">Cargando conteido</string>
+    <string name="loading_content">Cargando contenido</string>
     <string name="please_wait">Por favor espere …</string>
     <string name="no_internet">No hay conexión a internet</string>
     <string name="empty_string">No puede haber campos vacios</string>
@@ -281,7 +282,10 @@
     <string name="announcement_detail_sample_description_count">110</string>
     <string name="announcement_detail_description_count_limit">/500</string>
 
-    <string name="quota_sample_name">Sala A</string>
+    <string name="quotas_availables">Cupos disponibles</string>
+
+    <string name="quota_icon_description">Icono del cupo</string>
+    <string name="quota_sample_name">Sala de Computadores A Ingeniería</string>
     <string name="quota_sample_quota">24</string>
     <string name="quota_text">cupo(s)</string>
     <string name="quota_dialog_sample_name">Ajustar Cupos de Sala A</string>

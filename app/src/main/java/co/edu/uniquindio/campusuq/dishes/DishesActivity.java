@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.FileProvider;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +16,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Toast;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,10 +38,10 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
 
     static final int REQUEST_DISHES_DETAIL = 1001;
 
+    SwipeRefreshLayout swipeRefreshLayout;
     private ArrayList<Dish> dishes = new ArrayList<>();
     private boolean newActivity = true;
-    private DishesAdapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
+    private RecyclerView recyclerView;
     private boolean oldDishes = true;
 
     private IntentFilter dishesFilter = new IntentFilter(WebService.ACTION_DISHES);
@@ -79,10 +82,12 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
         viewStub.inflate();
 
         FloatingActionButton insert = findViewById(R.id.fab);
+        swipeRefreshLayout = findViewById(R.id.dishes_swipe_refresh);
 
         insert.setOnClickListener(this);
         User user = UsersPresenter.loadUser(this);
         if (user != null && "S".equals(user.getAdministrator())) insert.setVisibility(View.VISIBLE);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
 
         loadDishes(0);
     }
@@ -98,8 +103,9 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
             String query = intent.getStringExtra(SearchManager.QUERY);
 
             for (Dish dish : dishes) {
-                if (dish.getName().toLowerCase().contains(query.trim().toLowerCase())) {
-                    layoutManager.scrollToPosition(dishes.indexOf(dish));
+                if (StringUtils.stripAccents(dish.getName()).toLowerCase()
+                        .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
+                    recyclerView.getLayoutManager().scrollToPosition(dishes.indexOf(dish));
                     return;
                 }
             }
@@ -128,7 +134,7 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
      * @param inserted Indica la cantidad de platos insertados.
      */
     private void loadDishes(int inserted) {
-        if (!progressDialog.isShowing()) progressDialog.show();
+        swipeRefreshLayout.setRefreshing(true);
 
         int scrollTo = oldDishes ?
                 (newActivity ? 0 : dishes.size() - 1) :
@@ -139,43 +145,43 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
 
         if (newActivity) {
             newActivity = false;
-            adapter = new DishesAdapter(dishes, this);
-            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,
-                    false);
-
-            RecyclerView recyclerView = findViewById(R.id.dishes_recycler_view);
+            recyclerView = findViewById(R.id.dishes_recycler_view);
             recyclerView.setHasFixedSize(true);
-            recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(new DishesAdapter(dishes, this));
+            recyclerView.setLayoutManager(new LinearLayoutManager(this,
+                    LinearLayoutManager.VERTICAL, false));
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
-                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                        if (!recyclerView.canScrollVertically(-1)) {
-                            if (Utilities.haveNetworkConnection(DishesActivity.this)) {
-                                oldDishes = false;
-                                progressDialog.show();
-                                WebBroadcastReceiver.startService(getApplicationContext(),
-                                        WebService.ACTION_DISHES, WebService.METHOD_GET,
-                                        null);
-                            } else {
-                                Toast.makeText(DishesActivity.this,
-                                        R.string.no_internet, Toast.LENGTH_SHORT).show();
-                            }
-                        } else if (!recyclerView.canScrollVertically(1)) {
-                            oldDishes = true;
-                            loadDishes(0);
-                        }
+
+                    if (newState == RecyclerView.SCROLL_STATE_SETTLING &&
+                            !recyclerView.canScrollVertically(1)) {
+                        oldDishes = true;
+                        loadDishes(0);
+                    }
+                }
+            });
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    if (Utilities.haveNetworkConnection(DishesActivity.this)) {
+                        oldDishes = false;
+                        WebBroadcastReceiver.startService(getApplicationContext(),
+                                WebService.ACTION_DISHES, WebService.METHOD_GET,
+                                null);
+                    } else {
+                        Toast.makeText(DishesActivity.this,
+                                R.string.no_internet, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
         } else {
-            adapter.setDishes(dishes);
-            layoutManager.scrollToPosition(scrollTo);
+            ((DishesAdapter) recyclerView.getAdapter()).setDishes(dishes);
+            recyclerView.getLayoutManager().scrollToPosition(scrollTo);
         }
 
-        if (progressDialog.isShowing() && dishes.size() > 0) progressDialog.dismiss();
+        if (!dishes.isEmpty()) swipeRefreshLayout.setRefreshing(false);
     }
 
     /**
@@ -258,9 +264,8 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_DISHES_DETAIL && resultCode  == RESULT_OK &&
-                !progressDialog.isShowing()) {
-            progressDialog.show();
+        if (requestCode == REQUEST_DISHES_DETAIL && resultCode  == RESULT_OK) {
+            swipeRefreshLayout.setRefreshing(true);
         }
     }
 

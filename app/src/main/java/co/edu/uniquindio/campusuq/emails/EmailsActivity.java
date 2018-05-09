@@ -8,12 +8,15 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.Toast;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,10 +31,10 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClickEmailListener,
         EasyPermissions.PermissionCallbacks {
 
+    SwipeRefreshLayout swipeRefreshLayout;
     private ArrayList<Email> emails = new ArrayList<>();
     private boolean newActivity = true;
-    private EmailsAdapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
+    private RecyclerView recyclerView;
     private boolean oldEmails = true;
 
     private IntentFilter emailsFilter = new IntentFilter(WebService.ACTION_EMAILS);
@@ -44,7 +47,7 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
             if (exceptionIntent == null) {
                 loadEmails(intent.getIntExtra("INSERTED", 0));
             } else {
-                if(progressDialog.isShowing()) progressDialog.dismiss();
+                swipeRefreshLayout.setRefreshing(true);
                 startActivityForResult(exceptionIntent, EmailsPresenter.REQUEST_AUTHORIZATION);
             }
 
@@ -74,6 +77,7 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
         viewStub.inflate();
 
         FloatingActionButton insert = findViewById(R.id.fab);
+        swipeRefreshLayout = findViewById(R.id.emails_swipe_refresh);
 
         insert.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,6 +89,7 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
             }
         });
         insert.setVisibility(View.VISIBLE);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
 
         loadEmails(0);
     }
@@ -100,8 +105,9 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
             String query = intent.getStringExtra(SearchManager.QUERY);
 
             for (Email email : emails) {
-                if(email.getName().toLowerCase().contains(query.trim().toLowerCase())) {
-                    layoutManager.scrollToPosition(emails.indexOf(email));
+                if(StringUtils.stripAccents(email.getName()).toLowerCase()
+                        .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
+                    recyclerView.getLayoutManager().scrollToPosition(emails.indexOf(email));
                     return;
                 }
             }
@@ -130,7 +136,7 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
      * @param inserted Indica la cantidad de correos insertados.
      */
     private void loadEmails(int inserted) {
-        if (!progressDialog.isShowing()) progressDialog.show();
+        swipeRefreshLayout.setRefreshing(true);
 
         int scrollTo = oldEmails ?
                 (newActivity ? 0 : emails.size() - 1) :
@@ -142,40 +148,40 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
 
         if (newActivity) {
             newActivity = false;
-            adapter = new EmailsAdapter(emails, this);
-            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,
-                    false);
-
-            RecyclerView recyclerView = findViewById(R.id.emails_recycler_view);
+            recyclerView = findViewById(R.id.emails_recycler_view);
             recyclerView.setHasFixedSize(true);
-            recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(new EmailsAdapter(emails, this));
+            recyclerView.setLayoutManager(new LinearLayoutManager(this,
+                    LinearLayoutManager.VERTICAL, false));
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
-                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                        if (!recyclerView.canScrollVertically(-1)) {
-                            if (Utilities.haveNetworkConnection(EmailsActivity.this)) {
-                                oldEmails = false;
-                                progressDialog.show();
-                                WebBroadcastReceiver.startService(EmailsActivity.this,
-                                        WebService.ACTION_EMAILS, WebService.METHOD_GET,
-                                        null);
-                            } else {
-                                Toast.makeText(EmailsActivity.this,
-                                        getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
-                            }
-                        } else if (!recyclerView.canScrollVertically(1)) {
-                            oldEmails = true;
-                            loadEmails(0);
-                        }
+
+                    if (newState == RecyclerView.SCROLL_STATE_SETTLING &&
+                            !recyclerView.canScrollVertically(1)) {
+                        oldEmails = true;
+                        loadEmails(0);
+                    }
+                }
+            });
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    if (Utilities.haveNetworkConnection(EmailsActivity.this)) {
+                        oldEmails = false;
+                        WebBroadcastReceiver.startService(EmailsActivity.this,
+                                WebService.ACTION_EMAILS, WebService.METHOD_GET,
+                                null);
+                    } else {
+                        Toast.makeText(EmailsActivity.this,
+                                R.string.no_internet, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
         } else {
-            adapter.setEmails(emails);
-            layoutManager.scrollToPosition(scrollTo);
+            ((EmailsAdapter) recyclerView.getAdapter()).setEmails(emails);
+            recyclerView.getLayoutManager().scrollToPosition(scrollTo);
         }
 
         if (emails.isEmpty() && !WebService.PENDING_ACTION.equals(WebService.ACTION_EMAILS)) {
@@ -184,7 +190,7 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
                     WebService.METHOD_GET, null);
         }
 
-        if (progressDialog.isShowing() && emails.size() > 0) progressDialog.dismiss();
+        if (!emails.isEmpty()) swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -235,7 +241,7 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
         switch(requestCode) {
             case EmailsPresenter.REQUEST_AUTHORIZATION:
                 if (resultCode == RESULT_OK) {
-                    progressDialog.show();
+                    swipeRefreshLayout.setRefreshing(true);
                     WebBroadcastReceiver.startService(this, WebService.ACTION_EMAILS,
                             WebService.METHOD_GET, null);
                 } else {

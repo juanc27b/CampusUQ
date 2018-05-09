@@ -18,12 +18,19 @@
         android:background="@drawable/round_green_filled_button"
         android:backgroundTint="@color/colorRed"/>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/objects_recycler_view"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/objects_swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="20dp"
-        android:scrollbars="vertical"/>
+        android:layout_marginBottom="20dp">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/objects_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </LinearLayout>
