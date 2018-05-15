@@ -84,6 +84,10 @@ public class EmailsAdapter extends RecyclerView.Adapter<EmailsAdapter.EmailViewH
         return emails.size();
     }
 
+    public ArrayList<Email> getEmails() {
+        return emails;
+    }
+
     public void setEmails(ArrayList<Email> emails) {
         this.emails = emails;
         notifyDataSetChanged();

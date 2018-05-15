@@ -116,7 +116,8 @@ public class AnnouncementsAdapter extends
         void bindItem(Announcement announcement, ArrayList<AnnouncementLink> announcementLinks) {
             for (int i = 0; i < images.length; i++) {
                 if (i < announcementLinks.size()) {
-                    File linkFile = new File(announcementLinks.get(i).getLink());
+                    // Se concatena una cadena vacia para evitar el caso File(null)
+                    File linkFile = new File("" + announcementLinks.get(i).getLink());
 
                     if (linkFile.exists()) {
                         if ("I".equals(announcementLinks.get(i).getType())) {
@@ -223,6 +224,14 @@ public class AnnouncementsAdapter extends
     }
 
     /**
+     * Obtiene el arrego de anuncios.
+     * @return Arreglo de anuncios
+     */
+    public ArrayList<Announcement> getAnnouncements() {
+        return announcements;
+    }
+
+    /**
      * Asigna los nuevos arreglos de anuncios y enlaces de anuncios y notifica que los datos han
      * cambiado.
      * @param announcements Arreglo de anuncios.
@@ -233,6 +242,14 @@ public class AnnouncementsAdapter extends
         this.announcements = announcements;
         this.announcementsLinks = announcementsLinks;
         notifyDataSetChanged();
+    }
+
+    /**
+     * Obtiene el arrego de enlaces de anuncios.
+     * @return Arreglo de enlaces de anuncios
+     */
+    public ArrayList<AnnouncementLink> getAnnouncementsLinks() {
+        return announcementsLinks;
     }
 
     /**

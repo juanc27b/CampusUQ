@@ -17,6 +17,38 @@ public class Item implements Parcelable {
         this.description = description;
     }
 
+    private Item(Parcel in) {
+        background = in.readInt();
+        image = in.readInt();
+        title = in.readString();
+        description = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(background);
+        dest.writeInt(image);
+        dest.writeString(title);
+        dest.writeString(description);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Item> CREATOR = new Creator<Item>() {
+        @Override
+        public Item createFromParcel(Parcel in) {
+            return new Item(in);
+        }
+
+        @Override
+        public Item[] newArray(int size) {
+            return new Item[size];
+        }
+    };
+
     public int getBackground() {
         return background;
     }
@@ -47,37 +79,6 @@ public class Item implements Parcelable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(background);
-        dest.writeInt(image);
-        dest.writeString(title);
-        dest.writeString(description);
-    }
-
-    public static final Parcelable.Creator<Item> CREATOR
-            = new Parcelable.Creator<Item>() {
-        public Item createFromParcel(Parcel in) {
-            return new Item(in);
-        }
-
-        public Item[] newArray(int size) {
-            return new Item[size];
-        }
-    };
-
-    private Item(Parcel in) {
-        background = in.readInt();
-        image = in.readInt();
-        title = in.readString();
-        description = in.readString();
     }
 
 }

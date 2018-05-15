@@ -95,7 +95,7 @@ public class ObjectsFragment extends DialogFragment implements View.OnClickListe
                     if (modify.isChecked()) {
                         objectsActivity.startActivityForResult(
                                 new Intent(objectsActivity, ObjectsDetailActivity.class)
-                                        .putExtra("CATEGORY", getString(R.string.object_report_lost))
+                                        .putExtra(Utilities.CATEGORY, R.string.object_report_lost)
                                         .putExtra(OBJECT, object),
                                 ObjectsActivity.REQUEST_OBJECTS_DETAIL);
                     } else if (delete.isChecked()) {

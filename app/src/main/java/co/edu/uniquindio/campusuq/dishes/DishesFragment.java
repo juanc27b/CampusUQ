@@ -95,7 +95,7 @@ public class DishesFragment extends DialogFragment implements View.OnClickListen
                     if (modify.isChecked()) {
                         dishesActivity.startActivityForResult(
                                 new Intent(dishesActivity, DishesDetailActivity.class)
-                                        .putExtra("CATEGORY", getString(R.string.restaurant_detail))
+                                        .putExtra(Utilities.CATEGORY, R.string.restaurant_detail)
                                         .putExtra(DISH, dish),
                                 DishesActivity.REQUEST_DISHES_DETAIL);
                     } else if (delete.isChecked()) {

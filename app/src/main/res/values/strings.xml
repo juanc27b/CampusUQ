@@ -233,7 +233,7 @@
     <string name="digital_repository_url" translatable="false">https://bdigital.uniquindio.edu.co/</string>
     <string name="public_catalog_url" translatable="false">http://catalogo.uniquindio.edu.co/</string>
     <string name="databases_url" translatable="false">https://www.uniquindio.edu.co/biblioteca/publicaciones/bases_de_datos_pub</string>
-    <string name="pqrsd_system_url" translatable="false">https://uniquindio.sysaidit.com/SubmitSR.jsp?accountId=uniquindio</string>
+    <string name="pqrsd_system_url" translatable="false">http://intraweb.uniquindio.edu.co/index.php?option=com_formasonline&amp;formasonlineform=FormaLogin</string>
     <string name="ecotic_url" translatable="false">https://ecotic.uniquindio.edu.co/ecotic/#!/home</string>
     <string name="normativity_url" translatable="false">https://www.uniquindio.edu.co/documentos.php?id=685</string>
 

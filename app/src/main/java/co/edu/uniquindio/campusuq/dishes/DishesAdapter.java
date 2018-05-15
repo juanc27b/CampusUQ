@@ -138,6 +138,14 @@ public class DishesAdapter extends RecyclerView.Adapter<DishesAdapter.DishViewHo
     }
 
     /**
+     * Obtiene el arreglo de platos.
+     * @return Arreglo de platos.
+     */
+    public ArrayList<Dish> getDishes() {
+        return dishes;
+    }
+
+    /**
      * Asigna el nuevo arreglo de platos y notifica que los datos han cambiado.
      * @param dishes Arreglo de platos.
      */

@@ -141,7 +141,7 @@ public class QuotasFragment extends DialogFragment implements View.OnClickListen
                     } else if (modify.isChecked()) {
                         quotasActivity.startActivityForResult(
                                 new Intent(quotasActivity, QuotasDetailActivity.class)
-                                        .putExtra("CATEGORY", getString(R.string.quota_detail_modify))
+                                        .putExtra(Utilities.CATEGORY, R.string.quota_detail_modify)
                                         .putExtra(QUOTA, q),
                                 QuotasActivity.REQUEST_QUOTAS_DETAIL);
                     } else if (delete.isChecked()) {

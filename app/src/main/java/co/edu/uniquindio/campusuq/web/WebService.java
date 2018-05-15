@@ -122,7 +122,8 @@ public class WebService extends IntentService {
     public static final String METHOD_PUT    = "co.edu.uniquindio.campusuq.METHOD_PUT";
     public static final String METHOD_DELETE = "co.edu.uniquindio.campusuq.METHOD_DELETE";
 
-    public static final String FOREGROUND_NOTIFICATION = "co.edu.uniquindio.campusuq.FOREGROUND_NOTIFICATION";
+    public static final String FOREGROUND_NOTIFICATION =
+            "co.edu.uniquindio.campusuq.FOREGROUND_NOTIFICATION";
 
     public static String PENDING_ACTION = ACTION_NONE;
 
@@ -283,9 +284,8 @@ public class WebService extends IntentService {
             case ACTION_NEWS:
             case ACTION_EVENTS: {
                 New mNew = (New) object;
-                builder
-                        .setContentTitle(getString(R.string.app_name) + " - " +
-                                (type.equals(ACTION_NEWS) ? getString(R.string.news) : getString(R.string.events)))
+                builder.setContentTitle(getString(R.string.app_name) + " - " + getString(ACTION_NEWS.equals(type) ?
+                                R.string.news : R.string.events))
                         .setContentText(mNew.getName())
                         .setSubText(mNew.getSummary());
                 file = new File(mNew.getImage());
@@ -293,8 +293,7 @@ public class WebService extends IntentService {
             }
             case ACTION_OBJECTS: {
                 LostObject lostObject = (LostObject) object;
-                builder
-                        .setContentTitle(getString(R.string.app_name) + " - " + getString(R.string.lost_objects))
+                builder.setContentTitle(getString(R.string.app_name) + " - " + getString(R.string.lost_objects))
                         .setContentText(lostObject.getName())
                         .setSubText(lostObject.getDescription());
                 // Se concatena una cadena vacia para evitar el caso File(null)
@@ -303,18 +302,16 @@ public class WebService extends IntentService {
             }
             case ACTION_CALENDAR: {
                 Event event = (Event) object;
-                builder
-                        .setContentTitle(getString(R.string.app_name) + " - " + getString(R.string.academic_calendar))
+                builder.setContentTitle(getString(R.string.app_name) + " - " + getString(R.string.academic_calendar))
                         .setContentText(event.getName());
                 break;
             }
             case ACTION_INCIDENTS:
             case ACTION_COMMUNIQUES: {
                 Announcement announcement = (Announcement) object;
-                builder
-                        .setContentTitle(getString(R.string.app_name) + " - " +
-                                (type.equals(ACTION_INCIDENTS) ?
-                                        getString(R.string.security_system) : getString(R.string.billboard_information)))
+                builder.setContentTitle(getString(R.string.app_name) + " - " +
+                        getString(type.equals(ACTION_INCIDENTS) ?
+                                R.string.security_system : R.string.billboard_information))
                         .setContentText(announcement.getName())
                         .setSubText(announcement.getDescription());
                 AnnouncementsSQLiteController dbController =
@@ -328,16 +325,14 @@ public class WebService extends IntentService {
             }
             case ACTION_EMAILS: {
                 Email email = (Email) object;
-                builder
-                        .setContentTitle(getString(R.string.app_name) + " - " + getString(R.string.institutional_mail))
+                builder.setContentTitle(getString(R.string.app_name) + " - " + getString(R.string.institutional_mail))
                         .setContentText(email.getName())
                         .setSubText(email.getSnippet());
                 file = new File("");
                 break;
             }
             default:
-                builder
-                        .setContentTitle(getString(R.string.app_name))
+                builder.setContentTitle(getString(R.string.app_name))
                         .setContentText(getString(R.string.loading_content))
                         .setUsesChronometer(true);
                 break;
@@ -368,43 +363,52 @@ public class WebService extends IntentService {
             case ACTION_NEWS:
             case ACTION_EVENTS:
                 resultIntent = new Intent(getApplicationContext(), NewsActivity.class);
-                resultIntent.putExtra("CATEGORY", getString(
-                        ACTION_NEWS.equals(type) ? R.string.news : R.string.events));
+                resultIntent.putExtra(Utilities.CATEGORY,
+                        ACTION_NEWS.equals(type) ? R.string.news : R.string.events);
                 stackBuilder.addParentStack(NewsActivity.class);
-                stackBuilder.editIntentAt(0).putExtra("CATEGORY", getString(R.string.app_title_menu));
-                stackBuilder.editIntentAt(1).putExtra("CATEGORY", getString(R.string.information_module));
+                stackBuilder.editIntentAt(0)
+                        .putExtra(Utilities.CATEGORY, R.string.app_title_menu);
+                stackBuilder.editIntentAt(1)
+                        .putExtra(Utilities.CATEGORY, R.string.information_module);
                 break;
             case ACTION_OBJECTS:
                 resultIntent = new Intent(getApplicationContext(), ObjectsActivity.class);
-                resultIntent.putExtra("CATEGORY", getString(R.string.lost_objects));
+                resultIntent.putExtra(Utilities.CATEGORY, R.string.lost_objects);
                 stackBuilder.addParentStack(ObjectsActivity.class);
-                stackBuilder.editIntentAt(0).putExtra("CATEGORY", getString(R.string.app_title_menu));
-                stackBuilder.editIntentAt(1).putExtra("CATEGORY", getString(R.string.services_module));
+                stackBuilder.editIntentAt(0)
+                        .putExtra(Utilities.CATEGORY, R.string.app_title_menu);
+                stackBuilder.editIntentAt(1)
+                        .putExtra(Utilities.CATEGORY, R.string.services_module);
                 break;
             case ACTION_CALENDAR:
                 resultIntent = new Intent(getApplicationContext(), ItemsActivity.class);
-                resultIntent.putExtra("CATEGORY", getString(R.string.academic_calendar));
-                resultIntent.putParcelableArrayListExtra("ITEMS",
+                resultIntent.putExtra(Utilities.CATEGORY, R.string.academic_calendar);
+                resultIntent.putParcelableArrayListExtra(Utilities.ITEMS,
                         ItemsPresenter.getEventCategories(getApplicationContext()));
                 stackBuilder.addParentStack(ItemsActivity.class);
-                stackBuilder.editIntentAt(0).putExtra("CATEGORY", getString(R.string.app_title_menu));
+                stackBuilder.editIntentAt(0)
+                        .putExtra(Utilities.CATEGORY, R.string.app_title_menu);
                 break;
             case ACTION_INCIDENTS:
             case ACTION_COMMUNIQUES:
                 resultIntent = new Intent(getApplicationContext(), AnnouncementsActivity.class);
-                resultIntent.putExtra("CATEGORY", getString(
-                        ACTION_INCIDENTS.equals(type) ? R.string.security_system : R.string.billboard_information));
+                resultIntent.putExtra(Utilities.CATEGORY, ACTION_INCIDENTS.equals(type) ?
+                        R.string.security_system : R.string.billboard_information);
                 stackBuilder.addParentStack(AnnouncementsActivity.class);
-                stackBuilder.editIntentAt(0).putExtra("CATEGORY", getString(R.string.app_title_menu));
-                stackBuilder.editIntentAt(1).putExtra("CATEGORY", getString(
-                        ACTION_INCIDENTS.equals(type) ? R.string.services_module : R.string.state_module));
+                stackBuilder.editIntentAt(0)
+                        .putExtra(Utilities.CATEGORY, R.string.app_title_menu);
+                stackBuilder.editIntentAt(1)
+                        .putExtra(Utilities.CATEGORY,
+                        ACTION_INCIDENTS.equals(type) ? R.string.services_module : R.string.state_module);
                 break;
             case ACTION_EMAILS:
                 resultIntent = new Intent(getApplicationContext(), EmailsActivity.class);
-                resultIntent.putExtra("CATEGORY", getString(R.string.institutional_mail));
+                resultIntent.putExtra(Utilities.CATEGORY, R.string.institutional_mail);
                 stackBuilder.addParentStack(EmailsActivity.class);
-                stackBuilder.editIntentAt(0).putExtra("CATEGORY", getString(R.string.app_title_menu));
-                stackBuilder.editIntentAt(1).putExtra("CATEGORY", getString(R.string.communication_module));
+                stackBuilder.editIntentAt(0)
+                        .putExtra(Utilities.CATEGORY, R.string.app_title_menu);
+                stackBuilder.editIntentAt(1)
+                        .putExtra(Utilities.CATEGORY, R.string.communication_module);
                 break;
             default:
                 break;

@@ -32,8 +32,6 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
         EasyPermissions.PermissionCallbacks {
 
     SwipeRefreshLayout swipeRefreshLayout;
-    private ArrayList<Email> emails = new ArrayList<>();
-    private boolean newActivity = true;
     private RecyclerView recyclerView;
     private boolean oldEmails = true;
 
@@ -62,8 +60,13 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
     }
 
     /**
-     * Asigna el fondo de la actividad, infla el diseño de anuncios en la actividad superior, y
-     * llama a la funcion para cargar los correos.
+     * Asigna el fondo de la actividad, infla el diseño de anuncios en la actividad superior, se
+     * crea el adaptador de correos y el manejador de diseño lineal y se asignan al recilador de
+     * vista, al cual tambien se le asigna un listener de actualización encargado de actualizar
+     * desde el servidor la base de datos local al realizar un desplasamiento vetical en el limite
+     * superior, y un listener de desplasamiento encargado cargar mas correos desde la base de datos
+     * local al realizar un desplasamiento vetical en el limite inferior, y finalmente llama a la
+     * funcion para cargar los correos.
      * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
      */
     @Override
@@ -78,18 +81,49 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
 
         FloatingActionButton insert = findViewById(R.id.fab);
         swipeRefreshLayout = findViewById(R.id.emails_swipe_refresh);
+        recyclerView = findViewById(R.id.emails_recycler_view);
 
         insert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(EmailsActivity.this,
                         EmailsDetailActivity.class);
-                intent.putExtra("CATEGORY", getString(R.string.institutional_mail));
+                intent.putExtra(Utilities.CATEGORY, R.string.institutional_mail);
                 startActivityForResult(intent, 0);
             }
         });
         insert.setVisibility(View.VISIBLE);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (Utilities.haveNetworkConnection(EmailsActivity.this)) {
+                    oldEmails = false;
+                    WebBroadcastReceiver.startService(EmailsActivity.this,
+                            WebService.ACTION_EMAILS, WebService.METHOD_GET,
+                            null);
+                } else {
+                    Toast.makeText(EmailsActivity.this,
+                            R.string.no_internet, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(new EmailsAdapter(new ArrayList<Email>(), this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.VERTICAL, false));
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (newState == RecyclerView.SCROLL_STATE_SETTLING &&
+                        !recyclerView.canScrollVertically(1)) {
+                    oldEmails = true;
+                    loadEmails(0);
+                }
+            }
+        });
 
         loadEmails(0);
     }
@@ -104,100 +138,64 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
 
-            for (Email email : emails) {
-                if(StringUtils.stripAccents(email.getName()).toLowerCase()
-                        .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
-                    recyclerView.getLayoutManager().scrollToPosition(emails.indexOf(email));
-                    return;
+            if (recyclerView != null) {
+                ArrayList<Email> emails = ((EmailsAdapter) recyclerView.getAdapter()).getEmails();
+
+                for (Email email : emails) {
+                    if(StringUtils.stripAccents(email.getName()).toLowerCase()
+                            .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
+                        recyclerView.getLayoutManager().scrollToPosition(emails.indexOf(email));
+                        return;
+                    }
                 }
             }
 
             Toast.makeText(this, getString(R.string.email_no_found) + ": " + query,
                     Toast.LENGTH_SHORT).show();
         } else {
+            setIntent(intent);
             ActionBar actionBar = getSupportActionBar();
 
             if (actionBar != null) {
-                actionBar.setTitle(intent.getStringExtra("CATEGORY"));
+                actionBar.setTitle(intent.getIntExtra(Utilities.CATEGORY, R.string.app_name));
                 loadEmails(0);
             }
         }
     }
 
     /**
-     * Carga los correos desde la base de datos y los almacena en el arreglo de correos para
-     * enviarselos al adaptador, si la actividad es nueva el arreglo se envia por medio de su
-     * constructor, se crea tambien el manejador de diseño y se asignan al recilador de vista, al
-     * cual tambien se le asigna un listener de desplasamiento encargado de actualizar desde
-     * el servidor la base de datos local al realizar un desplasamiento vetical en el limite
-     * superior o cargar mas correos desde la base de datos local al realizar un desplasamiento
-     * vetical en el limite inferior, adicionalmente muestra un mensaje de de carga durante el
-     * tiempo que realiza el proceso.
+     * Carga los correos desde la base de datos y los almacena en el adaptador, , adicionalmente
+     * muestra un mensaje de de carga durante el tiempo que realiza el proceso.
      * @param inserted Indica la cantidad de correos insertados.
      */
     private void loadEmails(int inserted) {
         swipeRefreshLayout.setRefreshing(true);
 
+        EmailsAdapter emailsAdapter = (EmailsAdapter) recyclerView.getAdapter();
         int scrollTo = oldEmails ?
-                (newActivity ? 0 : emails.size() - 1) :
-                (inserted != 0 ? inserted - 1 : 0);
+                emailsAdapter.getItemCount() - 1 : (inserted != 0 ? inserted - 1 : 0);
 
         EmailsSQLiteController dbController = new EmailsSQLiteController(this, 1);
-        emails = dbController.select("" + emails.size() + (inserted > 0 ? inserted : 6));
+        emailsAdapter.setEmails(dbController
+                .select("" + emailsAdapter.getItemCount() + (inserted > 0 ? inserted : 6)));
         dbController.destroy();
+        recyclerView.getLayoutManager().scrollToPosition(scrollTo);
 
-        if (newActivity) {
-            newActivity = false;
-            recyclerView = findViewById(R.id.emails_recycler_view);
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setAdapter(new EmailsAdapter(emails, this));
-            recyclerView.setLayoutManager(new LinearLayoutManager(this,
-                    LinearLayoutManager.VERTICAL, false));
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
-
-                    if (newState == RecyclerView.SCROLL_STATE_SETTLING &&
-                            !recyclerView.canScrollVertically(1)) {
-                        oldEmails = true;
-                        loadEmails(0);
-                    }
-                }
-            });
-            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    if (Utilities.haveNetworkConnection(EmailsActivity.this)) {
-                        oldEmails = false;
-                        WebBroadcastReceiver.startService(EmailsActivity.this,
-                                WebService.ACTION_EMAILS, WebService.METHOD_GET,
-                                null);
-                    } else {
-                        Toast.makeText(EmailsActivity.this,
-                                R.string.no_internet, Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        } else {
-            ((EmailsAdapter) recyclerView.getAdapter()).setEmails(emails);
-            recyclerView.getLayoutManager().scrollToPosition(scrollTo);
-        }
-
-        if (emails.isEmpty() && !WebService.PENDING_ACTION.equals(WebService.ACTION_EMAILS)) {
+        if (emailsAdapter.getItemCount() == 0 &&
+                !WebService.PENDING_ACTION.equals(WebService.ACTION_EMAILS)) {
             WebService.PENDING_ACTION = WebService.ACTION_EMAILS;
             WebBroadcastReceiver.startService(this, WebService.ACTION_EMAILS,
                     WebService.METHOD_GET, null);
         }
 
-        if (!emails.isEmpty()) swipeRefreshLayout.setRefreshing(false);
+        if (emailsAdapter.getItemCount() > 0) swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void onEmailClick(int index) {
-        Email email = emails.get(index);
+        Email email = ((EmailsAdapter) recyclerView.getAdapter()).getEmails().get(index);
         startActivity(new Intent(this, EmailsContentActivity.class)
-                .putExtra("CATEGORY", getString(R.string.institutional_mail))
+                .putExtra(Utilities.CATEGORY, R.string.institutional_mail)
                 .putExtra(EmailsSQLiteController.columns[1], email.getName())
                 .putExtra(EmailsSQLiteController.columns[2], email.getFrom())
                 .putExtra(EmailsSQLiteController.columns[4], email.getDate())

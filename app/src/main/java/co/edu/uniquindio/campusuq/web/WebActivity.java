@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import co.edu.uniquindio.campusuq.R;
+import co.edu.uniquindio.campusuq.util.Utilities;
 
 public class WebActivity extends AppCompatActivity {
 
@@ -35,7 +36,7 @@ public class WebActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         urlText = findViewById(R.id.url_edit_text);
-        String url = getIntent().getStringExtra("URL");
+        String url = getIntent().getStringExtra(Utilities.URL);
         urlText.setText(url);
 
         webView = findViewById(R.id.webview);
@@ -112,7 +113,7 @@ public class WebActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        String url = getIntent().getStringExtra("URL");
+        String url = getIntent().getStringExtra(Utilities.URL);
         urlText.setText(url);
         webView.loadUrl(url);
         webView.clearHistory();

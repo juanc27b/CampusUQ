@@ -211,6 +211,14 @@ public class ObjectsAdapter extends RecyclerView.Adapter<ObjectsAdapter.ObjectVi
     }
 
     /**
+     * Obtiene el arreglo de objetos.
+     * @return Arreglo de objetos.
+     */
+    public ArrayList<LostObject> getObjects() {
+        return objects;
+    }
+
+    /**
      * Asigna el nuevo arreglo de objetos perdidos y notifica que los datos han cambiado.
      * @param objects Arreglo de objetos perdidos.
      */

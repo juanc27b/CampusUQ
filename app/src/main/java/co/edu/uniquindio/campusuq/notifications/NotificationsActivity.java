@@ -52,6 +52,7 @@ public class NotificationsActivity extends MainActivity implements
 
     @Override
     public void handleIntent(Intent intent) {
+        setIntent(intent);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) setNotifications();
     }
@@ -125,7 +126,8 @@ public class NotificationsActivity extends MainActivity implements
                 .setCategory(getString(R.string.analytics_notifications_category))
                 .setAction(getString(R.string.analytics_modify_action))
                 .setLabel(getString(R.string.analytics_adjust_notifications_label))
-                .setValue(1).build());
+                .setValue(1)
+                .build());
     }
 
 }

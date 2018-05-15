@@ -101,10 +101,10 @@ public class AnnouncementsFragment extends DialogFragment implements View.OnClic
                     if (modify.isChecked()) {
                         announcementsActivity.startActivityForResult(
                                 new Intent(announcementsActivity, AnnouncementsDetailActivity.class)
-                                        .putExtra("CATEGORY",
+                                        .putExtra(Utilities.CATEGORY,
                                                 WebService.ACTION_INCIDENTS.equals(action) ?
-                                                        getString(R.string.report_incident) :
-                                                        getString(R.string.billboard_detail))
+                                                        R.string.report_incident :
+                                                        R.string.billboard_detail)
                                         .putExtra(ANNOUNCEMENT, announcement),
                                 AnnouncementsActivity.REQUEST_ANNOUNCEMENT_DETAIL);
                     } else if (delete.isChecked()) {

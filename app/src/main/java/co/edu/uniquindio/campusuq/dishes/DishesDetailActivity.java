@@ -100,10 +100,11 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
      */
     @Override
     public void handleIntent(Intent intent) {
+        setIntent(intent);
         ActionBar actionBar = getSupportActionBar();
 
         if (actionBar != null) {
-            actionBar.setTitle(intent.getStringExtra("CATEGORY"));
+            actionBar.setTitle(intent.getIntExtra(Utilities.CATEGORY, R.string.app_name));
             this.intent = intent;
             setDish();
         }

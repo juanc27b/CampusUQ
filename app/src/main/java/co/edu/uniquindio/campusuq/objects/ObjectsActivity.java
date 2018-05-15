@@ -43,8 +43,6 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
     static final int REQUEST_OBJECTS_DETAIL = 1001;
 
     SwipeRefreshLayout swipeRefreshLayout;
-    private ArrayList<LostObject> objects = new ArrayList<>();
-    private boolean newActivity = true;
     private RecyclerView recyclerView;
     private boolean oldObjects = true;
 
@@ -66,7 +64,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                 if (userFound != null) {
                     startActivity(
                             new Intent(ObjectsActivity.this, UsersActivity.class)
-                            .putExtra("CATEGORY", getString(R.string.object_view_contact))
+                            .putExtra(Utilities.CATEGORY, R.string.object_view_contact)
                             .putExtra("USER", userFound));
                 }
             }
@@ -85,7 +83,12 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
 
     /**
      * Asigna el fondo de la actividad, infla el diseño de objetos perdidos en la actividad
-     * superior, y llama a la funcion para cargar los objetos perdidos.
+     * superior, se crea el adaptador de objetos y el manejador de diseño lineal y se asignan al
+     * recilador de vista, al cual tambien se le asigna un listener de actualización encargado de
+     * actualizar desde el servidor la base de datos local al realizar un desplasamiento vetical en
+     * el limite superior, y un listener de desplasamiento encargado de cargar mas objetos perdidos
+     * desde la base de datos local al realizar un desplasamiento vetical en el limite inferior, y
+     * finalmente llama a la funcion para cargar los objetos perdidos.
      * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
      */
     @Override
@@ -99,9 +102,40 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         viewStub.inflate();
 
         swipeRefreshLayout = findViewById(R.id.objects_swipe_refresh);
+        recyclerView = findViewById(R.id.objects_recycler_view);
 
         findViewById(R.id.object_report).setOnClickListener(this);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (Utilities.haveNetworkConnection(ObjectsActivity.this)) {
+                    oldObjects = false;
+                    WebBroadcastReceiver.startService(ObjectsActivity.this,
+                            WebService.ACTION_OBJECTS, WebService.METHOD_GET,
+                            null);
+                } else {
+                    Toast.makeText(ObjectsActivity.this,
+                            R.string.no_internet, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(new ObjectsAdapter(new ArrayList<LostObject>(), this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.VERTICAL, false));
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (newState == RecyclerView.SCROLL_STATE_SETTLING &&
+                        !recyclerView.canScrollVertically(1)) {
+                    oldObjects = true;
+                    loadObjects(0);
+                }
+            }
+        });
 
         loadObjects(0);
     }
@@ -116,86 +150,49 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
 
-            for (LostObject object : objects) {
-                if (StringUtils.stripAccents(object.getName()).toLowerCase()
-                        .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
-                    recyclerView.getLayoutManager().scrollToPosition(objects.indexOf(object));
-                    return;
+            if (recyclerView != null) {
+                ArrayList<LostObject> objects =
+                        ((ObjectsAdapter) recyclerView.getAdapter()).getObjects();
+
+                for (LostObject object : objects) {
+                    if (StringUtils.stripAccents(object.getName()).toLowerCase()
+                            .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
+                        recyclerView.getLayoutManager().scrollToPosition(objects.indexOf(object));
+                        return;
+                    }
                 }
             }
 
             Toast.makeText(this, getString(R.string.object_no_found) + ": " + query,
                     Toast.LENGTH_SHORT).show();
         } else {
+            setIntent(intent);
             ActionBar actionBar = getSupportActionBar();
 
             if (actionBar != null) {
-                actionBar.setTitle(intent.getStringExtra("CATEGORY"));
+                actionBar.setTitle(intent.getIntExtra(Utilities.CATEGORY, R.string.app_name));
                 loadObjects(0);
             }
         }
     }
 
     /**
-     * Carga los objetos perdidos desde la base de datos y los almacena en el arreglo de objetos
-     * perdidos para enviarselos al adaptador, si la actividad es nueva el arreglo se envia por
-     * medio de su constructor, se crea tambien el manejador de diseño y se asignan al recilador de
-     * vista, al cual tambien se le asigna un listener de desplasamiento encargado de actualizar
-     * desde el servidor la base de datos local al realizar un desplasamiento vetical en el limite
-     * superior o cargar mas objetos perdidos desde la base de datos local al realizar un
-     * desplasamiento vetical en el limite inferior, adicionalmente muestra un mensaje de de carga
-     * durante el tiempo que realiza el proceso.
+     * Carga los objetos perdidos desde la base de datos y los almacena en el adaptador,
+     * adicionalmente muestra un mensaje de de carga durante el tiempo que realiza el proceso.
      * @param inserted Indica la cantidad de objetos perdidos insertados.
      */
     private void loadObjects(int inserted) {
         swipeRefreshLayout.setRefreshing(true);
 
+        ObjectsAdapter objectsAdapter = (ObjectsAdapter) recyclerView.getAdapter();
         int scrollTo = oldObjects ?
-                (newActivity ? 0 : objects.size() - 1) :
-                (inserted != 0 ? inserted - 1 : 0);
+                objectsAdapter.getItemCount() - 1 : (inserted != 0 ? inserted - 1 : 0);
+        objectsAdapter.setObjects(ObjectsPresenter.loadObjects(this,
+                UsersPresenter.loadUser(this),
+                objectsAdapter.getItemCount() + (inserted > 0 ? inserted : 3)));
+        recyclerView.getLayoutManager().scrollToPosition(scrollTo);
 
-        objects = ObjectsPresenter.loadObjects(this, UsersPresenter.loadUser(this),
-                objects.size() + (inserted > 0 ? inserted : 3));
-
-        if (newActivity) {
-            newActivity = false;
-            recyclerView = findViewById(R.id.objects_recycler_view);
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setAdapter(new ObjectsAdapter(objects, this));
-            recyclerView.setLayoutManager(new LinearLayoutManager(this,
-                    LinearLayoutManager.VERTICAL, false));
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
-
-                    if (newState == RecyclerView.SCROLL_STATE_SETTLING &&
-                            !recyclerView.canScrollVertically(1)) {
-                        oldObjects = true;
-                        loadObjects(0);
-                    }
-                }
-            });
-            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    if (Utilities.haveNetworkConnection(ObjectsActivity.this)) {
-                        oldObjects = false;
-                        WebBroadcastReceiver.startService(ObjectsActivity.this,
-                                WebService.ACTION_OBJECTS, WebService.METHOD_GET,
-                                null);
-                    } else {
-                        Toast.makeText(ObjectsActivity.this,
-                                R.string.no_internet, Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        } else {
-            ((ObjectsAdapter) recyclerView.getAdapter()).setObjects(objects);
-            recyclerView.getLayoutManager().scrollToPosition(scrollTo);
-        }
-
-        if (!objects.isEmpty()) swipeRefreshLayout.setRefreshing(false);
+        if (objectsAdapter.getItemCount() > 0) swipeRefreshLayout.setRefreshing(false);
     }
 
     /**
@@ -214,7 +211,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
     @Override
     public void onObjectClick(int index, String action) {
         User user = UsersPresenter.loadUser(this);
-        LostObject object = objects.get(index);
+        LostObject object = ((ObjectsAdapter) recyclerView.getAdapter()).getObjects().get(index);
 
         switch (action) {
             case ObjectsAdapter.OBJECT:
@@ -231,7 +228,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                 break;
             case ObjectsAdapter.IMAGE:
                 try {
-                    String image = objects.get(index).getImage();
+                    String image = object.getImage();
 
                     if (image != null) {
                         startActivity(new Intent(Intent.ACTION_VIEW)
@@ -272,7 +269,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                     }
                 } else {
                     startActivity(new Intent(this, LoginActivity.class)
-                            .putExtra("CATEGORY", getString(R.string.log_in)));
+                            .putExtra(Utilities.CATEGORY, R.string.log_in));
                 }
                 break;
             case ObjectsAdapter.NOT_FOUND:
@@ -339,7 +336,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                 if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail())) {
                     startActivityForResult(
                             new Intent(this, ObjectsDetailActivity.class)
-                                    .putExtra("CATEGORY", getString(R.string.object_report_lost))
+                                    .putExtra(Utilities.CATEGORY, R.string.object_report_lost)
                                     .putExtra(ObjectsFragment.OBJECT, new LostObject(null,
                                             user.get_ID(), null, null, null,
                                             null, null, null,
@@ -347,7 +344,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                             REQUEST_OBJECTS_DETAIL);
                 } else {
                     startActivity(new Intent(this, LoginActivity.class)
-                            .putExtra("CATEGORY", getString(R.string.log_in)));
+                            .putExtra(Utilities.CATEGORY, R.string.log_in));
                 }
                 break;
             }

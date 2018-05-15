@@ -87,6 +87,10 @@ public class CalendarDetailItemsAdapter extends
         return mItems.size();
     }
 
+    public ArrayList<CalendarDetailItem> getItems() {
+        return mItems;
+    }
+
     public void setItems(ArrayList<CalendarDetailItem> mItems) {
         this.mItems = mItems;
         notifyDataSetChanged();

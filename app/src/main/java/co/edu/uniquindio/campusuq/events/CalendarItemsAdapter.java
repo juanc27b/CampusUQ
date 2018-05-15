@@ -75,6 +75,10 @@ public class CalendarItemsAdapter extends RecyclerView.Adapter<CalendarItemsAdap
         return mItems.size();
     }
 
+    public ArrayList<CalendarItem> getItems() {
+        return mItems;
+    }
+
     public void setItems(ArrayList<CalendarItem> mItems) {
         this.mItems = mItems;
         notifyDataSetChanged();

@@ -26,7 +26,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
         db.execSQL(NewsSQLiteController.createTable());
         db.execSQL(NewsSQLiteController.createCategoryTable());
         db.execSQL(NewsSQLiteController.createRelationTable());
@@ -61,12 +60,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(EmailsSQLiteController.createTable());
 
         db.execSQL(NotificationsSQLiteController.createTable());
-
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
     }
 
 }

@@ -42,14 +42,14 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
     private LinearLayout mapLayout;
     private LinearLayout streetViewLayout;
     private Button changeButton;
-    private boolean isMapEnabled;
+    private boolean isMapEnabled = true;
 
     private GoogleMap mMap;
     private StreetViewPanorama mPanorama;
     private LatLng UNIVERSIDAD = new LatLng(4.55435, -75.6601);
 
-    public ArrayList<String> tags;
-    public ArrayList<LatLng> locations;
+    public ArrayList<String> tags = new ArrayList<>();
+    public ArrayList<LatLng> locations= new ArrayList<>();
 
     /**
      * Constructor de la actividad que establece que no se va a usar el botón del panel de
@@ -57,10 +57,6 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
      */
     public MapsActivity() {
         super.setHasNavigationDrawerIcon(false);
-
-        isMapEnabled = true;
-        tags = new ArrayList<>();
-        locations = new ArrayList<>();
     }
 
     /**
@@ -103,16 +99,13 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
         });
 
         // Se obtiene el SupportMapFragment y se notifica cuando el mapa esté listo para usarse.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        ((SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map)).getMapAsync(this);
 
         // Se obtiene el StreetViewPanoramaFragment y se notifica cuando la vista esté disponible.
-        StreetViewPanoramaFragment streetViewPanoramaFragment =
-                (StreetViewPanoramaFragment) getFragmentManager()
-                        .findFragmentById(R.id.streetviewpanorama);
-        streetViewPanoramaFragment.getStreetViewPanoramaAsync(this);
-
+        ((StreetViewPanoramaFragment) getFragmentManager()
+                .findFragmentById(R.id.streetviewpanorama))
+                .getStreetViewPanoramaAsync(this);
     }
 
     /**
@@ -155,7 +148,7 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
         //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(UNIVERSIDAD.getCenter(), 18));
         //mMap.setLatLngBoundsForCameraTarget(BOUNDS);
 
-        for (int i = 0; i < 41; i++) {
+        for (int i = 0; i < tags.size(); i++) {
             mMap.addMarker(new MarkerOptions().position(locations.get(i)).title(tags.get(i))
                     .alpha(0.0f));
         }
@@ -184,8 +177,8 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
                 if (StringUtils.stripAccents(tags.get(i)).toLowerCase()
                         .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
                     if (isMapEnabled) {
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locations.get(i),
-                                16));
+                        mMap.moveCamera(CameraUpdateFactory
+                                .newLatLngZoom(locations.get(i), 16));
                     } else {
                         mPanorama.setPosition(locations.get(i));
                     }
@@ -193,6 +186,7 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
                     break;
                 }
             }
+
             if (!found) {
                 Toast.makeText(this, getString(R.string.location_no_found) + ": " +
                         query, Toast.LENGTH_SHORT).show();
@@ -205,7 +199,6 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
     }
 
     public void addTagsAndLocations() {
-
         tags.add(getString(R.string.marker_a1));
         tags.add(getString(R.string.marker_a2));
         tags.add(getString(R.string.marker_b1));
@@ -289,7 +282,6 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
         locations.add(new LatLng(4.554549070025962, -75.66203378140926));
         locations.add(new LatLng(4.554054428123737, -75.66225606948137));
         locations.add(new LatLng(4.553856237049898, -75.66203948110342));
-
     }
 
     @Override

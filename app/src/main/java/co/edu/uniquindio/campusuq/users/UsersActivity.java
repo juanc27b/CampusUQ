@@ -38,7 +38,7 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
     private Button send;
     private User user;
 
-    private String category;
+    private int category;
     private EmailsPresenter emailsPresenter;
 
     private IntentFilter usersFilter = new IntentFilter(WebService.ACTION_USERS);
@@ -157,14 +157,15 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
         });
 
         Intent intent = getIntent();
-        category = intent.getStringExtra("CATEGORY");
+        category = intent.getIntExtra(Utilities.CATEGORY, R.string.app_name);
         setUser(intent);
     }
 
     @Override
     public void handleIntent(Intent intent) {
-        if (category != null) {
-            category = intent.getStringExtra("CATEGORY");
+        if (getSupportActionBar() != null) {
+            setIntent(intent);
+            category = intent.getIntExtra(Utilities.CATEGORY, R.string.app_name);
             setUser(intent);
         }
     }
@@ -180,7 +181,7 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
             document.setText(user.getDocument());
         }
 
-        if (getString(R.string.sign_up).equals(category) || getString(R.string.edit_account).equals(category)) {
+        if (category == R.string.sign_up || category == R.string.edit_account) {
             passwordLayout.setVisibility(View.VISIBLE);
             send.setVisibility(View.VISIBLE);
             changeConfiguration(true);
@@ -204,7 +205,7 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
             email.setOnClickListener(null);
         }
 
-        if (getString(R.string.edit_account).equals(category)) {
+        if (category == R.string.edit_account) {
             logOut.setVisibility(View.VISIBLE);
         } else {
             logOut.setVisibility(View.GONE);

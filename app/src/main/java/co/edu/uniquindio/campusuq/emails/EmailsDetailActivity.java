@@ -86,7 +86,9 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
 
     @Override
     public void handleIntent(Intent intent) {
+        setIntent(intent);
         ActionBar actionBar = getSupportActionBar();
+
         if (actionBar != null) {
             to.setText("");
             name.setText("");

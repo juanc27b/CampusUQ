@@ -11,7 +11,6 @@ import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -37,14 +36,20 @@ import co.edu.uniquindio.campusuq.web.WebService;
 
 public class Utilities {
 
-    public final static String URL_SERVICIO = "https://campus-uq.000webhostapp.com";
+    public static final String CATEGORY = "CATEGORY";
+    public static final String SUBCATEGORY = "SUBCATEGORY";
+    public static final String ITEMS = "ITEMS";
+    public static final String URL = "URL";
+    public static final String LINK = "LINK";
+
+    public static final String URL_SERVICIO = "https://campus-uq.000webhostapp.com";
     public static final String NOMBRE_BD = "Campus_UQ";
 
-    public final static String PREFERENCES = "preferences";
-    private final static String PREFERENCE_LANGUAGE = "language_preferences";
-    private final static String LANGUAGE_ES = "es";
-    private final static String LANGUAGE_EN = "en";
-    public final static String CALENDAR_NOTIFY = "calendar_notify";
+    public static final String PREFERENCES = "preferences";
+    public static final String PREFERENCE_LANGUAGE = "language_preferences";
+    public static final String LANGUAGE_ES = "es";
+    private static final String LANGUAGE_EN = "en";
+    public static final String CALENDAR_NOTIFY = "calendar_notify";
 
     public static final int SUCCESS_STATE = 11;
     public static final int FAILURE_STATE = 12;
@@ -99,26 +104,30 @@ public class Utilities {
     }
 
     public static String saveMedia(String spec, String path, Context context) {
-        String imagePath = null;
-
         if (spec != null) try {
             File dir = new File(Environment.getExternalStorageDirectory()
-                    .getAbsolutePath() + "/CampusUQ/Media" + path);
+                    .getAbsolutePath() + "/CampusUQ/.Media" + path);
             dir.mkdirs();
             File file = new File(dir, spec.substring(spec.lastIndexOf('/') + 1));
 
             copy(new URL(spec).openConnection().getInputStream(), new FileOutputStream(file));
 
-            imagePath = file.getPath();
-            MediaScannerConnection
-                    .scanFile(context, new String[]{imagePath}, null, null);
+            return file.getPath();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return imagePath;
+        return null;
     }
 
+    /**
+     * Escribe el contenido del flujo de entrada en el flujo de salida, garantizando cerrar ambos
+     * flujos al finalizar este metodo.
+     * @param inputStream Flujo de entrada desde el cual leer.
+     * @param outputStream Flujo de salida en el cual escribir.
+     * @throws IOException Si hay un error al leer el flujo de entrada o al escribir en el flujo de
+     * salida.
+     */
     public static void copy(InputStream inputStream, OutputStream outputStream) throws IOException {
         try {
             for (byte[] buffer = new byte[4096]; ; ) {

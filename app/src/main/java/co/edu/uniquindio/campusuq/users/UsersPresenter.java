@@ -13,11 +13,8 @@ public class UsersPresenter {
         ArrayList<User> users = dbController.select();
         dbController.destroy();
 
-        if (users.size() > 1) {
-            user = users.get(1);
-        } else if (users.size() > 0) {
-            user = users.get(0);
-        }
+        if (users.size() > 1) user = users.get(1);
+        else if (users.size() > 0) user = users.get(0);
 
         return user;
     }

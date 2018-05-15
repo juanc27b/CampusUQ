@@ -124,6 +124,14 @@ public class QuotasAdapter extends RecyclerView.Adapter<QuotasAdapter.QuotaViewH
     }
 
     /**
+     * Obtiene el arreglo de cupos.
+     * @return Arreglo de cupos.
+     */
+    public ArrayList<Quota> getQuotas() {
+        return quotas;
+    }
+
+    /**
      * Asigna el nuevo arreglo de cupos y notifica que los datos han cambiado.
      * @param quotas Arreglo de cupos.
      */

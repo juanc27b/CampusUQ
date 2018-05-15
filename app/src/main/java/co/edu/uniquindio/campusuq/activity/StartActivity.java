@@ -64,9 +64,8 @@ public class StartActivity extends AppCompatActivity {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                Intent intent = new Intent(StartActivity.this, MenuActivity.class);
-                intent.putExtra("CATEGORY", getString(R.string.app_title_menu));
-                startActivity(intent);
+                startActivity(new Intent(StartActivity.this, MenuActivity.class)
+                        .putExtra(Utilities.CATEGORY, R.string.app_title_menu));
                 finish();
             }
 

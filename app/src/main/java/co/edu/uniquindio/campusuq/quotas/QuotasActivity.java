@@ -39,8 +39,6 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
 
     private String type;
     SwipeRefreshLayout swipeRefreshLayout;
-    private ArrayList<Quota> quotas = new ArrayList<>();
-    private boolean newActivity = true;
     private RecyclerView recyclerView;
 
     private IntentFilter quotasFilter = new IntentFilter(WebService.ACTION_QUOTAS);
@@ -66,8 +64,11 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
 
     /**
      * Asigna el fondo de la actividad, infla el diseño de cupos en la actividad superior, en caso
-     * de haber iniciado sesion como administrador hace visible el botón para añadir nuevos cupos, y
-     * llama a la funcion para cargar los cupos.
+     * de haber iniciado sesion como administrador hace visible el botón para añadir nuevos cupos,
+     * se crea el adaptador de cupos y el manejador de diseño lineal y se asignan al recilador de
+     * vista, al cual tambien se le asigna un listener de actualizacion encargado de actualizar
+     * desde el servidor la base de datos local al realizar un desplasamiento vetical en el limite
+     * superior, y finalmente llama a la funcion para cargar los cupos.
      * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
      */
     @Override
@@ -82,11 +83,29 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
 
         FloatingActionButton insert = findViewById(R.id.fab);
         swipeRefreshLayout = findViewById(R.id.quotas_swipe_refresh);
+        recyclerView = findViewById(R.id.quotas_recycler_view);
 
         insert.setOnClickListener(this);
         User user = UsersPresenter.loadUser(this);
         if (user != null && "S".equals(user.getAdministrator())) insert.setVisibility(View.VISIBLE);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (Utilities.haveNetworkConnection(QuotasActivity.this)) {
+                    WebBroadcastReceiver.startService(QuotasActivity.this,
+                            WebService.ACTION_QUOTAS, WebService.METHOD_GET,
+                            null);
+                } else {
+                    Toast.makeText(QuotasActivity.this,
+                            R.string.no_internet, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(new QuotasAdapter(new ArrayList<Quota>(), this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.VERTICAL, false));
 
         loadQuotas();
     }
@@ -101,23 +120,45 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
 
-            for (Quota quota : quotas) {
-                if (StringUtils.stripAccents(quota.getName()).toLowerCase()
-                        .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
-                    recyclerView.getLayoutManager().scrollToPosition(quotas.indexOf(quota));
-                    return;
+            if (recyclerView != null) {
+                ArrayList<Quota> quotas = ((QuotasAdapter) recyclerView.getAdapter()).getQuotas();
+
+                for (Quota quota : quotas) {
+                    if (StringUtils.stripAccents(quota.getName()).toLowerCase()
+                            .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
+                        recyclerView.getLayoutManager().scrollToPosition(quotas.indexOf(quota));
+                        return;
+                    }
                 }
             }
 
             Toast.makeText(this, getString(R.string.quota_no_found) + ": " + query,
                     Toast.LENGTH_SHORT).show();
         } else {
-            String category = intent.getStringExtra("CATEGORY");
-            type = category.equals(getString(R.string.computer_rooms)) ? "S" :
-                    category.equals(getString(R.string.parking_lots)) ? "P" :
-                    category.equals(getString(R.string.laboratories)) ? "L" :
-                    category.equals(getString(R.string.study_areas)) ? "E" :
-                    category.equals(getString(R.string.cultural_and_sport)) ? "C" : "A";
+            setIntent(intent);
+            int category = intent.getIntExtra(Utilities.CATEGORY, R.string.app_name);
+
+            switch (category) {
+                case R.string.computer_rooms:
+                    type = "S";
+                    break;
+                case R.string.parking_lots:
+                    type = "P";
+                    break;
+                case R.string.laboratories:
+                    type = "L";
+                    break;
+                case R.string.study_areas:
+                    type = "E";
+                    break;
+                case R.string.cultural_and_sport:
+                    type = "C";
+                    break;
+                default:
+                    type = "A";
+                    break;
+            }
+
             ActionBar actionBar = getSupportActionBar();
 
             if (actionBar != null) {
@@ -128,44 +169,16 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
     }
 
     /**
-     * Carga los cupos del tipo requerido desde la base de datos y los almacena en el arreglo quotas
-     * para enviarselos al adaptador, si la actividad es nueva el arreglo se envia por medio de su
-     * constructor, se crea tambien el manejador de diseño y se asignan al recilador de vista, al
-     * cual tambien se le asigna un listener de desplasamiento encargado de actualizar desde
-     * el servidor la base de datos local al realizar un desplasamiento vetical en el limite
-     * superior o inferior, adicionalmente muestra un mensaje de de carga durante el tiempo que
-     * realiza el proceso.
+     * Carga los cupos del tipo requerido desde la base de datos y los almacena en el adaptador,
+     * adicionalmente muestra un mensaje de de carga durante el tiempo que realiza el proceso.
      */
     private void loadQuotas() {
         swipeRefreshLayout.setRefreshing(true);
 
-        quotas = QuotasPresenter.loadQuotas(this, type);
+        QuotasAdapter quotasAdapter = (QuotasAdapter) recyclerView.getAdapter();
+        quotasAdapter.setQuotas(QuotasPresenter.loadQuotas(this, type));
 
-        if (newActivity) {
-            newActivity = false;
-            recyclerView = findViewById(R.id.quotas_recycler_view);
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setAdapter(new QuotasAdapter(quotas, this));
-            recyclerView.setLayoutManager(new LinearLayoutManager(this,
-                    LinearLayoutManager.VERTICAL, false));
-            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    if (Utilities.haveNetworkConnection(QuotasActivity.this)) {
-                        WebBroadcastReceiver.startService(QuotasActivity.this,
-                                WebService.ACTION_QUOTAS, WebService.METHOD_GET,
-                                null);
-                    } else {
-                        Toast.makeText(QuotasActivity.this,
-                                R.string.no_internet, Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        } else {
-            ((QuotasAdapter) recyclerView.getAdapter()).setQuotas(quotas);
-        }
-
-        if (!quotas.isEmpty()) swipeRefreshLayout.setRefreshing(false);
+        if (quotasAdapter.getItemCount() > 0) swipeRefreshLayout.setRefreshing(false);
     }
 
     /**
@@ -184,8 +197,8 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
     public void onQuotaClick(boolean fragment_quotas, int index) {
         User user = UsersPresenter.loadUser(this);
         if (user != null && user.getAdministrator().equals("S")) {
-            QuotasFragment.newInstance(fragment_quotas, quotas.get(index))
-                    .show(getSupportFragmentManager(), null);
+            QuotasFragment.newInstance(fragment_quotas, ((QuotasAdapter) recyclerView.getAdapter())
+                    .getQuotas().get(index)).show(getSupportFragmentManager(), null);
         } else {
             Toast.makeText(this, R.string.no_administrator,
                     Toast.LENGTH_SHORT).show();
@@ -203,7 +216,7 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
         switch (view.getId()) {
             case R.id.fab:
                 startActivityForResult(new Intent(this, QuotasDetailActivity.class)
-                                .putExtra("CATEGORY", getString(R.string.quota_detail_insert))
+                                .putExtra(Utilities.CATEGORY, R.string.quota_detail_insert)
                                 .putExtra(QuotasFragment.QUOTA,
                                         new Quota(null, type, null, null)),
                         REQUEST_QUOTAS_DETAIL);

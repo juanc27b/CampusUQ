@@ -132,8 +132,9 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
      */
     @Override
     public void handleIntent(Intent intent) {
-        String category = intent.getStringExtra("CATEGORY");
-        type = getString(R.string.report_incident).equals(category) ? "I" : "C";
+        setIntent(intent);
+        int category = intent.getIntExtra(Utilities.CATEGORY, R.string.app_name);
+        type = category == R.string.report_incident ? "I" : "C";
         announcementLinks = new AnnouncementLink[10];
         linksFiles = new File[10];
         ActionBar actionBar = getSupportActionBar();
@@ -178,7 +179,8 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
         for (int i = 0; i < images.length; i++) {
             if (i < announcementLinks.size()) {
                 this.announcementLinks[i] = announcementLinks.get(i);
-                linksFiles[i] = new File(this.announcementLinks[i].getLink());
+                // Se concatena una cadena vacia para evitar el caso File(null)
+                linksFiles[i] = new File("" + this.announcementLinks[i].getLink());
 
                 if (linksFiles[i].exists()) {
                     if ("I".equals(this.announcementLinks[i].getType())) {

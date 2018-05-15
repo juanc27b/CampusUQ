@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
+import co.edu.uniquindio.campusuq.util.Utilities;
 
 public class NewsContentActivity extends MainActivity {
 
@@ -93,7 +94,7 @@ public class NewsContentActivity extends MainActivity {
             }
         });
 
-        webView.loadDataWithBaseURL(intent.getStringExtra("LINK"),
+        webView.loadDataWithBaseURL(intent.getStringExtra(Utilities.LINK),
                 intent.getStringExtra("CONTENT"), "text/html", null,
                 null);
     }

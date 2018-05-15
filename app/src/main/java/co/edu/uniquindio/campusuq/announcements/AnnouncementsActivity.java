@@ -58,18 +58,15 @@ import co.edu.uniquindio.campusuq.web.WebService;
 /**
  * Actividad para visualizar los anuncios de incidentes y comunicados.
  */
-public class AnnouncementsActivity extends MainActivity implements
-        AnnouncementsAdapter.OnClickAnnouncementListener, View.OnClickListener {
+public class AnnouncementsActivity extends MainActivity
+        implements AnnouncementsAdapter.OnClickAnnouncementListener, View.OnClickListener {
 
-    public static final int REQUEST_ANNOUNCEMENT_DETAIL = 1005;
+    static final int REQUEST_ANNOUNCEMENT_DETAIL = 1005;
 
     private String action;
     private Button report;
     private FloatingActionButton fab;
     SwipeRefreshLayout swipeRefreshLayout;
-    private ArrayList<Announcement> announcements = new ArrayList<>();
-    private ArrayList<AnnouncementLink> announcementsLinks;
-    private boolean newActivity = true;
     private RecyclerView recyclerView;
     private boolean oldAnnouncements = true;
 
@@ -105,8 +102,13 @@ public class AnnouncementsActivity extends MainActivity implements
     }
 
     /**
-     * Asigna el fondo de la actividad, infla el diseño de anuncios en la actividad superior, y
-     * llama a la funcion para cargar los anuncios.
+     * Asigna el fondo de la actividad, infla el diseño de anuncios en la actividad superior, se
+     * crea el adaptador de anuncios y el manejador de diseño lineal y se asignan al recilador de
+     * vista, al cual tambien se le asigna un listener de actualización encargado de actualizar
+     * desde el servidor la base de datos local al realizar un desplasamiento vetical en el limite
+     * superior, y un listener de desplasamiento encargado de cargar mas anuncios desde la base de
+     * datos local al realizar un desplasamiento vetical en el limite inferior, y finalmente llama a
+     * la funcion para cargar los anuncios.
      * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
      */
     @Override
@@ -122,11 +124,42 @@ public class AnnouncementsActivity extends MainActivity implements
         report = findViewById(R.id.report_incident);
         fab = findViewById(R.id.fab);
         swipeRefreshLayout = findViewById(R.id.announcements_swipe_refresh);
+        recyclerView = findViewById(R.id.announcements_recycler_view);
 
         report.setOnClickListener(this);
         fab.setOnClickListener(this);
         changeConfiguration();
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (Utilities.haveNetworkConnection(AnnouncementsActivity.this)) {
+                    oldAnnouncements = false;
+                    WebBroadcastReceiver.startService(AnnouncementsActivity.this,
+                            action, WebService.METHOD_GET, null);
+                } else {
+                    Toast.makeText(AnnouncementsActivity.this,
+                            R.string.no_internet, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(new AnnouncementsAdapter(new ArrayList<Announcement>(),
+                null, this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.VERTICAL, false));
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (newState == RecyclerView.SCROLL_STATE_SETTLING &&
+                        !recyclerView.canScrollVertically(1)) {
+                    oldAnnouncements = true;
+                    loadAnnouncements(0);
+                }
+            }
+        });
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
@@ -170,41 +203,6 @@ public class AnnouncementsActivity extends MainActivity implements
         loadAnnouncements(0);
     }
 
-    /**
-     * Método para manejar nuevas llamadas a la actividad, dependiendo de la accion del intento,
-     * puede buscar un ítem, o cambiar el titulo de la actividad y volver a cargar los ítems.
-     * @param intent Intento que contiene la accion a realizar.
-     */
-    @Override
-    public void handleIntent(Intent intent) {
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-
-            for (Announcement announcement : announcements) {
-                if (StringUtils.stripAccents(announcement.getName()).toLowerCase()
-                        .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
-                    recyclerView.getLayoutManager()
-                            .scrollToPosition(announcements.indexOf(announcement));
-                    return;
-                }
-            }
-
-            Toast.makeText(this, getString(R.string.announcement_no_found) + ": " +
-                    query, Toast.LENGTH_SHORT).show();
-        } else {
-            String category = intent.getStringExtra("CATEGORY");
-            action = getString(R.string.security_system).equals(category) ?
-                    WebService.ACTION_INCIDENTS : WebService.ACTION_COMMUNIQUES;
-            ActionBar actionBar = getSupportActionBar();
-
-            if (actionBar != null) {
-                actionBar.setTitle(category);
-                changeConfiguration();
-                loadAnnouncements(0);
-            }
-        }
-    }
-
     public void changeConfiguration() {
         if (WebService.ACTION_INCIDENTS.equals(action)) {
             fab.setVisibility(View.GONE);
@@ -218,73 +216,73 @@ public class AnnouncementsActivity extends MainActivity implements
     }
 
     /**
-     * Carga los anuncios desde la base de datos y los almacena en el arreglo de anuncios para
-     * enviarselos al adaptador, si la actividad es nueva el arreglo se envia por medio de su
-     * constructor, se crea tambien el manejador de diseño y se asignan al recilador de vista, al
-     * cual tambien se le asigna un listener de desplasamiento encargado de actualizar desde el
-     * servidor la base de datos local al realizar un desplasamiento vetical en el limite
-     * superior o cargar mas anuncios desde la base de datos local al realizar un desplasamiento
-     * vetical en el limite inferior, adicionalmente muestra un mensaje de de carga durante el
-     * tiempo que realiza el proceso.
+     * Método para manejar nuevas llamadas a la actividad, dependiendo de la accion del intento,
+     * puede buscar un ítem, o cambiar el titulo de la actividad y volver a cargar los ítems.
+     * @param intent Intento que contiene la accion a realizar.
+     */
+    @Override
+    public void handleIntent(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+
+            if (recyclerView != null) {
+                ArrayList<Announcement> announcements =
+                        ((AnnouncementsAdapter) recyclerView.getAdapter()).getAnnouncements();
+
+                for (Announcement announcement : announcements) {
+                    if (StringUtils.stripAccents(announcement.getName()).toLowerCase()
+                            .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
+                        recyclerView.getLayoutManager()
+                                .scrollToPosition(announcements.indexOf(announcement));
+                        return;
+                    }
+                }
+            }
+
+            Toast.makeText(this, getString(R.string.announcement_no_found) + ": " +
+                    query, Toast.LENGTH_SHORT).show();
+        } else {
+            setIntent(intent);
+            int category = intent.getIntExtra(Utilities.CATEGORY, R.string.app_name);
+            action = category == R.string.security_system ?
+                    WebService.ACTION_INCIDENTS : WebService.ACTION_COMMUNIQUES;
+            ActionBar actionBar = getSupportActionBar();
+
+            if (actionBar != null) {
+                actionBar.setTitle(category);
+                changeConfiguration();
+                loadAnnouncements(0);
+            }
+        }
+    }
+
+    /**
+     * Carga los anuncios desde la base de datos y los almacena en el adaptador, adicionalmente
+     * muestra un mensaje de de carga durante el tiempo que realiza el proceso.
      * @param inserted Indica la cantidad de objetos perdidos insertados.
      */
     private void loadAnnouncements(int inserted) {
         swipeRefreshLayout.setRefreshing(true);
 
+        AnnouncementsAdapter announcementsAdapter =
+                (AnnouncementsAdapter) recyclerView.getAdapter();
         int scrollTo = oldAnnouncements ?
-                (newActivity ? 0 : announcements.size() - 1) :
-                (inserted > 0 ? inserted - 1 : 0);
+                announcementsAdapter.getItemCount() - 1 : (inserted > 0 ? inserted - 1 : 0);
 
-        announcements = AnnouncementsPresenter.loadAnnouncements(action, this,
-                announcements.size() + (inserted > 0 ? inserted : 3));
+        ArrayList<Announcement> announcements = AnnouncementsPresenter.loadAnnouncements(action,
+                this,
+                announcementsAdapter.getItemCount() + (inserted > 0 ? inserted : 3));
 
         String[] announcement_IDs = new String[announcements.size()];
         for (int i = 0; i < announcement_IDs.length; i++) {
             announcement_IDs[i] = announcements.get(i).get_ID();
         }
-        announcementsLinks =
-                AnnouncementsPresenter.getAnnouncementsLinks(this, announcement_IDs);
 
-        if (newActivity) {
-            newActivity = false;
-            recyclerView = findViewById(R.id.announcements_recycler_view);
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setAdapter(new AnnouncementsAdapter(announcements,
-                    announcementsLinks, this));
-            recyclerView.setLayoutManager(new LinearLayoutManager(this,
-                    LinearLayoutManager.VERTICAL, false));
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
+        announcementsAdapter.setAnnouncements(announcements,
+                AnnouncementsPresenter.getAnnouncementsLinks(this, announcement_IDs));
+        recyclerView.getLayoutManager().scrollToPosition(scrollTo);
 
-                    if (newState == RecyclerView.SCROLL_STATE_SETTLING &&
-                            !recyclerView.canScrollVertically(1)) {
-                        oldAnnouncements = true;
-                        loadAnnouncements(0);
-                    }
-                }
-            });
-            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    if (Utilities.haveNetworkConnection(AnnouncementsActivity.this)) {
-                        oldAnnouncements = false;
-                        WebBroadcastReceiver.startService(AnnouncementsActivity.this,
-                                action, WebService.METHOD_GET, null);
-                    } else {
-                        Toast.makeText(AnnouncementsActivity.this,
-                                R.string.no_internet, Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        } else {
-            ((AnnouncementsAdapter) recyclerView.getAdapter())
-                    .setAnnouncements(announcements, announcementsLinks);
-            recyclerView.getLayoutManager().scrollToPosition(scrollTo);
-        }
-
-        if (!announcements.isEmpty()) swipeRefreshLayout.setRefreshing(false);
+        if (announcementsAdapter.getItemCount() > 0) swipeRefreshLayout.setRefreshing(false);
     }
 
     /**
@@ -300,17 +298,19 @@ public class AnnouncementsActivity extends MainActivity implements
      */
     @Override
     public void onAnnouncementClick(int index, String action) {
+        Announcement announcement =
+                ((AnnouncementsAdapter) recyclerView.getAdapter()).getAnnouncements().get(index);
+
         switch (action) {
             case AnnouncementsAdapter.ANNOUNCEMENT: {
                 User user = UsersPresenter.loadUser(this);
 
                 if (user != null && "S".equals(user.getAdministrator())) {
-                    AnnouncementsFragment.newInstance(announcements.get(index), this.action)
+                    AnnouncementsFragment.newInstance(announcement, this.action)
                             .show(getSupportFragmentManager(), null);
                 } else if (WebService.ACTION_INCIDENTS.equals(this.action)) {
-                    if (user != null &&
-                            user.get_ID().equals(announcements.get(index).getUser_ID())) {
-                        AnnouncementsFragment.newInstance(announcements.get(index), this.action)
+                    if (user != null && user.get_ID().equals(announcement.getUser_ID())) {
+                        AnnouncementsFragment.newInstance(announcement, this.action)
                                 .show(getSupportFragmentManager(), null);
                     } else {
                         Toast.makeText(this,
@@ -335,11 +335,12 @@ public class AnnouncementsActivity extends MainActivity implements
             case AnnouncementsAdapter.IMAGE_8:
             case AnnouncementsAdapter.IMAGE_9:
                 try {
-                    String _ID = announcements.get(index).get_ID();
                     int link = Integer.parseInt(action.substring(action.length() - 1));
 
-                    for (AnnouncementLink announcementLink : announcementsLinks) {
-                        if (announcementLink.getAnnouncement_ID().equals(_ID) && link-- == 0) {
+                    for (AnnouncementLink announcementLink : ((AnnouncementsAdapter) recyclerView
+                            .getAdapter()).getAnnouncementsLinks()) {
+                        if (announcementLink.getAnnouncement_ID().equals(announcement.get_ID()) &&
+                                link-- == 0) {
                             if (announcementLink.getLink() != null) {
                                 startActivity(new Intent(Intent.ACTION_VIEW)
                                         .setDataAndType(FileProvider.getUriForFile(this,
@@ -359,7 +360,7 @@ public class AnnouncementsActivity extends MainActivity implements
                 }
                 break;
             case AnnouncementsAdapter.READ: {
-                AnnouncementsPresenter.readed(this, announcements.get(index).get_ID());
+                AnnouncementsPresenter.readed(this, announcement.get_ID());
                 loadAnnouncements(0);
                 break;
             }
@@ -379,8 +380,8 @@ public class AnnouncementsActivity extends MainActivity implements
                                 Arrays.asList("public_profile", "user_friends"));
                     } else if (ShareDialog.canShow(ShareLinkContent.class)) {
                         ShareLinkContent content = new ShareLinkContent.Builder()
-                                .setContentTitle(announcements.get(index).getName())
-                                .setContentDescription(announcements.get(index).getDescription())
+                                .setContentTitle(announcement.getName())
+                                .setContentDescription(announcement.getDescription())
                                 .build();
                         shareDialog.show(content);
                     }
@@ -405,7 +406,7 @@ public class AnnouncementsActivity extends MainActivity implements
                         startActivity(new ComposerActivity.Builder(this)
                                 .session(TwitterCore
                                         .getInstance().getSessionManager().getActiveSession())
-                                .text(announcements.get(index).getName())
+                                .text(announcement.getName())
                                 .hashtags("#Uniquindio")
                                 .createIntent());
                     }
@@ -426,7 +427,7 @@ public class AnnouncementsActivity extends MainActivity implements
 
                 try {
                     startActivity(new Intent(Intent.ACTION_SEND)
-                            .putExtra(Intent.EXTRA_TEXT, announcements.get(index).getName())
+                            .putExtra(Intent.EXTRA_TEXT, announcement.getName())
                             .setType("text/plain")
                             .setPackage("com.whatsapp"));
                 } catch (ActivityNotFoundException e) {
@@ -459,9 +460,8 @@ public class AnnouncementsActivity extends MainActivity implements
                 if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail())) {
                     startActivityForResult(
                             new Intent(this, AnnouncementsDetailActivity.class)
-                                    .putExtra("CATEGORY",
-                                            getString(id == R.id.report_incident ?
-                                                    R.string.report_incident : R.string.billboard_detail))
+                                    .putExtra(Utilities.CATEGORY, id == R.id.report_incident ?
+                                            R.string.report_incident : R.string.billboard_detail)
                                     .putExtra(AnnouncementsFragment.ANNOUNCEMENT,
                                             new Announcement(null, user.get_ID(), null,
                                                     null, null, null,
@@ -469,7 +469,7 @@ public class AnnouncementsActivity extends MainActivity implements
                             REQUEST_ANNOUNCEMENT_DETAIL);
                 } else {
                     startActivity(new Intent(this, LoginActivity.class)
-                            .putExtra("CATEGORY", getString(R.string.log_in)));
+                            .putExtra(Utilities.CATEGORY, R.string.log_in));
                 }
                 break;
             }

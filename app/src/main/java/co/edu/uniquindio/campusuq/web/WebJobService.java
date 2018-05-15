@@ -23,10 +23,10 @@ public class WebJobService extends JobIntentService {
         Log.i(TAG, "Job started!");
         isWorking = true;
 
-        String action = intent.getStringExtra("ACTION");
-        String method = intent.getStringExtra("METHOD");
-        String object = intent.getStringExtra("OBJECT");
-        WebBroadcastReceiver.startService(getApplicationContext(), action, method, object);
+        WebBroadcastReceiver.startService(getApplicationContext(),
+                intent.getStringExtra("ACTION"),
+                intent.getStringExtra("METHOD"),
+                intent.getStringExtra("OBJECT"));
 
         Log.i(TAG, "Job finished!");
         isWorking = false;

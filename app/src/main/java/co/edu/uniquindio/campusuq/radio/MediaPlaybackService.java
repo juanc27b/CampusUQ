@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.edu.uniquindio.campusuq.R;
+import co.edu.uniquindio.campusuq.util.Utilities;
 
 public class MediaPlaybackService extends MediaBrowserServiceCompat {
 
@@ -57,7 +58,8 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
     public void onCreate() {
         super.onCreate();
 
-        audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        audioManager =
+                (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
         // Create a MediaSessionCompat
         mMediaSession = new MediaSessionCompat(getApplicationContext(), LOG_TAG);
@@ -98,14 +100,15 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
                             AudioManager.AUDIOFOCUS_GAIN);
                     if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
                         // Start the service
-                        Intent intent = new Intent(getApplicationContext(), MediaPlaybackService.class);
-                        startService(intent);
+                        startService(new Intent(getApplicationContext(),
+                                MediaPlaybackService.class));
                         // Set the session active
                         mMediaSession.setActive(true);
                         // start the player (custom call)
                         if (!prepared) {
                             // update state
-                            PlaybackStateCompat playbackState = mMediaSession.getController().getPlaybackState();
+                            PlaybackStateCompat playbackState =
+                                    mMediaSession.getController().getPlaybackState();
                             playbackState = mStateBuilder
                                     .setState(PlaybackStateCompat.STATE_CONNECTING,
                                             playbackState.getPosition(),
@@ -124,7 +127,8 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
                             mMediaPlayer.start();
                             started = true;
                             // update state
-                            PlaybackStateCompat playbackState = mMediaSession.getController().getPlaybackState();
+                            PlaybackStateCompat playbackState =
+                                    mMediaSession.getController().getPlaybackState();
                             playbackState = mStateBuilder
                                     .setState(PlaybackStateCompat.STATE_PLAYING,
                                             playbackState.getPosition(),
@@ -145,7 +149,8 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
                     mMediaPlayer.pause();
                     started = false;
                     // Update state
-                    PlaybackStateCompat playbackState = mMediaSession.getController().getPlaybackState();
+                    PlaybackStateCompat playbackState =
+                            mMediaSession.getController().getPlaybackState();
                     playbackState = mStateBuilder
                             .setState(PlaybackStateCompat.STATE_PAUSED,
                                     playbackState.getPosition(),
@@ -163,7 +168,8 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
                 // Abandon audio focus
                 audioManager.abandonAudioFocus(afChangeListener);
                 // update state
-                PlaybackStateCompat playbackState = mMediaSession.getController().getPlaybackState();
+                PlaybackStateCompat playbackState =
+                        mMediaSession.getController().getPlaybackState();
                 playbackState = mStateBuilder
                         .setState(PlaybackStateCompat.STATE_STOPPED,
                                 playbackState.getPosition(),
@@ -198,7 +204,8 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
 
         Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
         mediaButtonIntent.setClass(getApplicationContext(), MediaButtonReceiver.class);
-        PendingIntent mbrIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, mediaButtonIntent, 0);
+        PendingIntent mbrIntent = PendingIntent
+                .getBroadcast(getApplicationContext(), 0, mediaButtonIntent, 0);
         mMediaSession.setMediaButtonReceiver(mbrIntent);
 
         // Set the session's token so that client activities can communicate with it.
@@ -224,7 +231,8 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
     }
 
     @Override
-    public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, Bundle rootHints) {
+    public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid,
+                                 Bundle rootHints) {
         // (Optional) Control the level of access for the specified package name.
         // You'll need to write your own logic to do this.
         if (allowBrowsing(clientPackageName, clientUid)) {
@@ -280,7 +288,8 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
                     prepared = true;
                     mp.start();
                     started = true;
-                    PlaybackStateCompat playbackState = mMediaSession.getController().getPlaybackState();
+                    PlaybackStateCompat playbackState =
+                            mMediaSession.getController().getPlaybackState();
                     playbackState = mStateBuilder
                             .setState(PlaybackStateCompat.STATE_PLAYING,
                                     playbackState.getPosition(),
@@ -300,9 +309,11 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
                             mp.prepareAsync();
                         } catch (Exception e) {
                             hasMedia = false;
-                            AudioManager am = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+                            AudioManager am = (AudioManager) getApplicationContext()
+                                    .getSystemService(Context.AUDIO_SERVICE);
                             am.abandonAudioFocus(afChangeListener);
-                            PlaybackStateCompat playbackState = mMediaSession.getController().getPlaybackState();
+                            PlaybackStateCompat playbackState =
+                                    mMediaSession.getController().getPlaybackState();
                             playbackState = mStateBuilder
                                     .setState(PlaybackStateCompat.STATE_STOPPED,
                                             playbackState.getPosition(),
@@ -318,7 +329,7 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
                             stopSelf();
                             stopForeground(true);
                             Toast.makeText(MediaPlaybackService.this,
-                                    getString(R.string.radio_error), Toast.LENGTH_SHORT).show();
+                                    R.string.radio_error, Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -359,7 +370,8 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
             builder = new NotificationCompat.Builder(getApplicationContext());
         }
 
-        Intent resultIntent = new Intent(getApplicationContext(), RadioActivity.class);
+        Intent resultIntent = new Intent(getApplicationContext(), RadioActivity.class)
+                .putExtra(Utilities.CATEGORY, R.string.radio);
         // The stack builder object will contain an artificial back stack for the
         // started Activity.
         // This ensures that navigating backward from the Activity leads out of
@@ -367,8 +379,8 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
         // Adds the back stack for the Intent (but not the Intent itself)
         stackBuilder.addParentStack(RadioActivity.class);
-        stackBuilder.editIntentAt(0).putExtra("CATEGORY", getString(R.string.app_title_menu));
-        stackBuilder.editIntentAt(1).putExtra("CATEGORY", getString(R.string.services_module));
+        stackBuilder.editIntentAt(0).putExtra(Utilities.CATEGORY, R.string.app_title_menu);
+        stackBuilder.editIntentAt(1).putExtra(Utilities.CATEGORY, R.string.services_module);
         // Adds the Intent that starts the Activity to the top of the stack
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
@@ -386,8 +398,8 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
                 .setContentIntent(resultPendingIntent)
 
                 // Stop the service when the notification is swiped away
-                .setDeleteIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(getApplicationContext(),
-                        PlaybackStateCompat.ACTION_STOP))
+                .setDeleteIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(
+                        getApplicationContext(), PlaybackStateCompat.ACTION_STOP))
 
                 // Make the transport controls visible on the lockscreen
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -402,15 +414,15 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
                     // Add a play button
                     .addAction(new NotificationCompat.Action(
                             R.drawable.ic_play_notification, "Play",
-                            MediaButtonReceiver.buildMediaButtonPendingIntent(getApplicationContext(),
-                                    PlaybackStateCompat.ACTION_PLAY)));
+                            MediaButtonReceiver.buildMediaButtonPendingIntent(
+                                    getApplicationContext(), PlaybackStateCompat.ACTION_PLAY)));
         } else if (type.equals("Pause")) {
             builder
                     // Add a pause button
                     .addAction(new NotificationCompat.Action(
                             R.drawable.ic_pause_notification, "Pause",
-                            MediaButtonReceiver.buildMediaButtonPendingIntent(getApplicationContext(),
-                                    PlaybackStateCompat.ACTION_PAUSE)));
+                            MediaButtonReceiver.buildMediaButtonPendingIntent(
+                                    getApplicationContext(), PlaybackStateCompat.ACTION_PAUSE)));
         } else {
             builder
                     // Add a pause button
@@ -434,6 +446,5 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
         // Display the notification and place the service in the foreground
         return builder.build();
     }
-
 
 }

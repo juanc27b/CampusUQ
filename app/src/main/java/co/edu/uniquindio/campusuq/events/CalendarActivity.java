@@ -15,16 +15,14 @@ import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
+import co.edu.uniquindio.campusuq.util.Utilities;
 
-public class CalendarActivity extends MainActivity implements
-        CalendarItemsAdapter.OnClickItemListener {
-
-    private CalendarItemsAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-
-    private ArrayList<CalendarItem> items = new ArrayList<>();
+public class CalendarActivity extends MainActivity
+        implements CalendarItemsAdapter.OnClickItemListener {
 
     private TextView categoryText;
+    private RecyclerView recyclerView;
+
     private String category;
 
     public CalendarActivity() {
@@ -41,19 +39,16 @@ public class CalendarActivity extends MainActivity implements
         stub.setLayoutResource(R.layout.content_calendar);
         stub.inflate();
 
-        RecyclerView mRecyclerView = findViewById(R.id.events_recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-
-        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,
-                false);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-        mAdapter = new CalendarItemsAdapter(items, this);
-        mRecyclerView.setAdapter(mAdapter);
-
         categoryText = findViewById(R.id.category_text);
-        category = getIntent().getStringExtra("CATEGORY");
+        recyclerView = findViewById(R.id.events_recycler_view);
+
+        category = getIntent().getStringExtra(Utilities.CATEGORY);
         categoryText.setText(String.format("%s: %s", getString(R.string.category), category));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(new CalendarItemsAdapter(new ArrayList<CalendarItem>(),
+                this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.VERTICAL, false));
         setItems();
     }
 
@@ -62,34 +57,40 @@ public class CalendarActivity extends MainActivity implements
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
 
-            for (CalendarItem item : items) {
-                if (StringUtils.stripAccents(item.getEvent()).toLowerCase()
-                        .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
-                    mLayoutManager.scrollToPosition(items.indexOf(item));
-                    return;
+            if (recyclerView != null) {
+                ArrayList<CalendarItem> items =
+                        ((CalendarItemsAdapter) recyclerView.getAdapter()).getItems();
+
+                for (CalendarItem item : items) {
+                    if (StringUtils.stripAccents(item.getEvent()).toLowerCase()
+                            .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
+                        recyclerView.getLayoutManager().scrollToPosition(items.indexOf(item));
+                        return;
+                    }
                 }
             }
 
             Toast.makeText(this, getString(R.string.event_no_found) + ": " + query,
                     Toast.LENGTH_SHORT).show();
-        } else if (mAdapter != null) {
-            category = intent.getStringExtra("CATEGORY");
+        } else if (recyclerView != null) {
+            setIntent(intent);
+            category = intent.getStringExtra(Utilities.CATEGORY);
             categoryText.setText(String.format("%s: %s", getString(R.string.category), category));
             setItems();
         }
     }
 
     private void setItems() {
-        this.items = CalendarPresenter.getCalendarItems(category, this);
-        mAdapter.setItems(this.items);
+        ((CalendarItemsAdapter) recyclerView.getAdapter())
+                .setItems(CalendarPresenter.getCalendarItems(category, this));
     }
 
     @Override
-    public void onCalendarItemClick(int pos) {
-        Intent intent = new Intent(this, CalendarDetailActivity.class);
-        intent.putExtra("EVENT", this.items.get(pos).getEvent());
-        intent.putExtra("CATEGORY", category);
-        startActivity(intent);
+    public void onCalendarItemClick(int index) {
+        startActivity(new Intent(this, CalendarDetailActivity.class)
+                .putExtra("EVENT", ((CalendarItemsAdapter) recyclerView.getAdapter())
+                        .getItems().get(index).getEvent())
+                .putExtra(Utilities.CATEGORY, category));
     }
 
 }

@@ -109,7 +109,8 @@ public class EmailsPresenter {
      * @param connectionStatusCode code describing the presence (or lack of)
      *     Google Play Services on this device.
      */
-    private void showGooglePlayServicesAvailabilityErrorDialog(final int connectionStatusCode, MainActivity activity) {
+    private void showGooglePlayServicesAvailabilityErrorDialog(final int connectionStatusCode,
+                                                               MainActivity activity) {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         Dialog dialog = apiAvailability.getErrorDialog(
                 activity,

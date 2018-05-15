@@ -32,7 +32,7 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
     private TextView email;
     private EditText password;
 
-    private String category;
+    private int category;
     private EmailsPresenter emailsPresenter;
 
     private IntentFilter usersFilter = new IntentFilter(WebService.ACTION_USERS);
@@ -49,7 +49,7 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
                 finish();
             }
 
-            if(progressDialog.isShowing()) progressDialog.dismiss();
+            if (progressDialog.isShowing()) progressDialog.dismiss();
         }
     };
 
@@ -93,11 +93,11 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
             public void onClick(View v) {
                 if (email.getText().length() < 7 || email.getText().length() > 70) {
                     Toast.makeText(LoginActivity.this,
-                            getString(R.string.user_email_invalid),
+                            R.string.user_email_invalid,
                             Toast.LENGTH_SHORT).show();
                 } else if (password.getText().length() < 8 || password.getText().length() > 16) {
                     Toast.makeText(LoginActivity.this,
-                            getString(R.string.user_password_invalid),
+                            R.string.user_password_invalid,
                             Toast.LENGTH_SHORT).show();
                 } else if (Utilities.haveNetworkConnection(LoginActivity.this)) {
                     JSONObject json = new JSONObject();
@@ -120,28 +120,22 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
         findViewById(R.id.user_sign_up).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, UsersActivity.class);
-                intent.putExtra("CATEGORY", getString(R.string.sign_up));
-                startActivity(intent);
+                startActivity(new Intent(LoginActivity.this, UsersActivity.class)
+                        .putExtra(Utilities.CATEGORY, R.string.sign_up));
                 finish();
             }
         });
 
-        Intent intent = getIntent();
-        category = intent.getStringExtra("CATEGORY");
-        if (getString(R.string.log_in).equals(category)) {
-            title.setText(R.string.login_campusuq);
-        }
-
+        category = getIntent().getIntExtra(Utilities.CATEGORY, R.string.app_name);
+        if (category == R.string.log_in) title.setText(R.string.login_campusuq);
     }
 
     @Override
     public void handleIntent(Intent intent) {
-        if (category != null) {
-            category = intent.getStringExtra("CATEGORY");
-            if (getString(R.string.log_in).equals(category)) {
-                title.setText(R.string.login_campusuq);
-            }
+        if (getSupportActionBar() != null) {
+            setIntent(intent);
+            category = intent.getIntExtra(Utilities.CATEGORY, R.string.app_name);
+            if (category == R.string.log_in) title.setText(R.string.login_campusuq);
         }
     }
 

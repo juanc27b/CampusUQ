@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
+import co.edu.uniquindio.campusuq.util.Utilities;
 
 public class WebContentActivity extends MainActivity {
 
@@ -35,10 +36,10 @@ public class WebContentActivity extends MainActivity {
         stub.setLayoutResource(R.layout.content_web);
         stub.inflate();
 
-        String category = getIntent().getStringExtra("CATEGORY");
-        getSupportActionBar().setTitle(category);
+        getSupportActionBar()
+                .setTitle(getIntent().getIntExtra(Utilities.CATEGORY, R.string.app_name));
 
-        String link = getIntent().getStringExtra("LINK");
+        String link = getIntent().getStringExtra(Utilities.LINK);
         String content = getIntent().getStringExtra("CONTENT");
 
         webView = findViewById(R.id.webview_content);
@@ -83,10 +84,11 @@ public class WebContentActivity extends MainActivity {
     @Override
     public void handleIntent(Intent intent) {
         if (webView != null) {
-            String category = intent.getStringExtra("CATEGORY");
-            getSupportActionBar().setTitle(category);
+            setIntent(intent);
+            getSupportActionBar()
+                    .setTitle(intent.getIntExtra(Utilities.CATEGORY, R.string.app_name));
 
-            String link = intent.getStringExtra("LINK");
+            String link = intent.getStringExtra(Utilities.LINK);
             String content = intent.getStringExtra("CONTENT");
 
             if (content != null) {

@@ -28,7 +28,7 @@ import co.edu.uniquindio.campusuq.users.User;
  * que se agrupan las funcionalidades de la aplicación. Al hacer click en cualquier módulo se
  * abrirá una actividad con la lista de funcionalidades de dicho módulo.
  */
-public class MenuActivity extends MainActivity {
+public class MenuActivity extends MainActivity implements View.OnClickListener {
 
     /**
      * Se define un filtro de intentos para el BroadcastReceiver del menú.
@@ -62,7 +62,7 @@ public class MenuActivity extends MainActivity {
     }
 
     /**
-     * Asigna el fongo de la actividad, infla el diseño del menú, asigna listeners a cada uno de los
+     * Asigna el fondo de la actividad, infla el diseño del menú, asigna listeners a cada uno de los
      * módulos para abrir las actividades correspondientes, asigna el diálogo de progreso a ser
      * mostrado cuando se deben descargar los datos de la aplicación, pide los permisos necesarios
      * para el correcto funcionamiento de la aplicación (API >= 23) si no los tiene, y por último
@@ -78,41 +78,12 @@ public class MenuActivity extends MainActivity {
         stub.setLayoutResource(R.layout.content_menu);
         stub.inflate();
 
-        findViewById(R.id.information_module_layout).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MenuActivity.this, ItemsActivity.class);
-                intent.putExtra("CATEGORY", getString(R.string.information_module));
-                startActivity(intent);
-            }
-        });
-        findViewById(R.id.services_module_layout).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MenuActivity.this, ItemsActivity.class);
-                intent.putExtra("CATEGORY", getString(R.string.services_module));
-                startActivity(intent);
-            }
-        });
-        findViewById(R.id.state_module_layout).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MenuActivity.this, ItemsActivity.class);
-                intent.putExtra("CATEGORY", getString(R.string.state_module));
-                startActivity(intent);
-            }
-        });
-        findViewById(R.id.communication_module_layout)
-                .setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MenuActivity.this, ItemsActivity.class);
-                intent.putExtra("CATEGORY", getString(R.string.communication_module));
-                startActivity(intent);
-            }
-        });
-
         progressDialog = Utilities.getProgressDialog(this, false);
+
+        findViewById(R.id.information_module_layout).setOnClickListener(this);
+        findViewById(R.id.services_module_layout).setOnClickListener(this);
+        findViewById(R.id.state_module_layout).setOnClickListener(this);
+        findViewById(R.id.communication_module_layout).setOnClickListener(this);
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
@@ -124,13 +95,15 @@ public class MenuActivity extends MainActivity {
                         PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_FINE_LOCATION) !=
-                        PackageManager.PERMISSION_GRANTED)
+                        PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-        else loadContent();
+        } else {
+            loadContent();
+        }
     }
 
     /**
@@ -159,6 +132,7 @@ public class MenuActivity extends MainActivity {
     public void loadContent() {
         WebService.PENDING_ACTION = WebService.ACTION_NONE;
         User user = UsersPresenter.loadUser(getApplicationContext());
+
         if (user == null) {
             Log.i(MenuActivity.class.getSimpleName(), "Activando alarma");
             if (!progressDialog.isShowing()) progressDialog.show();
@@ -166,6 +140,28 @@ public class MenuActivity extends MainActivity {
             StarterReceiver.scheduleAlarm(getApplicationContext(), true);
             WebBroadcastReceiver.startService(getApplicationContext(),
                     WebService.ACTION_ALL, WebService.METHOD_GET, null);
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.information_module_layout:
+                startActivity(new Intent(this, ItemsActivity.class)
+                        .putExtra(Utilities.CATEGORY, R.string.information_module));
+                break;
+            case R.id.services_module_layout:
+                startActivity(new Intent(this, ItemsActivity.class)
+                        .putExtra(Utilities.CATEGORY, R.string.services_module));
+                break;
+            case R.id.state_module_layout:
+                startActivity(new Intent(this, ItemsActivity.class)
+                        .putExtra(Utilities.CATEGORY, R.string.state_module));
+                break;
+            case R.id.communication_module_layout:
+                startActivity(new Intent(this, ItemsActivity.class)
+                        .putExtra(Utilities.CATEGORY, R.string.communication_module));
+                break;
         }
     }
 

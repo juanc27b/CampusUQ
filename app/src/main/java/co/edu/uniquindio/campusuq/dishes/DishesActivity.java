@@ -39,8 +39,6 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
     static final int REQUEST_DISHES_DETAIL = 1001;
 
     SwipeRefreshLayout swipeRefreshLayout;
-    private ArrayList<Dish> dishes = new ArrayList<>();
-    private boolean newActivity = true;
     private RecyclerView recyclerView;
     private boolean oldDishes = true;
 
@@ -68,7 +66,12 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
     /**
      * Asigna el fondo de la actividad, infla el diseño de platos en la actividad superior, en caso
      * de haber iniciado sesion como administrador hace visible el botón para añadir nuevos platos,
-     * y llama a la funcion para cargar los platos.
+     * se crea el adaptador de platos y el manejador de diseño lineal y se asignan al recilador de
+     * vista, al cual tambien se le asigna un listener de actualización encargado de actualizar
+     * desde el servidor la base de datos local al realizar un desplasamiento vetical en el limite
+     * superior, y un listener de despalzamiento encargado de cargar mas platos desde la base de
+     * datos local al realizar un desplasamiento vetical en el limite inferior, y finalmente llama
+     * a la funcion para cargar los platos.
      * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
      */
     @Override
@@ -83,11 +86,42 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
 
         FloatingActionButton insert = findViewById(R.id.fab);
         swipeRefreshLayout = findViewById(R.id.dishes_swipe_refresh);
+        recyclerView = findViewById(R.id.dishes_recycler_view);
 
         insert.setOnClickListener(this);
         User user = UsersPresenter.loadUser(this);
         if (user != null && "S".equals(user.getAdministrator())) insert.setVisibility(View.VISIBLE);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (Utilities.haveNetworkConnection(DishesActivity.this)) {
+                    oldDishes = false;
+                    WebBroadcastReceiver.startService(getApplicationContext(),
+                            WebService.ACTION_DISHES, WebService.METHOD_GET,
+                            null);
+                } else {
+                    Toast.makeText(DishesActivity.this,
+                            R.string.no_internet, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(new DishesAdapter(new ArrayList<Dish>(), this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.VERTICAL, false));
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (newState == RecyclerView.SCROLL_STATE_SETTLING &&
+                        !recyclerView.canScrollVertically(1)) {
+                    oldDishes = true;
+                    loadDishes(0);
+                }
+            }
+        });
 
         loadDishes(0);
     }
@@ -102,86 +136,47 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
 
-            for (Dish dish : dishes) {
-                if (StringUtils.stripAccents(dish.getName()).toLowerCase()
-                        .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
-                    recyclerView.getLayoutManager().scrollToPosition(dishes.indexOf(dish));
-                    return;
+            if (recyclerView != null) {
+                ArrayList<Dish> dishes = ((DishesAdapter) recyclerView.getAdapter()).getDishes();
+
+                for (Dish dish : dishes) {
+                    if (StringUtils.stripAccents(dish.getName()).toLowerCase()
+                            .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
+                        recyclerView.getLayoutManager().scrollToPosition(dishes.indexOf(dish));
+                        return;
+                    }
                 }
             }
 
             Toast.makeText(this, getString(R.string.dish_no_found) + ": " + query,
                     Toast.LENGTH_SHORT).show();
         } else {
+            setIntent(intent);
             ActionBar actionBar = getSupportActionBar();
 
             if (actionBar != null) {
-                actionBar.setTitle(intent.getStringExtra("CATEGORY"));
+                actionBar.setTitle(intent.getIntExtra(Utilities.CATEGORY, R.string.app_name));
                 loadDishes(0);
             }
         }
     }
 
     /**
-     * Carga los platos desde la base de datos y los almacena en el arreglo de platos para
-     * enviarselos al adaptador, si la actividad es nueva el arreglo se envia por medio de su
-     * constructor, se crea tambien el manejador de diseño y se asignan al recilador de vista, al
-     * cual tambien se le asigna un listener de desplasamiento encargado de actualizar desde
-     * el servidor la base de datos local al realizar un desplasamiento vetical en el limite
-     * superior o cargar mas platos desde la base de datos local al realizar un desplasamiento
-     * vetical en el limite inferior, adicionalmente muestra un mensaje de de carga durante el
-     * tiempo que realiza el proceso.
+     * Carga los platos desde la base de datos y los almacena en el adaptador, adicionalmente
+     * muestra un mensaje de de carga durante el tiempo que realiza el proceso.
      * @param inserted Indica la cantidad de platos insertados.
      */
     private void loadDishes(int inserted) {
         swipeRefreshLayout.setRefreshing(true);
 
+        DishesAdapter dishesAdapter = (DishesAdapter) recyclerView.getAdapter();
         int scrollTo = oldDishes ?
-                (newActivity ? 0 : dishes.size() - 1) :
-                (inserted > 0 ? inserted - 1 : 0);
+                dishesAdapter.getItemCount() - 1 : (inserted > 0 ? inserted - 1 : 0);
+        dishesAdapter.setDishes(DishesPresenter.loadDishes(this,
+                dishesAdapter.getItemCount() + (inserted > 0 ? inserted : 12)));
+        recyclerView.getLayoutManager().scrollToPosition(scrollTo);
 
-        dishes = DishesPresenter.loadDishes(this,
-                dishes.size() + (inserted > 0 ? inserted : 12));
-
-        if (newActivity) {
-            newActivity = false;
-            recyclerView = findViewById(R.id.dishes_recycler_view);
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setAdapter(new DishesAdapter(dishes, this));
-            recyclerView.setLayoutManager(new LinearLayoutManager(this,
-                    LinearLayoutManager.VERTICAL, false));
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
-
-                    if (newState == RecyclerView.SCROLL_STATE_SETTLING &&
-                            !recyclerView.canScrollVertically(1)) {
-                        oldDishes = true;
-                        loadDishes(0);
-                    }
-                }
-            });
-            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    if (Utilities.haveNetworkConnection(DishesActivity.this)) {
-                        oldDishes = false;
-                        WebBroadcastReceiver.startService(getApplicationContext(),
-                                WebService.ACTION_DISHES, WebService.METHOD_GET,
-                                null);
-                    } else {
-                        Toast.makeText(DishesActivity.this,
-                                R.string.no_internet, Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        } else {
-            ((DishesAdapter) recyclerView.getAdapter()).setDishes(dishes);
-            recyclerView.getLayoutManager().scrollToPosition(scrollTo);
-        }
-
-        if (!dishes.isEmpty()) swipeRefreshLayout.setRefreshing(false);
+        if (dishesAdapter.getItemCount() > 0) swipeRefreshLayout.setRefreshing(false);
     }
 
     /**
@@ -200,8 +195,8 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
             case DishesAdapter.DISH: {
                 User user = UsersPresenter.loadUser(this);
                 if (user != null && "S".equals(user.getAdministrator())) {
-                    DishesFragment.newInstance(dishes.get(index))
-                            .show(getSupportFragmentManager(), null);
+                    DishesFragment.newInstance(((DishesAdapter) recyclerView.getAdapter())
+                            .getDishes().get(index)).show(getSupportFragmentManager(), null);
                 } else {
                     Toast.makeText(this,
                             R.string.no_administrator,
@@ -211,7 +206,8 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
             }
             case DishesAdapter.IMAGE:
                 try {
-                    String image = dishes.get(index).getImage();
+                    String image = ((DishesAdapter) recyclerView.getAdapter())
+                            .getDishes().get(index).getImage();
 
                     if (image != null) {
                         startActivity(new Intent(Intent.ACTION_VIEW)
@@ -243,7 +239,7 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
         switch (view.getId()) {
             case R.id.fab:
                 startActivityForResult(new Intent(this, DishesDetailActivity.class)
-                                .putExtra("CATEGORY", getString(R.string.restaurant_detail))
+                                .putExtra(Utilities.CATEGORY, R.string.restaurant_detail)
                                 .putExtra(DishesFragment.DISH, new Dish(null, null,
                                         null, null, null)),
                         REQUEST_DISHES_DETAIL);

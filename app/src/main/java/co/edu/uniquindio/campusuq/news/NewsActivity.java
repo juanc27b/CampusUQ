@@ -52,8 +52,6 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
 
     private String action;
     SwipeRefreshLayout swipeRefreshLayout;
-    public ArrayList<New> news = new ArrayList<>();
-    public boolean newActivity = true;
     private RecyclerView recyclerView;
     boolean oldNews = true;
 
@@ -91,8 +89,38 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
         stub.inflate();
 
         swipeRefreshLayout = findViewById(R.id.news_swipe_refresh);
+        recyclerView = findViewById(R.id.news_recycler_view);
 
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (Utilities.haveNetworkConnection(NewsActivity.this)) {
+                    oldNews = false;
+                    WebBroadcastReceiver.startService(getApplicationContext(),
+                            action, WebService.METHOD_GET, null);
+                } else {
+                    Toast.makeText(NewsActivity.this,
+                            R.string.no_internet, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(new NewsAdapter(new ArrayList<New>(), this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.VERTICAL, false));
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (newState == RecyclerView.SCROLL_STATE_SETTLING &&
+                        !recyclerView.canScrollVertically(1)) {
+                    oldNews = true;
+                    loadNews(0);
+                }
+            }
+        });
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
@@ -140,20 +168,25 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
     public void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            for (New n : news) {
-                if (StringUtils.stripAccents(n.getName()).toLowerCase()
-                        .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
-                    recyclerView.getLayoutManager().scrollToPosition(news.indexOf(n));
-                    return;
+            if (recyclerView != null) {
+                ArrayList<New> news = ((NewsAdapter) recyclerView.getAdapter()).getNews();
+
+                for (New n : news) {
+                    if (StringUtils.stripAccents(n.getName()).toLowerCase()
+                            .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
+                        recyclerView.getLayoutManager().scrollToPosition(news.indexOf(n));
+                        return;
+                    }
                 }
             }
             Toast.makeText(this, getString(R.string.new_no_found) + ": " + query,
                     Toast.LENGTH_SHORT).show();
         } else {
-            String category = intent.getStringExtra("CATEGORY");
-            action = getString(R.string.news).equals(category) ?
-                    WebService.ACTION_NEWS : WebService.ACTION_EVENTS;
+            setIntent(intent);
+            int category = intent.getIntExtra(Utilities.CATEGORY, R.string.app_name);
+            action = category == R.string.news ? WebService.ACTION_NEWS : WebService.ACTION_EVENTS;
             ActionBar actionBar = getSupportActionBar();
+
             if (actionBar != null) {
                 actionBar.setTitle(category);
                 loadNews(0);
@@ -164,65 +197,29 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
     private void loadNews(int inserted) {
         swipeRefreshLayout.setRefreshing(true);
 
-        int scrollTo = oldNews ?
-                (newActivity ? 0 : news.size() - 1) : (inserted > 0 ? inserted - 1 : 0);
+        NewsAdapter newsAdapter = (NewsAdapter) recyclerView.getAdapter();
+        int scrollTo = oldNews ? newsAdapter.getItemCount() - 1 : (inserted > 0 ? inserted - 1 : 0);
+        newsAdapter.setNews(NewsPresenter.loadNews(action,
+                this, newsAdapter.getItemCount() + (inserted > 0 ? inserted : 3)));
+        recyclerView.getLayoutManager().scrollToPosition(scrollTo);
 
-        news = NewsPresenter.loadNews(action, this,
-                inserted > 0 ? news.size() + inserted : news.size() + 3);
-
-        if (newActivity) {
-            newActivity = false;
-            recyclerView = findViewById(R.id.news_recycler_view);
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setAdapter(new NewsAdapter(news, this));
-            recyclerView.setLayoutManager(new LinearLayoutManager(this,
-                    LinearLayoutManager.VERTICAL, false));
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
-
-                    if (newState == RecyclerView.SCROLL_STATE_SETTLING &&
-                            !recyclerView.canScrollVertically(1)) {
-                        oldNews = true;
-                        loadNews(0);
-                    }
-                }
-            });
-            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    if (Utilities.haveNetworkConnection(NewsActivity.this)) {
-                        oldNews = false;
-                        WebBroadcastReceiver.startService(getApplicationContext(),
-                                action, WebService.METHOD_GET, null);
-                    } else {
-                        Toast.makeText(NewsActivity.this,
-                                R.string.no_internet, Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        } else {
-            ((NewsAdapter) recyclerView.getAdapter()).setNews(news);
-            recyclerView.getLayoutManager().scrollToPosition(scrollTo);
-        }
-
-        if (!news.isEmpty()) swipeRefreshLayout.setRefreshing(false);
+        if (newsAdapter.getItemCount() > 0) swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void onNewClick(int index, String action) {
+        New n = ((NewsAdapter) recyclerView.getAdapter()).getNews().get(index);
+
         switch (action) {
             case NewsAdapter.NOTICE:
             case NewsAdapter.MORE: {
-                Intent intent = new Intent(this, NewsContentActivity.class);
-                intent.putExtra("CATEGORY", getString(R.string.news_detail));
-                intent.putExtra("TITLE", news.get(index).getName());
-                intent.putExtra("DATE", news.get(index).getDate());
-                intent.putExtra("AUTHOR", news.get(index).getAuthor());
-                intent.putExtra("LINK", news.get(index).getLink());
-                intent.putExtra("CONTENT", news.get(index).getContent());
-                startActivity(intent);
+                startActivity(new Intent(this, NewsContentActivity.class)
+                        .putExtra(Utilities.CATEGORY, R.string.news_detail)
+                        .putExtra("TITLE", n.getName())
+                        .putExtra("DATE", n.getDate())
+                        .putExtra("AUTHOR", n.getAuthor())
+                        .putExtra(Utilities.LINK, n.getLink())
+                        .putExtra("CONTENT", n.getContent()));
                 break;
             }
             case NewsAdapter.IMAGE:
@@ -230,7 +227,7 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                     startActivity(new Intent(Intent.ACTION_VIEW)
                             .setDataAndType(FileProvider.getUriForFile(this,
                                     "co.edu.uniquindio.campusuq.provider",
-                                    new File(news.get(index).getImage())), "image/*")
+                                    new File(n.getImage())), "image/*")
                             .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
                 } catch (RuntimeException e) {
                     e.printStackTrace();
@@ -253,9 +250,9 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                                 Arrays.asList("public_profile", "user_friends"));
                     } else if (ShareDialog.canShow(ShareLinkContent.class)) {
                         ShareLinkContent content = new ShareLinkContent.Builder()
-                                .setContentTitle(news.get(index).getName())
-                                .setContentUrl(Uri.parse(news.get(index).getLink()))
-                                .setContentDescription(news.get(index).getSummary())
+                                .setContentTitle(n.getName())
+                                .setContentUrl(Uri.parse(n.getLink()))
+                                .setContentDescription(n.getSummary())
                                 .build();
                         shareDialog.show(content);
                     }
@@ -281,10 +278,8 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                                 .getActiveSession();
                         final Intent twitterIntent = new ComposerActivity.Builder(this)
                                 .session(session)
-                                .image(Uri.fromFile(new File("" +
-                                        news.get(index).getImage())))
-                                .text(news.get(index).getName() +
-                                        "\n\n" + news.get(index).getLink())
+                                .image(Uri.fromFile(new File("" + n.getImage())))
+                                .text(n.getName() + "\n\n" + n.getLink())
                                 .hashtags("#Uniquindio")
                                 .createIntent();
                         startActivity(twitterIntent);
@@ -304,8 +299,7 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                         .build());
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT,
-                        news.get(index).getName() + "\n\n" + news.get(index).getLink());
+                sendIntent.putExtra(Intent.EXTRA_TEXT, n.getName() + "\n\n" + n.getLink());
                 sendIntent.setType("text/plain");
                 sendIntent.setPackage("com.whatsapp");
                 try {

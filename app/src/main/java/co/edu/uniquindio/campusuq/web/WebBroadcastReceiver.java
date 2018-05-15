@@ -8,8 +8,10 @@ import android.util.Log;
 
 public class WebBroadcastReceiver extends BroadcastReceiver {
 
-    public static final String ACTION_START_WEB_SERVICE = "co.edu.uniquindio.campusuq.ACTION_START_WEB_SERVICE";
-    public static final String ACTION_STOP_WEB_SERVICE = "co.edu.uniquindio.campusuq.ACTION_STOP_WEB_SERVICE";
+    public static final String ACTION_START_WEB_SERVICE =
+            "co.edu.uniquindio.campusuq.ACTION_START_WEB_SERVICE";
+    public static final String ACTION_STOP_WEB_SERVICE =
+            "co.edu.uniquindio.campusuq.ACTION_STOP_WEB_SERVICE";
 
     /**
      * Unique job ID for this service.
@@ -26,24 +28,20 @@ public class WebBroadcastReceiver extends BroadcastReceiver {
     }
 
     public static void scheduleJob(Context context, String action, String method, String object) {
-        Intent intent = new Intent(context, WebJobService.class);
-        intent.putExtra("ACTION", action);
-        intent.putExtra("METHOD", method);
-        intent.putExtra("OBJECT", object);
-        WebJobService.enqueueWork(context, intent);
+        WebJobService.enqueueWork(context, new Intent(context, WebJobService.class)
+                .putExtra("ACTION", action)
+                .putExtra("METHOD", method)
+                .putExtra("OBJECT", object));
         Log.i(WebBroadcastReceiver.class.getSimpleName(), "Job scheduled!");
     }
 
     public static void startService(Context context, String action, String method, String object) {
-        Intent intent = new Intent(context, WebService.class);
-        intent.putExtra("ACTION", action);
-        intent.putExtra("METHOD", method);
-        intent.putExtra("OBJECT", object);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent);
-        } else {
-            context.startService(intent);
-        }
+        Intent intent = new Intent(context, WebService.class)
+                .putExtra("ACTION", action)
+                .putExtra("METHOD", method)
+                .putExtra("OBJECT", object);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) context.startForegroundService(intent);
+        else context.startService(intent);
         Log.i(WebBroadcastReceiver.class.getSimpleName(), "Service called!");
     }
 
