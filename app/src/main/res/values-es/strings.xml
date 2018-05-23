@@ -112,11 +112,15 @@
     <string name="mark_as_read">Marcar como leído</string>
 
     <string name="contacts">contacto(s)</string>
-    <string name="address">Dirección</string>
-    <string name="phone">Teléfono</string>
-    <string name="email">Correo</string>
-    <string name="charge">Cargo</string>
-    <string name="additional_information">Información adicional</string>
+    <!-- Las id son utilizadas por un regex -->
+    <string name="description"><![CDATA[<b id=\'1\'>Dirección:</b> %1$s<br/><b id=\'2\'>Teléfono:</b> %2$s<br/><b id=\'3\'>Correo:</b> %3$s<br/><b id=\'4\'>Cargo:</b> %4$s<br/><b id=\'5\'>Información adicional:</b> %5$s]]></string>
+    <string name="add_contact">Añadir Contacto</string>
+    <string name="call">Llamar</string>
+    <string name="contact_added">Contacto añadido correctamente</string>
+    <string name="contact_error">Error al añadir contacto: %s</string>
+    <string name="invalid_phone">Teléfono invalido</string>
+
+    <string name="no_records">No hay registros</string>
 
     <string name="category">Categoría</string>
     <string name="select_event">Seleccione un evento para ver fechas detalladas</string>
@@ -141,12 +145,15 @@
     <string name="registration_successful">Registro exitoso</string>
     <string name="registration_wrong">Datos inválidos</string>
 
+    <string name="login_benefits">Acceder con una cuenta de usuario permite reportar objetos perdidos, incidentes, y acceder al correo institucional. Si la cuenta es de administrador también permite publicar comunicados, platos y cupos.</string>
+
     <string name="user_name_invalid">El nombre debe tener entre 3 y 50 caracteres</string>
     <string name="user_email_invalid">El correo debe tener entre 7 y 70 caracteres</string>
     <string name="user_phone_invalid">El teléfono debe tener menos de 50 caracteres</string>
     <string name="user_address_invalid">La dirección debe tener menos de 100 caracteres</string>
     <string name="user_document_invalid">El documento debe tener menos de 50 caracteres</string>
     <string name="user_password_invalid">La contraseña debe tener entre 8 y 16 caracteres</string>
+    <string name="user_password_verify_invalid">La contraseña y la verificacion de la contraseña deben ser iguales</string>
     <string name="user_account_invalid">Solo se admiten correos institucionales</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -185,7 +192,7 @@
 
     <string name="user_detail_title">DATOS DE CONTACTO</string>
     <string name="user_detail_name">Nombre y Apellidos</string>
-    <string name="user_detail_name_hint">Escribe tu nombre</string>
+    <string name="user_detail_name_hint">Escribe tu nombre y apellidos</string>
     <string name="user_detail_email">Correo Electrónico</string>
     <string name="user_detail_email_hint">Escribe tu correo electrónico</string>
     <string name="user_detail_phone">Teléfono Celular o Fijo (Opcional)</string>
@@ -196,6 +203,8 @@
     <string name="user_detail_document_hint">Escribe tu número de identificación (opcional)</string>
     <string name="user_detail_password">Contraseña</string>
     <string name="user_detail_password_hint">Escribe una contraseña de entre 8 y 16 caracteres</string>
+    <string name="user_detail_password_verify">Verificar Contraseña</string>
+    <string name="user_detail_password_verify_hint">Escribe la misma contraseña del campo anterior</string>
 
     <string name="announcement_image_description">Imagen del anuncio</string>
     <string name="announcement_sample_date">5 de Septiembre, 2:10 PM</string>

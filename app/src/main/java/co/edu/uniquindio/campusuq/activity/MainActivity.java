@@ -561,6 +561,7 @@ public class MainActivity extends AppCompatActivity
         registerReceiver(mainReceiver, mainFilter);
         String language = getSharedPreferences(Utilities.PREFERENCES, Context.MODE_PRIVATE)
                 .getString(Utilities.PREFERENCE_LANGUAGE, Utilities.LANGUAGE_ES);
+
         if (this.language == null) {
             this.language = language;
         } else if (!this.language.equals(language)) {

@@ -245,9 +245,9 @@ public class ItemsPresenter {
 
         for (ContactCategory category : categories) {
             ArrayList<Contact> contacts = dbController.select(
-                    ContactsSQLiteController.columns[1]+" = ?", category.get_ID());
+                    ContactsSQLiteController.columns[1] + " = ?", category.get_ID());
             Item item = new Item(getColor(), 0, category.getName(),
-                    contacts.size()+" "+context.getString(R.string.contacts));
+                    contacts.size() + " " + context.getString(R.string.contacts));
             items.add(item);
         }
 
@@ -262,22 +262,19 @@ public class ItemsPresenter {
         ContactsSQLiteController dbController = new ContactsSQLiteController(context, 1);
 
         ArrayList<ContactCategory> categories = dbController.selectCategory(null,
-                ContactsSQLiteController.categoryColumns[1]+" = ?", categoryName);
-        if (categories.size() > 0) {
+                ContactsSQLiteController.categoryColumns[1] + " = ?", categoryName);
+
+        if (!categories.isEmpty()) {
             ContactCategory category = categories.get(0);
 
             ArrayList<Contact> contacts = dbController.select(
-                    ContactsSQLiteController.columns[1]+" = ?", category.get_ID());
+                    ContactsSQLiteController.columns[1] + " = ?", category.get_ID());
 
             for (Contact contact : contacts) {
-                String description = context.getString(R.string.address)+": "+contact.getAddress()+"\n"+
-                        context.getString(R.string.phone)+": "+contact.getPhone()+"\n"+
-                        context.getString(R.string.email)+": "+contact.getEmail()+"\n"+
-                        context.getString(R.string.charge)+": "+contact.getCharge()+"\n"+
-                        context.getString(R.string.additional_information)+": "+contact.getAdditionalInformation();
-                Item item = new Item(R.drawable.circle_white, R.drawable.ic_person,
-                        contact.getName(), description);
-                items.add(item);
+                items.add(new Item(R.drawable.circle_white, R.drawable.ic_person, contact.getName(),
+                        context.getString(R.string.description, contact.getAddress(),
+                                contact.getPhone(), contact.getEmail(), contact.getCharge(),
+                                contact.getAdditionalInformation())));
             }
         }
 

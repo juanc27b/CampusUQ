@@ -1,7 +1,9 @@
 package co.edu.uniquindio.campusuq.items;
 
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +16,17 @@ import co.edu.uniquindio.campusuq.R;
 
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
 
+    private static int colorPrimary = 0;
+
     private ArrayList<Item> items;
     private OnClickItemListener listener;
 
     // Provide a suitable constructor (depends on the kind of dataset)
     ItemsAdapter(ArrayList<Item> items, ItemsActivity itemsActivity) {
+        if (colorPrimary == 0) {
+            colorPrimary = ContextCompat.getColor(itemsActivity, R.color.colorPrimary);
+        }
+
         this.items = items;
         listener = itemsActivity;
     }
@@ -52,13 +60,13 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
                 itemIcon.setVisibility(View.VISIBLE);
                 itemIcon.setImageResource(item.getImage());
                 itemIcon.setColorFilter(item.getBackground() == R.drawable.circle_white ?
-                        0xff47a22c : Color.WHITE);
+                        colorPrimary : Color.WHITE);
             } else {
                 itemIcon.setVisibility(View.GONE);
             }
 
             itemTitle.setText(item.getTitle());
-            itemDescription.setText(item.getDescription());
+            itemDescription.setText(Html.fromHtml(item.getDescription()));
         }
 
         @Override

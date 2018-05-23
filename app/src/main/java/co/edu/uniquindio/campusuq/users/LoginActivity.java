@@ -128,6 +128,10 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
 
         category = getIntent().getIntExtra(Utilities.CATEGORY, R.string.app_name);
         if (category == R.string.log_in) title.setText(R.string.login_campusuq);
+
+        Toast.makeText(LoginActivity.this,
+                R.string.login_benefits,
+                Toast.LENGTH_LONG).show();
     }
 
     @Override

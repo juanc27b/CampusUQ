@@ -32,14 +32,21 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 public class UsersActivity extends MainActivity implements EasyPermissions.PermissionCallbacks {
 
-    private EditText name, phone, address, document, password;
-    private TextView email, logOut;
+    private EditText name;
+    private TextView email;
+    private EditText phone;
+    private EditText address;
+    private EditText document;
     private LinearLayout passwordLayout;
+    private EditText password;
+    private EditText password_verify;
     private Button send;
+    private TextView logOut;
+
     private User user;
 
     private int category;
-    private EmailsPresenter emailsPresenter;
+    private EmailsPresenter emailsPresenter = new EmailsPresenter(this);
 
     private IntentFilter usersFilter = new IntentFilter(WebService.ACTION_USERS);
     private BroadcastReceiver usersReceiver = new BroadcastReceiver() {
@@ -61,8 +68,6 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
 
     public UsersActivity() {
         super.setHasSearch(false);
-
-        emailsPresenter = new EmailsPresenter(this);
     }
 
     @Override
@@ -80,8 +85,9 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
         phone = findViewById(R.id.user_detail_phone);
         address = findViewById(R.id.user_detail_address);
         document = findViewById(R.id.user_detail_document);
-        password = findViewById(R.id.user_detail_password);
         passwordLayout = findViewById(R.id.user_detail_password_layout);
+        password = findViewById(R.id.user_detail_password);
+        password_verify = findViewById(R.id.user_detail_password_verify);
 
         send = findViewById(R.id.user_send);
         send.setOnClickListener(new View.OnClickListener() {
@@ -111,6 +117,11 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
                         password.getText().length() > 16)) {
                     Toast.makeText(UsersActivity.this,
                             R.string.user_password_invalid,
+                            Toast.LENGTH_SHORT).show();
+                } else if (!password_verify.getText().toString()
+                        .equals(password.getText().toString())) {
+                    Toast.makeText(UsersActivity.this,
+                            R.string.user_password_verify_invalid,
                             Toast.LENGTH_SHORT).show();
                 } else if (Utilities.haveNetworkConnection(UsersActivity.this)) {
                     JSONObject json = new JSONObject();
@@ -152,6 +163,7 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
                 emailsPresenter.deleteEmails();
                 WebBroadcastReceiver.startService(getApplicationContext(),
                         WebService.ACTION_USERS, WebService.METHOD_DELETE, null);
+                Utilities.deleteHistory(UsersActivity.this);
                 finish();
             }
         });

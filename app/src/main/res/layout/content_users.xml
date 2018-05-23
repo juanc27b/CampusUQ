@@ -16,7 +16,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="10dp">
 
             <TextView
                 android:layout_width="match_parent"
@@ -137,6 +138,23 @@
                     android:textSize="15sp"
                     android:inputType="textPassword"
                     android:hint="@string/user_detail_password_hint"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/user_detail_password_verify"
+                    android:textSize="12sp"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_marginStart="4dp"/>
+
+                <EditText
+                    android:id="@+id/user_detail_password_verify"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:textSize="15sp"
+                    android:inputType="textPassword"
+                    android:hint="@string/user_detail_password_verify_hint"/>
 
             </LinearLayout>
 

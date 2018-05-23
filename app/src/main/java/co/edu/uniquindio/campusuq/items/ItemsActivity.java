@@ -132,7 +132,8 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
 
     @Override
     public void onItemClick(int index) {
-        String title = ((ItemsAdapter) recyclerView.getAdapter()).getItems().get(index).getTitle();
+        Item item = ((ItemsAdapter) recyclerView.getAdapter()).getItems().get(index);
+        String title = item.getTitle();
         String category = null;
         String label = null;
         Intent intent = null;
@@ -365,29 +366,37 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
                 }
                 break;
             default:
-                if (subcategory == R.string.academic_offer) {
-                    ActionBar actionBar = getSupportActionBar();
+                switch (subcategory) {
+                    case R.string.directory:
+                        ItemsFragment.newInstance(item)
+                                .show(getSupportFragmentManager(), null);
+                        break;
+                    case R.string.academic_offer: {
+                        ActionBar actionBar = getSupportActionBar();
 
-                    if (actionBar != null) {
-                        CharSequence actionBarTitle = actionBar.getTitle();
+                        if (actionBar != null) {
+                            CharSequence actionBarTitle = actionBar.getTitle();
 
-                        if (actionBarTitle != null) {
-                            if (getString(R.string.history).equals(title)) {
-                                loadProgramContent(actionBarTitle.toString(), R.string.history);
-                            } else if (getString(R.string.program_mission_vision).equals(title)) {
-                                loadProgramContent(actionBarTitle.toString(),
-                                        R.string.program_mission_vision);
-                            } else if (getString(R.string.curriculum).equals(title)) {
-                                loadProgramContent(actionBarTitle.toString(),
-                                        R.string.curriculum);
-                            } else if (getString(R.string.profiles).equals(title)) {
-                                loadProgramContent(actionBarTitle.toString(),
-                                        R.string.profiles);
-                            } else if (getString(R.string.program_contact).equals(title)) {
-                                loadProgramContent(actionBarTitle.toString(),
-                                        R.string.program_contact);
+                            if (actionBarTitle != null) {
+                                if (getString(R.string.history).equals(title)) {
+                                    loadProgramContent(actionBarTitle.toString(), R.string.history);
+                                } else if (getString(R.string.program_mission_vision)
+                                        .equals(title)) {
+                                    loadProgramContent(actionBarTitle.toString(),
+                                            R.string.program_mission_vision);
+                                } else if (getString(R.string.curriculum).equals(title)) {
+                                    loadProgramContent(actionBarTitle.toString(),
+                                            R.string.curriculum);
+                                } else if (getString(R.string.profiles).equals(title)) {
+                                    loadProgramContent(actionBarTitle.toString(),
+                                            R.string.profiles);
+                                } else if (getString(R.string.program_contact).equals(title)) {
+                                    loadProgramContent(actionBarTitle.toString(),
+                                            R.string.program_contact);
+                                }
                             }
                         }
+                        break;
                     }
                 }
                 break;
@@ -497,8 +506,14 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
 
         ArrayList<Item> contacts = ItemsPresenter.getContacts(category, this);
 
-        if (progressDialog.isShowing() && !contacts.isEmpty()) {
+        if (progressDialog.isShowing()) {
+            if (contacts.isEmpty()) {
+                Toast.makeText(this, R.string.no_records,
+                        Toast.LENGTH_SHORT).show();
+            }
+
             progressDialog.dismiss();
+
             startActivity(new Intent(this, ItemsActivity.class)
                     .putExtra(Utilities.CATEGORY, category)
                     .putExtra(Utilities.SUBCATEGORY, R.string.directory)
