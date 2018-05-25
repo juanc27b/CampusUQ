@@ -246,9 +246,8 @@ public class ItemsPresenter {
         for (ContactCategory category : categories) {
             ArrayList<Contact> contacts = dbController.select(
                     ContactsSQLiteController.columns[1] + " = ?", category.get_ID());
-            Item item = new Item(getColor(), 0, category.getName(),
-                    contacts.size() + " " + context.getString(R.string.contacts));
-            items.add(item);
+            items.add(new Item(getColor(), 0, category.getName(),
+                    context.getString(R.string.contacts, contacts.size())));
         }
 
         dbController.destroy();

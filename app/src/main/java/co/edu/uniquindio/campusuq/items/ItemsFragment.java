@@ -32,8 +32,8 @@ public class ItemsFragment extends DialogFragment implements View.OnClickListene
 
     private ItemsActivity itemsActivity;
     private Item item;
-    private RadioButton addContact;
-    private RadioButton call;
+    RadioButton addContact;
+    RadioButton call;
 
     public static ItemsFragment newInstance(Item item) {
         Bundle args = new Bundle();
@@ -66,25 +66,40 @@ public class ItemsFragment extends DialogFragment implements View.OnClickListene
         view.findViewById(R.id.dialog_cancel).setOnClickListener(this);
         view.findViewById(R.id.dialog_ok).setOnClickListener(this);
 
+        if (ActivityCompat.checkSelfPermission(itemsActivity,
+                Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(itemsActivity,
+                        Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(itemsActivity, new String[]{
+                    Manifest.permission.WRITE_CONTACTS, Manifest.permission.CALL_PHONE},
+                    0);
+        }
+
         return new AlertDialog.Builder(itemsActivity).setView(view).create();
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.dialog_ok:
+            case R.id.dialog_ok: {
                 Matcher matcher = Pattern.compile(
-                        "<b id='2'>.+?</b> (.+?)\\s*(?:Ext.*?)?<br/><b id='3'>",
+                        "<b id='2'>.+?</b> (.+?)[^\\d]*\\s*(?:Ext.*?)?<br/><b id='3'>",
                         Pattern.CASE_INSENSITIVE).matcher(item.getDescription());
+                final String phoneRegex1 = "^5\\s*7\\s*-?\\s*6\\s*-?\\s*";
+                final String phoneReplacement1 = "036";
+                final String phoneRegex2 = "^(\\d\\s*\\d\\s*\\d\\s*\\d\\s*\\d\\s*\\d\\s*\\d)" +
+                        "(?:[^\\d]|$)";
+                final String phoneReplacement2 = "036$1";
 
-                if (addContact.isChecked()) {
-                    ArrayList<ContentProviderOperation> operationList = new ArrayList<>();
-                    operationList.add(ContentProviderOperation
+                if (addContact.isChecked() && ActivityCompat.checkSelfPermission(itemsActivity,
+                        Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+                    ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+                    operations.add(ContentProviderOperation
                             .newInsert(ContactsContract.RawContacts.CONTENT_URI)
                             .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
                             .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
                             .build());
-                    operationList.add(ContentProviderOperation
+                    operations.add(ContentProviderOperation
                             .newInsert(ContactsContract.Data.CONTENT_URI)
                             .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID,
                                     0)
@@ -95,14 +110,15 @@ public class ItemsFragment extends DialogFragment implements View.OnClickListene
                             .build());
 
                     if (matcher.find()) {
-                        operationList.add(ContentProviderOperation
+                        operations.add(ContentProviderOperation
                                 .newInsert(ContactsContract.Data.CONTENT_URI)
                                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID,
                                         0)
                                 .withValue(ContactsContract.Data.MIMETYPE,
                                         ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER,
-                                        matcher.group(1))
+                                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, matcher
+                                        .group(1).replaceFirst(phoneRegex1, phoneReplacement1)
+                                        .replaceFirst(phoneRegex2, phoneReplacement2))
                                 .withValue(ContactsContract.CommonDataKinds.Phone.TYPE,
                                         ContactsContract.CommonDataKinds.Phone.TYPE_WORK)
                                 .build());
@@ -112,7 +128,7 @@ public class ItemsFragment extends DialogFragment implements View.OnClickListene
                             .matcher(item.getDescription());
 
                     if (matcher.find()) {
-                        operationList.add(ContentProviderOperation
+                        operations.add(ContentProviderOperation
                                 .newInsert(ContactsContract.Data.CONTENT_URI)
                                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID,
                                         0)
@@ -152,13 +168,13 @@ public class ItemsFragment extends DialogFragment implements View.OnClickListene
                                 .DEPARTMENT, matcher.group(1));
                     }
 
-                    operationList.add(builder.build());
+                    operations.add(builder.build());
 
                     matcher = Pattern.compile("<b id='5'>.+?</b> (.+)")
                             .matcher(item.getDescription());
 
                     if (matcher.find()) {
-                        operationList.add(ContentProviderOperation
+                        operations.add(ContentProviderOperation
                                 .newInsert(ContactsContract.Data.CONTENT_URI)
                                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID,
                                         0)
@@ -171,7 +187,7 @@ public class ItemsFragment extends DialogFragment implements View.OnClickListene
 
                     try {
                         itemsActivity.getContentResolver()
-                                .applyBatch(ContactsContract.AUTHORITY, operationList);
+                                .applyBatch(ContactsContract.AUTHORITY, operations);
                         Toast.makeText(itemsActivity, R.string.contact_added,
                                 Toast.LENGTH_SHORT).show();
                     } catch (RemoteException | OperationApplicationException e) {
@@ -184,13 +200,16 @@ public class ItemsFragment extends DialogFragment implements View.OnClickListene
                         Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
                     if (matcher.find()) {
                         itemsActivity.startActivity(new Intent(Intent.ACTION_CALL,
-                                Uri.parse("tel:"+matcher.group(1))));
+                                Uri.parse("tel:" + matcher.group(1)
+                                        .replaceFirst(phoneRegex1, phoneReplacement1)
+                                        .replaceFirst(phoneRegex2, phoneReplacement2))));
                     } else {
                         Toast.makeText(itemsActivity, R.string.invalid_phone,
                                 Toast.LENGTH_SHORT).show();
                     }
                 }
                 // Tanto ok como cancel cierran el dialogo, por eso aqui no hay break
+            }
             case R.id.dialog_cancel:
                 dismiss();
                 break;

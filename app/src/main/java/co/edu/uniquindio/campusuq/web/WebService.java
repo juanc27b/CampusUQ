@@ -202,27 +202,38 @@ public class WebService extends IntentService {
                 int progress = 0;
                 Intent menuIntent = new Intent(ACTION_ALL);
                 loadInformations();
-                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress));
+                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
+                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_contacts)));
                 loadContacts();
-                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress));
+                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
+                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_programs)));
                 loadPrograms();
-                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress));
+                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
+                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_calendar)));
                 loadCalendar();
-                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress));
+                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
+                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_events)));
                 loadNews(ACTION_EVENTS);
-                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress));
+                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
+                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_news)));
                 loadNews(ACTION_NEWS);
-                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress));
+                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
+                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_incidents)));
                 loadAnnouncements(ACTION_INCIDENTS, method, object);
-                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress));
+                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
+                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_communiques)));
                 loadAnnouncements(ACTION_COMMUNIQUES, method, object);
-                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress));
+                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
+                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_objects)));
                 loadObjects(method, object);
-                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress));
+                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
+                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_dishes)));
                 loadDishes(method, object);
-                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress));
+                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
+                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_quotas)));
                 loadQuotas(method, object);
-                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress));
+                sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
+                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_emails)));
                 loadEmails(method, object);
                 sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress));
                 break;

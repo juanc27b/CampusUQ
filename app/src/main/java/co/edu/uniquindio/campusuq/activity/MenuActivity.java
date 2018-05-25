@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
@@ -46,6 +45,7 @@ public class MenuActivity extends MainActivity implements View.OnClickListener {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (progressDialog.isShowing()) {
+                progressDialog.setTitle(intent.getStringExtra(Utilities.FEEDBACK));
                 int progress = intent.getIntExtra("PROGRESS", 0);
                 progressDialog.setProgress(progress);
                 if (progress == 12) progressDialog.dismiss();
@@ -85,15 +85,15 @@ public class MenuActivity extends MainActivity implements View.OnClickListener {
         findViewById(R.id.state_module_layout).setOnClickListener(this);
         findViewById(R.id.communication_module_layout).setOnClickListener(this);
 
-        if (ContextCompat.checkSelfPermission(this,
+        if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this,
+                ActivityCompat.checkSelfPermission(this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                         PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this,
+                ActivityCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_COARSE_LOCATION) !=
                         PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this,
+                ActivityCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_FINE_LOCATION) !=
                         PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{

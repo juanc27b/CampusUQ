@@ -37,6 +37,7 @@ import co.edu.uniquindio.campusuq.web.WebService;
 public class Utilities {
 
     public static final String CATEGORY = "CATEGORY";
+    public static final String FEEDBACK = "FEEDBACK";
     public static final String SUBCATEGORY = "SUBCATEGORY";
     public static final String ITEMS = "ITEMS";
     public static final String URL = "URL";
@@ -87,7 +88,7 @@ public class Utilities {
             pDialog.setMessage(context.getString(R.string.please_wait));
         } else {
             pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            pDialog.setTitle(context.getString(R.string.downloading_data));
+            pDialog.setTitle(context.getString(R.string.downloading_informations));
             pDialog.setMessage(context.getString(R.string.wait_to));
             pDialog.setMax(12);
             pDialog.setProgress(0);

@@ -547,8 +547,7 @@ public class MainActivity extends AppCompatActivity
      * Método usado para añadir el contenido específico de la actividad.
      * @param savedInstanceState Parámetro usado para recuperar estados anteriores de la actividad.
      */
-    public void addContent(Bundle savedInstanceState) {
-    }
+    public void addContent(Bundle savedInstanceState) {}
 
     /**
      * Método del ciclo de la actividad llamado para reanudar la misma, en el que se registra el
@@ -559,6 +558,17 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         registerReceiver(mainReceiver, mainFilter);
+
+        /*User user = UsersPresenter.loadUser(this);
+        LinearLayout accountLayout = findViewById(R.id.account_layout);
+
+        if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail())) {
+            accountLayout.setVisibility(View.VISIBLE);
+            ((TextView) findViewById(R.id.account)).setText(user.getName());
+        } else {
+            accountLayout.setVisibility(View.GONE);
+        }*/
+
         String language = getSharedPreferences(Utilities.PREFERENCES, Context.MODE_PRIVATE)
                 .getString(Utilities.PREFERENCE_LANGUAGE, Utilities.LANGUAGE_ES);
 
@@ -627,12 +637,12 @@ public class MainActivity extends AppCompatActivity
         if (!progressDialog.isShowing()) progressDialog.show();
         ArrayList<Item> categories = ItemsPresenter.getContactCategories(context);
 
-        if (progressDialog.isShowing() && categories.size() > 0) {
+        if (!categories.isEmpty()) {
             progressDialog.dismiss();
             context.startActivity(new Intent(context, ItemsActivity.class)
                     .putExtra(Utilities.CATEGORY, R.string.directory)
                     .putParcelableArrayListExtra(Utilities.ITEMS, categories));
-        } else if (categories.size() == 0 && !Utilities.haveNetworkConnection(context)) {
+        } else if (!Utilities.haveNetworkConnection(context)) {
             Toast.makeText(context, R.string.no_internet,
                     Toast.LENGTH_SHORT).show();
         }
@@ -649,12 +659,12 @@ public class MainActivity extends AppCompatActivity
         if (!progressDialog.isShowing()) progressDialog.show();
         ArrayList<Item> programs = ItemsPresenter.getPrograms(context);
 
-        if (progressDialog.isShowing() && programs.size() > 0) {
+        if (!programs.isEmpty()) {
             progressDialog.dismiss();
             context.startActivity(new Intent(context, ItemsActivity.class)
                     .putExtra(Utilities.CATEGORY, R.string.academic_offer)
                     .putParcelableArrayListExtra(Utilities.ITEMS, programs));
-        } else if (programs.size() == 0 && !Utilities.haveNetworkConnection(context)) {
+        } else if (!Utilities.haveNetworkConnection(context)) {
             Toast.makeText(context, R.string.no_internet,
                     Toast.LENGTH_SHORT).show();
         }
@@ -671,12 +681,12 @@ public class MainActivity extends AppCompatActivity
         if (!progressDialog.isShowing()) progressDialog.show();
         ArrayList<Item> categories = ItemsPresenter.getEventCategories(context);
 
-        if (progressDialog.isShowing() && categories.size() > 0) {
+        if (!categories.isEmpty()) {
             progressDialog.dismiss();
             context.startActivity(new Intent(context, ItemsActivity.class)
                     .putExtra(Utilities.CATEGORY, R.string.academic_calendar)
                     .putParcelableArrayListExtra(Utilities.ITEMS, categories));
-        } else if (categories.size() == 0 && !Utilities.haveNetworkConnection(context)) {
+        } else if (!Utilities.haveNetworkConnection(context)) {
             Toast.makeText(context, R.string.no_internet,
                     Toast.LENGTH_SHORT).show();
         }

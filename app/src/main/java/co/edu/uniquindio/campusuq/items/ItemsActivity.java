@@ -5,7 +5,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -40,6 +42,8 @@ import co.edu.uniquindio.campusuq.web.WebActivity;
 import co.edu.uniquindio.campusuq.web.WebContentActivity;
 
 public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickItemListener {
+
+    private static final String DIRECTORY_FRAGMENT = "DIRECTORY_FRAGMENT";
 
     private RecyclerView recyclerView;
 
@@ -335,7 +339,9 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
                 }
                 break;
             case R.string.directory:
-                loadContacts(title);
+                intent = new Intent(this, ItemsActivity.class)
+                        .putExtra(Utilities.CATEGORY, title)
+                        .putExtra(Utilities.SUBCATEGORY, R.string.directory);
                 break;
             case R.string.academic_offer:
                 intent = new Intent(this, ItemsActivity.class)
@@ -369,7 +375,7 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
                 switch (subcategory) {
                     case R.string.directory:
                         ItemsFragment.newInstance(item)
-                                .show(getSupportFragmentManager(), null);
+                                .show(getSupportFragmentManager(), DIRECTORY_FRAGMENT);
                         break;
                     case R.string.academic_offer: {
                         ActionBar actionBar = getSupportActionBar();
@@ -414,6 +420,17 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         if (intent != null) startActivity(intent);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        ItemsFragment itemsFragment =
+                (ItemsFragment) getSupportFragmentManager().findFragmentByTag(DIRECTORY_FRAGMENT);
+        itemsFragment.addContact.setClickable(grantResults[0] == PackageManager.PERMISSION_GRANTED);
+        itemsFragment.call.setClickable(grantResults[1] == PackageManager.PERMISSION_GRANTED);
+    }
+
     public void setItems(ArrayList<Item> items) {
         ItemsAdapter itemsAdapter = (ItemsAdapter) recyclerView.getAdapter();
 
@@ -433,16 +450,37 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
             case R.string.institution:
                 itemsAdapter.setItems(ItemsPresenter.getInstitutionItems(this));
                 break;
+            /*case R.string.directory:
+                loadContactCategories(this);
+                break;
+            case R.string.academic_offer:
+                loadPrograms(this);
+                break;
+            case R.string.academic_calendar:
+                loadEventCategories(this);
+                break;*/
             case R.string.library_services:
                 itemsAdapter.setItems(ItemsPresenter.getLibraryItems(this));
                 break;
             default:
-                if (subcategory == R.string.academic_offer) {
-                    itemsAdapter.setItems(ItemsPresenter.getProgramItems(this));
-                } else if (items != null) {
-                    itemsAdapter.setItems(items);
-                } else {
-                    itemsAdapter.setItems(new ArrayList<Item>());
+                switch (subcategory) {
+                    case R.string.directory:
+                        ArrayList<Item> contacts = ItemsPresenter.getContacts(getIntent()
+                                .getStringExtra(Utilities.CATEGORY), this);
+
+                        if (contacts.isEmpty()) {
+                            Toast.makeText(this, R.string.no_records,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                        itemsAdapter.setItems(contacts);
+                        break;
+                    case R.string.academic_offer:
+                        itemsAdapter.setItems(ItemsPresenter.getProgramItems(this));
+                        break;
+                    default:
+                        itemsAdapter.setItems(items != null ? items : new ArrayList<Item>());
+                        break;
                 }
                 break;
         }
@@ -499,29 +537,6 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         super.onPause();
         // Unregister the listener when the application is paused
         unregisterReceiver(symbolsReceiver);
-    }
-
-    public void loadContacts(String category) {
-        if (!progressDialog.isShowing()) progressDialog.show();
-
-        ArrayList<Item> contacts = ItemsPresenter.getContacts(category, this);
-
-        if (progressDialog.isShowing()) {
-            if (contacts.isEmpty()) {
-                Toast.makeText(this, R.string.no_records,
-                        Toast.LENGTH_SHORT).show();
-            }
-
-            progressDialog.dismiss();
-
-            startActivity(new Intent(this, ItemsActivity.class)
-                    .putExtra(Utilities.CATEGORY, category)
-                    .putExtra(Utilities.SUBCATEGORY, R.string.directory)
-                    .putParcelableArrayListExtra(Utilities.ITEMS, contacts));
-        } else if (contacts.isEmpty() && !Utilities.haveNetworkConnection(this)) {
-            Toast.makeText(this, R.string.no_internet,
-                    Toast.LENGTH_SHORT).show();
-        }
     }
 
     public void loadProgramContent(String name, int type) {

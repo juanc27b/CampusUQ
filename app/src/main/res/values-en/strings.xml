@@ -111,7 +111,7 @@
     <string name="news_detail">News detail</string>
     <string name="mark_as_read">Mark as read</string>
 
-    <string name="contacts">contact(s)</string>
+    <string name="contacts">%d contact(s)</string>
     <!-- Las id son utilizadas por un regex -->
     <string name="description"><![CDATA[<b id=\'1\'>Address:</b> %1$s<br/><b id=\'2\'>Phone:</b> %2$s<br/><b id=\'3\'>Email:</b> %3$s<br/><b id=\'4\'>Charge:</b> %4$s<br/><b id=\'5\'>Additional information:</b> %5$s]]></string>
     <string name="add_contact">Add Contact</string>
@@ -169,7 +169,18 @@
     <string name="please_wait">Please wait …</string>
     <string name="no_internet">There isn\'t internet connection</string>
     <string name="empty_string">There cannot be empty fields</string>
-    <string name="downloading_data">Downloading data</string>
+    <string name="downloading_informations">Downloading data (Informations)</string>
+    <string name="downloading_contacts">Downloading data (Contacts)</string>
+    <string name="downloading_programs">Downloading data (Programs)</string>
+    <string name="downloading_calendar">Downloading data (Calendar)</string>
+    <string name="downloading_events">Downloading data (Events)</string>
+    <string name="downloading_news">Downloading data (News)</string>
+    <string name="downloading_incidents">Downloading data (Incidents)</string>
+    <string name="downloading_communiques">Downloading data (Communiques)</string>
+    <string name="downloading_objects">Downloading data (Objects)</string>
+    <string name="downloading_dishes">Downloading data (Dishes)</string>
+    <string name="downloading_quotas">Downloading data (Quotas)</string>
+    <string name="downloading_emails">Downloading data (Emails)</string>
     <string name="wait_to">Wait to have a better experience</string>
     <string name="no_administrator">Only administrators can upload, modify or delete</string>
     <string name="no_propietary">Only the owner or an administrator can modify or delete</string>

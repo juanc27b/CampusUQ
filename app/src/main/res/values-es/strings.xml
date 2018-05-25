@@ -111,7 +111,7 @@
     <string name="news_detail">Detalle de noticia</string>
     <string name="mark_as_read">Marcar como leído</string>
 
-    <string name="contacts">contacto(s)</string>
+    <string name="contacts">%d contacto(s)</string>
     <!-- Las id son utilizadas por un regex -->
     <string name="description"><![CDATA[<b id=\'1\'>Dirección:</b> %1$s<br/><b id=\'2\'>Teléfono:</b> %2$s<br/><b id=\'3\'>Correo:</b> %3$s<br/><b id=\'4\'>Cargo:</b> %4$s<br/><b id=\'5\'>Información adicional:</b> %5$s]]></string>
     <string name="add_contact">Añadir Contacto</string>
@@ -169,7 +169,18 @@
     <string name="please_wait">Por favor espere …</string>
     <string name="no_internet">No hay conexión a internet</string>
     <string name="empty_string">No puede haber campos vacios</string>
-    <string name="downloading_data">Descargando datos</string>
+    <string name="downloading_informations">Descargando datos (Informaciones)</string>
+    <string name="downloading_contacts">Descargando datos (Contactos)</string>
+    <string name="downloading_programs">Descargando datos (Programas)</string>
+    <string name="downloading_calendar">Descargando datos (Calendario)</string>
+    <string name="downloading_events">Descargando datos (Eventos)</string>
+    <string name="downloading_news">Descargando datos (Noticias)</string>
+    <string name="downloading_incidents">Descargando datos (Incidentes)</string>
+    <string name="downloading_communiques">Descargando datos (Comunicados)</string>
+    <string name="downloading_objects">Descargando datos (Objetos)</string>
+    <string name="downloading_dishes">Descargando datos (Platos)</string>
+    <string name="downloading_quotas">Descargando datos (Cupos)</string>
+    <string name="downloading_emails">Descargando datos (Correos)</string>
     <string name="wait_to">Espera para tener una mejor experiencia</string>
     <string name="no_administrator">Solo administradores pueden subir, modificar o eliminar</string>
     <string name="no_propietary">Solo el propietario o un administrador pueden modificar o eliminar</string>
