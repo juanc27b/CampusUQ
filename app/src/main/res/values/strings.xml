@@ -160,27 +160,31 @@
 
     <string name="action_change_language">Cambiar idioma</string>
     <string name="action_adjust_notifications">Ajustar notificaciones</string>
+    <string name="action_notification_tray">Banjeda de notificaciones</string>
     <string name="action_delete_history">Eliminar historial</string>
     <string name="action_login">Cuenta de usuario</string>
     <string name="action_credits">Créditos</string>
+
+    <string name="select_all">Seleccionar todo</string>
+    <string name="delete">Eliminar</string>
 
     <string name="loading_content">Cargando contenido</string>
     <string name="please_wait">Por favor espere …</string>
     <string name="no_internet">No hay conexión a internet</string>
     <string name="empty_string">No puede haber campos vacios</string>
-    <string name="downloading_informations">Descargando datos (Informaciones)</string>
-    <string name="downloading_contacts">Descargando datos (Contactos)</string>
-    <string name="downloading_programs">Descargando datos (Programas)</string>
-    <string name="downloading_calendar">Descargando datos (Calendario)</string>
-    <string name="downloading_events">Descargando datos (Eventos)</string>
-    <string name="downloading_news">Descargando datos (Noticias)</string>
-    <string name="downloading_incidents">Descargando datos (Incidentes)</string>
-    <string name="downloading_communiques">Descargando datos (Comunicados)</string>
-    <string name="downloading_objects">Descargando datos (Objetos)</string>
-    <string name="downloading_dishes">Descargando datos (Platos)</string>
-    <string name="downloading_quotas">Descargando datos (Cupos)</string>
-    <string name="downloading_emails">Descargando datos (Correos)</string>
-    <string name="wait_to">Espera para tener una mejor experiencia</string>
+    <string name="downloading_data">Descargando datos</string>
+    <string name="wait_to_informations">Espera para tener una mejor experiencia.\n\nDescargando informaciones…</string>
+    <string name="wait_to_contacts">Espera para tener una mejor experiencia.\n\nDescargando contactos…</string>
+    <string name="wait_to_programs">Espera para tener una mejor experiencia.\n\nDescargando programas…</string>
+    <string name="wait_to_calendar">Espera para tener una mejor experiencia.\n\nDescargando calendario…</string>
+    <string name="wait_to_events">Espera para tener una mejor experiencia.\n\nDescargando eventos…</string>
+    <string name="wait_to_news">Espera para tener una mejor experiencia.\n\nDescargando noticias…</string>
+    <string name="wait_to_incidents">Espera para tener una mejor experiencia.\n\nDescargando incidentes…</string>
+    <string name="wait_to_communiques">Espera para tener una mejor experiencia.\n\nDescargando comunicados…</string>
+    <string name="wait_to_objects">Espera para tener una mejor experiencia.\n\nDescargando objetos…</string>
+    <string name="wait_to_dishes">Espera para tener una mejor experiencia.\n\nDescargando platos…</string>
+    <string name="wait_to_quotas">Espera para tener una mejor experiencia.\n\nDescargando cupos…</string>
+    <string name="wait_to_emails">Espera para tener una mejor experiencia.\n\nDescargando correos…</string>
     <string name="no_administrator">Solo administradores pueden subir, modificar o eliminar</string>
     <string name="no_propietary">Solo el propietario o un administrador pueden modificar o eliminar</string>
 
@@ -401,6 +405,7 @@
     <string name="email_content_invalid">Debe escribirse un contenido</string>
 
     <string name="notifications_text">Ajustes de notificaciones</string>
+    <string name="notifications_dialog">Para ajustar las notificaciones haga clic en el menú de los tres puntos de la parte superior derecha y luego en \"Ajustar Notificaciones\"</string>
 
     <string name="ic_facebook_description">icono de facebook</string>
     <string name="ic_twitter_description">icono de twitter</string>

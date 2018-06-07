@@ -26,17 +26,15 @@ public class AnnouncementsPresenter {
      * @return Arreglo de anuncios obtenido de la base de datos.
      */
     static ArrayList<Announcement> loadAnnouncements(String action, Context context, int limit) {
-        String type = WebService.ACTION_INCIDENTS.equals(action) ? "I" : "C";
-
         AnnouncementsSQLiteController dbController =
                 new AnnouncementsSQLiteController(context, 1);
 
         ArrayList<Announcement> announcements = dbController.select("" + limit,
-                AnnouncementsSQLiteController.columns[2] + " = ? AND "+
-                        AnnouncementsSQLiteController.columns[6] + " = 0", type);
+                AnnouncementsSQLiteController.columns[2] + " = ? AND " +
+                        AnnouncementsSQLiteController.columns[6] + " = 0",
+                WebService.ACTION_INCIDENTS.equals(action) ? "I" : "C");
 
         dbController.destroy();
-
         return announcements;
     }
 
@@ -81,15 +79,27 @@ public class AnnouncementsPresenter {
         dbController.destroy();
     }
 
+    public static ArrayList<Announcement> loadReadedAnnouncements(Context context, String type) {
+        AnnouncementsSQLiteController dbController =
+                new AnnouncementsSQLiteController(context, 1);
+
+        ArrayList<Announcement> announcements = dbController.select(null,
+                AnnouncementsSQLiteController.columns[2] + " = ? AND " +
+                        AnnouncementsSQLiteController.columns[6] + " = 1", type);
+
+        dbController.destroy();
+        return announcements;
+    }
+
     /**
      * Borra el historial de anuncios.
      * @param context Contexto utilizado para crear una instancia del controlador de la base de
      *                datos.
      */
-    public static void deleteHistory(Context context) {
+    public static void deleteHistory(Context context, Object... ids) {
         AnnouncementsSQLiteController dbController =
                 new AnnouncementsSQLiteController(context, 1);
-        dbController.unreadAll();
+        dbController.unreaded(ids);
         dbController.destroy();
     }
 

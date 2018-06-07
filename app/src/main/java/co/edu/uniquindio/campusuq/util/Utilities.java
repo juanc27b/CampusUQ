@@ -30,8 +30,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
-import co.edu.uniquindio.campusuq.announcements.AnnouncementsPresenter;
-import co.edu.uniquindio.campusuq.objects.ObjectsPresenter;
 import co.edu.uniquindio.campusuq.web.WebService;
 
 public class Utilities {
@@ -42,6 +40,7 @@ public class Utilities {
     public static final String ITEMS = "ITEMS";
     public static final String URL = "URL";
     public static final String LINK = "LINK";
+    public static final String SELECT_ALL = "SELECT_ALL";
 
     public static final String URL_SERVICIO = "https://campus-uq.000webhostapp.com";
     public static final String NOMBRE_BD = "Campus_UQ";
@@ -88,8 +87,8 @@ public class Utilities {
             pDialog.setMessage(context.getString(R.string.please_wait));
         } else {
             pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            pDialog.setTitle(context.getString(R.string.downloading_informations));
-            pDialog.setMessage(context.getString(R.string.wait_to));
+            pDialog.setTitle(R.string.downloading_data);
+            pDialog.setMessage(context.getString(R.string.wait_to_informations));
             pDialog.setMax(12);
             pDialog.setProgress(0);
         }
@@ -106,8 +105,8 @@ public class Utilities {
 
     public static String saveMedia(String spec, String path, Context context) {
         if (spec != null) try {
-            File dir = new File(Environment.getExternalStorageDirectory()
-                    .getAbsolutePath() + "/CampusUQ/.Media" + path);
+            File dir = new File(context.getExternalFilesDir(null).getAbsolutePath() +
+                    "/CampusUQ/.Media" + path);
             dir.mkdirs();
             File file = new File(dir, spec.substring(spec.lastIndexOf('/') + 1));
 
@@ -143,11 +142,6 @@ public class Utilities {
                 outputStream.close();
             }
         }
-    }
-
-    public static void deleteHistory(Context context) {
-        ObjectsPresenter.deleteHistory(context);
-        AnnouncementsPresenter.deleteHistory(context);
     }
 
     @SuppressLint("ApplySharedPref")

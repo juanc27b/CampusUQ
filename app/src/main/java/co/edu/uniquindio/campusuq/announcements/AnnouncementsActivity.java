@@ -232,8 +232,7 @@ public class AnnouncementsActivity extends MainActivity
                 for (Announcement announcement : announcements) {
                     if (StringUtils.stripAccents(announcement.getName()).toLowerCase()
                             .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
-                        recyclerView.getLayoutManager()
-                                .scrollToPosition(announcements.indexOf(announcement));
+                        recyclerView.smoothScrollToPosition(announcements.indexOf(announcement));
                         return;
                     }
                 }

@@ -64,9 +64,12 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewViewHolder>
 
         void bindItem(New n) {
             File imageFile = new  File("" + n.getImage());
-            if (imageFile.exists())
+
+            if (imageFile.exists()) {
                 image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
-            else image.setImageResource(R.drawable.rectangle_gray);
+            } else {
+                image.setImageResource(R.drawable.rectangle_gray);
+            }
 
             try {
                 date.setText(DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)

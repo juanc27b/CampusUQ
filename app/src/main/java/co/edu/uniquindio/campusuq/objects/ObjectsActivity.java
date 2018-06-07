@@ -157,7 +157,7 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                 for (LostObject object : objects) {
                     if (StringUtils.stripAccents(object.getName()).toLowerCase()
                             .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
-                        recyclerView.getLayoutManager().scrollToPosition(objects.indexOf(object));
+                        recyclerView.smoothScrollToPosition(objects.indexOf(object));
                         return;
                     }
                 }

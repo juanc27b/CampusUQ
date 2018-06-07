@@ -142,7 +142,7 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
                 for (Dish dish : dishes) {
                     if (StringUtils.stripAccents(dish.getName()).toLowerCase()
                             .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
-                        recyclerView.getLayoutManager().scrollToPosition(dishes.indexOf(dish));
+                        recyclerView.smoothScrollToPosition(dishes.indexOf(dish));
                         return;
                     }
                 }

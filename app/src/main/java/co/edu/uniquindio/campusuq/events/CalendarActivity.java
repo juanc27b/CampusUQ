@@ -64,7 +64,7 @@ public class CalendarActivity extends MainActivity
                 for (CalendarItem item : items) {
                     if (StringUtils.stripAccents(item.getEvent()).toLowerCase()
                             .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
-                        recyclerView.getLayoutManager().scrollToPosition(items.indexOf(item));
+                        recyclerView.smoothScrollToPosition(items.indexOf(item));
                         return;
                     }
                 }

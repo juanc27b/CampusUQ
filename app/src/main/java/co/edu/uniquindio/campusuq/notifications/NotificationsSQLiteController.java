@@ -17,6 +17,10 @@ public class NotificationsSQLiteController {
     private static final String tablename = "Notificacion";
     public static final String columns[] = {"_ID", "Nombre", "Activada"};
 
+    private static final String detailTablename = "NotificacionDetail";
+    private static final String detailColumns[] =
+            {"_ID", "Categoria", "Nombre", "Fecha_Hora", "Descripcion"};
+
     private SQLiteHelper usdbh;
     private SQLiteDatabase db;
 
@@ -26,40 +30,73 @@ public class NotificationsSQLiteController {
     }
 
     public static String createTable() {
-        return "CREATE TABLE "+tablename+'('+columns[0]+" INTEGER PRIMARY KEY, "+
-                columns[1]+" TEXT NOT NULL UNIQUE, "+columns[2]+" TEXT NOT NULL )";
+        return "CREATE TABLE " + tablename + '(' + columns[0] + " INTEGER PRIMARY KEY, " +
+                columns[1] + " TEXT NOT NULL UNIQUE, " + columns[2] + " TEXT NOT NULL)";
     }
 
     public ArrayList<Notification> select(String limit, String selection, String... selectionArgs) {
         ArrayList<Notification> notifications = new ArrayList<>();
-
         Cursor c = db.query(tablename, null, selection, selectionArgs,
-                null, null, columns[0]+" ASC", limit);
-        if(c.moveToFirst()) do {
+                null, null, columns[0] + " ASC", limit);
+
+        if (c.moveToFirst()) do {
             notifications.add(new Notification(c.getString(0), c.getString(1),
                     c.getString(2)));
-        } while(c.moveToNext());
-        c.close();
+        } while (c.moveToNext());
 
+        c.close();
         return notifications;
     }
 
     public void insert(Object... values) {
-        db.execSQL("INSERT INTO "+tablename+'('+
-                TextUtils.join(", ", columns)+") VALUES("+
-                TextUtils.join(", ", Collections.nCopies(columns.length, '?'))+
+        db.execSQL("INSERT INTO " + tablename + '(' +
+                TextUtils.join(", ", columns) + ") VALUES(" +
+                TextUtils.join(", ", Collections.nCopies(columns.length, '?')) +
                 ')', values);
     }
 
     public void update(Object... values) {
-        db.execSQL("UPDATE "+tablename+" SET "+TextUtils.join(" = ?, ",
-                Arrays.copyOfRange(columns, 0, columns.length))+" = ? WHERE "+
-                columns[0]+" = ?", values);
+        db.execSQL("UPDATE " + tablename + " SET " + TextUtils.join(" = ?, ",
+                Arrays.copyOfRange(columns, 0, columns.length)) + " = ? WHERE " +
+                columns[0] + " = ?", values);
     }
 
     public void delete(Object... ids) {
-        db.execSQL("DELETE FROM "+tablename+" WHERE "+columns[0]+" IN("+
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?'))+')', ids);
+        db.execSQL("DELETE FROM " + tablename + " WHERE " + columns[0] + " IN(" +
+                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
+    }
+
+    public static String createDetailTable() {
+        return "CREATE TABLE " + detailTablename + '(' +
+                detailColumns[0] + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                detailColumns[1] + " INTEGER NOT NULL, " + detailColumns[2] + " TEXT NOT NULL, " +
+                detailColumns[3] + " TEXT NOT NULL, " + detailColumns[4] + " TEXT)";
+    }
+
+    ArrayList<NotificationDetail> selectDetail() {
+        ArrayList<NotificationDetail> notificationDetails = new ArrayList<>();
+        Cursor c = db.query(detailTablename, null, null, null,
+                null, null, detailColumns[0] + " ASC");
+
+        if (c.moveToFirst()) do {
+            notificationDetails.add(new NotificationDetail(c.getString(0), c.getInt(1),
+                    c.getString(2), c.getString(3), c.getString(4)));
+        } while (c.moveToNext());
+
+        c.close();
+        return notificationDetails;
+    }
+
+    void insertDetail(Object... values) {
+        db.execSQL("INSERT INTO " + detailTablename + '(' +
+                TextUtils.join(", ", detailColumns) + ") VALUES(" +
+                TextUtils.join(", ", Collections.nCopies(detailColumns.length, '?')) +
+                ')', values);
+    }
+
+    void deleteDetail(Object... ids) {
+        db.execSQL("DELETE FROM " + detailTablename + " WHERE " + detailColumns[0] + " IN(" +
+                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
     }
 
     public void destroy() {

@@ -108,10 +108,13 @@ public class ObjectsSQLiteController {
     }
 
     /**
-     * Marca como no leidos todos los objetos perdidos de la base de datos.
+     * Marca como no leidos un conjunto de objetos perdidos de la base de datos.
+     * @param ids Conjunto de IDs de los objetos perdidos que se desea marcar como no leidos.
      */
-    void unreadAll() {
-        db.execSQL("UPDATE " + tablename + " SET " + columns[9] + " = 0");
+    void unreaded(Object... ids) {
+        db.execSQL("UPDATE " + tablename + " SET " +
+                columns[9] + " = 0 WHERE " + columns[0] + " IN(" +
+                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
     }
 
     /**

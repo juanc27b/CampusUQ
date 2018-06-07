@@ -72,7 +72,7 @@ public class CalendarDetailActivity extends MainActivity {
                             item.getStart().toLowerCase().contains(query.trim().toLowerCase()) ||
                             query.trim().toLowerCase().equals(item.getEnd().toLowerCase()) ||
                             item.getEnd().toLowerCase().contains(query.trim().toLowerCase())) {
-                        recyclerView.getLayoutManager().scrollToPosition(items.indexOf(item));
+                        recyclerView.smoothScrollToPosition(items.indexOf(item));
                         found = true;
                         break;
                     }

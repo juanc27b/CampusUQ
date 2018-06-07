@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import java.util.List;
 
 import co.edu.uniquindio.campusuq.R;
+import co.edu.uniquindio.campusuq.activity.HistoryActivity;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
 import co.edu.uniquindio.campusuq.emails.EmailsPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
@@ -163,7 +164,9 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
                 emailsPresenter.deleteEmails();
                 WebBroadcastReceiver.startService(getApplicationContext(),
                         WebService.ACTION_USERS, WebService.METHOD_DELETE, null);
-                Utilities.deleteHistory(UsersActivity.this);
+                startActivity(new Intent(UsersActivity.this, HistoryActivity.class)
+                        .putExtra(Utilities.CATEGORY, R.string.action_delete_history)
+                        .putExtra(Utilities.SELECT_ALL, true));
                 finish();
             }
         });

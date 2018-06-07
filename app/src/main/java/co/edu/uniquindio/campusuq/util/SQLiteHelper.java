@@ -60,10 +60,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(EmailsSQLiteController.createTable());
 
         db.execSQL(NotificationsSQLiteController.createTable());
+        db.execSQL(NotificationsSQLiteController.createDetailTable());
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-    }
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
 
 }

@@ -19,8 +19,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -39,6 +42,7 @@ import co.edu.uniquindio.campusuq.items.ItemsPresenter;
 import co.edu.uniquindio.campusuq.maps.MapsActivity;
 import co.edu.uniquindio.campusuq.news.NewsActivity;
 import co.edu.uniquindio.campusuq.notifications.NotificationsActivity;
+import co.edu.uniquindio.campusuq.notifications.NotificationsDetailActivity;
 import co.edu.uniquindio.campusuq.objects.ObjectsActivity;
 import co.edu.uniquindio.campusuq.quotas.QuotasActivity;
 import co.edu.uniquindio.campusuq.radio.RadioActivity;
@@ -60,6 +64,10 @@ import co.edu.uniquindio.campusuq.web.WebContentActivity;
  */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private DrawerLayout drawer;
+    private LinearLayout accountLayout;
+    private TextView account;
 
     private boolean hasSearch;
     private boolean hasNavigationDrawerIcon;
@@ -89,16 +97,19 @@ public class MainActivity extends AppCompatActivity
 
             if (progressDialog.isShowing()) switch (intent.getAction()) {
                 case WebService.ACTION_WELFARE:
-                    loadInformations(R.string.institutional_welfare, MainActivity.this);
+                    loadInformations(R.string.institutional_welfare, context);
                     break;
                 case WebService.ACTION_CONTACTS:
-                    loadContactCategories(MainActivity.this);
+                    startActivity(new Intent(context, ItemsActivity.class)
+                            .putExtra(Utilities.CATEGORY, R.string.directory));
                     break;
                 case WebService.ACTION_PROGRAMS:
-                    loadPrograms(MainActivity.this);
+                    startActivity(new Intent(context, ItemsActivity.class)
+                            .putExtra(Utilities.CATEGORY, R.string.academic_offer));
                     break;
                 case WebService.ACTION_CALENDAR:
-                    loadEventCategories(MainActivity.this);
+                    startActivity(new Intent(context, ItemsActivity.class)
+                            .putExtra(Utilities.CATEGORY, R.string.academic_calendar));
                     break;
                 default:
                     break;
@@ -153,7 +164,7 @@ public class MainActivity extends AppCompatActivity
                 getString(category) : intent.getStringExtra(Utilities.CATEGORY));
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,
                 drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -164,6 +175,10 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View view = navigationView.getHeaderView(0);
+        accountLayout = view.findViewById(R.id.account_layout);
+        account = view.findViewById(R.id.account);
 
         progressDialog = Utilities.getProgressDialog(this, true);
 
@@ -190,7 +205,6 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) drawer.closeDrawer(GravityCompat.START);
         else super.onBackPressed();
     }
@@ -250,7 +264,6 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             // Se responde al botón Home/Up de la barra de acción.
             case android.R.id.home: {
-                DrawerLayout drawer = findViewById(R.id.drawer_layout);
                 if (hasNavigationDrawerIcon) drawer.openDrawer(GravityCompat.START);
                 else onBackPressed();
                 return true;
@@ -270,8 +283,13 @@ public class MainActivity extends AppCompatActivity
                         .putExtra(Utilities.CATEGORY, R.string.action_adjust_notifications));
                 return true;
             }
+            case R.id.action_notification_tray:
+                startActivity(new Intent(this, NotificationsDetailActivity.class)
+                        .putExtra(Utilities.CATEGORY, R.string.action_notification_tray));
+                return true;
             case R.id.action_delete_history:
-                Utilities.deleteHistory(this);
+                startActivity(new Intent(this, HistoryActivity.class)
+                        .putExtra(Utilities.CATEGORY, R.string.action_delete_history));
                 return true;
             case R.id.action_login: {
                 User user = UsersPresenter.loadUser(this);
@@ -343,19 +361,22 @@ public class MainActivity extends AppCompatActivity
                 category = getString(R.string.analytics_contatcs_category);
                 label = getString(R.string.analytics_directory_label);
                 WebService.PENDING_ACTION = WebService.ACTION_CONTACTS;
-                loadContactCategories(this);
+                intent = new Intent(this, ItemsActivity.class)
+                        .putExtra(Utilities.CATEGORY, R.string.directory);
                 break;
             case R.id.nav_academic_offer:
                 category = getString(R.string.analytics_programs_category);
                 label = getString(R.string.analytics_academic_offer_label);
                 WebService.PENDING_ACTION = WebService.ACTION_PROGRAMS;
-                loadPrograms(this);
+                intent = new Intent(this, ItemsActivity.class)
+                        .putExtra(Utilities.CATEGORY, R.string.academic_offer);
                 break;
             case R.id.nav_academic_calendar:
                 category = getString(R.string.analytics_events_category);
                 label = getString(R.string.analytics_academic_calendar_label);
                 WebService.PENDING_ACTION = WebService.ACTION_CALENDAR;
-                loadEventCategories(this);
+                intent = new Intent(this, ItemsActivity.class)
+                        .putExtra(Utilities.CATEGORY, R.string.academic_calendar);
                 break;
             case R.id.nav_employment_exchange:
                 category = getString(R.string.analytics_web_category);
@@ -497,7 +518,6 @@ public class MainActivity extends AppCompatActivity
 
         if (intent != null) startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -559,15 +579,14 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         registerReceiver(mainReceiver, mainFilter);
 
-        /*User user = UsersPresenter.loadUser(this);
-        LinearLayout accountLayout = findViewById(R.id.account_layout);
+        User user = UsersPresenter.loadUser(this);
 
         if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail())) {
             accountLayout.setVisibility(View.VISIBLE);
-            ((TextView) findViewById(R.id.account)).setText(user.getName());
+            account.setText(user.getName());
         } else {
             accountLayout.setVisibility(View.GONE);
-        }*/
+        }
 
         String language = getSharedPreferences(Utilities.PREFERENCES, Context.MODE_PRIVATE)
                 .getString(Utilities.PREFERENCE_LANGUAGE, Utilities.LANGUAGE_ES);
@@ -621,50 +640,6 @@ public class MainActivity extends AppCompatActivity
                     .putExtra(Utilities.LINK, content[0])
                     .putExtra("CONTENT", content[1]));
         } else if (content[0] == null && !Utilities.haveNetworkConnection(context)) {
-            Toast.makeText(context, R.string.no_internet,
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    /**
-     * Método encargado de obtener las categorías de los contactos desde la base de datos local para
-     * la funcionalidad del Directorio telefónico, y después abrir la actividad correspondiente o
-     * mostrar mensajes al usuario si no están disponibles los datos.
-     * @param context Contexto necesario para cargar los datos.
-     */
-    public static void loadContactCategories(Context context) {
-        ProgressDialog progressDialog = ((MainActivity) context).progressDialog;
-        if (!progressDialog.isShowing()) progressDialog.show();
-        ArrayList<Item> categories = ItemsPresenter.getContactCategories(context);
-
-        if (!categories.isEmpty()) {
-            progressDialog.dismiss();
-            context.startActivity(new Intent(context, ItemsActivity.class)
-                    .putExtra(Utilities.CATEGORY, R.string.directory)
-                    .putParcelableArrayListExtra(Utilities.ITEMS, categories));
-        } else if (!Utilities.haveNetworkConnection(context)) {
-            Toast.makeText(context, R.string.no_internet,
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    /**
-     * Método encargado de obtener los programas desde la base de datos local para la funcionalidad
-     * de la Oferta académica, y despues abrir la actividad correpondiente o mostrar mensajes al
-     * usuario si no están disponibles los datos.
-     * @param context Contexto necesario para cargar los datos.
-     */
-    public static void loadPrograms(Context context) {
-        ProgressDialog progressDialog = ((MainActivity) context).progressDialog;
-        if (!progressDialog.isShowing()) progressDialog.show();
-        ArrayList<Item> programs = ItemsPresenter.getPrograms(context);
-
-        if (!programs.isEmpty()) {
-            progressDialog.dismiss();
-            context.startActivity(new Intent(context, ItemsActivity.class)
-                    .putExtra(Utilities.CATEGORY, R.string.academic_offer)
-                    .putParcelableArrayListExtra(Utilities.ITEMS, programs));
-        } else if (!Utilities.haveNetworkConnection(context)) {
             Toast.makeText(context, R.string.no_internet,
                     Toast.LENGTH_SHORT).show();
         }

@@ -1,35 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
         android:id="@+id/action_search"
         android:icon="@drawable/ic_menu_search"
         android:title="@string/search_hint"
         app:showAsAction="always"
-        app:actionViewClass="android.widget.SearchView" />
+        app:actionViewClass="android.widget.SearchView"/>
+
     <item
         android:id="@+id/action_change_language"
         android:icon="@drawable/ic_menu_language"
         android:title="@string/action_change_language"
-        app:showAsAction="never" />
+        app:showAsAction="never"/>
+
     <item
         android:id="@+id/action_adjust_notifications"
         android:icon="@drawable/ic_menu_notifications"
         android:title="@string/action_adjust_notifications"
-        app:showAsAction="never" />
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_notification_tray"
+        android:icon="@drawable/ic_menu_notification_tray"
+        android:title="@string/action_notification_tray"
+        app:showAsAction="never"/>
+
     <item
         android:id="@+id/action_delete_history"
         android:icon="@drawable/ic_menu_history"
         android:title="@string/action_delete_history"
-        app:showAsAction="never" />
+        app:showAsAction="never"/>
+
     <item
         android:id="@+id/action_login"
         android:icon="@drawable/ic_menu_admin_login"
         android:title="@string/action_login"
-        app:showAsAction="never" />
+        app:showAsAction="never"/>
+
     <item
         android:id="@+id/action_credits"
         android:icon="@drawable/ic_menu_credits"
         android:title="@string/action_credits"
-        app:showAsAction="never" />
+        app:showAsAction="never"/>
+
 </menu>

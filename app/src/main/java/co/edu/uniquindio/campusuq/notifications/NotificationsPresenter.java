@@ -53,4 +53,32 @@ public class NotificationsPresenter {
         dbController.destroy();
     }
 
+    static ArrayList<NotificationDetail> loadNotificationDetails(Context context) {
+        NotificationsSQLiteController dbController =
+                new NotificationsSQLiteController(context, 1);
+
+        ArrayList<NotificationDetail> notificationDetails = dbController.selectDetail();
+
+        dbController.destroy();
+        return notificationDetails;
+    }
+
+    public static void insertNotificationDetail(Context context, Object... values) {
+        NotificationsSQLiteController dbController =
+                new NotificationsSQLiteController(context, 1);
+
+        dbController.insertDetail(values);
+
+        dbController.destroy();
+    }
+
+    static void deleteNotificationDetail(Context context, Object... values) {
+        NotificationsSQLiteController dbController =
+                new NotificationsSQLiteController(context, 1);
+
+        dbController.deleteDetail(values);
+
+        dbController.destroy();
+    }
+
 }

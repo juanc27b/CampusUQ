@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -73,6 +74,7 @@ import co.edu.uniquindio.campusuq.news.NewRelation;
 import co.edu.uniquindio.campusuq.news.NewsActivity;
 import co.edu.uniquindio.campusuq.news.NewsSQLiteController;
 import co.edu.uniquindio.campusuq.news.NewsServiceController;
+import co.edu.uniquindio.campusuq.notifications.NotificationDetail;
 import co.edu.uniquindio.campusuq.notifications.NotificationsPresenter;
 import co.edu.uniquindio.campusuq.objects.LostObject;
 import co.edu.uniquindio.campusuq.objects.ObjectsActivity;
@@ -203,37 +205,48 @@ public class WebService extends IntentService {
                 Intent menuIntent = new Intent(ACTION_ALL);
                 loadInformations();
                 sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
-                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_contacts)));
+                        .putExtra(Utilities.FEEDBACK,
+                                R.string.wait_to_contacts));
                 loadContacts();
                 sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
-                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_programs)));
+                        .putExtra(Utilities.FEEDBACK,
+                                R.string.wait_to_programs));
                 loadPrograms();
                 sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
-                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_calendar)));
+                        .putExtra(Utilities.FEEDBACK,
+                                R.string.wait_to_calendar));
                 loadCalendar();
                 sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
-                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_events)));
+                        .putExtra(Utilities.FEEDBACK,
+                                R.string.wait_to_events));
                 loadNews(ACTION_EVENTS);
                 sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
-                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_news)));
+                        .putExtra(Utilities.FEEDBACK,
+                                R.string.wait_to_news));
                 loadNews(ACTION_NEWS);
                 sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
-                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_incidents)));
+                        .putExtra(Utilities.FEEDBACK,
+                                R.string.wait_to_incidents));
                 loadAnnouncements(ACTION_INCIDENTS, method, object);
                 sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
-                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_communiques)));
+                        .putExtra(Utilities.FEEDBACK,
+                                R.string.wait_to_communiques));
                 loadAnnouncements(ACTION_COMMUNIQUES, method, object);
                 sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
-                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_objects)));
+                        .putExtra(Utilities.FEEDBACK,
+                                R.string.wait_to_objects));
                 loadObjects(method, object);
                 sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
-                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_dishes)));
+                        .putExtra(Utilities.FEEDBACK,
+                                R.string.wait_to_dishes));
                 loadDishes(method, object);
                 sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
-                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_quotas)));
+                        .putExtra(Utilities.FEEDBACK,
+                                R.string.wait_to_quotas));
                 loadQuotas(method, object);
                 sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress)
-                        .putExtra(Utilities.FEEDBACK, getString(R.string.downloading_emails)));
+                        .putExtra(Utilities.FEEDBACK,
+                                R.string.wait_to_emails));
                 loadEmails(method, object);
                 sendBroadcast(menuIntent.putExtra("PROGRESS", ++progress));
                 break;
@@ -290,6 +303,10 @@ public class WebService extends IntentService {
         }
 
         File file = null;
+        NotificationDetail notificationDetail = new NotificationDetail(null, 0,
+                null, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ",
+                new Locale("es", "CO")).format(Calendar.getInstance().getTime()),
+                null);
 
         switch (type) {
             case ACTION_NEWS:
@@ -300,6 +317,10 @@ public class WebService extends IntentService {
                         .setContentText(mNew.getName())
                         .setSubText(mNew.getSummary());
                 file = new File(mNew.getImage());
+                notificationDetail.setCategory(ACTION_NEWS.equals(type) ?
+                        R.string.news : R.string.events);
+                notificationDetail.setName(mNew.getName());
+                notificationDetail.setDescription(mNew.getSummary());
                 break;
             }
             case ACTION_OBJECTS: {
@@ -309,12 +330,17 @@ public class WebService extends IntentService {
                         .setSubText(lostObject.getDescription());
                 // Se concatena una cadena vacia para evitar el caso File(null)
                 file = new File("" + lostObject.getImage());
+                notificationDetail.setCategory(R.string.lost_objects);
+                notificationDetail.setName(lostObject.getName());
+                notificationDetail.setDescription(lostObject.getDescription());
                 break;
             }
             case ACTION_CALENDAR: {
                 Event event = (Event) object;
                 builder.setContentTitle(getString(R.string.app_name) + " - " + getString(R.string.academic_calendar))
                         .setContentText(event.getName());
+                notificationDetail.setCategory(R.string.academic_calendar);
+                notificationDetail.setName(event.getName());
                 break;
             }
             case ACTION_INCIDENTS:
@@ -332,6 +358,10 @@ public class WebService extends IntentService {
                         announcement.get_ID());
                 dbController.destroy();
                 file = links.size() > 0 ? new File(links.get(0).getLink()) : new File("");
+                notificationDetail.setCategory(type.equals(ACTION_INCIDENTS) ?
+                        R.string.security_system : R.string.billboard_information);
+                notificationDetail.setName(announcement.getName());
+                notificationDetail.setDescription(announcement.getDescription());
                 break;
             }
             case ACTION_EMAILS: {
@@ -340,6 +370,9 @@ public class WebService extends IntentService {
                         .setContentText(email.getName())
                         .setSubText(email.getSnippet());
                 file = new File("");
+                notificationDetail.setCategory(R.string.institutional_mail);
+                notificationDetail.setName(email.getName());
+                notificationDetail.setDescription(email.getSnippet());
                 break;
             }
             default:
@@ -362,7 +395,15 @@ public class WebService extends IntentService {
                     .setAutoCancel(true);
         }
 
-        return builder.setSmallIcon(R.mipmap.ic_launcher)
+        if (notificationDetail.getCategory() != 0) {
+            NotificationsPresenter.insertNotificationDetail(getApplicationContext(),
+                    notificationDetail.get_ID(), notificationDetail.getCategory(),
+                    notificationDetail.getName(), notificationDetail.getDateTime(),
+                    notificationDetail.getDescription());
+        }
+
+        return builder
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .build();
     }
 
@@ -373,9 +414,9 @@ public class WebService extends IntentService {
         switch (type) {
             case ACTION_NEWS:
             case ACTION_EVENTS:
-                resultIntent = new Intent(getApplicationContext(), NewsActivity.class);
-                resultIntent.putExtra(Utilities.CATEGORY,
-                        ACTION_NEWS.equals(type) ? R.string.news : R.string.events);
+                resultIntent = new Intent(getApplicationContext(), NewsActivity.class)
+                        .putExtra(Utilities.CATEGORY,
+                                ACTION_NEWS.equals(type) ? R.string.news : R.string.events);
                 stackBuilder.addParentStack(NewsActivity.class);
                 stackBuilder.editIntentAt(0)
                         .putExtra(Utilities.CATEGORY, R.string.app_title_menu);
@@ -383,8 +424,8 @@ public class WebService extends IntentService {
                         .putExtra(Utilities.CATEGORY, R.string.information_module);
                 break;
             case ACTION_OBJECTS:
-                resultIntent = new Intent(getApplicationContext(), ObjectsActivity.class);
-                resultIntent.putExtra(Utilities.CATEGORY, R.string.lost_objects);
+                resultIntent = new Intent(getApplicationContext(), ObjectsActivity.class)
+                        .putExtra(Utilities.CATEGORY, R.string.lost_objects);
                 stackBuilder.addParentStack(ObjectsActivity.class);
                 stackBuilder.editIntentAt(0)
                         .putExtra(Utilities.CATEGORY, R.string.app_title_menu);
@@ -392,9 +433,9 @@ public class WebService extends IntentService {
                         .putExtra(Utilities.CATEGORY, R.string.services_module);
                 break;
             case ACTION_CALENDAR:
-                resultIntent = new Intent(getApplicationContext(), ItemsActivity.class);
-                resultIntent.putExtra(Utilities.CATEGORY, R.string.academic_calendar);
-                resultIntent.putParcelableArrayListExtra(Utilities.ITEMS,
+                resultIntent = new Intent(getApplicationContext(), ItemsActivity.class)
+                        .putExtra(Utilities.CATEGORY, R.string.academic_calendar)
+                        .putParcelableArrayListExtra(Utilities.ITEMS,
                         ItemsPresenter.getEventCategories(getApplicationContext()));
                 stackBuilder.addParentStack(ItemsActivity.class);
                 stackBuilder.editIntentAt(0)
@@ -402,8 +443,8 @@ public class WebService extends IntentService {
                 break;
             case ACTION_INCIDENTS:
             case ACTION_COMMUNIQUES:
-                resultIntent = new Intent(getApplicationContext(), AnnouncementsActivity.class);
-                resultIntent.putExtra(Utilities.CATEGORY, ACTION_INCIDENTS.equals(type) ?
+                resultIntent = new Intent(getApplicationContext(), AnnouncementsActivity.class)
+                        .putExtra(Utilities.CATEGORY, ACTION_INCIDENTS.equals(type) ?
                         R.string.security_system : R.string.billboard_information);
                 stackBuilder.addParentStack(AnnouncementsActivity.class);
                 stackBuilder.editIntentAt(0)
@@ -413,8 +454,8 @@ public class WebService extends IntentService {
                         ACTION_INCIDENTS.equals(type) ? R.string.services_module : R.string.state_module);
                 break;
             case ACTION_EMAILS:
-                resultIntent = new Intent(getApplicationContext(), EmailsActivity.class);
-                resultIntent.putExtra(Utilities.CATEGORY, R.string.institutional_mail);
+                resultIntent = new Intent(getApplicationContext(), EmailsActivity.class)
+                        .putExtra(Utilities.CATEGORY, R.string.institutional_mail);
                 stackBuilder.addParentStack(EmailsActivity.class);
                 stackBuilder.editIntentAt(0)
                         .putExtra(Utilities.CATEGORY, R.string.app_title_menu);

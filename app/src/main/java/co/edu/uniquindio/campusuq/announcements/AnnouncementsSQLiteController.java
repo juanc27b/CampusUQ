@@ -108,10 +108,13 @@ public class AnnouncementsSQLiteController {
     }
 
     /**
-     * Marca como no leidos todos los anuncios de la base de datos.
+     * Marca como no leidos un conjunto de anuncios de la base de datos.
+     * @param ids Conjunto de IDs de los anuncios que se desea marcar como no leidos.
      */
-    void unreadAll() {
-        db.execSQL("UPDATE " + tablename + " SET " + columns[6] + " = 0");
+    void unreaded(Object... ids) {
+        db.execSQL("UPDATE " + tablename + " SET " +
+                columns[6] + " = 0 WHERE " + columns[0] + " IN(" +
+                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
     }
 
     /**
