@@ -146,6 +146,7 @@
     <string name="registration_wrong">Invalid data</string>
 
     <string name="login_benefits">Accessing a user account allows you to report lost items, incidents, and access to institutional mail. If the account is an administrator, it also allows to publish communiqués, dishes and quotas.</string>
+    <string name="oauth_error">Could not login</string>
 
     <string name="user_name_invalid">The name must be between 3 and 50 characters</string>
     <string name="user_email_invalid">The email must be between 7 and 70 characters</string>

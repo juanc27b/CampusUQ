@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -48,9 +49,9 @@ import co.edu.uniquindio.campusuq.users.UsersActivity;
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.AnalyticsApplication;
 import co.edu.uniquindio.campusuq.util.Utilities;
-import co.edu.uniquindio.campusuq.web.WebService;
 import co.edu.uniquindio.campusuq.web.WebActivity;
 import co.edu.uniquindio.campusuq.web.WebContentActivity;
+import co.edu.uniquindio.campusuq.web.WebService;
 
 /**
  * Actividad principal de la que heredan la mayoría de actividades de la aplicación, la cual provee
@@ -479,8 +480,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_ecotic:
                 category = getString(R.string.analytics_web_category);
                 label = getString(R.string.analytics_ecotic_label);
-                intent = new Intent(this, WebActivity.class)
-                        .putExtra(Utilities.URL, getString(R.string.ecotic_url));
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.ecotic_url)));
                 break;
             default:
                 break;

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.GravityCompat;
@@ -37,9 +38,9 @@ import co.edu.uniquindio.campusuq.users.LoginActivity;
 import co.edu.uniquindio.campusuq.users.User;
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
-import co.edu.uniquindio.campusuq.web.WebService;
 import co.edu.uniquindio.campusuq.web.WebActivity;
 import co.edu.uniquindio.campusuq.web.WebContentActivity;
+import co.edu.uniquindio.campusuq.web.WebService;
 
 public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickItemListener {
 
@@ -284,9 +285,8 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
                 } else if (getString(R.string.ecotic).equals(title)) {
                     category = getString(R.string.analytics_web_category);
                     label = getString(R.string.analytics_ecotic_label);
-                    intent = new Intent(this, WebActivity.class)
-                            .putExtra(Utilities.URL,
-                                    getString(R.string.ecotic_url));
+                    intent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(getString(R.string.ecotic_url)));
                 }
                 break;
             case R.string.institution:

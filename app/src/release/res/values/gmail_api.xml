@@ -2,5 +2,6 @@
 <resources>
 
     <string name="oauth_client_id" translatable="false">472940728781-nks54h7u6465ureerbqiparjuhgid106.apps.googleusercontent.com</string>
+    <string name="oauth_web_client_id" translatable="false">472940728781-a9dem0cesknm3fa86bg18097jms3kvb9.apps.googleusercontent.com</string>
 
 </resources>

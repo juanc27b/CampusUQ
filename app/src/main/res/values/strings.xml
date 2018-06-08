@@ -145,6 +145,7 @@
     <string name="registration_wrong">Datos inválidos</string>
 
     <string name="login_benefits">Acceder con una cuenta de usuario permite reportar objetos perdidos, incidentes, y acceder al correo institucional. Si la cuenta es de administrador también permite publicar comunicados, platos y cupos.</string>
+    <string name="oauth_error">No se pudo iniciar sesión</string>
 
     <string name="user_name_invalid">El nombre debe tener entre 3 y 50 caracteres</string>
     <string name="user_email_invalid">El correo debe tener entre 7 y 70 caracteres</string>

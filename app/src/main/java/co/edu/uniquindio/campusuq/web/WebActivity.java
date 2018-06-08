@@ -26,6 +26,8 @@ public class WebActivity extends AppCompatActivity {
     public WebSettings webSettings;
     public EditText urlText;
 
+    public String pendingURL;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,8 +38,8 @@ public class WebActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         urlText = findViewById(R.id.url_edit_text);
-        String url = getIntent().getStringExtra(Utilities.URL);
-        urlText.setText(url);
+        pendingURL = getIntent().getStringExtra(Utilities.URL);
+        urlText.setText(pendingURL);
 
         webView = findViewById(R.id.webview);
 
@@ -62,8 +64,15 @@ public class WebActivity extends AppCompatActivity {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                urlText.setText(request.getUrl().toString());
-                return false;
+                pendingURL = request.getUrl().toString();
+                if (pendingURL.startsWith("https://accounts.google.com/o/oauth2/v2/auth")) {
+                    //loadOAuthURL();
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(pendingURL)));
+                    return true;
+                } else {
+                    urlText.setText(pendingURL);
+                    return false;
+                }
             }
         });
 
@@ -106,16 +115,16 @@ public class WebActivity extends AppCompatActivity {
             }
         });
 
-        webView.loadUrl(url);
+        webView.loadUrl(pendingURL);
 
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        String url = getIntent().getStringExtra(Utilities.URL);
-        urlText.setText(url);
-        webView.loadUrl(url);
+        pendingURL = getIntent().getStringExtra(Utilities.URL);
+        urlText.setText(pendingURL);
+        webView.loadUrl(pendingURL);
         webView.clearHistory();
     }
 

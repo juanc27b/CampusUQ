@@ -62,18 +62,20 @@ public class EmailsServiceController {
 
         try {
             String user = "me";
+            List<String> labelIds = new ArrayList<>();
+            labelIds.add("INBOX");
             List<Message> messages = new ArrayList<>();
             boolean reSync = true;
 
             if (startHistoryID != null) {
                 try {
                     List<History> histories = new ArrayList<>();
-                    ListHistoryResponse response = mService.users().history().list(user).setStartHistoryId(startHistoryID).execute();
+                    ListHistoryResponse response = mService.users().history().list(user).setLabelId(labelIds.get(0)).setStartHistoryId(startHistoryID).execute();
                     while (response.getHistory() != null) {
                         histories.addAll(response.getHistory());
                         if (response.getNextPageToken() != null) {
                             String pageToken = response.getNextPageToken();
-                            response = mService.users().history().list(user).setPageToken(pageToken)
+                            response = mService.users().history().list(user).setLabelId(labelIds.get(0)).setPageToken(pageToken)
                                     .setStartHistoryId(startHistoryID).execute();
                         } else {
                             break;
@@ -84,7 +86,9 @@ public class EmailsServiceController {
                         List<HistoryMessageAdded> messagesAdded = history.getMessagesAdded();
                         if (messagesAdded != null) {
                             for (HistoryMessageAdded messageAdded : messagesAdded) {
-                                messages.add(getMessage(mService, user, messageAdded.getMessage().getId()));
+                                if (messageAdded.getMessage().getLabelIds().containsAll(labelIds)) {
+                                    messages.add(getMessage(mService, user, messageAdded.getMessage().getId()));
+                                }
                             }
                         }
                         List<HistoryMessageDeleted> messagesDeleted = history.getMessagesDeleted();
@@ -106,7 +110,7 @@ public class EmailsServiceController {
             }
 
             if (reSync) {
-                ListMessagesResponse response = mService.users().messages().list(user).execute();
+                ListMessagesResponse response = mService.users().messages().list(user).setLabelIds(labelIds).execute();
                 if (response.getMessages() != null) {
                     for (Message message : response.getMessages()) {
                         messages.add(getMessage(mService, user, message.getId()));

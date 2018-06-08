@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.StreetViewPanoramaCamera;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -43,10 +44,13 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
     private LinearLayout streetViewLayout;
     private Button changeButton;
     private boolean isMapEnabled = true;
+    private boolean isStreetViewReady = false;
 
     private GoogleMap mMap;
     private StreetViewPanorama mPanorama;
-    private LatLng UNIVERSIDAD = new LatLng(4.55435, -75.6601);
+    private final LatLng UNIVERSIDAD = new LatLng(4.55435, -75.6601);
+    private final LatLng CIENCIAS_BASICAS = new LatLng(4.552531396833602, -75.65901193767786);
+    private LatLng location;
 
     public ArrayList<String> tags = new ArrayList<>();
     public ArrayList<LatLng> locations= new ArrayList<>();
@@ -89,6 +93,13 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
                     mapLayout.setVisibility(View.GONE);
                     streetViewLayout.setVisibility(View.VISIBLE);
                     isMapEnabled = false;
+                    if (!isStreetViewReady) {
+                        // Se obtiene el StreetViewPanoramaFragment y se notifica cuando la vista esté disponible.
+                        ((StreetViewPanoramaFragment) getFragmentManager()
+                                .findFragmentById(R.id.streetviewpanorama))
+                                .getStreetViewPanoramaAsync(MapsActivity.this);
+                        isStreetViewReady = true;
+                    }
                 } else {
                     changeButton.setText(R.string.change_to_streetview);
                     streetViewLayout.setVisibility(View.GONE);
@@ -101,11 +112,36 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
         // Se obtiene el SupportMapFragment y se notifica cuando el mapa esté listo para usarse.
         ((SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map)).getMapAsync(this);
+    }
 
-        // Se obtiene el StreetViewPanoramaFragment y se notifica cuando la vista esté disponible.
-        ((StreetViewPanoramaFragment) getFragmentManager()
-                .findFragmentById(R.id.streetviewpanorama))
-                .getStreetViewPanoramaAsync(this);
+    @Override
+    public void handleIntent(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            boolean found = false;
+            for (int i = 0; i < 41; i++) {
+                if (StringUtils.stripAccents(tags.get(i)).toLowerCase()
+                        .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
+                    if (isMapEnabled) {
+                        mMap.moveCamera(CameraUpdateFactory
+                                .newLatLngZoom(locations.get(i), 16));
+                    } else {
+                        showStreetView(locations.get(i));
+                    }
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                Toast.makeText(this, getString(R.string.location_no_found) + ": " +
+                        query, Toast.LENGTH_SHORT).show();
+            }
+        } else if (isMapEnabled && mMap != null)  {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(UNIVERSIDAD, 16));
+        } else if (!isMapEnabled && mPanorama != null) {
+            showStreetView(CIENCIAS_BASICAS);
+        }
     }
 
     /**
@@ -121,10 +157,6 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Sets the map type to be "hybrid"
-        //mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-
-        //mMap.setBuildingsEnabled(false);
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this,
@@ -138,15 +170,7 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
             mMap.setMyLocationEnabled(true);
-            //return;
         }
-
-        // Add a marker in UQ and move the camera
-        //mMap.setMaxZoomPreference();
-        //mMap.addMarker(new MarkerOptions().position(UNIVERSIDAD).title("Marker in UQ").alpha(0.0f));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(UNIVERSIDAD, 16));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(UNIVERSIDAD.getCenter(), 18));
-        //mMap.setLatLngBoundsForCameraTarget(BOUNDS);
 
         for (int i = 0; i < tags.size(); i++) {
             mMap.addMarker(new MarkerOptions().position(locations.get(i)).title(tags.get(i))
@@ -155,47 +179,52 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
 
         GroundOverlayOptions universityMap = new GroundOverlayOptions()
                 .image(BitmapDescriptorFactory.fromResource(R.drawable.map))
-                .position(UNIVERSIDAD, 500f, 500f);//.transparency(0.5f).bearing(357);
-        /*GroundOverlay imageOverlay = */mMap.addGroundOverlay(universityMap);
+                .position(UNIVERSIDAD, 500f, 500f);
+        mMap.addGroundOverlay(universityMap);
 
-        /*
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
-            public void onMapClick(LatLng latLng) {
-                Log.i("Map clicked", latLng.latitude + ", " + latLng.longitude);
+            public void onMapLongClick(LatLng latLng) {
+                changeButton.setText(R.string.change_to_mapview);
+                mapLayout.setVisibility(View.GONE);
+                streetViewLayout.setVisibility(View.VISIBLE);
+                isMapEnabled = false;
+                if (!isStreetViewReady) {
+                    location = latLng;
+                    // Se obtiene el StreetViewPanoramaFragment y se notifica cuando la vista esté disponible.
+                    ((StreetViewPanoramaFragment) getFragmentManager()
+                            .findFragmentById(R.id.streetviewpanorama))
+                            .getStreetViewPanoramaAsync(MapsActivity.this);
+                    isStreetViewReady = true;
+                } else {
+                    showStreetView(latLng);
+                }
             }
         });
-        */
     }
 
     @Override
-    public void handleIntent(Intent intent) {
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            boolean found = false;
-            for (int i = 0; i < 41; i++) {
-                if (StringUtils.stripAccents(tags.get(i)).toLowerCase()
-                        .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
-                    if (isMapEnabled) {
-                        mMap.moveCamera(CameraUpdateFactory
-                                .newLatLngZoom(locations.get(i), 16));
-                    } else {
-                        mPanorama.setPosition(locations.get(i));
-                    }
-                    found = true;
-                    break;
-                }
-            }
+    public void onStreetViewPanoramaReady(StreetViewPanorama streetViewPanorama) {
+        mPanorama = streetViewPanorama;
 
-            if (!found) {
-                Toast.makeText(this, getString(R.string.location_no_found) + ": " +
-                        query, Toast.LENGTH_SHORT).show();
-            }
-        } else if (isMapEnabled && mMap != null)  {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(UNIVERSIDAD, 16));
-        } else if (!isMapEnabled && mPanorama != null) {
-            mPanorama.setPosition(UNIVERSIDAD);
-        }
+        mPanorama.setPanningGesturesEnabled(true);
+        mPanorama.setUserNavigationEnabled(true);
+        mPanorama.setZoomGesturesEnabled(true);
+        mPanorama.setStreetNamesEnabled(true);
+
+        showStreetView(location != null ? location : CIENCIAS_BASICAS);
+    }
+
+    public void showStreetView(LatLng latLng) {
+        StreetViewPanoramaCamera camera = new StreetViewPanoramaCamera.Builder()
+                .zoom(0.0f)
+                .tilt(0.0f)
+                .bearing(0.0f)
+                .build();
+
+        mPanorama.animateTo(camera, 0);
+
+        mPanorama.setPosition(latLng, 300);
     }
 
     public void addTagsAndLocations() {
@@ -282,18 +311,6 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
         locations.add(new LatLng(4.554549070025962, -75.66203378140926));
         locations.add(new LatLng(4.554054428123737, -75.66225606948137));
         locations.add(new LatLng(4.553856237049898, -75.66203948110342));
-    }
-
-    @Override
-    public void onStreetViewPanoramaReady(StreetViewPanorama streetViewPanorama) {
-        mPanorama = streetViewPanorama;
-
-        mPanorama.setPanningGesturesEnabled(true);
-        mPanorama.setUserNavigationEnabled(true);
-        mPanorama.setZoomGesturesEnabled(true);
-        mPanorama.setStreetNamesEnabled(true);
-
-        mPanorama.setPosition(UNIVERSIDAD);
     }
 
 }

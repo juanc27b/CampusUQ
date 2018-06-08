@@ -36,7 +36,7 @@ public class EmailsPresenter {
         this.context = context;
     }
 
-    GoogleAccountCredential getCredential() {
+    public GoogleAccountCredential getCredential() {
         if (mCredential == null) {
             mCredential = GoogleAccountCredential.usingOAuth2(
                     context, Arrays.asList(SCOPES))
