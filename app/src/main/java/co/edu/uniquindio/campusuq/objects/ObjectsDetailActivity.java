@@ -282,4 +282,19 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        intent = null;
+        object = null;
+        name = null;
+        place = null;
+        dateLost = null;
+        timeLost = null;
+        description = null;
+        descriptionCount = null;
+        image = null;
+        imageFile = null;
+    }
+
 }

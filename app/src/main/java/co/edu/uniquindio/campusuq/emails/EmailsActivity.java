@@ -223,6 +223,13 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
         unregisterReceiver(emailsReceiver);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        swipeRefreshLayout = null;
+        recyclerView = null;
+    }
+
     /**
      * Called when an activity launched here (specifically, AccountPicker
      * and authorization) exits, giving you the requestCode you started it with,

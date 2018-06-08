@@ -534,4 +534,18 @@ public class AnnouncementsActivity extends MainActivity
         unregisterReceiver(announcementsReceiver);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        action = null;
+        report = null;
+        fab = null;
+        swipeRefreshLayout = null;
+        recyclerView = null;
+        facebookCallbackManager = null;
+        shareDialog = null;
+        mTwitterAuthClient = null;
+        twitterCallback = null;
+    }
+
 }

@@ -145,4 +145,13 @@ public class QuotasDetailActivity extends MainActivity implements View.OnClickLi
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        intent = null;
+        q = null;
+        name = null;
+        quota = null;
+    }
+
 }

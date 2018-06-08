@@ -285,4 +285,11 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
         unregisterReceiver(dishesReceiver);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        swipeRefreshLayout = null;
+        recyclerView = null;
+    }
+
 }

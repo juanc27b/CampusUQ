@@ -2,17 +2,12 @@ package co.edu.uniquindio.campusuq.notifications;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
-import co.edu.uniquindio.campusuq.util.SQLiteHelper;
-import co.edu.uniquindio.campusuq.util.Utilities;
+import co.edu.uniquindio.campusuq.util.SQLiteController;
 
-public class NotificationsSQLiteController {
+public class NotificationsSQLiteController extends SQLiteController {
 
     private static final String tablename = "Notificacion";
     public static final String columns[] = {"_ID", "Nombre", "Activada"};
@@ -21,12 +16,18 @@ public class NotificationsSQLiteController {
     private static final String detailColumns[] =
             {"_ID", "Categoria", "Nombre", "Fecha_Hora", "Descripcion"};
 
-    private SQLiteHelper usdbh;
-    private SQLiteDatabase db;
-
     NotificationsSQLiteController(Context context, int version) {
-        usdbh = new SQLiteHelper(context, Utilities.NOMBRE_BD , null, version);
-        db = usdbh.getWritableDatabase();
+        super(context, version);
+    }
+
+    @Override
+    protected String getTablename(int index) {
+        return new String[]{tablename, detailTablename}[index];
+    }
+
+    @Override
+    protected String[] getColumns(int index) {
+        return new String[][]{columns, detailColumns}[index];
     }
 
     public static String createTable() {
@@ -46,24 +47,6 @@ public class NotificationsSQLiteController {
 
         c.close();
         return notifications;
-    }
-
-    public void insert(Object... values) {
-        db.execSQL("INSERT INTO " + tablename + '(' +
-                TextUtils.join(", ", columns) + ") VALUES(" +
-                TextUtils.join(", ", Collections.nCopies(columns.length, '?')) +
-                ')', values);
-    }
-
-    public void update(Object... values) {
-        db.execSQL("UPDATE " + tablename + " SET " + TextUtils.join(" = ?, ",
-                Arrays.copyOfRange(columns, 0, columns.length)) + " = ? WHERE " +
-                columns[0] + " = ?", values);
-    }
-
-    public void delete(Object... ids) {
-        db.execSQL("DELETE FROM " + tablename + " WHERE " + columns[0] + " IN(" +
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
     }
 
     public static String createDetailTable() {
@@ -88,19 +71,11 @@ public class NotificationsSQLiteController {
     }
 
     void insertDetail(Object... values) {
-        db.execSQL("INSERT INTO " + detailTablename + '(' +
-                TextUtils.join(", ", detailColumns) + ") VALUES(" +
-                TextUtils.join(", ", Collections.nCopies(detailColumns.length, '?')) +
-                ')', values);
+        insert(1, values);
     }
 
     void deleteDetail(Object... ids) {
-        db.execSQL("DELETE FROM " + detailTablename + " WHERE " + detailColumns[0] + " IN(" +
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
-    }
-
-    public void destroy() {
-        usdbh.close();
+        delete(1, ids);
     }
 
 }

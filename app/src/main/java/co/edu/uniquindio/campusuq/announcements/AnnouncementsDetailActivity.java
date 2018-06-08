@@ -366,4 +366,22 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        type = null;
+        announcementLinks = null;
+        linksFiles = null;
+        intent = null;
+        announcement = null;
+        titleText = null;
+        nameText = null;
+        name = null;
+        descriptionText = null;
+        description = null;
+        descriptionCount = null;
+        imageText = null;
+        images = null;
+    }
+
 }

@@ -131,4 +131,12 @@ public class WebActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        webView = null;
+        webSettings = null;
+        urlText = null;
+    }
+
 }

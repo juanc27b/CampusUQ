@@ -614,6 +614,17 @@ public class MainActivity extends AppCompatActivity
         if (progressDialog.isShowing()) progressDialog.dismiss();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        drawer = null;
+        accountLayout = null;
+        account = null;
+        progressDialog = null;
+        mTracker = null;
+        language = null;
+    }
+
     /**
      * Método encargado de obtener la información necesaria desde la base de datos local para las
      * funcionalidades de Institución (Símbolos) y Bienestar institucional, y después abrir las

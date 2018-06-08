@@ -2,30 +2,23 @@ package co.edu.uniquindio.campusuq.announcements;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
-import co.edu.uniquindio.campusuq.util.SQLiteHelper;
-import co.edu.uniquindio.campusuq.util.Utilities;
+import co.edu.uniquindio.campusuq.util.SQLiteController;
 
 /**
  * Controlador de la base de datos para las tablas Anuncio y Anuncio_Enlace.
  */
-public class AnnouncementsSQLiteController {
+public class AnnouncementsSQLiteController extends SQLiteController {
 
     private static final String tablename = "Anuncio";
-    public static final String columns[] = {"_ID", "Usuario_ID", "Tipo", "Nombre", "Fecha",
-            "Descripcion", "Leido"};
+    public static final String columns[] =
+            {"_ID", "Usuario_ID", "Tipo", "Nombre", "Fecha", "Descripcion", "Leido"};
 
     private static final String linkTablename = "Anuncio_Enlace";
     public static final String linkColumns[] = {"_ID", "Anuncio_ID", "Tipo", "Enlace"};
-
-    private SQLiteHelper usdbh;
-    private SQLiteDatabase db;
 
     /**
      * Construye el controlador de la base de datos.
@@ -33,8 +26,23 @@ public class AnnouncementsSQLiteController {
      * @param version Versión del controlador.
      */
     public AnnouncementsSQLiteController(Context context, int version) {
-        usdbh = new SQLiteHelper(context, Utilities.NOMBRE_BD , null, version);
-        db = usdbh.getWritableDatabase();
+        super(context, version);
+    }
+
+    @Override
+    protected String getTablename(int index) {
+        return new String[]{tablename, linkTablename}[index];
+    }
+
+    @Override
+    protected String[] getColumns(int index) {
+        return new String[][]{columns, linkColumns}[index];
+    }
+
+    @Override
+    protected String[] getUpdateColumns(int index) {
+        return new String[][]{Arrays.copyOfRange(columns, 0, columns.length - 1),
+                linkColumns}[index];
     }
 
     /**
@@ -59,71 +67,17 @@ public class AnnouncementsSQLiteController {
      */
     public ArrayList<Announcement> select(String limit, String selection, String... selectionArgs) {
         ArrayList<Announcement> announcements = new ArrayList<>();
-
         Cursor c = db.query(tablename, null, selection, selectionArgs, null,
                 null, columns[4] + " DESC", limit);
+
         if (c.moveToFirst()) do {
             announcements.add(new Announcement(c.getString(0), c.getString(1),
                     c.getString(2), c.getString(3), c.getString(4), c.getString(5),
                     c.getString(6)));
         } while (c.moveToNext());
+
         c.close();
-
         return announcements;
-    }
-
-    /**
-     * Inserta un anuncio en la base de datos, de acuerdo a los valores de las columnas pasados como
-     * parámetros.
-     * @param values Valores de las columnas del anuncio a insertar.
-     */
-    public void insert(Object... values) {
-        db.execSQL("INSERT INTO " + tablename + '(' +
-                TextUtils.join(", ", columns) + ") VALUES(" +
-                TextUtils.join(", ", Collections.nCopies(columns.length, '?')) +
-                ')', values);
-    }
-
-    /**
-     * Actualiza un anuncio en la base de datos de acuerdo a los valores de las columnas (todas
-     * menos la columna Leido) pasados como parámetros, siendo el último de estos la ID de la fila a
-     * modificar.
-     * @param values Valores de las columnas del anuncio a actualizar seguidos de la ID de dicho
-     *               anuncio.
-     */
-    public void update(Object... values) {
-        db.execSQL("UPDATE " + tablename + " SET " + TextUtils.join(" = ?, ",
-                Arrays.copyOfRange(columns, 0, columns.length - 1)) + " = ? WHERE " +
-                columns[0] + " = ?", values);
-    }
-
-    /**
-     * Marca como leidos un conjunto de anuncios de la base de datos.
-     * @param ids Conjunto de IDs de los anuncios que se desea marcar como leidos.
-     */
-    void readed(Object... ids) {
-        db.execSQL("UPDATE " + tablename + " SET " +
-                columns[6] + " = 1 WHERE " + columns[0] + " IN(" +
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
-    }
-
-    /**
-     * Marca como no leidos un conjunto de anuncios de la base de datos.
-     * @param ids Conjunto de IDs de los anuncios que se desea marcar como no leidos.
-     */
-    void unreaded(Object... ids) {
-        db.execSQL("UPDATE " + tablename + " SET " +
-                columns[6] + " = 0 WHERE " + columns[0] + " IN(" +
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
-    }
-
-    /**
-     * Elimina un conjunto de anuncios de la base de datos.
-     * @param ids Conjunto de IDs de los anuncios que se desea eliminar.
-     */
-    public void delete(Object... ids) {
-        db.execSQL("DELETE FROM " + tablename + " WHERE " + columns[0] + " IN(" +
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
     }
 
     /**
@@ -164,10 +118,7 @@ public class AnnouncementsSQLiteController {
      * @param values Valores de las columnas del enlace de anuncio a insertar.
      */
     public void insertLink(Object... values) {
-        db.execSQL("INSERT INTO " + linkTablename + '(' +
-                TextUtils.join(", ", linkColumns) + ") VALUES(" +
-                TextUtils.join(", ", Collections.nCopies(linkColumns.length, '?')) +
-                ')', values);
+        insert(1, values);
     }
 
     /**
@@ -177,9 +128,7 @@ public class AnnouncementsSQLiteController {
      *               enlace de anuncio.
      */
     public void updateLink(Object... values) {
-        db.execSQL("UPDATE " + linkTablename + " SET " +
-                TextUtils.join(" = ?, ", linkColumns) + " = ? WHERE " +
-                linkColumns[0] + " = ?", values);
+        update(1, values);
     }
 
     /**
@@ -187,15 +136,7 @@ public class AnnouncementsSQLiteController {
      * @param ids Conjunto de IDs de los enlaces de anuncios que se desea eliminar.
      */
     public void deleteLink(Object... ids) {
-        db.execSQL("DELETE FROM " + linkTablename + " WHERE " + linkColumns[0] + " IN(" +
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
-    }
-
-    /**
-     * Destruye el controlador de la base de datos.
-     */
-    public void destroy() {
-        usdbh.close();
+        delete(1, ids);
     }
 
 }

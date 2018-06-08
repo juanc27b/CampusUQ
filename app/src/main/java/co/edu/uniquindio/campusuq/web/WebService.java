@@ -720,20 +720,20 @@ public class WebService extends IntentService {
                             program.getProfiles(), program.getProfilesLink(),
                             program.getProfilesDate(), program.getContact());
                 } else if (olds.get(0).getHistoryDate().compareTo(program.getHistoryDate()) < 0) {
-                    dbController.update(4, program.getHistory(), program.getHistoryLink(),
-                            program.getHistoryDate(), program.get_ID());
+                    dbController.partialUpdate(4, program.getHistory(),
+                            program.getHistoryLink(), program.getHistoryDate(), program.get_ID());
                 } else if (olds.get(0).getMissionVisionDate()
                         .compareTo(program.getMissionVisionDate()) < 0) {
-                    dbController.update(7, program.getMissionVision(),
+                    dbController.partialUpdate(7, program.getMissionVision(),
                             program.getMissionVisionLink(), program.getMissionVisionDate(),
                             program.get_ID());
                 } else if (olds.get(0).getCurriculumDate()
                         .compareTo(program.getCurriculumDate()) < 0) {
-                    dbController.update(10, program.getCurriculum(),
+                    dbController.partialUpdate(10, program.getCurriculum(),
                             program.getCurriculumLink(), program.getCurriculumDate(),
                             program.get_ID());
                 } else if (olds.get(0).getProfilesDate().compareTo(program.getProfilesDate()) < 0) {
-                    dbController.update(13, program.getProfiles(),
+                    dbController.partialUpdate(13, program.getProfiles(),
                             program.getProfilesLink(), program.getProfilesDate(), program.get_ID());
                 }
             }

@@ -93,4 +93,12 @@ public class CalendarActivity extends MainActivity
                 .putExtra(Utilities.CATEGORY, category));
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        categoryText = null;
+        recyclerView = null;
+        category = null;
+    }
+
 }

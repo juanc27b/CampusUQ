@@ -353,4 +353,16 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
         unregisterReceiver(newsReceiver);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        action = null;
+        swipeRefreshLayout = null;
+        recyclerView = null;
+        facebookCallbackManager = null;
+        shareDialog = null;
+        mTwitterAuthClient = null;
+        twitterCallback = null;
+    }
+
 }

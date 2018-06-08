@@ -2,27 +2,20 @@ package co.edu.uniquindio.campusuq.objects;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
-import co.edu.uniquindio.campusuq.util.SQLiteHelper;
-import co.edu.uniquindio.campusuq.util.Utilities;
+import co.edu.uniquindio.campusuq.util.SQLiteController;
 
 /**
  * Controlador de la base de datos para la tabla Objeto.
  */
-public class ObjectsSQLiteController {
+public class ObjectsSQLiteController extends SQLiteController {
 
     private static final String tablename = "Objeto";
     static final String columns[] = {"_ID", "Usuario_Perdio_ID", "Nombre", "Lugar", "Fecha_Perdio",
             "Fecha", "Descripcion", "Imagen", "Usuario_Encontro_ID", "Leido"};
-
-    private SQLiteHelper usdbh;
-    private SQLiteDatabase db;
 
     /**
      * Construye el controlador de la base de datos.
@@ -30,8 +23,22 @@ public class ObjectsSQLiteController {
      * @param version Versión del controlador.
      */
     public ObjectsSQLiteController(Context context, int version) {
-        usdbh = new SQLiteHelper(context, Utilities.NOMBRE_BD , null, version);
-        db = usdbh.getWritableDatabase();
+        super(context, version);
+    }
+
+    @Override
+    protected String getTablename(int index) {
+        return tablename;
+    }
+
+    @Override
+    protected String[] getColumns(int index) {
+        return columns;
+    }
+
+    @Override
+    protected String[] getUpdateColumns(int index) {
+        return Arrays.copyOfRange(columns, 0, columns.length - 1);
     }
 
     /**
@@ -58,79 +65,18 @@ public class ObjectsSQLiteController {
      */
     public ArrayList<LostObject> select(String limit, String selection, String... selectionArgs) {
         ArrayList<LostObject> objects = new ArrayList<>();
-
         Cursor c = db.query(tablename, null, selection, selectionArgs, null,
                 null, columns[5] + " DESC", limit);
+
         if (c.moveToFirst()) do {
             objects.add(new LostObject(c.getString(0), c.getString(1), c.getString(2),
                     c.getString(3), c.getString(4), c.getString(5), c.getString(6),
                     c.isNull(7) ? null : c.getString(7),
                     c.isNull(8) ? null : c.getString(8), c.getString(9)));
         } while (c.moveToNext());
+
         c.close();
-
         return objects;
-    }
-
-    /**
-     * Inserta un objeto perdido en la base de datos, de acuerdo a los valores de las columnas
-     * pasados como parámetros.
-     * @param values Valores de las columnas del objeto perdido a insertar.
-     */
-    public void insert(Object... values) {
-        db.execSQL("INSERT INTO " + tablename + '(' +
-                TextUtils.join(", ", columns) + ") VALUES(" +
-                TextUtils.join(", ", Collections.nCopies(columns.length, '?')) +
-                ')', values);
-    }
-
-    /**
-     * Actualiza un objeto perdido en la base de datos de acuerdo a los valores de las columnas
-     * (todas menos la columna Leido) pasados como parámetros, siendo el último de estos la ID de la
-     * fila a modificar.
-     * @param values Valores de las columnas del objeto perdido a actualizar seguidos de la ID de
-     *               dicho objeto perdido.
-     */
-    public void update(Object... values) {
-        db.execSQL("UPDATE " + tablename + " SET " + TextUtils.join(" = ?, ",
-                Arrays.copyOfRange(columns, 0, columns.length - 1)) + " = ? WHERE " +
-                columns[0] + " = ?", values);
-    }
-
-    /**
-     * Marca como leidos un conjunto de objetos perdidos de la base de datos.
-     * @param ids Conjunto de IDs de los objetos perdidos que se desea marcar como leidos.
-     */
-    void readed(Object... ids) {
-        db.execSQL("UPDATE " + tablename + " SET " +
-                columns[9] + " = 1 WHERE " + columns[0] + " IN(" +
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
-    }
-
-    /**
-     * Marca como no leidos un conjunto de objetos perdidos de la base de datos.
-     * @param ids Conjunto de IDs de los objetos perdidos que se desea marcar como no leidos.
-     */
-    void unreaded(Object... ids) {
-        db.execSQL("UPDATE " + tablename + " SET " +
-                columns[9] + " = 0 WHERE " + columns[0] + " IN(" +
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
-    }
-
-    /**
-     * Elimina un conjunto de objetos perdidos de la base de datos.
-     * @param ids Conjunto de IDs de los objetos perdidos que se desea eliminar.
-     */
-    public void delete(Object... ids) {
-        db.execSQL("DELETE FROM " + tablename + " WHERE " + columns[0] + " IN(" +
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
-    }
-
-    /**
-     * Destruye el controlador de la base de datos.
-     */
-    public void destroy() {
-        usdbh.close();
     }
 
 }

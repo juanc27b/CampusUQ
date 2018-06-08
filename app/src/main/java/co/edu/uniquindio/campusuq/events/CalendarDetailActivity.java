@@ -98,4 +98,14 @@ public class CalendarDetailActivity extends MainActivity {
                 .setItems(CalendarPresenter.getCalendarDetailItems(event, category, this));
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        eventText = null;
+        recyclerView = null;
+        categoryText = null;
+        event = null;
+        category = null;
+    }
+
 }

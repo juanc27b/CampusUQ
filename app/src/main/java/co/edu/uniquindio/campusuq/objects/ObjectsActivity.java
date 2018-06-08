@@ -388,4 +388,12 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
         super.onPause();
         unregisterReceiver(objectsReceiver);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        swipeRefreshLayout = null;
+        recyclerView = null;
+    }
+
 }

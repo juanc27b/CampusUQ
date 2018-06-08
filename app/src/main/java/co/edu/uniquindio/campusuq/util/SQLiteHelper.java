@@ -19,9 +19,20 @@ import co.edu.uniquindio.campusuq.users.UsersSQLiteController;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
 
+    private static SQLiteDatabase db;
+
     public SQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory,
                         int version) {
         super(context, name, factory, version);
+    }
+
+    static SQLiteDatabase getDatabaseInstance(Context context, int version) {
+        if (db == null) {
+            db = new SQLiteHelper(context, Utilities.NOMBRE_BD , null, version)
+                    .getWritableDatabase();
+        }
+
+        return db;
     }
 
     @Override

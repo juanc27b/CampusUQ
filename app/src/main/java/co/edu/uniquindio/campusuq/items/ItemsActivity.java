@@ -573,6 +573,12 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         unregisterReceiver(symbolsReceiver);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        recyclerView = null;
+    }
+
     public void loadProgramContent(String name, int type) {
         if (!progressDialog.isShowing()) progressDialog.show();
 

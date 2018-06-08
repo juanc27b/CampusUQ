@@ -262,4 +262,12 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
         unregisterReceiver(quotasReceiver);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        type = null;
+        swipeRefreshLayout = null;
+        recyclerView = null;
+    }
+
 }

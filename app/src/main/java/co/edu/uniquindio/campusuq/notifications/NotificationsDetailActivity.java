@@ -190,4 +190,12 @@ public class NotificationsDetailActivity extends MainActivity
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        selectAll = null;
+        delete = null;
+        recyclerView = null;
+    }
+
 }
