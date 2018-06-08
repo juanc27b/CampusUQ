@@ -2,68 +2,80 @@ package co.edu.uniquindio.campusuq.notifications;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
-import co.edu.uniquindio.campusuq.util.SQLiteHelper;
-import co.edu.uniquindio.campusuq.util.Utilities;
+import co.edu.uniquindio.campusuq.util.SQLiteController;
 
-public class NotificationsSQLiteController {
+public class NotificationsSQLiteController extends SQLiteController {
 
     private static final String tablename = "Notificacion";
     public static final String columns[] = {"_ID", "Nombre", "Activada"};
 
-    private SQLiteHelper usdbh;
-    private SQLiteDatabase db;
+    private static final String detailTablename = "NotificacionDetail";
+    private static final String detailColumns[] =
+            {"_ID", "Categoria", "Nombre", "Fecha_Hora", "Descripcion"};
 
     NotificationsSQLiteController(Context context, int version) {
-        usdbh = new SQLiteHelper(context, Utilities.NOMBRE_BD , null, version);
-        db = usdbh.getWritableDatabase();
+        super(context, version);
+    }
+
+    @Override
+    protected String getTablename(int index) {
+        return new String[]{tablename, detailTablename}[index];
+    }
+
+    @Override
+    protected String[] getColumns(int index) {
+        return new String[][]{columns, detailColumns}[index];
     }
 
     public static String createTable() {
-        return "CREATE TABLE "+tablename+'('+columns[0]+" INTEGER PRIMARY KEY, "+
-                columns[1]+" TEXT NOT NULL UNIQUE, "+columns[2]+" TEXT NOT NULL )";
+        return "CREATE TABLE " + tablename + '(' + columns[0] + " INTEGER PRIMARY KEY, " +
+                columns[1] + " TEXT NOT NULL UNIQUE, " + columns[2] + " TEXT NOT NULL)";
     }
 
     public ArrayList<Notification> select(String limit, String selection, String... selectionArgs) {
         ArrayList<Notification> notifications = new ArrayList<>();
-
         Cursor c = db.query(tablename, null, selection, selectionArgs,
-                null, null, columns[0]+" ASC", limit);
-        if(c.moveToFirst()) do {
+                null, null, columns[0] + " ASC", limit);
+
+        if (c.moveToFirst()) do {
             notifications.add(new Notification(c.getString(0), c.getString(1),
                     c.getString(2)));
-        } while(c.moveToNext());
-        c.close();
+        } while (c.moveToNext());
 
+        c.close();
         return notifications;
     }
 
-    public void insert(Object... values) {
-        db.execSQL("INSERT INTO "+tablename+'('+
-                TextUtils.join(", ", columns)+") VALUES("+
-                TextUtils.join(", ", Collections.nCopies(columns.length, '?'))+
-                ')', values);
+    public static String createDetailTable() {
+        return "CREATE TABLE " + detailTablename + '(' +
+                detailColumns[0] + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                detailColumns[1] + " INTEGER NOT NULL, " + detailColumns[2] + " TEXT NOT NULL, " +
+                detailColumns[3] + " TEXT NOT NULL, " + detailColumns[4] + " TEXT)";
     }
 
-    public void update(Object... values) {
-        db.execSQL("UPDATE "+tablename+" SET "+TextUtils.join(" = ?, ",
-                Arrays.copyOfRange(columns, 0, columns.length))+" = ? WHERE "+
-                columns[0]+" = ?", values);
+    ArrayList<NotificationDetail> selectDetail() {
+        ArrayList<NotificationDetail> notificationDetails = new ArrayList<>();
+        Cursor c = db.query(detailTablename, null, null, null,
+                null, null, detailColumns[0] + " ASC");
+
+        if (c.moveToFirst()) do {
+            notificationDetails.add(new NotificationDetail(c.getString(0), c.getInt(1),
+                    c.getString(2), c.getString(3), c.getString(4)));
+        } while (c.moveToNext());
+
+        c.close();
+        return notificationDetails;
     }
 
-    public void delete(Object... ids) {
-        db.execSQL("DELETE FROM "+tablename+" WHERE "+columns[0]+" IN("+
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?'))+')', ids);
+    void insertDetail(Object... values) {
+        insert(1, values);
     }
 
-    public void destroy() {
-        usdbh.close();
+    void deleteDetail(Object... ids) {
+        delete(1, ids);
     }
 
 }

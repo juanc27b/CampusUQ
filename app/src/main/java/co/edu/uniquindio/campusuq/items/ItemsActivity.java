@@ -110,9 +110,7 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
                 for (Item item : items) {
                     if (StringUtils.stripAccents(item.getTitle()).toLowerCase()
                             .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
-                        //items.add(0, items.remove(items.indexOf(item)));
-                        //mAdapter.setItems(items);
-                        recyclerView.getLayoutManager().scrollToPosition(items.indexOf(item));
+                        recyclerView.smoothScrollToPosition(items.indexOf(item));
                         return;
                     }
                 }
@@ -162,17 +160,20 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
                     category = getString(R.string.analytics_contatcs_category);
                     label = getString(R.string.analytics_directory_label);
                     WebService.PENDING_ACTION = WebService.ACTION_CONTACTS;
-                    loadContactCategories(this);
+                    intent = new Intent(this, ItemsActivity.class)
+                            .putExtra(Utilities.CATEGORY, R.string.directory);
                 } else if (getString(R.string.academic_offer).equals(title)) {
                     category = getString(R.string.analytics_programs_category);
                     label = getString(R.string.analytics_academic_offer_label);
                     WebService.PENDING_ACTION = WebService.ACTION_PROGRAMS;
-                    loadPrograms(this);
+                    intent = new Intent(this, ItemsActivity.class)
+                            .putExtra(Utilities.CATEGORY, R.string.academic_offer);
                 } else if (getString(R.string.academic_calendar).equals(title)) {
                     category = getString(R.string.analytics_events_category);
                     label = getString(R.string.analytics_academic_calendar_label);
                     WebService.PENDING_ACTION = WebService.ACTION_CALENDAR;
-                    loadEventCategories(this);
+                    intent = new Intent(this, ItemsActivity.class)
+                            .putExtra(Utilities.CATEGORY, R.string.academic_calendar);
                 } else if (getString(R.string.employment_exchange).equals(title)) {
                     category = getString(R.string.analytics_web_category);
                     label = getString(R.string.analytics_employment_exchange_label);
@@ -450,21 +451,51 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
             case R.string.institution:
                 itemsAdapter.setItems(ItemsPresenter.getInstitutionItems(this));
                 break;
-            /*case R.string.directory:
-                loadContactCategories(this);
+            case R.string.directory: {
+                if (!progressDialog.isShowing()) progressDialog.show();
+                ArrayList<Item> categories = ItemsPresenter.getContactCategories(this);
+
+                if (!categories.isEmpty()) {
+                    progressDialog.dismiss();
+                    itemsAdapter.setItems(categories);
+                } else if (!Utilities.haveNetworkConnection(this)) {
+                    Toast.makeText(this, R.string.no_internet,
+                            Toast.LENGTH_SHORT).show();
+                }
                 break;
-            case R.string.academic_offer:
-                loadPrograms(this);
+            }
+            case R.string.academic_offer: {
+                if (!progressDialog.isShowing()) progressDialog.show();
+                ArrayList<Item> programs = ItemsPresenter.getPrograms(this);
+
+                if (!programs.isEmpty()) {
+                    progressDialog.dismiss();
+                    itemsAdapter.setItems(programs);
+                } else if (!Utilities.haveNetworkConnection(this)) {
+                    Toast.makeText(this, R.string.no_internet,
+                            Toast.LENGTH_SHORT).show();
+                }
                 break;
-            case R.string.academic_calendar:
-                loadEventCategories(this);
-                break;*/
+            }
+            case R.string.academic_calendar: {
+                if (!progressDialog.isShowing()) progressDialog.show();
+                ArrayList<Item> categories = ItemsPresenter.getEventCategories(this);
+
+                if (!categories.isEmpty()) {
+                    progressDialog.dismiss();
+                    itemsAdapter.setItems(categories);
+                } else if (!Utilities.haveNetworkConnection(this)) {
+                    Toast.makeText(this, R.string.no_internet,
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
             case R.string.library_services:
                 itemsAdapter.setItems(ItemsPresenter.getLibraryItems(this));
                 break;
             default:
                 switch (subcategory) {
-                    case R.string.directory:
+                    case R.string.directory: {
                         ArrayList<Item> contacts = ItemsPresenter.getContacts(getIntent()
                                 .getStringExtra(Utilities.CATEGORY), this);
 
@@ -475,6 +506,7 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
 
                         itemsAdapter.setItems(contacts);
                         break;
+                    }
                     case R.string.academic_offer:
                         itemsAdapter.setItems(ItemsPresenter.getProgramItems(this));
                         break;
@@ -502,9 +534,11 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
             startActivity(new Intent(this, ItemsActivity.class)
                     .putExtra(Utilities.CATEGORY, R.string.services_module));
         } else if (subcategory == R.string.directory) {
-            loadContactCategories(this);
+            startActivity(new Intent(this, ItemsActivity.class)
+                    .putExtra(Utilities.CATEGORY, R.string.directory));
         } else if (subcategory == R.string.academic_offer) {
-            loadPrograms(this);
+            startActivity(new Intent(this, ItemsActivity.class)
+                    .putExtra(Utilities.CATEGORY, R.string.academic_offer));
         } else {
             super.onBackPressed();
         }
@@ -537,6 +571,12 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         super.onPause();
         // Unregister the listener when the application is paused
         unregisterReceiver(symbolsReceiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        recyclerView = null;
     }
 
     public void loadProgramContent(String name, int type) {

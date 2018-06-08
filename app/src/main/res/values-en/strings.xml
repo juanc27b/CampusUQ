@@ -162,27 +162,31 @@
 
     <string name="action_change_language">Change language</string>
     <string name="action_adjust_notifications">Adjust notifications</string>
+    <string name="action_notification_tray">Notification tray</string>
     <string name="action_delete_history">Delete history</string>
     <string name="action_login">User account</string>
     <string name="action_credits">Credits</string>
+
+    <string name="select_all">Select all</string>
+    <string name="delete">Delete</string>
 
     <string name="loading_content">Loading content</string>
     <string name="please_wait">Please wait …</string>
     <string name="no_internet">There isn\'t internet connection</string>
     <string name="empty_string">There cannot be empty fields</string>
-    <string name="downloading_informations">Downloading data (Informations)</string>
-    <string name="downloading_contacts">Downloading data (Contacts)</string>
-    <string name="downloading_programs">Downloading data (Programs)</string>
-    <string name="downloading_calendar">Downloading data (Calendar)</string>
-    <string name="downloading_events">Downloading data (Events)</string>
-    <string name="downloading_news">Downloading data (News)</string>
-    <string name="downloading_incidents">Downloading data (Incidents)</string>
-    <string name="downloading_communiques">Downloading data (Communiques)</string>
-    <string name="downloading_objects">Downloading data (Objects)</string>
-    <string name="downloading_dishes">Downloading data (Dishes)</string>
-    <string name="downloading_quotas">Downloading data (Quotas)</string>
-    <string name="downloading_emails">Downloading data (Emails)</string>
-    <string name="wait_to">Wait to have a better experience</string>
+    <string name="downloading_data">Downloading data</string>
+    <string name="wait_to_informations">Wait to have a better experience.\n\nDownloading informations…</string>
+    <string name="wait_to_contacts">Wait to have a better experience.\n\nDownloading contacts…</string>
+    <string name="wait_to_programs">Wait to have a better experience.\n\nDownloading programs…</string>
+    <string name="wait_to_calendar">Wait to have a better experience.\n\nDownloading calendar…</string>
+    <string name="wait_to_events">Wait to have a better experience.\n\nDownloading events…</string>
+    <string name="wait_to_news">Wait to have a better experience.\n\nDownloading news…</string>
+    <string name="wait_to_incidents">Wait to have a better experience.\n\nDownloading incidents…</string>
+    <string name="wait_to_communiques">Wait to have a better experience.\n\nDownloading communiques…</string>
+    <string name="wait_to_objects">Wait to have a better experience.\n\nDownloading objects…</string>
+    <string name="wait_to_dishes">Wait to have a better experience.\n\nDownloading dishes…</string>
+    <string name="wait_to_quotas">Wait to have a better experience.\n\nDownloading quotas…</string>
+    <string name="wait_to_emails">Wait to have a better experience.\n\nDownloading emails…</string>
     <string name="no_administrator">Only administrators can upload, modify or delete</string>
     <string name="no_propietary">Only the owner or an administrator can modify or delete</string>
 
@@ -340,6 +344,7 @@
     <string name="email_content_invalid">Content must be written</string>
 
     <string name="notifications_text">Notifications settings</string>
+    <string name="notifications_dialog">To adjust the notifications click on the menu of the three points on the top right and then on \"Notifications settings\"</string>
 
     <string name="ic_facebook_description">facebook icon</string>
     <string name="ic_twitter_description">twitter icon</string>

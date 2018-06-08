@@ -144,7 +144,7 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
                 for (Email email : emails) {
                     if(StringUtils.stripAccents(email.getName()).toLowerCase()
                             .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
-                        recyclerView.getLayoutManager().scrollToPosition(emails.indexOf(email));
+                        recyclerView.smoothScrollToPosition(emails.indexOf(email));
                         return;
                     }
                 }
@@ -221,6 +221,13 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
         super.onPause();
         // Unregister the listener when the application is paused
         unregisterReceiver(emailsReceiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        swipeRefreshLayout = null;
+        recyclerView = null;
     }
 
     /**

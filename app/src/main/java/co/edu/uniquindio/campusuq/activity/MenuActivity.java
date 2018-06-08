@@ -3,12 +3,14 @@ package co.edu.uniquindio.campusuq.activity;
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
@@ -45,7 +47,8 @@ public class MenuActivity extends MainActivity implements View.OnClickListener {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (progressDialog.isShowing()) {
-                progressDialog.setTitle(intent.getStringExtra(Utilities.FEEDBACK));
+                progressDialog.setMessage(getString(intent.getIntExtra(Utilities.FEEDBACK,
+                        R.string.wait_to_informations)));
                 int progress = intent.getIntExtra("PROGRESS", 0);
                 progressDialog.setProgress(progress);
                 if (progress == 12) progressDialog.dismiss();
@@ -79,6 +82,16 @@ public class MenuActivity extends MainActivity implements View.OnClickListener {
         stub.inflate();
 
         progressDialog = Utilities.getProgressDialog(this, false);
+        progressDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                new AlertDialog.Builder(MenuActivity.this)
+                        .setTitle(R.string.notifications_text)
+                        .setMessage(R.string.notifications_dialog)
+                        .setPositiveButton(R.string.dialog_ok, null)
+                        .show();
+            }
+        });
 
         findViewById(R.id.information_module_layout).setOnClickListener(this);
         findViewById(R.id.services_module_layout).setOnClickListener(this);

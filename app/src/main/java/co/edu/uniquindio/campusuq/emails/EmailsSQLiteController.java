@@ -2,28 +2,30 @@ package co.edu.uniquindio.campusuq.emails;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collections;
 
-import co.edu.uniquindio.campusuq.util.SQLiteHelper;
-import co.edu.uniquindio.campusuq.util.Utilities;
+import co.edu.uniquindio.campusuq.util.SQLiteController;
 
-public class EmailsSQLiteController {
+public class EmailsSQLiteController extends SQLiteController {
 
     private static final String tablename = "Correo";
     public static final String columns[] = {"_ID", "Nombre", "De", "Para", "Fecha", "Retazo",
             "Contenido", "History_ID"};
 
-    private SQLiteHelper usdbh;
-    private SQLiteDatabase db;
-
     public EmailsSQLiteController(Context context, int version) {
-        usdbh = new SQLiteHelper(context, Utilities.NOMBRE_BD , null, version);
-        db = usdbh.getWritableDatabase();
+        super(context, version);
+    }
+
+    @Override
+    protected String getTablename(int index) {
+        return tablename;
+    }
+
+    @Override
+    protected String[] getColumns(int index) {
+        return columns;
     }
 
     public static String createTable() {
@@ -36,39 +38,17 @@ public class EmailsSQLiteController {
 
     public ArrayList<Email> select(String limit) {
         ArrayList<Email> emails = new ArrayList<>();
-
         Cursor c = db.query(tablename, null, null, null,
                 null, null, columns[4] + " DESC", limit);
+
         if (c.moveToFirst()) do {
             emails.add(new Email(c.getString(0), c.getString(1), c.getString(2),
                     c.getString(3), c.getString(4), c.getString(5), c.getString(6),
                     new BigInteger(c.getString(7))));
         } while (c.moveToNext());
+
         c.close();
-
         return emails;
-    }
-
-    public void insert(Object... values) {
-        db.execSQL("INSERT INTO " + tablename + '(' +
-                TextUtils.join(", ", columns) + ") VALUES(" +
-                TextUtils.join(", ", Collections.nCopies(columns.length, '?')) +
-                ')', values);
-    }
-
-    void update(Object... values) {
-        db.execSQL("UPDATE " + tablename + " SET " +
-                TextUtils.join(" = ?, ", columns) + " = ? WHERE " +
-                columns[0] + " = ?", values);
-    }
-
-    public void delete(Object... ids) {
-        db.execSQL("DELETE FROM " + tablename + " WHERE " + columns[0] + " IN(" +
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
-    }
-
-    public void destroy() {
-        usdbh.close();
     }
 
 }

@@ -126,7 +126,7 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
                 for (Quota quota : quotas) {
                     if (StringUtils.stripAccents(quota.getName()).toLowerCase()
                             .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
-                        recyclerView.getLayoutManager().scrollToPosition(quotas.indexOf(quota));
+                        recyclerView.smoothScrollToPosition(quotas.indexOf(quota));
                         return;
                     }
                 }
@@ -260,6 +260,14 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
     protected void onPause() {
         super.onPause();
         unregisterReceiver(quotasReceiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        type = null;
+        swipeRefreshLayout = null;
+        recyclerView = null;
     }
 
 }

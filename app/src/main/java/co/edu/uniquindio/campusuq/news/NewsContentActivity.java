@@ -111,4 +111,14 @@ public class NewsContentActivity extends MainActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        title = null;
+        date = null;
+        author = null;
+        webView = null;
+        webSettings = null;
+    }
+
 }

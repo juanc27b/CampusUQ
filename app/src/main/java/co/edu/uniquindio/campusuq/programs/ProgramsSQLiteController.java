@@ -2,17 +2,14 @@ package co.edu.uniquindio.campusuq.programs;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
-import co.edu.uniquindio.campusuq.util.SQLiteHelper;
-import co.edu.uniquindio.campusuq.util.Utilities;
+import co.edu.uniquindio.campusuq.util.SQLiteController;
 
-public class ProgramsSQLiteController {
+public class ProgramsSQLiteController extends SQLiteController {
 
     private static final String tablename = "Programa";
     public static final String columns[] = {"_ID", "Categoria_ID", "Facultad_ID", "Nombre",
@@ -26,12 +23,18 @@ public class ProgramsSQLiteController {
     private static final String facultyTablename = "Programa_Facultad";
     static final String facultyColumns[] = {"_ID", "Nombre"};
 
-    private SQLiteHelper usdbh;
-    private SQLiteDatabase db;
-
     public ProgramsSQLiteController(Context context, int version) {
-        usdbh = new SQLiteHelper(context, Utilities.NOMBRE_BD , null, version);
-        db = usdbh.getWritableDatabase();
+        super(context, version);
+    }
+
+    @Override
+    protected String getTablename(int index) {
+        return new String[]{tablename, categoryTablename, facultyTablename}[index];
+    }
+
+    @Override
+    protected String[] getColumns(int index) {
+        return new String[][]{columns, categoryColumns, facultyColumns}[index];
     }
 
     public static String createTable(){
@@ -51,9 +54,9 @@ public class ProgramsSQLiteController {
 
     public ArrayList<Program> select(String selection, String... selectionArgs) {
         ArrayList<Program> programs = new ArrayList<>();
-
         Cursor c = db.query(tablename, null, selection, selectionArgs, null,
                 null, columns[3] + " ASC");
+
         if (c.moveToFirst()) do {
             programs.add(new Program(c.getString(0), c.getString(1), c.getString(2),
                     c.getString(3), c.getString(4), c.getString(5), c.getString(6),
@@ -61,19 +64,12 @@ public class ProgramsSQLiteController {
                     c.getString(11), c.getString(12), c.getString(13), c.getString(14),
                     c.getString(15), c.getString(16)));
         } while (c.moveToNext());
-        c.close();
 
+        c.close();
         return programs;
     }
 
-    public void insert(Object... values) {
-        db.execSQL("INSERT INTO " + tablename + '(' +
-                TextUtils.join(", ", columns) + ") VALUES(" +
-                TextUtils.join(", ", Collections.nCopies(columns.length, '?')) +
-                ')', values);
-    }
-
-    public void update(int column, Object... values) {
+    public void partialUpdate(int column, Object... values) {
         db.execSQL("UPDATE " + tablename + " SET " + TextUtils.join(" = ?, ", Arrays
                 .copyOfRange(columns, column, column + values.length - 1)) + " = ? WHERE " +
                 columns[0] + " = ?", values);
@@ -91,22 +87,19 @@ public class ProgramsSQLiteController {
 
     public ArrayList<ProgramCategory> selectCategory() {
         ArrayList<ProgramCategory> categories = new ArrayList<>();
-
         Cursor c = db.query(categoryTablename, null, null, null,
                 null, null, categoryColumns[0] + " ASC");
+
         if (c.moveToFirst()) do {
             categories.add(new ProgramCategory(c.getString(0), c.getString(1)));
         } while (c.moveToNext());
-        c.close();
 
+        c.close();
         return categories;
     }
 
     public void insertCategory(Object... values) {
-        db.execSQL("INSERT INTO " + categoryTablename + '(' +
-                TextUtils.join(", ", categoryColumns) + ") VALUES(" +
-                TextUtils.join(", ",
-                        Collections.nCopies(categoryColumns.length, '?')) + ')', values);
+        insert(1, values);
     }
 
     public void deleteCategory() {
@@ -121,30 +114,23 @@ public class ProgramsSQLiteController {
 
     public ArrayList<ProgramFaculty> selectFaculty() {
         ArrayList<ProgramFaculty> faculties = new ArrayList<>();
-
         Cursor c = db.query(facultyTablename, null, null, null,
                 null, null, facultyColumns[0]+" ASC");
+
         if (c.moveToFirst()) do {
             faculties.add(new ProgramFaculty(c.getString(0), c.getString(1)));
         } while (c.moveToNext());
-        c.close();
 
+        c.close();
         return faculties;
     }
 
     public void insertFaculty(Object... values) {
-        db.execSQL("INSERT INTO " + facultyTablename + '(' +
-                TextUtils.join(", ", facultyColumns) + ") VALUES(" +
-                TextUtils.join(", ",
-                        Collections.nCopies(facultyColumns.length, '?')) + ')', values);
+        insert(2, values);
     }
 
     public void deleteFaculty() {
         db.execSQL("DELETE FROM " + facultyTablename);
-    }
-
-    public void destroy() {
-        usdbh.close();
     }
 
 }

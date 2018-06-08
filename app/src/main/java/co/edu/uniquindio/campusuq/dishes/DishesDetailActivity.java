@@ -229,4 +229,17 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        intent = null;
+        dish = null;
+        name = null;
+        description = null;
+        price = null;
+        descriptionCount = null;
+        image = null;
+        imageFile = null;
+    }
+
 }

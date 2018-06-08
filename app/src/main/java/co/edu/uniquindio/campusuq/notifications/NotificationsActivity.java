@@ -130,4 +130,16 @@ public class NotificationsActivity extends MainActivity implements
                 .build());
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        events = null;
+        news = null;
+        academicCalendar = null;
+        lostObjects = null;
+        securitySystem = null;
+        billboardInformation = null;
+        institutionalMail = null;
+    }
+
 }

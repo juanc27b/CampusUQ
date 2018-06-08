@@ -69,8 +69,7 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
     private BroadcastReceiver newsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            int inserted = intent.getIntExtra("INSERTED", 0);
-            loadNews(inserted);
+            loadNews(intent.getIntExtra("INSERTED", 0));
         }
     };
 
@@ -174,7 +173,7 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                 for (New n : news) {
                     if (StringUtils.stripAccents(n.getName()).toLowerCase()
                             .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
-                        recyclerView.getLayoutManager().scrollToPosition(news.indexOf(n));
+                        recyclerView.smoothScrollToPosition(news.indexOf(n));
                         return;
                     }
                 }
@@ -352,6 +351,18 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
         super.onPause();
         // Unregister the listener when the application is paused
         unregisterReceiver(newsReceiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        action = null;
+        swipeRefreshLayout = null;
+        recyclerView = null;
+        facebookCallbackManager = null;
+        shareDialog = null;
+        mTwitterAuthClient = null;
+        twitterCallback = null;
     }
 
 }

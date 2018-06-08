@@ -23,11 +23,6 @@ import co.edu.uniquindio.campusuq.activity.MainActivity;
 
 public class EmailsContentActivity extends MainActivity {
 
-    private TextView name;
-    private TextView icon;
-    private TextView from;
-    private TextView date;
-
     public WebView webView;
     public WebSettings webSettings;
 
@@ -48,17 +43,17 @@ public class EmailsContentActivity extends MainActivity {
 
         Intent intent = getIntent();
 
-        name = findViewById(R.id.content_email_name);
-        icon = findViewById(R.id.content_email_icon);
-        from = findViewById(R.id.content_email_from);
-        date = findViewById(R.id.content_email_date);
+        TextView name = findViewById(R.id.content_email_name);
 
         name.setText(intent.getStringExtra(EmailsSQLiteController.columns[1]));
-        icon.setText(name.getText().subSequence(0, 1).toString().toUpperCase());
-        from.setText(intent.getStringExtra(EmailsSQLiteController.columns[2]));
+        ((TextView) findViewById(R.id.content_email_icon))
+                .setText(name.getText().subSequence(0, 1).toString().toUpperCase());
+        ((TextView) findViewById(R.id.content_email_from))
+                .setText(intent.getStringExtra(EmailsSQLiteController.columns[2]));
 
         try {
-            date.setText(DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.SHORT)
+            ((TextView) findViewById(R.id.content_email_date)).setText(DateFormat
+                    .getDateTimeInstance(DateFormat.FULL, DateFormat.SHORT)
                     .format(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ",
                             new Locale("es", "CO"))
                             .parse(intent.getStringExtra(EmailsSQLiteController.columns[4]))));
@@ -109,6 +104,13 @@ public class EmailsContentActivity extends MainActivity {
         // If it wasn't the Back key or there's no web page history, bubble up to the default
         // system behavior (probably exit the activity)
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        webView = null;
+        webSettings = null;
     }
 
 }

@@ -29,8 +29,8 @@ public class DishesAdapter extends RecyclerView.Adapter<DishesAdapter.DishViewHo
     /**
      * Constructor que asigna el arreglo de platos inicial y la interfaz para redireccionar el
      * procesamiento del click en un plato.
-     * @param dishes Arreglo de cupos.
-     * @param dishesActivity Actividad que implementa la interfaz OnClickQuotaListener.
+     * @param dishes Arreglo de platos.
+     * @param dishesActivity Actividad que implementa la interfaz OnClickDishListener.
      */
     DishesAdapter(ArrayList<Dish> dishes, DishesActivity dishesActivity) {
         this.dishes = dishes;
@@ -50,18 +50,18 @@ public class DishesAdapter extends RecyclerView.Adapter<DishesAdapter.DishViewHo
         /**
          * Obtiene los objetos de vista a partir de sus identificadores y asigna los listener de
          * click.
-         * @param view Vista de un item en la cual buscar las subvistas que se controlan en el
+         * @param itemView Vista de un item en la cual buscar las subvistas que se controlan en el
          *             adaptador.
          */
-        DishViewHolder(View view) {
-            super(view);
+        DishViewHolder(View itemView) {
+            super(itemView);
 
-            image = view.findViewById(R.id.dish_image);
-            name = view.findViewById(R.id.dish_name);
-            description = view.findViewById(R.id.dish_description);
-            price = view.findViewById(R.id.dish_price);
+            image = itemView.findViewById(R.id.dish_image);
+            name = itemView.findViewById(R.id.dish_name);
+            description = itemView.findViewById(R.id.dish_description);
+            price = itemView.findViewById(R.id.dish_price);
 
-            view.findViewById(R.id.dish_layout).setOnClickListener(this);
+            itemView.findViewById(R.id.dish_layout).setOnClickListener(this);
             image.setOnClickListener(this);
         }
 
@@ -108,7 +108,7 @@ public class DishesAdapter extends RecyclerView.Adapter<DishesAdapter.DishViewHo
 
     /**
      * Crea el portador de platos inflando su diseño.
-     * @param parent Vista donde inflar el portador de cupos.
+     * @param parent Vista donde inflar el portador de platos.
      * @param viewType Tipo de la vista (no utilizado).
      * @return Nuevo portador de platos creado.
      */

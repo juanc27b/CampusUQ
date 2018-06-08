@@ -154,6 +154,15 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
         unregisterReceiver(emailsReceiver);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        from = null;
+        to = null;
+        name = null;
+        content = null;
+    }
+
     /**
      * Called when an activity launched here (specifically, AccountPicker
      * and authorization) exits, giving you the requestCode you started it with,

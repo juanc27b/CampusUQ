@@ -112,4 +112,11 @@ public class WebContentActivity extends MainActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        webView = null;
+        webSettings = null;
+    }
+
 }

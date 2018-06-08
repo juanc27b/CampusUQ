@@ -248,7 +248,7 @@ public class AnnouncementsAdapter extends
      * Obtiene el arrego de enlaces de anuncios.
      * @return Arreglo de enlaces de anuncios
      */
-    public ArrayList<AnnouncementLink> getAnnouncementsLinks() {
+    ArrayList<AnnouncementLink> getAnnouncementsLinks() {
         return announcementsLinks;
     }
 

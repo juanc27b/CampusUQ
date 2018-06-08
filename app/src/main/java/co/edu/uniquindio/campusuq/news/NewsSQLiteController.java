@@ -6,16 +6,18 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
+import co.edu.uniquindio.campusuq.util.SQLiteController;
 import co.edu.uniquindio.campusuq.util.SQLiteHelper;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
-public class NewsSQLiteController {
+public class NewsSQLiteController extends SQLiteController {
 
     private static final String tablename = "Noticia";
-    public static final String columns[] = {"_ID", "Nombre", "Enlace", "Imagen", "Resumen",
-            "Contenido", "Fecha", "Autor"};
+    public static final String columns[] =
+            {"_ID", "Nombre", "Enlace", "Imagen", "Resumen", "Contenido", "Fecha", "Autor"};
 
     private static final String categoryTablename = "Noticia_Categoria";
     public static final String categoryColumns[] = {"_ID", "Nombre", "Enlace"};
@@ -23,12 +25,18 @@ public class NewsSQLiteController {
     private static final String relationTablename = "Noticia_Relacion";
     public static final String relationColumns[] = {"Categoria_ID", "Noticia_ID"};
 
-    private SQLiteHelper usdbh;
-    private SQLiteDatabase db;
-
     public NewsSQLiteController(Context context, int version) {
-        usdbh = new SQLiteHelper(context, Utilities.NOMBRE_BD , null, version);
-        db = usdbh.getWritableDatabase();
+        super(context, version);
+    }
+
+    @Override
+    protected String getTablename(int index) {
+        return new String[]{tablename, categoryTablename, relationTablename}[index];
+    }
+
+    @Override
+    protected String[] getColumns(int index) {
+        return new String[][]{columns, categoryColumns, relationColumns}[index];
     }
 
     public static String createTable(){
@@ -41,35 +49,17 @@ public class NewsSQLiteController {
 
     public ArrayList<New> select(String limit, String selection, String... selectionArgs) {
         ArrayList<New> news = new ArrayList<>();
-
         Cursor c = db.query(tablename, null, selection, selectionArgs, null,
                 null, columns[6] + " DESC", limit);
+
         if (c.moveToFirst()) do {
             news.add(new New(c.getString(0), c.getString(1), c.getString(2),
                     c.getString(3), c.getString(4), c.getString(5), c.getString(6),
                     c.getString(7)));
         } while (c.moveToNext());
+
         c.close();
-
         return news;
-    }
-
-    public void insert(Object... values) {
-        db.execSQL("INSERT INTO " + tablename + '(' +
-                TextUtils.join(", ", columns) + ") VALUES(" +
-                TextUtils.join(", ", Collections.nCopies(columns.length, '?')) +
-                ')', values);
-    }
-
-    public void update(Object... values) {
-        db.execSQL("UPDATE " + tablename + " SET " +
-                TextUtils.join(" = ?, ", columns) + " = ? WHERE " +
-                columns[0] + " = ?", values);
-    }
-
-    public void delete(Object... ids) {
-        db.execSQL("DELETE FROM " + tablename + " WHERE " + columns[0] + " IN(" +
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
     }
 
     public static String createCategoryTable(){
@@ -82,35 +72,28 @@ public class NewsSQLiteController {
     public ArrayList<NewCategory> selectCategory(String limit, String selection,
                                                  String... selectionArgs) {
         ArrayList<NewCategory> categories = new ArrayList<>();
-
         Cursor c = db.query(categoryTablename, null, selection, selectionArgs,
                 null, null, null, limit);
+
         if (c.moveToFirst()) do {
             categories.add(new NewCategory(c.getString(0), c.getString(1),
                     c.getString(2)));
         } while (c.moveToNext());
-        c.close();
 
+        c.close();
         return categories;
     }
 
     public void insertCategory(Object... values) {
-        db.execSQL("INSERT INTO " + categoryTablename + '(' +
-                TextUtils.join(", ", categoryColumns) + ") VALUES(" +
-                TextUtils.join(", ",
-                        Collections.nCopies(categoryColumns.length, '?')) + ')', values);
+        insert(1, values);
     }
 
     public void updateCategory(Object... values) {
-        db.execSQL("UPDATE " + categoryTablename + " SET " +
-                TextUtils.join(" = ?, ", categoryColumns) + " = ? WHERE " +
-                categoryColumns[0] + " = ?", values);
+        update(1, values);
     }
 
     public void deleteCategory(Object... ids) {
-        db.execSQL("DELETE FROM " + categoryTablename + " WHERE " +
-                categoryColumns[0] + " IN(" +
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
+        delete(1, ids);
     }
 
     public static String createRelationTable(){
@@ -124,26 +107,19 @@ public class NewsSQLiteController {
 
     public ArrayList<NewRelation> selectRelation(String selection, String... selectionArgs) {
         ArrayList<NewRelation> relations = new ArrayList<>();
-
         Cursor c = db.query(relationTablename, null, selection, selectionArgs,
                 null, null, null);
+
         if (c.moveToFirst()) do {
             relations.add(new NewRelation(c.getString(0), c.getString(1)));
         } while (c.moveToNext());
-        c.close();
 
+        c.close();
         return relations;
     }
 
     public void insertRelation(Object... values) {
-        db.execSQL("INSERT INTO " + relationTablename + '(' +
-                TextUtils.join(", ", relationColumns) + ") VALUES(" +
-                TextUtils.join(", ",
-                        Collections.nCopies(relationColumns.length, '?')) + ')', values);
-    }
-
-    public void destroy() {
-        usdbh.close();
+        insert(2, values);
     }
 
 }

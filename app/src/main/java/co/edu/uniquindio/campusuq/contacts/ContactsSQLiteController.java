@@ -2,20 +2,16 @@ package co.edu.uniquindio.campusuq.contacts;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
-import co.edu.uniquindio.campusuq.util.SQLiteHelper;
-import co.edu.uniquindio.campusuq.util.Utilities;
+import co.edu.uniquindio.campusuq.util.SQLiteController;
 
 /**
  * Controlador de la base de datos para las tablas Contacto y Contacto_Categoria, que hacen parte de
  * la funcionalidad de Directorio telefónico.
  */
-public class ContactsSQLiteController {
+public class ContactsSQLiteController extends SQLiteController {
 
     private static final String tablename = "Contacto";
     public static final String columns[] = {"_ID", "Categoria_ID", "Nombre", "Direccion",
@@ -23,9 +19,6 @@ public class ContactsSQLiteController {
 
     private static final String categoryTablename = "Contacto_Categoria";
     public static final String categoryColumns[] = {"_ID", "Nombre", "Enlace"};
-
-    private SQLiteHelper usdbh;
-    private SQLiteDatabase db;
 
     /**
      * Constructor del controlador de la base de datos, el cual utiliza un SQLiteHelper para
@@ -35,8 +28,17 @@ public class ContactsSQLiteController {
      * @param version Versión de la base de datos.
      */
     public ContactsSQLiteController(Context context, int version) {
-        usdbh = new SQLiteHelper(context, Utilities.NOMBRE_BD , null, version);
-        db = usdbh.getWritableDatabase();
+        super(context, version);
+    }
+
+    @Override
+    protected String getTablename(int index) {
+        return new String[]{tablename, categoryTablename}[index];
+    }
+
+    @Override
+    protected String[] getColumns(int index) {
+        return new String[][]{columns, categoryColumns}[index];
     }
 
     /**
@@ -61,39 +63,17 @@ public class ContactsSQLiteController {
      */
     public ArrayList<Contact> select(String selection, String... selectionArgs) {
         ArrayList<Contact> contacts = new ArrayList<>();
-
         Cursor c = db.query(tablename, null, selection, selectionArgs, null,
                 null, columns[2] + " ASC");
+
         if (c.moveToFirst()) do {
             contacts.add(new Contact(c.getString(0), c.getString(1), c.getString(2),
                     c.getString(3), c.getString(4), c.getString(5), c.getString(6),
                     c.getString(7)));
         } while (c.moveToNext());
+
         c.close();
-
         return contacts;
-    }
-
-    /**
-     * Inserta en la base de datos un contacto con los valores de las columnas pasados como
-     * parámetro a la función
-     * @param values Valores de las columnas del contacto.
-     */
-    public void insert(Object... values) {
-        db.execSQL("INSERT INTO " + tablename + '(' +
-                TextUtils.join(", ", columns) + ") VALUES(" +
-                TextUtils.join(", ", Collections.nCopies(columns.length, '?')) +
-                ')', values);
-    }
-
-    /**
-     * Elimina de la base de datos los contactos cuyas IDs se encuentren dentro del arreglo de
-     * IDs parado como parámetro.
-     * @param ids Arreglo de IDs de los contactos que se quiere eliminar.
-     */
-    public void delete(Object... ids) {
-        db.execSQL("DELETE FROM " + tablename + " WHERE " + columns[0] + " IN(" +
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
     }
 
     /**
@@ -119,15 +99,15 @@ public class ContactsSQLiteController {
     public ArrayList<ContactCategory> selectCategory(String limit, String selection,
                                                      String... selectionArgs) {
         ArrayList<ContactCategory> categories = new ArrayList<>();
-
         Cursor c = db.query(categoryTablename, null, selection, selectionArgs,
                 null, null, categoryColumns[1] + " ASC", limit);
+
         if (c.moveToFirst()) do {
             categories.add(new ContactCategory(c.getString(0), c.getString(1),
                     c.getString(2)));
         } while (c.moveToNext());
-        c.close();
 
+        c.close();
         return categories;
     }
 
@@ -137,10 +117,7 @@ public class ContactsSQLiteController {
      * @param values Valores de las columnas de la categoría de contacto.
      */
     public void insertCategory(Object... values) {
-        db.execSQL("INSERT INTO " + categoryTablename + '(' +
-                TextUtils.join(", ", categoryColumns) + ") VALUES(" +
-                TextUtils.join(", ",
-                        Collections.nCopies(categoryColumns.length, '?')) + ')', values);
+        insert(1, values);
     }
 
     /**
@@ -149,16 +126,7 @@ public class ContactsSQLiteController {
      * @param ids Arreglo de IDs de las categorías de contactos que se quiere eliminar.
      */
     public void deleteCategory(Object... ids) {
-        db.execSQL("DELETE FROM " + categoryTablename + " WHERE " +
-                categoryColumns[0] + " IN(" +
-                TextUtils.join(", ", Collections.nCopies(ids.length, '?')) + ')', ids);
-    }
-
-    /**
-     * Método para cerrar cualquier conexión abierta a la base de datos.
-     */
-    public void destroy() {
-        usdbh.close();
+        delete(1, ids);
     }
 
 }

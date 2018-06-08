@@ -46,14 +46,22 @@ public class ObjectsPresenter {
         return objects;
     }
 
+    public static ArrayList<LostObject> loadReadedObjects(Context context) {
+        ObjectsSQLiteController dbController = new ObjectsSQLiteController(context, 1);
+        ArrayList<LostObject> objects = dbController
+                .select(null, ObjectsSQLiteController.columns[9] + " = 1");
+        dbController.destroy();
+        return objects;
+    }
+
     /**
      * Borra el historial de objetos perdidos.
      * @param context Contexto utilizado para crear una instancia del controlador de la base de
      *                datos.
      */
-    public static void deleteHistory(Context context) {
+    public static void deleteHistory(Context context, Object... ids) {
         ObjectsSQLiteController dbController = new ObjectsSQLiteController(context, 1);
-        dbController.unreadAll();
+        dbController.unreaded(ids);
         dbController.destroy();
     }
 

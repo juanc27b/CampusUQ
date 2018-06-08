@@ -232,8 +232,7 @@ public class AnnouncementsActivity extends MainActivity
                 for (Announcement announcement : announcements) {
                     if (StringUtils.stripAccents(announcement.getName()).toLowerCase()
                             .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
-                        recyclerView.getLayoutManager()
-                                .scrollToPosition(announcements.indexOf(announcement));
+                        recyclerView.smoothScrollToPosition(announcements.indexOf(announcement));
                         return;
                     }
                 }
@@ -533,6 +532,20 @@ public class AnnouncementsActivity extends MainActivity
     protected void onPause() {
         super.onPause();
         unregisterReceiver(announcementsReceiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        action = null;
+        report = null;
+        fab = null;
+        swipeRefreshLayout = null;
+        recyclerView = null;
+        facebookCallbackManager = null;
+        shareDialog = null;
+        mTwitterAuthClient = null;
+        twitterCallback = null;
     }
 
 }

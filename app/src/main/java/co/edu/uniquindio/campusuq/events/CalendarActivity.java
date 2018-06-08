@@ -64,7 +64,7 @@ public class CalendarActivity extends MainActivity
                 for (CalendarItem item : items) {
                     if (StringUtils.stripAccents(item.getEvent()).toLowerCase()
                             .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
-                        recyclerView.getLayoutManager().scrollToPosition(items.indexOf(item));
+                        recyclerView.smoothScrollToPosition(items.indexOf(item));
                         return;
                     }
                 }
@@ -91,6 +91,14 @@ public class CalendarActivity extends MainActivity
                 .putExtra("EVENT", ((CalendarItemsAdapter) recyclerView.getAdapter())
                         .getItems().get(index).getEvent())
                 .putExtra(Utilities.CATEGORY, category));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        categoryText = null;
+        recyclerView = null;
+        category = null;
     }
 
 }
