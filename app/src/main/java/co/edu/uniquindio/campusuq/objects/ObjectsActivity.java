@@ -192,6 +192,13 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                 objectsAdapter.getItemCount() + (inserted > 0 ? inserted : 3)));
         recyclerView.getLayoutManager().scrollToPosition(scrollTo);
 
+        if (objectsAdapter.getItemCount() == 0 &&
+                !WebService.PENDING_ACTION.equals(WebService.ACTION_OBJECTS)) {
+            WebService.PENDING_ACTION = WebService.ACTION_OBJECTS;
+            WebBroadcastReceiver.startService(this,
+                    WebService.ACTION_OBJECTS, WebService.METHOD_GET, null);
+        }
+
         if (objectsAdapter.getItemCount() > 0) swipeRefreshLayout.setRefreshing(false);
     }
 
@@ -243,14 +250,10 @@ public class ObjectsActivity extends MainActivity implements ObjectsAdapter.OnCl
                             Toast.LENGTH_SHORT).show();
                 }
                 break;
-            case ObjectsAdapter.READED: {
-                ObjectsSQLiteController dbController =
-                        new ObjectsSQLiteController(this, 1);
-                dbController.readed(object.get_ID());
-                dbController.destroy();
+            case ObjectsAdapter.READED:
+                new ObjectsSQLiteController(this, 1).readed(object.get_ID());
                 loadObjects(0);
                 break;
-            }
             case ObjectsAdapter.FOUND:
                 if (user != null && !"campusuq@uniquindio.edu.co".equals(user.getEmail())) {
                     try {

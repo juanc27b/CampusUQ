@@ -1,15 +1,11 @@
 package co.edu.uniquindio.campusuq.activity;
 
-import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -67,9 +63,8 @@ public class MenuActivity extends MainActivity implements View.OnClickListener {
     /**
      * Asigna el fondo de la actividad, infla el diseño del menú, asigna listeners a cada uno de los
      * módulos para abrir las actividades correspondientes, asigna el diálogo de progreso a ser
-     * mostrado cuando se deben descargar los datos de la aplicación, pide los permisos necesarios
-     * para el correcto funcionamiento de la aplicación (API >= 23) si no los tiene, y por último
-     * inicia la descarga de datos si la aplicación no dispone de ellos.
+     * mostrado cuando se deben descargar los datos de la aplicación, y por último inicia la
+     * descarga de datos.
      * @param savedInstanceState Parámetro usado para recuperar estados anteriores de la actividad.
      */
     @Override
@@ -97,42 +92,6 @@ public class MenuActivity extends MainActivity implements View.OnClickListener {
         findViewById(R.id.services_module_layout).setOnClickListener(this);
         findViewById(R.id.state_module_layout).setOnClickListener(this);
         findViewById(R.id.communication_module_layout).setOnClickListener(this);
-
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                        PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                        PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION) !=
-                        PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-        } else {
-            loadContent();
-        }
-    }
-
-    /**
-     * Callback para el resultado de la solicitud de permisos, en el que se inicia la descarga de
-     * datos de la aplicación si la misma no dispone de ellos en el momento. Si el usuario no da
-     * los permisos entonces no podrá visualizar multimedia de la aplicación (imágenes y videos) y
-     * tampoco dispondrá de GPS en la funcionalidad del Mapa de la universidad hasta que decida
-     * otorgar los permisos.
-     * @param requestCode Código de la solicitud.
-     * @param permissions Arreglo de permisos que se solicitaron.
-     * @param grantResults Resultados de las solicitudes.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         loadContent();
     }

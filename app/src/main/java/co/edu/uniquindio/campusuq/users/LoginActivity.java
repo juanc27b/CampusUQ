@@ -33,7 +33,7 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
     private EditText password;
 
     private int category;
-    private EmailsPresenter emailsPresenter;
+    private EmailsPresenter emailsPresenter = new EmailsPresenter(this);
 
     private IntentFilter usersFilter = new IntentFilter(WebService.ACTION_USERS);
     private BroadcastReceiver usersReceiver = new BroadcastReceiver() {
@@ -55,8 +55,6 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
 
     public LoginActivity() {
         super.setHasSearch(false);
-
-        emailsPresenter = new EmailsPresenter(this);
     }
 
     @Override
@@ -153,6 +151,14 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
     protected void onPause() {
         super.onPause();
         unregisterReceiver(usersReceiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        title = null;
+        email = null;
+        password = null;
     }
 
     /**

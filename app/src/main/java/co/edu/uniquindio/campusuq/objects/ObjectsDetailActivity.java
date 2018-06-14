@@ -1,11 +1,15 @@
 package co.edu.uniquindio.campusuq.objects;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -185,10 +189,7 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
                 break;
             }
             case R.id.object_detail_image:
-                startActivityForResult(Intent.createChooser(
-                        new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                                .setType("image/*"),
-                        getString(R.string.select_image)), REQUEST_IMAGE);
+                getImage();
                 break;
             case R.id.object_detail_ok:
                 if (Utilities.haveNetworkConnection(this)) {
@@ -244,6 +245,33 @@ public class ObjectsDetailActivity extends MainActivity implements View.OnClickL
                 break;
             default:
                 break;
+        }
+    }
+
+    private void getImage() {
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
+        } else {
+            startActivityForResult(Intent.createChooser(
+                    new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                            .setType("image/*"),
+                    getString(R.string.select_image)), REQUEST_IMAGE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            getImage();
+        } else {
+            Toast.makeText(this,
+                    R.string.read_permission_required,
+                    Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -18,13 +18,8 @@ class QuotasPresenter {
      * @return Arreglo de cupos del tipo especificado obtenido de la base de datos.
      */
     static ArrayList<Quota> loadQuotas(Context context, String type) {
-        QuotasSQLiteController dbController = new QuotasSQLiteController(context, 1);
-
-        ArrayList<Quota> quotas =
-                dbController.select(QuotasSQLiteController.columns[1]+" = ?", type);
-
-        dbController.destroy();
-        return quotas;
+        return new QuotasSQLiteController(context, 1)
+                .select(QuotasSQLiteController.columns[1] + " = ?", type);
     }
 
 }

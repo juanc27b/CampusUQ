@@ -228,14 +228,12 @@ public class ItemsPresenter {
             content.append(information.getContent());
         }
 
-        dbController.destroy();
-
         info[0] = link;
         info[1] = content.toString();
         return info;
     }
 
-    public static ArrayList<Item> getContactCategories(Context context) {
+    static ArrayList<Item> getContactCategories(Context context) {
         ArrayList<Item> items = new ArrayList<>();
 
         ContactsSQLiteController dbController = new ContactsSQLiteController(context, 1);
@@ -249,8 +247,6 @@ public class ItemsPresenter {
             items.add(new Item(getColor(), 0, category.getName(),
                     context.getString(R.string.contacts, contacts.size())));
         }
-
-        dbController.destroy();
 
         return items;
     }
@@ -277,12 +273,10 @@ public class ItemsPresenter {
             }
         }
 
-        dbController.destroy();
-
         return items;
     }
 
-    public static ArrayList<Item> getPrograms(Context context) {
+    static ArrayList<Item> getPrograms(Context context) {
         ArrayList<Item> items = new ArrayList<>();
 
         ProgramsSQLiteController dbController = new ProgramsSQLiteController(context, 1);
@@ -339,8 +333,6 @@ public class ItemsPresenter {
             }
         }
 
-        dbController.destroy();
-
         return items;
     }
 
@@ -349,8 +341,6 @@ public class ItemsPresenter {
 
         ArrayList<Program> programs =
                 dbController.select(ProgramsSQLiteController.columns[3] + " = ?", name);
-
-        dbController.destroy();
 
         if (!programs.isEmpty()) {
             Program program = programs.get(0);
@@ -389,8 +379,6 @@ public class ItemsPresenter {
             Item item = new Item(getColor(), 0, category.getName(), description);
             items.add(item);
         }
-
-        dbController.destroy();
 
         return items;
     }

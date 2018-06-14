@@ -1,10 +1,12 @@
 package co.edu.uniquindio.campusuq.maps;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.view.ViewStub;
@@ -49,7 +51,8 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
     private GoogleMap mMap;
     private StreetViewPanorama mPanorama;
     private final LatLng UNIVERSIDAD = new LatLng(4.55435, -75.6601);
-    private final LatLng CIENCIAS_BASICAS = new LatLng(4.552531396833602, -75.65901193767786);
+    private final LatLng CIENCIAS_BASICAS =
+            new LatLng(4.552531396833602, -75.65901193767786);
     private LatLng location;
 
     public ArrayList<String> tags = new ArrayList<>();
@@ -93,11 +96,14 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
                     mapLayout.setVisibility(View.GONE);
                     streetViewLayout.setVisibility(View.VISIBLE);
                     isMapEnabled = false;
+
                     if (!isStreetViewReady) {
-                        // Se obtiene el StreetViewPanoramaFragment y se notifica cuando la vista esté disponible.
+                        // Se obtiene el StreetViewPanoramaFragment y se notifica cuando la vista
+                        // esté disponible.
                         ((StreetViewPanoramaFragment) getFragmentManager()
                                 .findFragmentById(R.id.streetviewpanorama))
-                                .getStreetViewPanoramaAsync(MapsActivity.this);
+                                .getStreetViewPanoramaAsync(
+                                        MapsActivity.this);
                         isStreetViewReady = true;
                     }
                 } else {
@@ -119,6 +125,7 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
             boolean found = false;
+
             for (int i = 0; i < 41; i++) {
                 if (StringUtils.stripAccents(tags.get(i)).toLowerCase()
                         .contains(StringUtils.stripAccents(query.trim()).toLowerCase())) {
@@ -158,17 +165,14 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
         mMap = googleMap;
 
         if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                        Manifest.permission.ACCESS_FINE_LOCATION) !=
                         PackageManager.PERMISSION_GRANTED) {
-            // Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+        } else {
             mMap.setMyLocationEnabled(true);
         }
 
@@ -191,16 +195,30 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
                 isMapEnabled = false;
                 if (!isStreetViewReady) {
                     location = latLng;
-                    // Se obtiene el StreetViewPanoramaFragment y se notifica cuando la vista esté disponible.
+                    // Se obtiene el StreetViewPanoramaFragment y se notifica cuando la vista esté
+                    // disponible.
                     ((StreetViewPanoramaFragment) getFragmentManager()
                             .findFragmentById(R.id.streetviewpanorama))
-                            .getStreetViewPanoramaAsync(MapsActivity.this);
+                            .getStreetViewPanoramaAsync(
+                                    MapsActivity.this);
                     isStreetViewReady = true;
                 } else {
                     showStreetView(latLng);
                 }
             }
         });
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        }
     }
 
     @Override
@@ -311,6 +329,17 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
         locations.add(new LatLng(4.554549070025962, -75.66203378140926));
         locations.add(new LatLng(4.554054428123737, -75.66225606948137));
         locations.add(new LatLng(4.553856237049898, -75.66203948110342));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mapLayout = null;
+        streetViewLayout = null;
+        changeButton = null;
+        mMap = null;
+        mPanorama = null;
+        location = null;
     }
 
 }

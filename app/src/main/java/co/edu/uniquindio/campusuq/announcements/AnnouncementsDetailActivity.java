@@ -1,11 +1,15 @@
 package co.edu.uniquindio.campusuq.announcements;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -300,11 +304,31 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
     }
 
     private void getImage(int requestCode) {
-        startActivityForResult(Intent.createChooser(
-                new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                        .setType("image/* video/*")
-                        .putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/*", "video/*"}),
-                getString(R.string.select_image_or_video)), requestCode);
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, requestCode);
+        } else {
+            startActivityForResult(Intent.createChooser(
+                    new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                            .setType("image/* video/*")
+                            .putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/*", "video/*"}),
+                    getString(R.string.select_image_or_video)), requestCode);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            getImage(requestCode);
+        } else {
+            Toast.makeText(this,
+                    R.string.read_permission_required,
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**

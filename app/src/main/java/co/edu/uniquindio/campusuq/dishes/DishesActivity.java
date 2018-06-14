@@ -176,6 +176,13 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
                 dishesAdapter.getItemCount() + (inserted > 0 ? inserted : 12)));
         recyclerView.getLayoutManager().scrollToPosition(scrollTo);
 
+        if (dishesAdapter.getItemCount() == 0 &&
+                !WebService.PENDING_ACTION.equals(WebService.ACTION_DISHES)) {
+            WebService.PENDING_ACTION = WebService.ACTION_DISHES;
+            WebBroadcastReceiver.startService(this,
+                    WebService.ACTION_DISHES, WebService.METHOD_GET, null);
+        }
+
         if (dishesAdapter.getItemCount() > 0) swipeRefreshLayout.setRefreshing(false);
     }
 

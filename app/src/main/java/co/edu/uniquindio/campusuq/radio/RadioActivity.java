@@ -232,5 +232,15 @@ public class RadioActivity extends MainActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        play = null;
+        stop = null;
+        volume = null;
+        seekBar = null;
+        mMediaBrowser = null;
+        controllerCallback = null;
+    }
 
 }

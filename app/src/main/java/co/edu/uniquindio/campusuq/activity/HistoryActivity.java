@@ -208,4 +208,15 @@ public class HistoryActivity extends MainActivity implements View.OnClickListene
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        noRecords = null;
+        historySelectAll = null;
+        history = null;
+        objectsHistory = null;
+        incidentsHistory = null;
+        communiquesHistory = null;
+    }
+
 }

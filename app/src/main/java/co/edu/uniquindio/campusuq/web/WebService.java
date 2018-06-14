@@ -351,12 +351,10 @@ public class WebService extends IntentService {
                                 R.string.security_system : R.string.billboard_information))
                         .setContentText(announcement.getName())
                         .setSubText(announcement.getDescription());
-                AnnouncementsSQLiteController dbController =
-                        new AnnouncementsSQLiteController(getApplicationContext(), 1);
-                ArrayList<AnnouncementLink> links = dbController.selectLink(
-                        AnnouncementsSQLiteController.linkColumns[1] + " = ?",
-                        announcement.get_ID());
-                dbController.destroy();
+                ArrayList<AnnouncementLink> links =
+                        new AnnouncementsSQLiteController(getApplicationContext(), 1)
+                                .selectLink(AnnouncementsSQLiteController.linkColumns[1] +
+                                        " = ?", announcement.get_ID());
                 file = links.size() > 0 ? new File(links.get(0).getLink()) : new File("");
                 notificationDetail.setCategory(type.equals(ACTION_INCIDENTS) ?
                         R.string.security_system : R.string.billboard_information);
@@ -599,8 +597,6 @@ public class WebService extends IntentService {
                     Log.i(TAG, "delete " + image + ": " + new File(image).delete());
                 }
             }
-
-            dbController.destroy();
         }
 
         sendBroadcast(new Intent(ACTION_NEWS)
@@ -652,8 +648,6 @@ public class WebService extends IntentService {
                     }
                 }
             }
-
-            dbController.destroy();
         }
 
         sendBroadcast(new Intent(PENDING_ACTION));
@@ -680,8 +674,6 @@ public class WebService extends IntentService {
                             contact.getAdditionalInformation());
                 }
             }
-
-            dbController.destroy();
         }
 
         sendBroadcast(new Intent(PENDING_ACTION));
@@ -739,7 +731,6 @@ public class WebService extends IntentService {
             }
         }
 
-        dbController.destroy();
         sendBroadcast(new Intent(PENDING_ACTION));
     }
 
@@ -839,7 +830,6 @@ public class WebService extends IntentService {
             }
         }
 
-        dbController.destroy();
         sendBroadcast(new Intent(PENDING_ACTION));
     }
 
@@ -996,7 +986,6 @@ public class WebService extends IntentService {
 
                     dbController.delete(_IDs.toArray());
                 }
-                dbController.destroy();
                 break;
             }
             default:
@@ -1095,8 +1084,6 @@ public class WebService extends IntentService {
                         Log.i(TAG, "delete " + image + ": " + new File(image).delete());
                     }
                 }
-
-                dbController.destroy();
                 break;
             }
             default:
@@ -1176,7 +1163,6 @@ public class WebService extends IntentService {
                         Log.i(TAG, "delete " + image + ": " + new File(image).delete());
                     }
                 }
-                dbController.destroy();
                 break;
             }
             default:
@@ -1239,7 +1225,6 @@ public class WebService extends IntentService {
 
                 // Se eliminan los items que hay en la aplicacion pero no en el servidor
                 if (!quotas.isEmpty()) dbController.delete(_IDs.toArray());
-                dbController.destroy();
                 break;
             }
             default:
@@ -1294,8 +1279,6 @@ public class WebService extends IntentService {
                     }
                     break;
             }
-
-            dbController.destroy();
         }
 
         sendBroadcast(new Intent(ACTION_USERS)
@@ -1368,8 +1351,6 @@ public class WebService extends IntentService {
                         } catch (UserRecoverableAuthIOException e) {
                             intent = e.getIntent();
                         }
-
-                        dbController.destroy();
                     }
                     break;
             }

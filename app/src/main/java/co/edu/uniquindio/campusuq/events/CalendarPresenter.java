@@ -27,9 +27,11 @@ class CalendarPresenter {
         for (EventRelation event : events) {
 
             ArrayList<EventRelation> periods = dbController.selectRelation(
-                    new String[]{EventsSQLiteController.relationColumns[1], EventsSQLiteController.relationColumns[2]},
+                    new String[]{EventsSQLiteController.relationColumns[1],
+                            EventsSQLiteController.relationColumns[2]},
                     EventsSQLiteController.relationColumns[0] + " = ? AND " +
-                            EventsSQLiteController.relationColumns[1] + " = ?", categoryID, event.getEvent_ID());
+                            EventsSQLiteController.relationColumns[1] + " = ?",
+                    categoryID, event.getEvent_ID());
 
             String periodIDs = "";
             for (EventRelation period : periods) {
@@ -84,12 +86,11 @@ class CalendarPresenter {
 
         }
 
-        dbController.destroy();
-
         return items;
     }
 
-    static ArrayList<CalendarDetailItem> getCalendarDetailItems(String event, String category, Context context) {
+    static ArrayList<CalendarDetailItem> getCalendarDetailItems(String event, String category,
+                                                                Context context) {
         ArrayList<CalendarDetailItem> items = new ArrayList<>();
 
         EventsSQLiteController dbController = new EventsSQLiteController(context, 1);
@@ -155,8 +156,6 @@ class CalendarPresenter {
             }
 
         }
-
-        dbController.destroy();
 
         return items;
     }

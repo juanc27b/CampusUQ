@@ -99,9 +99,4 @@ public abstract class SQLiteController {
         }
     }
 
-    /**
-     * Destruye el controlador de la base de datos.
-     */
-    public void destroy() {}
-
 }

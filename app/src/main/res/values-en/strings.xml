@@ -222,6 +222,8 @@
     <string name="user_detail_password_verify">Verify Password</string>
     <string name="user_detail_password_verify_hint">Enter the same password as the previous field</string>
 
+    <string name="read_permission_required">Read permissions are required to execute this action</string>
+
     <string name="announcement_image_description">Announcement image</string>
     <string name="announcement_sample_date">September 5, 2:10 PM</string>
     <string name="announcement_sample_name">Integral Calculus Notes G1</string>
@@ -351,7 +353,7 @@
     <string name="ic_whatsapp_description">whatsapp icon</string>
 
     <string name="social_ok">Successful operation</string>
-    <string name="social_error">Error in the operation</string>
+    <string name="social_error">The operation could not be performed due to invalid data, internet problems or the application of the social network has not been installed</string>
     <string name="no_whatsapp">WhatsApp has not been installed</string>
     <string name="undefined">Undefined</string>
     <string name="get_image_error">Error getting the image</string>

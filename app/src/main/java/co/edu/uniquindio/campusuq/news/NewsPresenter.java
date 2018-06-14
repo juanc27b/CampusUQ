@@ -31,7 +31,6 @@ class NewsPresenter {
                     ')', New_IDs);
         }
 
-        dbController.destroy();
         return news;
     }
 

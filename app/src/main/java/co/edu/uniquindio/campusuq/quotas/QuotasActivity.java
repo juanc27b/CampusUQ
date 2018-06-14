@@ -178,6 +178,13 @@ public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClic
         QuotasAdapter quotasAdapter = (QuotasAdapter) recyclerView.getAdapter();
         quotasAdapter.setQuotas(QuotasPresenter.loadQuotas(this, type));
 
+        if (quotasAdapter.getItemCount() == 0 &&
+                !WebService.PENDING_ACTION.equals(WebService.ACTION_QUOTAS)) {
+            WebService.PENDING_ACTION = WebService.ACTION_QUOTAS;
+            WebBroadcastReceiver.startService(this,
+                    WebService.ACTION_QUOTAS, WebService.METHOD_GET, null);
+        }
+
         if (quotasAdapter.getItemCount() > 0) swipeRefreshLayout.setRefreshing(false);
     }
 

@@ -26,28 +26,15 @@ public class AnnouncementsPresenter {
      * @return Arreglo de anuncios obtenido de la base de datos.
      */
     static ArrayList<Announcement> loadAnnouncements(String action, Context context, int limit) {
-        AnnouncementsSQLiteController dbController =
-                new AnnouncementsSQLiteController(context, 1);
-
-        ArrayList<Announcement> announcements = dbController.select("" + limit,
+        return new AnnouncementsSQLiteController(context, 1).select("" + limit,
                 AnnouncementsSQLiteController.columns[2] + " = ? AND " +
                         AnnouncementsSQLiteController.columns[6] + " = 0",
                 WebService.ACTION_INCIDENTS.equals(action) ? "I" : "C");
-
-        dbController.destroy();
-        return announcements;
     }
 
     public static Announcement getAnnouncementByID(String _ID, Context context) {
-        AnnouncementsSQLiteController dbController =
-                new AnnouncementsSQLiteController(context, 1);
-
-        ArrayList<Announcement> announcements = dbController.select("1",
-                AnnouncementsSQLiteController.columns[0] + " = ?", _ID);
-
-        dbController.destroy();
-
-        return announcements.get(0);
+        return new AnnouncementsSQLiteController(context, 1).select("1",
+                AnnouncementsSQLiteController.columns[0] + " = ?", _ID).get(0);
     }
 
     /**
@@ -59,36 +46,20 @@ public class AnnouncementsPresenter {
      * @return Arreglo de enlaces de anuncios obtenido de la base de datos.
      */
     static ArrayList<AnnouncementLink> getAnnouncementsLinks(Context context, String... _IDs) {
-        AnnouncementsSQLiteController dbController =
-                new AnnouncementsSQLiteController(context, 1);
-
-        ArrayList<AnnouncementLink> links = dbController.selectLink(
+        return new AnnouncementsSQLiteController(context, 1).selectLink(
                 AnnouncementsSQLiteController.linkColumns[1] + " IN(" +
                         TextUtils.join(", ", Collections.nCopies(_IDs.length, "?")) +
                         ')', _IDs);
-
-        dbController.destroy();
-
-        return links;
     }
 
     static void readed(Context context, Object... ids) {
-        AnnouncementsSQLiteController dbController =
-                new AnnouncementsSQLiteController(context, 1);
-        dbController.readed(ids);
-        dbController.destroy();
+        new AnnouncementsSQLiteController(context, 1).readed(ids);
     }
 
     public static ArrayList<Announcement> loadReadedAnnouncements(Context context, String type) {
-        AnnouncementsSQLiteController dbController =
-                new AnnouncementsSQLiteController(context, 1);
-
-        ArrayList<Announcement> announcements = dbController.select(null,
+        return new AnnouncementsSQLiteController(context, 1).select(null,
                 AnnouncementsSQLiteController.columns[2] + " = ? AND " +
                         AnnouncementsSQLiteController.columns[6] + " = 1", type);
-
-        dbController.destroy();
-        return announcements;
     }
 
     /**
@@ -97,10 +68,7 @@ public class AnnouncementsPresenter {
      *                datos.
      */
     public static void deleteHistory(Context context, Object... ids) {
-        AnnouncementsSQLiteController dbController =
-                new AnnouncementsSQLiteController(context, 1);
-        dbController.unreaded(ids);
-        dbController.destroy();
+        new AnnouncementsSQLiteController(context, 1).unreaded(ids);
     }
 
 }

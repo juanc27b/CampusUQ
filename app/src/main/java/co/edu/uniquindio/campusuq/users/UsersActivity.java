@@ -265,6 +265,22 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
         unregisterReceiver(usersReceiver);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        name = null;
+        email = null;
+        phone = null;
+        address = null;
+        document = null;
+        passwordLayout = null;
+        password = null;
+        password_verify = null;
+        send = null;
+        logOut = null;
+        user = null;
+    }
+
     /**
      * Called when an activity launched here (specifically, AccountPicker
      * and authorization) exits, giving you the requestCode you started it with,

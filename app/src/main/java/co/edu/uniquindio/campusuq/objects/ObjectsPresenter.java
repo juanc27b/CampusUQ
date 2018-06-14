@@ -42,16 +42,12 @@ public class ObjectsPresenter {
                     user.get_ID(), user.get_ID()));
         }
 
-        dbController.destroy();
         return objects;
     }
 
     public static ArrayList<LostObject> loadReadedObjects(Context context) {
-        ObjectsSQLiteController dbController = new ObjectsSQLiteController(context, 1);
-        ArrayList<LostObject> objects = dbController
+        return new ObjectsSQLiteController(context, 1)
                 .select(null, ObjectsSQLiteController.columns[9] + " = 1");
-        dbController.destroy();
-        return objects;
     }
 
     /**
@@ -60,9 +56,7 @@ public class ObjectsPresenter {
      *                datos.
      */
     public static void deleteHistory(Context context, Object... ids) {
-        ObjectsSQLiteController dbController = new ObjectsSQLiteController(context, 1);
-        dbController.unreaded(ids);
-        dbController.destroy();
+        new ObjectsSQLiteController(context, 1).unreaded(ids);
     }
 
 }

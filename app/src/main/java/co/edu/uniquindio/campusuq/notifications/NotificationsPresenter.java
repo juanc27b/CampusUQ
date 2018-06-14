@@ -9,24 +9,13 @@ import co.edu.uniquindio.campusuq.web.WebService;
 public class NotificationsPresenter {
 
     public static ArrayList<Notification> loadNotifications(Context context) {
-        NotificationsSQLiteController dbController =
-                new NotificationsSQLiteController(context, 1);
-
-        ArrayList<Notification> notifications = dbController.select(null, null);
-
-        dbController.destroy();
-        return notifications;
+        return new NotificationsSQLiteController(context, 1)
+                .select(null, null);
     }
 
     public static Notification getNotification(Context context, String _ID) {
-        NotificationsSQLiteController dbController =
-                new NotificationsSQLiteController(context, 1);
-
-        Notification notification = dbController.select("1",
+        return new NotificationsSQLiteController(context, 1).select("1",
                 NotificationsSQLiteController.columns[0]+" = ?", _ID).get(0);
-
-        dbController.destroy();
-        return notification;
     }
 
     public static void insertNotifications(Context context) {
@@ -36,8 +25,6 @@ public class NotificationsPresenter {
         for (int i = 0; i < WebService.NOTIFICATIONS.length; i++) {
             dbController.insert(""+i, WebService.NOTIFICATIONS[i], "S");
         }
-
-        dbController.destroy();
     }
 
     static void updateNotification(Context context, String _ID, String activated) {
@@ -49,36 +36,18 @@ public class NotificationsPresenter {
 
         dbController.update(notification.get_ID(), notification.getName(), activated,
                 notification.get_ID());
-
-        dbController.destroy();
     }
 
     static ArrayList<NotificationDetail> loadNotificationDetails(Context context) {
-        NotificationsSQLiteController dbController =
-                new NotificationsSQLiteController(context, 1);
-
-        ArrayList<NotificationDetail> notificationDetails = dbController.selectDetail();
-
-        dbController.destroy();
-        return notificationDetails;
+        return new NotificationsSQLiteController(context, 1).selectDetail();
     }
 
     public static void insertNotificationDetail(Context context, Object... values) {
-        NotificationsSQLiteController dbController =
-                new NotificationsSQLiteController(context, 1);
-
-        dbController.insertDetail(values);
-
-        dbController.destroy();
+        new NotificationsSQLiteController(context, 1).insertDetail(values);
     }
 
     static void deleteNotificationDetail(Context context, Object... values) {
-        NotificationsSQLiteController dbController =
-                new NotificationsSQLiteController(context, 1);
-
-        dbController.deleteDetail(values);
-
-        dbController.destroy();
+        new NotificationsSQLiteController(context, 1).deleteDetail(values);
     }
 
 }

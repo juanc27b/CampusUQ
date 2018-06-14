@@ -70,9 +70,9 @@ public class ItemsFragment extends DialogFragment implements View.OnClickListene
                 Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(itemsActivity,
                         Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(itemsActivity, new String[]{
-                    Manifest.permission.WRITE_CONTACTS, Manifest.permission.CALL_PHONE},
-                    0);
+            ActivityCompat.requestPermissions(itemsActivity,
+                    new String[]{Manifest.permission.WRITE_CONTACTS,
+                            Manifest.permission.CALL_PHONE}, 0);
         }
 
         return new AlertDialog.Builder(itemsActivity).setView(view).create();

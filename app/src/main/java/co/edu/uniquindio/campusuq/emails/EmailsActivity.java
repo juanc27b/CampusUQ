@@ -175,10 +175,8 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
         int scrollTo = oldEmails ?
                 emailsAdapter.getItemCount() - 1 : (inserted != 0 ? inserted - 1 : 0);
 
-        EmailsSQLiteController dbController = new EmailsSQLiteController(this, 1);
-        emailsAdapter.setEmails(dbController
+        emailsAdapter.setEmails(new EmailsSQLiteController(this, 1)
                 .select("" + emailsAdapter.getItemCount() + (inserted > 0 ? inserted : 6)));
-        dbController.destroy();
         recyclerView.getLayoutManager().scrollToPosition(scrollTo);
 
         if (emailsAdapter.getItemCount() == 0 &&

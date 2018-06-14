@@ -284,6 +284,8 @@
     <string name="user_detail_password_verify">Verificar Contraseña</string>
     <string name="user_detail_password_verify_hint">Escribe la misma contraseña del campo anterior</string>
 
+    <string name="read_permission_required">Se requieren permisos de lectura para ejecutar esta acción</string>
+
     <string name="announcement_image_description">Imagen del anuncio</string>
     <string name="announcement_sample_date">5 de Septiembre, 2:10 PM</string>
     <string name="announcement_sample_name">Notas Cálculo Integral G1</string>
@@ -413,7 +415,7 @@
     <string name="ic_whatsapp_description">icono de whatsapp</string>
 
     <string name="social_ok">Operación exitosa</string>
-    <string name="social_error">Error en la operación</string>
+    <string name="social_error">No se pudo realizar la operación debido a datos inválidos, problemas de internet o que no se ha instalado la aplicación de la red social</string>
     <string name="no_whatsapp">No se ha instalado Whatsapp</string>
     <string name="undefined">Undefined</string>
     <string name="get_image_error">Error al obtener la imagen</string>

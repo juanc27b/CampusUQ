@@ -281,6 +281,12 @@ public class AnnouncementsActivity extends MainActivity
                 AnnouncementsPresenter.getAnnouncementsLinks(this, announcement_IDs));
         recyclerView.getLayoutManager().scrollToPosition(scrollTo);
 
+        if (announcementsAdapter.getItemCount() == 0 && !WebService.PENDING_ACTION.equals(action)) {
+            WebService.PENDING_ACTION = action;
+            WebBroadcastReceiver
+                    .startService(this, action, WebService.METHOD_GET, null);
+        }
+
         if (announcementsAdapter.getItemCount() > 0) swipeRefreshLayout.setRefreshing(false);
     }
 
@@ -506,7 +512,8 @@ public class AnnouncementsActivity extends MainActivity
                 if (resultCode == RESULT_OK){
                     Toast.makeText(this, R.string.social_ok, Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(this, R.string.social_error,
+                    Toast.makeText(this,
+                            R.string.social_error,
                             Toast.LENGTH_SHORT).show();
                 }
                 socialNetwork = AnnouncementsAdapter.UNDEFINED;

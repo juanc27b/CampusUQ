@@ -93,13 +93,13 @@ public class EmailsServiceController {
                         }
                         List<HistoryMessageDeleted> messagesDeleted = history.getMessagesDeleted();
                         if (messagesDeleted != null) {
-                            EmailsSQLiteController dbController = new EmailsSQLiteController(context, 1);
                             ArrayList<String> ids = new ArrayList<>();
+
                             for (HistoryMessageDeleted messageDeleted : messagesDeleted) {
                                 ids.add(messageDeleted.getMessage().getId());
                             }
-                            dbController.delete(ids.toArray());
-                            dbController.destroy();
+
+                            new EmailsSQLiteController(context, 1).delete(ids.toArray());
                         }
                     }
 

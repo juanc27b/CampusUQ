@@ -202,6 +202,12 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
                 this, newsAdapter.getItemCount() + (inserted > 0 ? inserted : 3)));
         recyclerView.getLayoutManager().scrollToPosition(scrollTo);
 
+        if (newsAdapter.getItemCount() == 0 && !WebService.PENDING_ACTION.equals(action)) {
+            WebService.PENDING_ACTION = action;
+            WebBroadcastReceiver
+                    .startService(this, action, WebService.METHOD_GET, null);
+        }
+
         if (newsAdapter.getItemCount() > 0) swipeRefreshLayout.setRefreshing(false);
     }
 
@@ -333,7 +339,9 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
         if (resultCode == RESULT_OK){
             Toast.makeText(this, R.string.social_ok, Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, R.string.social_error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,
+                    R.string.social_error,
+                    Toast.LENGTH_SHORT).show();
         }
 
         socialNetwork = NewsAdapter.UNDEFINED;

@@ -36,7 +36,7 @@ public class EmailsPresenter {
         this.context = context;
     }
 
-    public GoogleAccountCredential getCredential() {
+    GoogleAccountCredential getCredential() {
         if (mCredential == null) {
             mCredential = GoogleAccountCredential.usingOAuth2(
                     context, Arrays.asList(SCOPES))
@@ -124,7 +124,6 @@ public class EmailsPresenter {
         ArrayList<String> oldIDs = new ArrayList<>();
         for (Email old : dbController.select(null)) oldIDs.add(old.get_ID());
         dbController.delete(oldIDs.toArray());
-        dbController.destroy();
     }
 
 }

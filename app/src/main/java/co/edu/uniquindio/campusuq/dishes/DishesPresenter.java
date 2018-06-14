@@ -19,12 +19,7 @@ class DishesPresenter {
      * @return Arreglo de platos obtenido de la base de datos.
      */
     static ArrayList<Dish> loadDishes(Context context, int limit) {
-        DishesSQLiteController dbController = new DishesSQLiteController(context, 1);
-
-        ArrayList<Dish> dishes = dbController.select(""+limit);
-
-        dbController.destroy();
-        return dishes;
+        return new DishesSQLiteController(context, 1).select("" + limit);
     }
 
 }
