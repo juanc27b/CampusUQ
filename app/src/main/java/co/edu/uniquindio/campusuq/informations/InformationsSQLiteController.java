@@ -7,6 +7,9 @@ import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.util.SQLiteController;
 
+/**
+ * Controlador de la base de datos para las tablas Informacion e Informacion_Categoria.
+ */
 public class InformationsSQLiteController extends SQLiteController {
 
     private static final String tablename = "Informacion";
@@ -29,6 +32,10 @@ public class InformationsSQLiteController extends SQLiteController {
         return new String[][]{columns, categoryColumns}[index];
     }
 
+    /**
+     * Crea la cadena con las instrucciones SQL nesesarias para crear la tabla Informacion.
+     * @return Cadena con las instrucciones SQL para crear la tabla Informacion.
+     */
     public static String createTable(){
         return "CREATE TABLE " + tablename + '(' + columns[0] + " INTEGER PRIMARY KEY, " +
                 columns[1] + " INTEGER NOT NULL REFERENCES " + categoryTablename + '(' +
@@ -50,6 +57,11 @@ public class InformationsSQLiteController extends SQLiteController {
         return informations;
     }
 
+    /**
+     * Crea la cadena con las instrucciones SQL nesesarias para crear la tabla
+     * Informacion_Categoria.
+     * @return Cadena con las instrucciones SQL para crear la tabla Informacion_Categoria.
+     */
     public static String createCategoryTable(){
         return "CREATE TABLE " + categoryTablename + '(' +
                 categoryColumns[0] + " INTEGER PRIMARY KEY, " +

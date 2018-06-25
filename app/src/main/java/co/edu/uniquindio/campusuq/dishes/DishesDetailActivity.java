@@ -257,6 +257,10 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
         }
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para destruir la misma, en el que se anulan
+     * instancias.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();

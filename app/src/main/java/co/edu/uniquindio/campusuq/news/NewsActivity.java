@@ -361,6 +361,10 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
         unregisterReceiver(newsReceiver);
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para destruir la misma, en el que se anulan
+     * instancias.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();

@@ -44,6 +44,12 @@ public class ItemsFragment extends DialogFragment implements View.OnClickListene
         return fragment;
     }
 
+    /**
+     * Infla el diseño del dialogo de ítems, asigna las variables de vistas, sus listener y sus
+     * valores, y crea el dialogo.
+     * @param savedInstanceState No utilizado.
+     * @return Nuevo dialogo creado.
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -78,16 +84,32 @@ public class ItemsFragment extends DialogFragment implements View.OnClickListene
         return new AlertDialog.Builder(itemsActivity).setView(view).create();
     }
 
+    /**
+     * Responde al listener de los botones aceptar y cancelar, para el caso de cancelar cierra el
+     * cuadro de dialogo, para el caso de aceptar verifica primero si el boton añadir contacto esta
+     * seleccionado en cuyo caso si tiene el permiso requerido añade el contacto, si no esta
+     * seleccionado entonces verifica si el boton llamar esta seleccionado en cuyo caso si tiene el
+     * permiso requerido realiza la llamada, finalmente cierra el cuadro de dialogo.
+     * @param view Vista de la cual se pude obtener un identificador para saber a cual de los
+     *             botones de ha dado click.
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.dialog_ok: {
+                // Extrae el telefono de la descripcion del ítem excluyendo caracteres extraños y la
+                // extencion del final si la hay
                 Matcher matcher = Pattern.compile(
                         "<b id='2'>.+?</b> (.+?)[^\\d]*\\s*(?:Ext.*?)?<br/><b id='3'>",
                         Pattern.CASE_INSENSITIVE).matcher(item.getDescription());
+                // Si el telefono empieza por 57-6- o variantes con espacios con o sin los guiones
+                // se reemplaza el prefijo con 036
                 final String phoneRegex1 = "^5\\s*7\\s*-?\\s*6\\s*-?\\s*";
                 final String phoneReplacement1 = "036";
-                final String phoneRegex2 = "^(\\d\\s*\\d\\s*\\d\\s*\\d\\s*\\d\\s*\\d\\s*\\d)" +
+                // Si el telefono resultante es un numero de 7 digitos con o sin espacios entre los
+                // digitos seguidos de caracteres no numeriocos o el final de la cadena se añade el
+                // prefijo 036
+                final String phoneRegex2 = "^(\\d\\s*\\d\\s*\\d\\s*\\d\\s*\\d\\s*\\d\\s*\\d\\s*)" +
                         "(?:[^\\d]|$)";
                 final String phoneReplacement2 = "036$1";
 

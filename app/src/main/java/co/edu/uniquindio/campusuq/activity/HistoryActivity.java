@@ -24,6 +24,10 @@ import co.edu.uniquindio.campusuq.objects.LostObject;
 import co.edu.uniquindio.campusuq.objects.ObjectsPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
+/**
+ * Actividad que muestra los items del historial, los cuales correcponden a items que han sido
+ * marcados como leidos en el Sistema de seguridad, Objetos Perdidos y Cartelera.
+ */
 public class HistoryActivity extends MainActivity implements View.OnClickListener {
 
     private static class HistoryItem {
@@ -46,8 +50,7 @@ public class HistoryActivity extends MainActivity implements View.OnClickListene
     private ArrayList<HistoryItem> announcementHistoryItems = new ArrayList<>();
 
     /**
-     * Constructor que oculta el ícono de navegación reemplazandolo por una flecha de ir atrás, y
-     * oculta también el botón de busqueda.
+     * Constructor que oculta el ícono de navegación reemplazandolo por una flecha de ir atrás.
      */
     public HistoryActivity() {
         super.setHasNavigationDrawerIcon(false);
@@ -208,6 +211,10 @@ public class HistoryActivity extends MainActivity implements View.OnClickListene
         }
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para destruir la misma, en el que se anulan
+     * instancias.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();

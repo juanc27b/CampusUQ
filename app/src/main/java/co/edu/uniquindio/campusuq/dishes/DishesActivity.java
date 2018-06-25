@@ -292,6 +292,10 @@ public class DishesActivity extends MainActivity implements DishesAdapter.OnClic
         unregisterReceiver(dishesReceiver);
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para destruir la misma, en el que se anulan
+     * instancias.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();

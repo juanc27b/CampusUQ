@@ -19,8 +19,20 @@ import java.util.ArrayList;
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
+/**
+ * Controlador del servicio de informaciones que permite recivir informaciones y categorias de
+ * informaciones desde el servidor.
+ */
 public class InformationsServiceController {
 
+    /**
+     * Obtiene del servidor el arreglo de informaciones de la categoria especificada, o el arreglo
+     * total si la categoria es una cadena vacia.
+     * @param context Contexto utilizado para obtener la clave de autorizacion del usuario que haya
+     *                iniciado sesion.
+     * @param category Categoria de informacion.
+     * @return Arreglo de informaciones.
+     */
     public static ArrayList<Information> getInformations(Context context,
                                                          @NonNull String category) {
         ArrayList<Information> informations = new ArrayList<>();
@@ -80,6 +92,12 @@ public class InformationsServiceController {
         return informations;
     }
 
+    /**
+     * Obtiene el arreglo total de categorias de informaciones.
+     * @param context Contexto utilizado para obtener la clave de autorizacion del usuario que haya
+     *                iniciado sesion.
+     * @return Arreglo de categorias de informaciones.
+     */
     public static ArrayList<InformationCategory> getInformationCategories(Context context) {
         ArrayList<InformationCategory> categories = new ArrayList<>();
 

@@ -153,6 +153,10 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
         unregisterReceiver(usersReceiver);
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para destruir la misma, en el que se anulan
+     * instancias.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();

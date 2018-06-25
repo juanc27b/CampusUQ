@@ -28,6 +28,48 @@ public class User implements Parcelable {
         this.administrator = administrator;
     }
 
+    protected User(Parcel in) {
+        _ID = in.readString();
+        name = in.readString();
+        email = in.readString();
+        phone = in.readString();
+        address = in.readString();
+        document = in.readString();
+        password = in.readString();
+        apiKey = in.readString();
+        administrator = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(_ID);
+        dest.writeString(name);
+        dest.writeString(email);
+        dest.writeString(phone);
+        dest.writeString(address);
+        dest.writeString(document);
+        dest.writeString(password);
+        dest.writeString(apiKey);
+        dest.writeString(administrator);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
+
     public String get_ID() {
         return _ID;
     }
@@ -98,47 +140,6 @@ public class User implements Parcelable {
 
     public void setAdministrator(String administrator) {
         this.administrator = administrator;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(_ID);
-        dest.writeString(name);
-        dest.writeString(email);
-        dest.writeString(phone);
-        dest.writeString(address);
-        dest.writeString(document);
-        dest.writeString(password);
-        dest.writeString(apiKey);
-        dest.writeString(administrator);
-    }
-
-    public static final Parcelable.Creator<User> CREATOR
-            = new Parcelable.Creator<User>() {
-        public User createFromParcel(Parcel in) {
-            return new User(in);
-        }
-
-        public User[] newArray(int size) {
-            return new User[size];
-        }
-    };
-
-    public User(Parcel in) {
-        _ID = in.readString();
-        name = in.readString();
-        email = in.readString();
-        phone = in.readString();
-        address = in.readString();
-        document = in.readString();
-        password = in.readString();
-        apiKey = in.readString();
-        administrator = in.readString();
     }
 
 }

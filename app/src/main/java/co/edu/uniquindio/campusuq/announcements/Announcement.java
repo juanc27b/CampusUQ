@@ -56,7 +56,7 @@ public class Announcement implements Parcelable {
 
     /**
      * Escribe en un parcel los datos necesarios para recrear posteriormente el anuncio.
-     * @param dest Parcel que contendrá los datos para recreal el anuncio.
+     * @param dest Parcel que contendrá los datos para recrear el anuncio.
      * @param flags Banderas para especificar otras opciones.
      */
     @Override

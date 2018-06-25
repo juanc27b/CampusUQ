@@ -5,12 +5,22 @@ import android.view.ViewStub;
 
 import co.edu.uniquindio.campusuq.R;
 
+/**
+ * Actividad que muestra los creditos de la aplicacion.
+ */
 public class CreditsActivity extends MainActivity {
 
+    /**
+     * Contructor que oculta el boton de busqueda.
+     */
     public CreditsActivity() {
         super.setHasSearch(false);
     }
 
+    /**
+     * Asigna el fondo de la actividad e infla el diseño de los creditos.
+     * @param savedInstanceState Parámetro usado para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);

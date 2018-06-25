@@ -20,11 +20,11 @@ public class Program {
     private String profilesDate;
     private String contact;
 
-    Program(String _ID, String category_ID, String faculty_ID, String name,
-            String history, String historyLink, String historyDate,
-            String missionVision, String missionVisionLink, String missionVisionDate,
-            String curriculum, String curriculumLink, String curriculumDate,
-            String profiles, String profilesLink, String profilesDate, String contact) {
+    Program(String _ID, String category_ID, String faculty_ID, String name, String history,
+            String historyLink, String historyDate, String missionVision, String missionVisionLink,
+            String missionVisionDate, String curriculum, String curriculumLink,
+            String curriculumDate, String profiles, String profilesLink, String profilesDate,
+            String contact) {
         this._ID = _ID;
         this.category_ID = category_ID;
         this.faculty_ID = faculty_ID;

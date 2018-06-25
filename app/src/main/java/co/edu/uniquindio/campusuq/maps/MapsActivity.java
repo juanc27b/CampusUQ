@@ -331,6 +331,10 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
         locations.add(new LatLng(4.553856237049898, -75.66203948110342));
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para destruir la misma, en el que se anulan
+     * instancias.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();

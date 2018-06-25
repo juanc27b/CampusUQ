@@ -31,13 +31,11 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.announcements.AnnouncementsActivity;
 import co.edu.uniquindio.campusuq.dishes.DishesActivity;
 import co.edu.uniquindio.campusuq.emails.EmailsActivity;
-import co.edu.uniquindio.campusuq.items.Item;
 import co.edu.uniquindio.campusuq.items.ItemsActivity;
 import co.edu.uniquindio.campusuq.items.ItemsPresenter;
 import co.edu.uniquindio.campusuq.maps.MapsActivity;
@@ -614,6 +612,10 @@ public class MainActivity extends AppCompatActivity
         if (progressDialog.isShowing()) progressDialog.dismiss();
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para destruir la misma, en el que se anulan
+     * instancias.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -651,28 +653,6 @@ public class MainActivity extends AppCompatActivity
                     .putExtra(Utilities.LINK, content[0])
                     .putExtra("CONTENT", content[1]));
         } else if (content[0] == null && !Utilities.haveNetworkConnection(context)) {
-            Toast.makeText(context, R.string.no_internet,
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    /**
-     * Método encargado de obtener las categorías de los eventos del calendario desde la base de
-     * datos local para la funcionalidad del Calendario académico, y después abrir la actividad
-     * correspondiente o mostrar mensajes al usuario si no están disponibles los datos.
-     * @param context Contexto necesario para cargar los datos.
-     */
-    public static void loadEventCategories(Context context) {
-        ProgressDialog progressDialog = ((MainActivity) context).progressDialog;
-        if (!progressDialog.isShowing()) progressDialog.show();
-        ArrayList<Item> categories = ItemsPresenter.getEventCategories(context);
-
-        if (!categories.isEmpty()) {
-            progressDialog.dismiss();
-            context.startActivity(new Intent(context, ItemsActivity.class)
-                    .putExtra(Utilities.CATEGORY, R.string.academic_calendar)
-                    .putParcelableArrayListExtra(Utilities.ITEMS, categories));
-        } else if (!Utilities.haveNetworkConnection(context)) {
             Toast.makeText(context, R.string.no_internet,
                     Toast.LENGTH_SHORT).show();
         }
