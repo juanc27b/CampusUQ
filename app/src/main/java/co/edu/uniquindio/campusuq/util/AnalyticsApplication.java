@@ -12,6 +12,7 @@ import co.edu.uniquindio.campusuq.R;
  * the {@link Tracker}.
  */
 public class AnalyticsApplication extends Application {
+
     private Tracker mTracker;
 
     /**
@@ -24,6 +25,8 @@ public class AnalyticsApplication extends Application {
             // To enable debug logging use: adb shell setprop log.tag.GAv4 DEBUG
             mTracker = analytics.newTracker(R.xml.global_tracker);
         }
+
         return mTracker;
     }
+
 }

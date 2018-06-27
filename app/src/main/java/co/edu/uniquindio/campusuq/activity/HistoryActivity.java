@@ -30,10 +30,19 @@ import co.edu.uniquindio.campusuq.util.Utilities;
  */
 public class HistoryActivity extends MainActivity implements View.OnClickListener {
 
+    /**
+     * Clase que almacena la informacion de un ítem del historial
+     */
     private static class HistoryItem {
         String _ID;
         CheckBox checkBox;
 
+        /**
+         * Constructor de un ítem del historial que se encarga de asignar valores a cada una de sus
+         * variables.
+         * @param _ID ID del ítem del historial.
+         * @param checkBox Casilla de verificación del ítem del historial.
+         */
         HistoryItem(String _ID, CheckBox checkBox) {
             this._ID = _ID;
             this.checkBox = checkBox;
@@ -122,6 +131,11 @@ public class HistoryActivity extends MainActivity implements View.OnClickListene
         }
     }
 
+    /**
+     * Carga los elementos del historial desde la base de datos, lso cuales corresponden a los
+     * incidentes (Sistema de seguridad), objetos perdidos y comunicados (Cartelera) que han sido
+     * marcados como leidos.
+     */
     private void loadHistory() {
         ArrayList<LostObject> objects = ObjectsPresenter.loadReadedObjects(this);
         boolean objectsIsEmpty = objects.isEmpty();
@@ -174,6 +188,15 @@ public class HistoryActivity extends MainActivity implements View.OnClickListene
         }
     }
 
+    /**
+     * Define la tarea a realizar cuando se da click en una de las vistas controladas por esta
+     * actividad, en caso de dar clic al doton de seleccionar todos los elementos, como su nombre lo
+     * indica, todas las casillas de los elementos seran marcadas, o si ya estanban marcadas,
+     * entonces seran todas desmarcadas, en caso de dar clic al boton de aceptar se eliminaran del
+     * historial (seran marcados como no leidos) todos los elementos cuyas casillas esten marcadas
+     * en ese momento, y posteriormente se cerrara la actividad de historial.
+     * @param view Vista a la cual el usuario ha dado click.
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {

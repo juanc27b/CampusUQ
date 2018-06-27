@@ -6,6 +6,10 @@ import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.web.WebService;
 
+/**
+ * Presentador para manejar lógica de las notificaciones.
+ * Obtiene notificaciones y detalles de notificaciones desde la base de datos local.
+ */
 public class NotificationsPresenter {
 
     public static ArrayList<Notification> loadNotifications(Context context) {

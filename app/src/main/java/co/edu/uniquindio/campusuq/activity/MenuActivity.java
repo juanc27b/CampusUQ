@@ -115,6 +115,15 @@ public class MenuActivity extends MainActivity implements View.OnClickListener {
         }
     }
 
+    /**
+     * Define la tarea a realizar cuando se da click en una de las vistas controladas por esta
+     * actividad, si se da clic en Información se abrira la actividad de ítems con los ítems de la
+     * seccion de información, si se da clic en Servicios se abrira la actividad de ítems con los
+     * ítems de la seccion de servicios, si se da clic en Estado se abrira la actividad de ítems con
+     * los ítems de la seccion de estado y si se da clic en Comunicación se abrira la actividad de
+     * ítems con los ítems de la seccion de comunicación.
+     * @param view Vista a la cual el usuario ha dado click.
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {

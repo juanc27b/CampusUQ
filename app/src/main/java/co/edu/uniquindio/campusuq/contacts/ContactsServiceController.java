@@ -86,10 +86,11 @@ public class ContactsServiceController {
     }
 
     /**
-     * Hace una peticiñon GET al servidor para obtener las categorías de contactos almacenadas en
-     * el mismo, y las extrae de la respuesta en formato JSON para retornar un arreglo de categorías.
+     * Hace una peticiñon GET al servidor para obtener las categorías de contacto almacenadas en el
+     * mismo, y las extrae de la respuesta en formato JSON para retornar un arreglo de categorías de
+     * contacto.
      * @param context Contexto necesario para obtener la clave de API para el servicio.
-     * @return Arreglo de categorías de contactos obtenido desde el servidor.
+     * @return Arreglo de categorías de contacto obtenido desde el servidor.
      */
     public static ArrayList<ContactCategory> getContactCategories(Context context) {
         ArrayList<ContactCategory> categories = new ArrayList<>();

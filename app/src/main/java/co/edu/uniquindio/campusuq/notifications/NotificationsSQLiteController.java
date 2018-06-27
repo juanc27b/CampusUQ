@@ -20,11 +20,23 @@ public class NotificationsSQLiteController extends SQLiteController {
         super(context, version);
     }
 
+    /**
+     * Funcion por medio de la cual se le pasa el nombre de la tabla a la clase base.
+     * @param index Parametro que permite elegir entre la tabla Notificacion y la tabla
+     *              NotificacionDetail.
+     * @return Nombre de la tabla elegida.
+     */
     @Override
     protected String getTablename(int index) {
         return new String[]{tablename, detailTablename}[index];
     }
 
+    /**
+     * Funcion por medio de la cual se le pasan los nombres de las columnas a la clase base.
+     * @param index Parametro que permite elegir entre la tabla Notificacion y la tabla
+     *              NotificacionDetail.
+     * @return Nombre de las columnas elegidas.
+     */
     @Override
     protected String[] getColumns(int index) {
         return new String[][]{columns, detailColumns}[index];

@@ -175,22 +175,15 @@ public class RadioActivity extends MainActivity {
                 mBundle.putFloat(getString(R.string.radio_volume), vol);
                 MediaControllerCompat.getMediaController(RadioActivity.this).getTransportControls()
                         .sendCustomAction(MediaPlaybackService.CUSTOM_ACTION_SET_VOLUME, mBundle);
-                if (vol == 0.0f) {
-                    volume.setImageResource(R.drawable.mute_button);
-                } else {
-                    volume.setImageResource(R.drawable.volume_button);
-                }
+                if (vol == 0.0f) volume.setImageResource(R.drawable.mute_button);
+                else volume.setImageResource(R.drawable.volume_button);
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
         MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(this);
@@ -201,11 +194,11 @@ public class RadioActivity extends MainActivity {
 
         // Register a Callback to stay in sync
         mediaController.registerCallback(controllerCallback);
-
     }
 
     public void displayState(int state) {
         play.setEnabled(true);
+
         if (state == PlaybackStateCompat.STATE_PLAYING) {
             play.setImageResource(R.drawable.pause_button);
         } else if (state == PlaybackStateCompat.STATE_CONNECTING) {
@@ -224,10 +217,12 @@ public class RadioActivity extends MainActivity {
     @Override
     public void onStop() {
         super.onStop();
+
         // (see "stay in sync with the MediaSession")
         if (MediaControllerCompat.getMediaController(this) != null) {
             MediaControllerCompat.getMediaController(this).unregisterCallback(controllerCallback);
         }
+
         mMediaBrowser.disconnect();
 
     }

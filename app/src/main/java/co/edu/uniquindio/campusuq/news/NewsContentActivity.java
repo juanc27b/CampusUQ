@@ -22,6 +22,10 @@ import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
+/**
+ * Actividad para visualizar el contenido completo de una noticia de las funcionalidades Noticias y
+ * Eventos.
+ */
 public class NewsContentActivity extends MainActivity {
 
     public TextView title;
@@ -31,11 +35,20 @@ public class NewsContentActivity extends MainActivity {
     public WebView webView;
     public WebSettings webSettings;
 
+    /**
+     * Constructor que oculta el ícono de navegación reemplazandolo por una flecha de ir atrás, y
+     * oculta también el botón de busqueda.
+     */
     public NewsContentActivity() {
         super.setHasSearch(false);
         super.setHasNavigationDrawerIcon(false);
     }
 
+    /**
+     * Asigna el fondo de la actividad, infla el diseño de contenido de noticia en la actividad
+     * superior y asigna las variables de vistas.
+     * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
@@ -99,6 +112,12 @@ public class NewsContentActivity extends MainActivity {
                 null);
     }
 
+    /**
+     * Permite volver atraz en la vista web.
+     * @param keyCode Codigo de la tecla.
+     * @param event Evento.
+     * @return Retorna el valor que retornaria la actividad superior.
+     */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // Check if the key event was the Back button and if there's history
@@ -111,6 +130,10 @@ public class NewsContentActivity extends MainActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para destruir la misma, en el que se anulan
+     * instancias.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();

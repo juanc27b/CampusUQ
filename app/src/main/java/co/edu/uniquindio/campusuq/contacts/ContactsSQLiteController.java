@@ -31,11 +31,23 @@ public class ContactsSQLiteController extends SQLiteController {
         super(context, version);
     }
 
+    /**
+     * Funcion por medio de la cual se le pasa el nombre de la tabla a la clase base.
+     * @param index Parametro que permite elegir entre la tabla Contacto y la tabla
+     *              Contacto_Categoria.
+     * @return Nombre de la tabla elegida.
+     */
     @Override
     protected String getTablename(int index) {
         return new String[]{tablename, categoryTablename}[index];
     }
 
+    /**
+     * Funcion por medio de la cual se le pasan los nombres de las columnas a la clase base.
+     * @param index Parametro que permite elegir entre la tabla Contacto y la tabla
+     *              Contacto_Categoria.
+     * @return Nombre de las columnas elegidas.
+     */
     @Override
     protected String[] getColumns(int index) {
         return new String[][]{columns, categoryColumns}[index];
@@ -88,13 +100,13 @@ public class ContactsSQLiteController extends SQLiteController {
     }
 
     /**
-     * Obtiene de la base de datos un arreglo de categorías de contactos de acuerdo a los filtros y
+     * Obtiene de la base de datos un arreglo de categorías de contacto de acuerdo a los filtros y
      * al límite de resultados pasados como parámetro a la función, y las ordena por nombre en orden
      * ascendente.
      * @param limit Límite de resultados a obtener.
      * @param selection Cláusula SQL WHERE para filtrar los resultados.
      * @param selectionArgs Parámetros de la cláusula SQL WHERE.
-     * @return Arreglo de categorías de contactos extraído de la base de datos.
+     * @return Arreglo de categorías de contacto extraído de la base de datos.
      */
     public ArrayList<ContactCategory> selectCategory(String limit, String selection,
                                                      String... selectionArgs) {
@@ -121,9 +133,9 @@ public class ContactsSQLiteController extends SQLiteController {
     }
 
     /**
-     * Elimina de la base de datos las categorías de contactos cuyas IDs se encuentren dentro del
-     * arreglo de IDs parado como parámetro.
-     * @param ids Arreglo de IDs de las categorías de contactos que se quiere eliminar.
+     * Elimina de la base de datos las categorías de contacto cuyas IDs se encuentren dentro del
+     * arreglo de IDs pasado como parámetro.
+     * @param ids Arreglo de IDs de las categorías de contacto que se quiere eliminar.
      */
     public void deleteCategory(Object... ids) {
         delete(1, ids);

@@ -6,6 +6,10 @@ import android.text.TextUtils;
 
 import java.util.Collections;
 
+/**
+ * Controlador de la base de datos del cual se derivan los controladores espesificos para la tabla o
+ * tablas de cada funcionalidad.
+ */
 public abstract class SQLiteController {
 
     protected SQLiteDatabase db;
@@ -19,13 +23,42 @@ public abstract class SQLiteController {
         db = SQLiteHelper.getDatabaseInstance(context, version);
     }
 
+    /**
+     * Funcion que debe ser sobreescrita por la clase derivada para que la clase base pueda obtener
+     * el nombre de la tabla.
+     * @param index Parametro opcional que permite elegir el nombre de la tabla cuando hay mas de
+     *              una.
+     * @return Nombre de la tabla.
+     */
     protected abstract String getTablename(int index);
+
+    /**
+     * Funcion que debe ser sobreescrita por la clase derivada para que la clase base pueda obtener
+     * las columnas de la tabla.
+     * @param index Parametro opcional que permite elegir la columnas de la tabla cuando hay mas de
+     *              una tabla.
+     * @return Array de cadenas con los nombres de las columnas de la tabla.
+     */
     protected abstract String[] getColumns(int index);
 
+    /**
+     * Funcion que puede ser sobreescrita por la clase derivada y permite definir un conjunto
+     * distinto de columnas para la funcion update cuando hay una columna con la marca de lectura,
+     * si no se sobreescribe se utilizaran las mismas columnas de la funcion getColumns.
+     * @param index Parametro opcional que permite elegir la columnas de la tabla cuando hay mas de
+     *              una tabla.
+     * @return Array de cadenas con los nombres de las columnas de la tabla.
+     */
     protected String[] getUpdateColumns(int index) {
         return getColumns(index);
     }
 
+    /**
+     * Inserta un ítem en la base de datos, de acuerdo al indice de la tabla y a los valores de las
+     * columnas pasados como parámetros.
+     * @param index Indice de la tabla.
+     * @param values Valores de las columnas del ítem a insertar.
+     */
     protected void insert(int index, Object... values) {
         db.execSQL("INSERT INTO " + getTablename(index) + '(' +
                 TextUtils.join(", ", getColumns(index)) + ") VALUES(" +
@@ -33,12 +66,23 @@ public abstract class SQLiteController {
                         .nCopies(getColumns(index).length, '?')) + ')', values);
     }
 
+    /**
+     * Actualiza un ítem en la base de datos de acuerdo al indice de la tabla y a los valores de las
+     * columnas pasados como parámetros, siendo el último de estos la ID de la fila a modificar.
+     * @param index Indice de la tabla.
+     * @param values Valores de las columnas del ítem a actualizar seguidos de la ID de dicho ítem.
+     */
     protected void update(int index, Object... values) {
         db.execSQL("UPDATE " + getTablename(index) + " SET " +
                 TextUtils.join(" = ?, ", getUpdateColumns(index)) + " = ? WHERE " +
                 getUpdateColumns(index)[0] + " = ?", values);
     }
 
+    /**
+     * Elimina un conjunto de ítems de la base de datos.
+     * @param index Indice de la tabla.
+     * @param ids Conjunto de IDs de los ítems que se desea eliminar.
+     */
     protected void delete(int index, Object... ids) {
         db.execSQL("DELETE FROM " + getTablename(index) + " WHERE " +
                 getColumns(index)[0] + " IN(" +
@@ -48,7 +92,7 @@ public abstract class SQLiteController {
     /**
      * Inserta un ítem en la base de datos, de acuerdo a los valores de las columnas pasados como
      * parámetros.
-     * @param values Valores de las columnas del plato a insertar.
+     * @param values Valores de las columnas del ítem a insertar.
      */
     public void insert(Object... values) {
         insert( 0, values);

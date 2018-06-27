@@ -77,34 +77,34 @@ public class AnnouncementsAdapter extends
         /**
          * Obtiene los objetos de vista a partir de sus identificadores y asigna los listener de
          * click.
-         * @param view Vista de un item en la cual buscar las subvistas que se controlan en el
-         *             adaptador.
+         * @param itemView Vista de un item en la cual buscar las subvistas que se controlan en el
+         *                 adaptador.
          */
-        AnnouncementViewHolder(View view) {
-            super(view);
+        AnnouncementViewHolder(View itemView) {
+            super(itemView);
 
             images = new ImageView[]{
-                    view.findViewById(R.id.announcement_image_0),
-                    view.findViewById(R.id.announcement_image_1),
-                    view.findViewById(R.id.announcement_image_2),
-                    view.findViewById(R.id.announcement_image_3),
-                    view.findViewById(R.id.announcement_image_4),
-                    view.findViewById(R.id.announcement_image_5),
-                    view.findViewById(R.id.announcement_image_6),
-                    view.findViewById(R.id.announcement_image_7),
-                    view.findViewById(R.id.announcement_image_8),
-                    view.findViewById(R.id.announcement_image_9),
+                    itemView.findViewById(R.id.announcement_image_0),
+                    itemView.findViewById(R.id.announcement_image_1),
+                    itemView.findViewById(R.id.announcement_image_2),
+                    itemView.findViewById(R.id.announcement_image_3),
+                    itemView.findViewById(R.id.announcement_image_4),
+                    itemView.findViewById(R.id.announcement_image_5),
+                    itemView.findViewById(R.id.announcement_image_6),
+                    itemView.findViewById(R.id.announcement_image_7),
+                    itemView.findViewById(R.id.announcement_image_8),
+                    itemView.findViewById(R.id.announcement_image_9),
             };
-            date = view.findViewById(R.id.announcement_date);
-            name = view.findViewById(R.id.announcement_name);
-            description = view.findViewById(R.id.announcement_description);
+            date = itemView.findViewById(R.id.announcement_date);
+            name = itemView.findViewById(R.id.announcement_name);
+            description = itemView.findViewById(R.id.announcement_description);
 
-            view.findViewById(R.id.announcement_layout).setOnClickListener(this);
+            itemView.findViewById(R.id.announcement_layout).setOnClickListener(this);
             for (ImageView image : images) image.setOnClickListener(this);
-            view.findViewById(R.id.announcement_read_button).setOnClickListener(this);
-            view.findViewById(R.id.announcement_facebook_button).setOnClickListener(this);
-            view.findViewById(R.id.announcement_twitter_button).setOnClickListener(this);
-            view.findViewById(R.id.announcement_whatsapp_button).setOnClickListener(this);
+            itemView.findViewById(R.id.announcement_read_button).setOnClickListener(this);
+            itemView.findViewById(R.id.announcement_facebook_button).setOnClickListener(this);
+            itemView.findViewById(R.id.announcement_twitter_button).setOnClickListener(this);
+            itemView.findViewById(R.id.announcement_whatsapp_button).setOnClickListener(this);
         }
 
         /**
@@ -187,7 +187,7 @@ public class AnnouncementsAdapter extends
 
     /**
      * Crea el portador de anuncios inflando su diseño.
-     * @param parent Vista donde inflar el portador de cupos.
+     * @param parent Vista donde inflar el portador de anuncios.
      * @param viewType Tipo de la vista (no utilizado).
      * @return Nuevo portador de anuncios creado.
      */

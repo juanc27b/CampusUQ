@@ -203,6 +203,12 @@ public class AnnouncementsActivity extends MainActivity
         loadAnnouncements(0);
     }
 
+    /**
+     * Cambia la configuracion del diseño de la actividad dependiendo si la instancia de la
+     * actividad corresponde a la funcionalidad de Servicio de seguridad, o si pertenece a
+     * Cartelera, en este ultimo caso el diseño tambien depende de si el usuario tiene o no permisos
+     * de administrador.
+     */
     public void changeConfiguration() {
         if (WebService.ACTION_INCIDENTS.equals(action)) {
             fab.setVisibility(View.GONE);
@@ -258,7 +264,7 @@ public class AnnouncementsActivity extends MainActivity
     /**
      * Carga los anuncios desde la base de datos y los almacena en el adaptador, adicionalmente
      * muestra un mensaje de de carga durante el tiempo que realiza el proceso.
-     * @param inserted Indica la cantidad de objetos perdidos insertados.
+     * @param inserted Indica la cantidad de anuncios insertados.
      */
     private void loadAnnouncements(int inserted) {
         swipeRefreshLayout.setRefreshing(true);

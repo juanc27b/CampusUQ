@@ -28,6 +28,9 @@ import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 import pub.devrel.easypermissions.EasyPermissions;
 
+/**
+ * Actividad para visualizar los correos del Correo institucional.
+ */
 public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClickEmailListener,
         EasyPermissions.PermissionCallbacks {
 
@@ -189,6 +192,10 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
         if (emailsAdapter.getItemCount() > 0) swipeRefreshLayout.setRefreshing(false);
     }
 
+    /**
+     * Al dar clic en un correo se inicia la actividad para visualizar el correo en su totalidad.
+     * @param index Indice del correo al cual se ha dado clic.
+     */
     @Override
     public void onEmailClick(int index) {
         Email email = ((EmailsAdapter) recyclerView.getAdapter()).getEmails().get(index);
@@ -221,6 +228,10 @@ public class EmailsActivity extends MainActivity implements EmailsAdapter.OnClic
         unregisterReceiver(emailsReceiver);
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para destruir la misma, en el que se anulan
+     * instancias.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();

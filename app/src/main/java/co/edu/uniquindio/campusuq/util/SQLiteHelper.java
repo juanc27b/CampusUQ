@@ -21,8 +21,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     private static SQLiteDatabase db;
 
-    public SQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory,
-                        int version) {
+    private SQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory,
+                         int version) {
         super(context, name, factory, version);
     }
 

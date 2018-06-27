@@ -26,6 +26,9 @@ import java.util.regex.Pattern;
 
 import co.edu.uniquindio.campusuq.R;
 
+/**
+ * Dialogo que da la opciones de añadir un contacto o realizar una llamada telefonica.
+ */
 public class ItemsFragment extends DialogFragment implements View.OnClickListener {
 
     private static final String ITEM = "item";
@@ -35,6 +38,11 @@ public class ItemsFragment extends DialogFragment implements View.OnClickListene
     RadioButton addContact;
     RadioButton call;
 
+    /**
+     * Crea una nueva instancia del dialogo y asigna sus parametros.
+     * @param item Ítem que se usara para el titulo del dialogo.
+     * @return Instancia del nuevo dialogo.
+     */
     public static ItemsFragment newInstance(Item item) {
         Bundle args = new Bundle();
         args.putParcelable(ITEM, item);

@@ -24,11 +24,21 @@ public class DishesSQLiteController extends SQLiteController {
         super(context, version);
     }
 
+    /**
+     * Funcion por medio de la cual se le pasa el nombre de la tabla a la clase base.
+     * @param index No utilizado.
+     * @return Nombre de la tabla Plato.
+     */
     @Override
     protected String getTablename(int index) {
         return tablename;
     }
 
+    /**
+     * Funcion por medio de la cual se le pasan los nombres de las columnas a la clase base.
+     * @param index No utilizado.
+     * @return Nombre de las columnas de la tabla Plato.
+     */
     @Override
     protected String[] getColumns(int index) {
         return columns;

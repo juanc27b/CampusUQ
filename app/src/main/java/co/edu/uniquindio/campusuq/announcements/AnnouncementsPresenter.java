@@ -17,7 +17,7 @@ public class AnnouncementsPresenter {
 
     /**
      * Carga desde la base de datos local los anuncios permitiendo definir opcinalmente un maximo
-     * numero de platos a cargar.
+     * numero de anuncios a cargar.
      * @param action Accion que determina si los anuncios a obtener corresponden a la funcionalidad
      *               de incidentes o de comunicados.
      * @param context Contexto utilizado para crear una instancia del controlador de la base de
@@ -30,11 +30,6 @@ public class AnnouncementsPresenter {
                 AnnouncementsSQLiteController.columns[2] + " = ? AND " +
                         AnnouncementsSQLiteController.columns[6] + " = 0",
                 WebService.ACTION_INCIDENTS.equals(action) ? "I" : "C");
-    }
-
-    public static Announcement getAnnouncementByID(String _ID, Context context) {
-        return new AnnouncementsSQLiteController(context, 1).select("1",
-                AnnouncementsSQLiteController.columns[0] + " = ?", _ID).get(0);
     }
 
     /**
@@ -52,10 +47,23 @@ public class AnnouncementsPresenter {
                         ')', _IDs);
     }
 
+    /**
+     * Marca como leidos los anuncios con las IDs pasadas como parametros.
+     * @param context Contexto con el cual realizar la operacion.
+     * @param ids IDs de los anuncios a marcar como leidos.
+     */
     static void readed(Context context, Object... ids) {
         new AnnouncementsSQLiteController(context, 1).readed(ids);
     }
 
+    /**
+     * Carga desde la base de datos local los anuncios del tipo espesificado que estan marcados como
+     * leidos.
+     * @param context Contexto con el cual realizar la operacion.
+     * @param type Tipo de anuncios a cargar (incidentes para el Sistema de seguridad o comunicados
+     *             para Cartelera).
+     * @return Arreglo de anuncios leidos del tipo especificado.
+     */
     public static ArrayList<Announcement> loadReadedAnnouncements(Context context, String type) {
         return new AnnouncementsSQLiteController(context, 1).select(null,
                 AnnouncementsSQLiteController.columns[2] + " = ? AND " +

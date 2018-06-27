@@ -8,8 +8,22 @@ import java.util.Collections;
 
 import co.edu.uniquindio.campusuq.web.WebService;
 
+/**
+ * Presentador para manejar lógica de las noticias.
+ * Obtiene noticias desde la base de datos local.
+ */
 class NewsPresenter {
 
+    /**
+     * Carga desde la base de datos local las noticias permitiendo definir opcinalmente un maximo
+     * numero de noticias a cargar.
+     * @param type Cadena que determina si las noticias pertenecen a la funcionalidad Noticas o
+     *             Eventos.
+     * @param context Contexto utilizado para crear una instancia del controlador de la base de
+     *                datos.
+     * @param limit Maximo numero de noticias a cargar.
+     * @return Arreglo de noticias obtenido de la base de datos.
+     */
     static ArrayList<New> loadNews(String type, Context context, int limit) {
         NewsSQLiteController dbController = new NewsSQLiteController(context, 1);
 

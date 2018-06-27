@@ -48,6 +48,9 @@ import co.edu.uniquindio.campusuq.util.Utilities;
 import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 
+/**
+ * Actividad para visualizar las noticias de las funcionalidades Noticias y Eventos.
+ */
 public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNewListener {
 
     private String action;
@@ -73,10 +76,23 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
         }
     };
 
+    /**
+     * Constructor que oculta el ícono de navegación para reemplazarlo por la flecha de ir atrás.
+     */
     public NewsActivity() {
         super.setHasNavigationDrawerIcon(false);
     }
 
+    /**
+     * Asigna el fondo de la actividad, infla el diseño de noticias en la actividad superior, se
+     * crea el adaptador de noticias y el manejador de diseño lineal y se asignan al recilador de
+     * vista, al cual tambien se le asigna un listener de actualización encargado de actualizar
+     * desde el servidor la base de datos local al realizar un desplasamiento vetical en el limite
+     * superior, y un listener de despalzamiento encargado de cargar mas noticias desde la base de
+     * datos local al realizar un desplasamiento vetical en el limite inferior, y finalmente llama a
+     * la funcion para cargar las noticias.
+     * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
@@ -163,6 +179,11 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
         loadNews(0);
     }
 
+    /**
+     * Método para manejar nuevas llamadas a la actividad, dependiendo de la accion del intento,
+     * puede buscar un ítem, o cambiar el titulo de la actividad y volver a cargar los ítems.
+     * @param intent Intento que contiene la accion a realizar.
+     */
     @Override
     public void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
@@ -193,6 +214,11 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
         }
     }
 
+    /**
+     * Carga las noticias desde la base de datos y los almacena en el adaptador, adicionalmente
+     * muestra un mensaje de de carga durante el tiempo que realiza el proceso.
+     * @param inserted Indica la cantidad de noticias insertados.
+     */
     private void loadNews(int inserted) {
         swipeRefreshLayout.setRefreshing(true);
 
@@ -211,6 +237,15 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
         if (newsAdapter.getItemCount() > 0) swipeRefreshLayout.setRefreshing(false);
     }
 
+    /**
+     * Dependiendo de la accion, puede llamar a otra aplicacion que permita visualizar con mas
+     * detalle la imagen de la noticia, puede marcar la noticia como leida o compartirla en redes
+     * sociales.
+     * @param index Indice de la noticia que determina a cuál de los ítems del arreglo de noticias
+     *              se le aplicará la accion.
+     * @param action Determina si se le ha dado clic a la noticia, a su imagen, al boton de leido,
+     *               facebook, twitter o whatsapp.
+     */
     @Override
     public void onNewClick(int index, String action) {
         New n = ((NewsAdapter) recyclerView.getAdapter()).getNews().get(index);
@@ -321,6 +356,12 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
         }
     }
 
+    /**
+     * Recive y redirecciona los resultados de la operaciones de redes soaciales.
+     * @param requestCode Código de solicitud para el cual se espera un resultado.
+     * @param resultCode Código de resultado que indica exito o fracaso.
+     * @param data Datos retornados por la actividad.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -347,17 +388,23 @@ public class NewsActivity extends MainActivity implements NewsAdapter.OnClickNew
         socialNetwork = NewsAdapter.UNDEFINED;
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para reanudar la misma, en el que se registra un
+     * receptor para estar atento a los intentos relacionados con los anuncios.
+     */
     @Override
     protected void onResume() {
         super.onResume();
-        // Register for the particular broadcast based on ACTION string
         registerReceiver(newsReceiver, newsFilter);
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para pausar la misma, en el que se invalida el
+     * previo registro del receptor para los anuncios.
+     */
     @Override
     protected void onPause() {
         super.onPause();
-        // Unregister the listener when the application is paused
         unregisterReceiver(newsReceiver);
     }
 

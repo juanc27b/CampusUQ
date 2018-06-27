@@ -303,6 +303,13 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
         }
     }
 
+    /**
+     * Verifica si la actividad tiene permiso de lectura del almacenamiento externo, si lo tiene
+     * inicia una actividad para seleccionar una imagen o video y obtenerlo en su resultado, si no
+     * tiene permiso de lectura lo solicita.
+     * @param requestCode Codigo que indica para cual de los 10 ImageView se obtendrá la imagen o
+     *                    video.
+     */
     private void getImage(int requestCode) {
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -317,6 +324,14 @@ public class AnnouncementsDetailActivity extends MainActivity implements View.On
         }
     }
 
+    /**
+     * Funcion que procesa el resultado de solicitud de permisos y reutiliza la funcion getImage si
+     * el usuario le concede los permisos o muestra un mensaje de advertencia en caso contrario.
+     * @param requestCode Codigo que indica para cual de los 10 ImageView se obtendrá la imagen o
+     *                    video.
+     * @param permissions Permisos.
+     * @param grantResults Resultados.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {

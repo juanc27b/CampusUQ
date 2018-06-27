@@ -421,6 +421,13 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         if (intent != null) startActivity(intent);
     }
 
+    /**
+     * Asigna la propiedad clicable a las opciones del cuadro de dialogo del Directorio telefónico
+     * dependiendo de si tiene o no tiene los permisos de añadir contactos y/o realizar llamadas.
+     * @param requestCode Codigo de consulta.
+     * @param permissions Permisos.
+     * @param grantResults Resultados.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {

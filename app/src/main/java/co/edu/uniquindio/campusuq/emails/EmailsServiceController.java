@@ -70,12 +70,17 @@ public class EmailsServiceController {
             if (startHistoryID != null) {
                 try {
                     List<History> histories = new ArrayList<>();
-                    ListHistoryResponse response = mService.users().history().list(user).setLabelId(labelIds.get(0)).setStartHistoryId(startHistoryID).execute();
+                    ListHistoryResponse response = mService.users().history().list(user)
+                            .setLabelId(labelIds.get(0))
+                            .setStartHistoryId(startHistoryID).execute();
+
                     while (response.getHistory() != null) {
                         histories.addAll(response.getHistory());
+
                         if (response.getNextPageToken() != null) {
                             String pageToken = response.getNextPageToken();
-                            response = mService.users().history().list(user).setLabelId(labelIds.get(0)).setPageToken(pageToken)
+                            response = mService.users().history().list(user)
+                                    .setLabelId(labelIds.get(0)).setPageToken(pageToken)
                                     .setStartHistoryId(startHistoryID).execute();
                         } else {
                             break;
@@ -84,14 +89,18 @@ public class EmailsServiceController {
 
                     for (History history : histories) {
                         List<HistoryMessageAdded> messagesAdded = history.getMessagesAdded();
+
                         if (messagesAdded != null) {
                             for (HistoryMessageAdded messageAdded : messagesAdded) {
                                 if (messageAdded.getMessage().getLabelIds().containsAll(labelIds)) {
-                                    messages.add(getMessage(mService, user, messageAdded.getMessage().getId()));
+                                    messages.add(getMessage(mService,
+                                            user, messageAdded.getMessage().getId()));
                                 }
                             }
                         }
+
                         List<HistoryMessageDeleted> messagesDeleted = history.getMessagesDeleted();
+
                         if (messagesDeleted != null) {
                             ArrayList<String> ids = new ArrayList<>();
 
@@ -110,11 +119,11 @@ public class EmailsServiceController {
             }
 
             if (reSync) {
-                ListMessagesResponse response = mService.users().messages().list(user).setLabelIds(labelIds).execute();
-                if (response.getMessages() != null) {
-                    for (Message message : response.getMessages()) {
-                        messages.add(getMessage(mService, user, message.getId()));
-                    }
+                ListMessagesResponse response =
+                        mService.users().messages().list(user).setLabelIds(labelIds).execute();
+
+                if (response.getMessages() != null) for (Message message : response.getMessages()) {
+                    messages.add(getMessage(mService, user, message.getId()));
                 }
             }
 
@@ -128,6 +137,7 @@ public class EmailsServiceController {
                 if (message.getPayload() != null) {
                     String subject = "", from = "", to = "", date = "", snippet, content = "";
                     List<MessagePartHeader> headers = message.getPayload().getHeaders();
+
                     for (MessagePartHeader header : headers) {
                         String name = header.getName();
                         String value = StringEscapeUtils.unescapeHtml4(header.getValue());
@@ -148,17 +158,24 @@ public class EmailsServiceController {
                                 break;
                         }
                     }
+
                     snippet = message.getSnippet() != null ? message.getSnippet() : "";
                     String mimeType = message.getPayload().getMimeType();
+
                     if (mimeType != null && mimeType.startsWith("text")) {
-                        byte[] emailBytes = Base64.decodeBase64(message.getPayload().getBody().getData());
+                        byte[] emailBytes =
+                                Base64.decodeBase64(message.getPayload().getBody().getData());
+
                         if (emailBytes != null) {
-                            content += StringEscapeUtils.unescapeHtml4(new String(emailBytes, "UTF-8"))+'\n';
+                            content += StringEscapeUtils.unescapeHtml4(new String(emailBytes,
+                                    "UTF-8")) + '\n';
                         }
                     }
+
                     content = addParts(content, message.getPayload().getParts());
 
-                    Email email = new Email(message.getId(), subject, from, to, date, snippet, content, message.getHistoryId());
+                    Email email = new Email(message.getId(),
+                            subject, from, to, date, snippet, content, message.getHistoryId());
                     emails.add(email);
                 }
             }
@@ -170,6 +187,7 @@ public class EmailsServiceController {
                 return new ArrayList<>();
             }
         }
+
         return emails;
     }
 
@@ -190,18 +208,21 @@ public class EmailsServiceController {
 
     private static String addParts(String content, List<MessagePart> parts)
             throws UnsupportedEncodingException {
-        if (parts != null) {
-            for (MessagePart part : parts) {
-                String mimeType = part.getMimeType();
-                if (mimeType != null && mimeType.startsWith("text")) {
-                    byte[] emailBytes = Base64.decodeBase64(part.getBody().getData());
-                    if (emailBytes != null) {
-                        content += StringEscapeUtils.unescapeHtml4(new String(emailBytes, "UTF-8"))+'\n';
-                    }
+        if (parts != null) for (MessagePart part : parts) {
+            String mimeType = part.getMimeType();
+
+            if (mimeType != null && mimeType.startsWith("text")) {
+                byte[] emailBytes = Base64.decodeBase64(part.getBody().getData());
+
+                if (emailBytes != null) {
+                    content += StringEscapeUtils
+                            .unescapeHtml4(new String(emailBytes, "UTF-8")) + '\n';
                 }
-                content = addParts(content, part.getParts());
             }
+
+            content = addParts(content, part.getParts());
         }
+
         return content;
     }
 
@@ -221,7 +242,8 @@ public class EmailsServiceController {
 
         try {
             String user = "me";
-            MimeMessage mimeMessage = createEmail(email.getTo(), email.getFrom(), email.getName(), email.getContent());
+            MimeMessage mimeMessage = createEmail(email.getTo(),
+                    email.getFrom(), email.getName(), email.getContent());
             Message message = sendMessage(mService, user, mimeMessage);
             success = message != null;
         } catch (Exception e) {

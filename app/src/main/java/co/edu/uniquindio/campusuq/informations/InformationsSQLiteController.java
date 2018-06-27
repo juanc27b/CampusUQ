@@ -18,15 +18,32 @@ public class InformationsSQLiteController extends SQLiteController {
     private static final String categoryTablename = "Informacion_Categoria";
     public static final String categoryColumns[] = {"_ID", "Nombre", "Enlace", "Fecha"};
 
+    /**
+     * Construye el controlador de la base de datos.
+     * @param context Contexto usado para la construccion.
+     * @param version Versión del controlador.
+     */
     public InformationsSQLiteController(Context context, int version) {
         super(context, version);
     }
 
+    /**
+     * Funcion por medio de la cual se le pasa el nombre de la tabla a la clase base.
+     * @param index Parametro que permite elegir entre la tabla Informacion y la tabla
+     *              Informacion_Categoria.
+     * @return Nombre de la tabla elegida.
+     */
     @Override
     protected String getTablename(int index) {
         return new String[]{tablename, categoryTablename}[index];
     }
 
+    /**
+     * Funcion por medio de la cual se le pasan los nombres de las columnas a la clase base.
+     * @param index Parametro que permite elegir entre la tabla Informacion y la tabla
+     *              Informacion_Categoria.
+     * @return Nombre de las columnas elegidas.
+     */
     @Override
     protected String[] getColumns(int index) {
         return new String[][]{columns, categoryColumns}[index];
@@ -43,6 +60,13 @@ public class InformationsSQLiteController extends SQLiteController {
                 columns[2] + " TEXT NOT NULL UNIQUE, " + columns[3] + " TEXT NOT NULL)";
     }
 
+    /**
+     * Selecciona un arreglo de informaciones desde la base de datos.
+     * @param selection Sentencia WHERE para filtrar las informaciones que se obtendran de la base
+     *                  de datos.
+     * @param selectionArgs Valores a reemplasar en el filtro de selección.
+     * @return Arreglo de informaciones de la base de datos.
+     */
     public ArrayList<Information> select(String selection, String... selectionArgs) {
         ArrayList<Information> informations = new ArrayList<>();
         Cursor c = db.query(tablename, null, selection, selectionArgs, null,
@@ -70,6 +94,13 @@ public class InformationsSQLiteController extends SQLiteController {
                 categoryColumns[3] + " TEXT NOT NULL)";
     }
 
+    /**
+     * Selecciona un arreglo de categorias de informacion desde la base de datos.
+     * @param selection Sentencia WHERE para filtrar las categorias de informacion que se obtendran
+     *                  de la base de datos.
+     * @param selectionArgs Valores a reemplasar en el filtro de selección.
+     * @return Arreglo de categorias de informacion de la base de datos.
+     */
     public ArrayList<InformationCategory> selectCategory(String selection,
                                                          String... selectionArgs) {
         ArrayList<InformationCategory> categories = new ArrayList<>();
@@ -85,10 +116,21 @@ public class InformationsSQLiteController extends SQLiteController {
         return categories;
     }
 
+    /**
+     * Inserta una categoria de informacion en la base de datos, de acuerdo a los valores de las
+     * columnas pasados como parámetros.
+     * @param values Valores de las columnas de la categoria de informacion a insertar.
+     */
     public void insertCategory(Object... values) {
         insert(1, values);
     }
 
+    /**
+     * Actualiza una categoria de informacion en la base de datos de acuerdo a los valores de las
+     * columnas pasados como parámetros, siendo el último de estos la ID de la fila a modificar.
+     * @param values Valores de las columnas de la categoria de informacion a actualizar seguidos de
+     *               la ID de dicha categoria de informacion.
+     */
     public void updateCategory(Object... values) {
         update(1, values);
     }

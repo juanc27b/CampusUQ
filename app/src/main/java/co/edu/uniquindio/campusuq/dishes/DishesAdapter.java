@@ -51,7 +51,7 @@ public class DishesAdapter extends RecyclerView.Adapter<DishesAdapter.DishViewHo
          * Obtiene los objetos de vista a partir de sus identificadores y asigna los listener de
          * click.
          * @param itemView Vista de un item en la cual buscar las subvistas que se controlan en el
-         *             adaptador.
+         *                 adaptador.
          */
         DishViewHolder(View itemView) {
             super(itemView);

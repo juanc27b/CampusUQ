@@ -18,8 +18,18 @@ import java.util.ArrayList;
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
+/**
+ * Controlador del servicio de programas que permite descargar programas, categorías de programa y
+ * facultades de programa desde el servidor.
+ */
 public class ProgramsServiceController {
 
+    /**
+     * Hace una petición GET al servidor para obtener los programas almacenados en el mismo, y los
+     * extrae de la respuesta en formato JSON para retornar un arreglo de programas.
+     * @param context Contexto necesario para obtener la clave de API para el servicio.
+     * @return Arreglo de programas obtenido desde el servidor.
+     */
     public static ArrayList<Program> getPrograms(Context context) {
         ArrayList<Program> programs = new ArrayList<>();
 
@@ -104,6 +114,13 @@ public class ProgramsServiceController {
         return programs;
     }
 
+    /**
+     * Hace una petición GET al servidor para obtener las categorias de programa almacenados en el
+     * mismo, y las extrae de la respuesta en formato JSON para retornar un arreglo de categorias de
+     * programa.
+     * @param context Contexto necesario para obtener la clave de API para el servicio.
+     * @return Arreglo de categorias de programa obtenido desde el servidor.
+     */
     public static ArrayList<ProgramCategory> getProgramCategories(Context context) {
         ArrayList<ProgramCategory> categories = new ArrayList<>();
 
@@ -158,6 +175,13 @@ public class ProgramsServiceController {
         return categories;
     }
 
+    /**
+     * Hace una petición GET al servidor para obtener las facultades de programa almacenados en el
+     * mismo, y las extrae de la respuesta en formato JSON para retornar un arreglo de facultades de
+     * programa.
+     * @param context Contexto necesario para obtener la clave de API para el servicio.
+     * @return Arreglo de facultades de programa obtenido desde el servidor.
+     */
     public static ArrayList<ProgramFaculty> getProgramFaculties(Context context) {
         ArrayList<ProgramFaculty> faculties = new ArrayList<>();
 

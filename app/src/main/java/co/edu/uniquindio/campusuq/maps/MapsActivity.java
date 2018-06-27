@@ -120,6 +120,11 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
                 .findFragmentById(R.id.map)).getMapAsync(this);
     }
 
+    /**
+     * Método para manejar nuevas llamadas a la actividad, dependiendo de la accion del intento,
+     * puede buscar una etiqueta.
+     * @param intent Intento que contiene la accion a realizar.
+     */
     @Override
     public void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
@@ -209,6 +214,12 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
         });
     }
 
+    /**
+     * Funcion que procesa el resultado de solicitud de permisos.
+     * @param requestCode Codigo de solicitud.
+     * @param permissions Permisos.
+     * @param grantResults Resultados.
+     */
     @SuppressLint("MissingPermission")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -221,6 +232,10 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
         }
     }
 
+    /**
+     * Funcion que se llama cuando el panorama de vista de calle esta listo.
+     * @param streetViewPanorama Panorama de vista de calle.
+     */
     @Override
     public void onStreetViewPanoramaReady(StreetViewPanorama streetViewPanorama) {
         mPanorama = streetViewPanorama;
@@ -233,6 +248,10 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
         showStreetView(location != null ? location : CIENCIAS_BASICAS);
     }
 
+    /**
+     * Funcion para establecer una posicion en el panorama de vista de calle.
+     * @param latLng Latitud y longitud a establecer.
+     */
     public void showStreetView(LatLng latLng) {
         StreetViewPanoramaCamera camera = new StreetViewPanoramaCamera.Builder()
                 .zoom(0.0f)
@@ -245,6 +264,9 @@ public class MapsActivity extends MainActivity implements OnMapReadyCallback,
         mPanorama.setPosition(latLng, 300);
     }
 
+    /**
+     * Añade las etiquetas al arreglo de etiquetas y las posiciones al arreglo de posiciones.
+     */
     public void addTagsAndLocations() {
         tags.add(getString(R.string.marker_a1));
         tags.add(getString(R.string.marker_a2));

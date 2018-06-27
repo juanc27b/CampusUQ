@@ -29,16 +29,34 @@ public class AnnouncementsSQLiteController extends SQLiteController {
         super(context, version);
     }
 
+    /**
+     * Funcion por medio de la cual se le pasa el nombre de la tabla a la clase base.
+     * @param index Parametro que permite elegir entre la tabla Anuncio y la tabla Anuncio_Enlace.
+     * @return Nombre de la tabla elegida.
+     */
     @Override
     protected String getTablename(int index) {
         return new String[]{tablename, linkTablename}[index];
     }
 
+    /**
+     * Funcion por medio de la cual se le pasan los nombres de las columnas a la clase base.
+     * @param index Parametro que permite elegir entre la tabla Anuncio y la tabla Anuncio_Enlace.
+     * @return Nombre de las columnas elegidas.
+     */
     @Override
     protected String[] getColumns(int index) {
         return new String[][]{columns, linkColumns}[index];
     }
 
+    /**
+     * Funcion por medio de la cual se le pasan los nombres de las columnas para la funcion update a
+     * la clase base.
+     * @param index Parametro que permite elegir entre la tabla Anuncio y la tabla Anuncio_Enlace,
+     *              para la tabla Anuncio se actualizan todas las columnas excepto la ultima la cual
+     *              corresponde a la marca de elemento leido.
+     * @return Nombre de las columnas elegidas.
+     */
     @Override
     protected String[] getUpdateColumns(int index) {
         return new String[][]{Arrays.copyOfRange(columns, 0, columns.length - 1),
@@ -92,7 +110,7 @@ public class AnnouncementsSQLiteController extends SQLiteController {
     }
 
     /**
-     * Selecciona un arreglo de anuncios desde la base de datos.
+     * Selecciona un arreglo de enlaces de anuncios desde la base de datos.
      * @param selection Sentencia WHERE para filtrar los enlaces de anuncios que se obtendran de la
      *                  base de datos.
      * @param selectionArgs Valores a reemplasar en el filtro de selección.
@@ -124,8 +142,8 @@ public class AnnouncementsSQLiteController extends SQLiteController {
     /**
      * Actualiza un enlace de anuncio en la base de datos de acuerdo a los valores de las columnas
      * pasados como parámetros, siendo el último de estos la ID de la fila a modificar.
-     * @param values Valores de las columnas del plato a actualizar seguidos de la ID de dicho
-     *               enlace de anuncio.
+     * @param values Valores de las columnas del enlace de anuncio a actualizar seguidos de la ID de
+     *               dicho enlace de anuncio.
      */
     public void updateLink(Object... values) {
         update(1, values);

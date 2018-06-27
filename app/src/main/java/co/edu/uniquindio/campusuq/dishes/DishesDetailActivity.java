@@ -195,6 +195,11 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
         }
     }
 
+    /**
+     * Verifica si la actividad tiene permiso de lectura del almacenamiento externo, si lo tiene
+     * inicia una actividad para seleccionar una imagen y obtenerla en su resultado, si no tiene
+     * permiso de lectura lo solicita.
+     */
     private void getImage() {
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -208,6 +213,13 @@ public class DishesDetailActivity extends MainActivity implements View.OnClickLi
         }
     }
 
+    /**
+     * Funcion que procesa el resultado de solicitud de permisos y reutiliza la funcion getImage si
+     * el usuario le concede los permisos o muestra un mensaje de advertencia en caso contrario.
+     * @param requestCode Codigo de solicitud.
+     * @param permissions Permisos.
+     * @param grantResults Resultados.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {

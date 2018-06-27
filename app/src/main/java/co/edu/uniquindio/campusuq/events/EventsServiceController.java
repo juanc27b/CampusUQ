@@ -19,8 +19,18 @@ import java.util.ArrayList;
 import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
+/**
+ * Controlador del servicio de eventos que permite descargar eventos, categorías de eventos,
+ * fechas de eventos, periodos de eventos y relaciones de evento desde el servidor.
+ */
 public class EventsServiceController {
 
+    /**
+     * Hace una petición GET al servidor para obtener los eventos almacenados en el mismo, y los
+     * extrae de la respuesta en formato JSON para retornar un arreglo de eventos.
+     * @param context Contexto necesario para obtener la clave de API para el servicio.
+     * @return Arreglo de eventos obtenido desde el servidor.
+     */
     public static ArrayList<Event> getEvents(Context context) {
         ArrayList<Event> events = new ArrayList<>();
 
@@ -75,6 +85,13 @@ public class EventsServiceController {
         return events;
     }
 
+    /**
+     * Hace una petición GET al servidor para obtener las categorias de evento almacenadas en el
+     * mismo, y las extrae de la respuesta en formato JSON para retornar un arreglo de categorias de
+     * evento.
+     * @param context Contexto necesario para obtener la clave de API para el servicio.
+     * @return Arreglo de categorias de evento obtenido desde el servidor.
+     */
     public static ArrayList<EventCategory> getEventCategories(Context context) {
         ArrayList<EventCategory> categories = new ArrayList<>();
 
@@ -131,6 +148,13 @@ public class EventsServiceController {
         return categories;
     }
 
+    /**
+     * Hace una petición GET al servidor para obtener los periodos de evento almacenadas en el
+     * mismo, y los extrae de la respuesta en formato JSON para retornar un arreglo de periodos de
+     * evento.
+     * @param context Contexto necesario para obtener la clave de API para el servicio.
+     * @return Arreglo de periodos de evento obtenido desde el servidor.
+     */
     public static ArrayList<EventPeriod> getEventPeriods(Context context) {
         ArrayList<EventPeriod> periods = new ArrayList<>();
 
@@ -185,6 +209,12 @@ public class EventsServiceController {
         return periods;
     }
 
+    /**
+     * Hace una petición GET al servidor para obtener las fechas de evento almacenadas en el mismo,
+     * y las extrae de la respuesta en formato JSON para retornar un arreglo de fechas de evento.
+     * @param context Contexto necesario para obtener la clave de API para el servicio.
+     * @return Arreglo de fechas de evento obtenido desde el servidor.
+     */
     public static ArrayList<EventDate> getEventDates(Context context, @NonNull String type) {
         ArrayList<EventDate> dates = new ArrayList<>();
 
@@ -237,6 +267,13 @@ public class EventsServiceController {
         return dates;
     }
 
+    /**
+     * Hace una petición GET al servidor para obtener las relaciones de evento almacenadas en el
+     * mismo, y las extrae de la respuesta en formato JSON para retornar un arreglo de relaciones de
+     * evento.
+     * @param context Contexto necesario para obtener la clave de API para el servicio.
+     * @return Arreglo de relaciones de evento obtenido desde el servidor.
+     */
     public static ArrayList<EventRelation> getEventRelations(Context context) {
         ArrayList<EventRelation> relations = new ArrayList<>();
 

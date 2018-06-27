@@ -26,16 +26,33 @@ public class ObjectsSQLiteController extends SQLiteController {
         super(context, version);
     }
 
+    /**
+     * Funcion por medio de la cual se le pasa el nombre de la tabla a la clase base.
+     * @param index No utilizado.
+     * @return Nombre de la tabla Objeto.
+     */
     @Override
     protected String getTablename(int index) {
         return tablename;
     }
 
+    /**
+     * Funcion por medio de la cual se le pasan los nombres de las columnas a la clase base.
+     * @param index No utilizado.
+     * @return Nombre de las columnas de la tabla Objeto.
+     */
     @Override
     protected String[] getColumns(int index) {
         return columns;
     }
 
+    /**
+     * Funcion por medio de la cual se le pasan los nombres de las columnas para la funcion update a
+     * la clase base.
+     * @param index No utilizado.
+     * @return Columnas de la tabla Objeto excepto la ultima la cual corresponde a la marca de
+     *         elemento leido.
+     */
     @Override
     protected String[] getUpdateColumns(int index) {
         return Arrays.copyOfRange(columns, 0, columns.length - 1);

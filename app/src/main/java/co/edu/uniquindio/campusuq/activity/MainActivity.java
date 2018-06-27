@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity
      * Se define un filtro de intentos para el BroadcastReceiver principal.
      */
     public IntentFilter mainFilter = new IntentFilter();
+
     /**
      * Se define un BroadcastReceiver para que el servicio que se encarga de las operaciones web le
      * pueda comunicar a la actividad que ha terminado de cargar/descargar los datos, y se define
@@ -93,8 +94,9 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onReceive(Context context, Intent intent) {
             WebService.PENDING_ACTION = WebService.ACTION_NONE;
+            String action = intent.getAction();
 
-            if (progressDialog.isShowing()) switch (intent.getAction()) {
+            if (progressDialog.isShowing() && action != null) switch (action) {
                 case WebService.ACTION_WELFARE:
                     loadInformations(R.string.institutional_welfare, context);
                     break;

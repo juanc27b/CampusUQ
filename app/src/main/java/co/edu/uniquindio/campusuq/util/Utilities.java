@@ -14,7 +14,6 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
@@ -43,7 +42,7 @@ public class Utilities {
     public static final String SELECT_ALL = "SELECT_ALL";
 
     public static final String URL_SERVICIO = "https://campus-uq.000webhostapp.com";
-    public static final String NOMBRE_BD = "Campus_UQ";
+    static final String NOMBRE_BD = "Campus_UQ";
 
     public static final String PREFERENCES = "preferences";
     public static final String PREFERENCE_LANGUAGE = "language_preferences";
@@ -66,13 +65,16 @@ public class Utilities {
                 String sign = Base64.encodeToString(md.digest(), Base64.DEFAULT);
                 Log.d("KeyHash:", sign);
             }
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
+        } catch (PackageManager.NameNotFoundException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Determina si hay o no conexión a internet.
+     * @param context Contexto con el cual realizar el proceso.
+     * @return Verdadero si hay conexión a internet, falso en caso contrario.
+     */
     public static boolean haveNetworkConnection(Context context) {
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -80,8 +82,15 @@ public class Utilities {
         return activeNetwork != null && activeNetwork.isConnected();
     }
 
+    /**
+     * Obtiene un dialogo de progreso que puede ser vertical u horizontal.
+     * @param context Contexto con el cual crear el dialogo.
+     * @param vertical Valor booleano que indica si se quiere el dialogo vertical u horizontal.
+     * @return Nuevo dialogo de progreso.
+     */
     public static ProgressDialog getProgressDialog(Context context, boolean vertical) {
         ProgressDialog pDialog = new ProgressDialog(context);
+
         if (vertical) {
             pDialog.setTitle(context.getString(R.string.loading_content));
             pDialog.setMessage(context.getString(R.string.please_wait));
@@ -92,6 +101,7 @@ public class Utilities {
             pDialog.setMax(12);
             pDialog.setProgress(0);
         }
+
         pDialog.setIndeterminate(false);
         pDialog.setCancelable(true);
         pDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -103,6 +113,14 @@ public class Utilities {
         return pDialog;
     }
 
+    /**
+     * Almacena un elemento multimedia en la subruta especificada descargandolo desde la direccion
+     * url especificada.
+     * @param spec Direccion url desde la cual descargar el elemento multimedia.
+     * @param path Subruta donde almacenar el elemento multimedia.
+     * @param context Contexto con el cual realizar el proceso.
+     * @return Ruta en la cual se almacenó el elemento multimedia, o null en caso de error.
+     */
     public static String saveMedia(String spec, String path, Context context) {
         if (spec != null) try {
             File dir = new File(context.getExternalFilesDir(null).getAbsolutePath() +
@@ -144,6 +162,11 @@ public class Utilities {
         }
     }
 
+    /**
+     * Cambia el lenguaje almacenado en la preferencias compartidas intercalando entre ingles y
+     * español.
+     * @param context Contexto.
+     */
     @SuppressLint("ApplySharedPref")
     public static void changeLanguage(Context context) {
         SharedPreferences sharedPreferences =
@@ -153,6 +176,12 @@ public class Utilities {
         getLanguage(context);
     }
 
+    /**
+     * Obtiene un nuevo contexto actualizado con el nuevo lenguaje obtenido de las preferencias
+     * compartidas.
+     * @param context Contexto actual a partir del cual obtener el nuevo contexto.
+     * @return Nuevo contexto con el lenguaje actualizado.
+     */
     public static Context getLanguage(Context context){
         Locale locale = new Locale(context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
                 .getString(PREFERENCE_LANGUAGE, LANGUAGE_ES), "CO");
@@ -163,6 +192,12 @@ public class Utilities {
         return context.createConfigurationContext(configuration);
     }
 
+    /**
+     * Obtiene un mapa de bits redimencionado a un maximo horizontal o vertical de 500, conservando
+     * la relacion de aspecto.
+     * @param image Mapa de bits a redimencionar.
+     * @return Mapa de bits redimencionado.
+     */
     public static Bitmap getResizedBitmap(Bitmap image) {
         int width = image.getWidth();
         int height = image.getHeight();
@@ -179,6 +214,12 @@ public class Utilities {
         return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
+    /**
+     * Obtiene la ruta de un elemento multimedia a partir de su Uri.
+     * @param context Contexto.
+     * @param uri Uri del elemento multimedia.
+     * @return Ruta del elemento multimedia.
+     */
     public static String getPath(Context context, Uri uri) {
         String path = null;
         String[] projection = {MediaStore.Images.Media.DATA};

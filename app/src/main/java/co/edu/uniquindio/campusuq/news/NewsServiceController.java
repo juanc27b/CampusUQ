@@ -20,8 +20,23 @@ import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import co.edu.uniquindio.campusuq.util.State;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
+/**
+ * Controlador del servicio de noticias que permite recivir noticias desde el servidor.
+ */
 public class NewsServiceController {
 
+    /**
+     * Obtiene del servidor el arreglo de noticias que puede ser total, el correspondiente a la
+     * categoria suministrada o ademas de la categoria la mas reciente a la fecha suministrada.
+     * @param context Contexto utilizado para obtener la clave de autorizacion del usuario que haya
+     *                iniciado sesion.
+     * @param category_date Categoria y fecha a partir de la cual buscar nuevas noticias, o una
+     *                      cadena vacia para buscarlas todos.
+     * @param state Estado de exito o fracaso de la operacion retornado atravez del objeto mutable.
+     * @param _IDs Arreglo de IDs presentes en la base de datos local que se remoberan de dicho
+     *             arreglo si tambien estan en el servidor.
+     * @return Arreglo de noticias.
+     */
     public static ArrayList<New> getNews(Context context, @NonNull String category_date,
                                          State state, ArrayList<String> _IDs,
                                          ArrayList<String> images) {
@@ -98,6 +113,13 @@ public class NewsServiceController {
         return news;
     }
 
+    /**
+     * Hace una peticiñon GET al servidor para obtener las categorías de noticia almacenadas en el
+     * mismo, y las extrae de la respuesta en formato JSON para retornar un arreglo de categorías de
+     * noticia.
+     * @param context Contexto necesario para obtener la clave de API para el servicio.
+     * @return Arreglo de categorías de noticia obtenido desde el servidor.
+     */
     public static ArrayList<NewCategory> getNewCategories(Context context) {
         ArrayList<NewCategory> categories = new ArrayList<>();
 
@@ -151,6 +173,14 @@ public class NewsServiceController {
         return categories;
     }
 
+    /**
+     * Hace una peticiñon GET al servidor para obtener las relaciones de noticia de una noticia en
+     * particular almacenadas en el mismo, y las extrae de la respuesta en formato JSON para
+     * retornar un arreglo de relaciones de noticia.
+     * @param context Contexto necesario para obtener la clave de API para el servicio.
+     * @param idNew ID de la noticia para la cual buscar sus relaciones.
+     * @return Arreglo de relaciones de noticia obtenido desde el servidor.
+     */
     public static ArrayList<NewRelation> getNewRelations(Context context, String idNew) {
         ArrayList<NewRelation> relations = new ArrayList<>();
 

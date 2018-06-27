@@ -2,16 +2,15 @@ package co.edu.uniquindio.campusuq.events;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import co.edu.uniquindio.campusuq.util.SQLiteController;
-import co.edu.uniquindio.campusuq.util.SQLiteHelper;
-import co.edu.uniquindio.campusuq.util.Utilities;
 
+/**
+ * Controlador de la base de datos para las tablas Evento, Evento_Categoria, Evento_Periodo,
+ * Evento_Fecha y Evento_Relacion, que hacen parte de la funcionalidad de Calendario academico.
+ */
 public class EventsSQLiteController extends SQLiteController {
 
     private static final String tablename = "Evento";
@@ -30,27 +29,57 @@ public class EventsSQLiteController extends SQLiteController {
     public static final String relationColumns[] =
             {"Categoria_ID", "Evento_ID", "Periodo_ID", "Fecha_ID"};
 
+    /**
+     * Constructor del controlador de la base de datos, el cual utiliza un SQLiteHelper para
+     * asegurar que las tablas se creen al crear la base de datos, y obtiene una instancia de la
+     * base de datos con permisos de escritura.
+     * @param context Contexto necesario para crear un SQLiteHelper.
+     * @param version Versión de la base de datos.
+     */
     public EventsSQLiteController(Context context, int version) {
         super(context, version);
     }
 
+    /**
+     * Funcion por medio de la cual se le pasa el nombre de la tabla a la clase base.
+     * @param index Parametro que permite elegir entre la tabla Evento, la tabla Evento_Categoria,
+     *              la tabla Evento_Periodo, la tabla Evento_Fecha y la tabla Evento_Relacion.
+     * @return Nombre de la tabla elegida.
+     */
     @Override
     protected String getTablename(int index) {
         return new String[]{tablename, categoryTablename, periodTablename, dateTablename,
                 relationTablename}[index];
     }
 
+    /**
+     * Funcion por medio de la cual se le pasan los nombres de las columnas a la clase base.
+     * @param index Parametro que permite elegir entre la tabla Evento, la tabla Evento_Categoria,
+     *              la tabla Evento_Periodo, la tabla Evento_Fecha y la tabla Evento_Relacion.
+     * @return Nombre de las columnas elegidas.
+     */
     @Override
     protected String[] getColumns(int index) {
         return new String[][]{columns, categoryColumns, periodColumns, dateColumns,
                 relationColumns}[index];
     }
 
+    /**
+     * Crea una cadena válida para crear la tabla Evento en la base de datos.
+     * @return Cadena SQL para crear la tabla Evento.
+     */
     public static String createTable(){
         return "CREATE TABLE " + tablename + '(' + columns[0] + " INTEGER PRIMARY KEY, " +
                 columns[1] + " TEXT NOT NULL UNIQUE)";
     }
 
+    /**
+     * Obtiene de la base de datos un arreglo de eventos de acuerdo a los filtros pasados como
+     * parámetro a la función, y los ordena por ID en orden ascendente.
+     * @param selection Cláusula SQL WHERE para filtrar los resultados.
+     * @param selectionArgs Parámetros de la cláusula SQL WHERE.
+     * @return Arreglo de eventos extraído de la base de datos.
+     */
     public ArrayList<Event> select(String selection, String... selectionArgs) {
         ArrayList<Event> events = new ArrayList<>();
         Cursor c = db.query(tablename, null, selection, selectionArgs, null,
@@ -64,10 +93,17 @@ public class EventsSQLiteController extends SQLiteController {
         return events;
     }
 
+    /**
+     * Elimina todas las filas de la tabla Evento.
+     */
     public void delete() {
         db.execSQL("DELETE FROM " + tablename);
     }
 
+    /**
+     * Crea una cadena válida para crear la tabla Evento_Categoria en la base de datos.
+     * @return Cadena SQL para crear la tabla Evento_Categoria.
+     */
     public static String createCategoryTable(){
         return "CREATE TABLE " + categoryTablename + '(' +
                 categoryColumns[0] + " INTEGER PRIMARY KEY, " +
@@ -75,6 +111,13 @@ public class EventsSQLiteController extends SQLiteController {
                 categoryColumns[2] + " TEXT NOT NULL UNIQUE)";
     }
 
+    /**
+     * Obtiene de la base de datos un arreglo de categorias de evento de acuerdo al limite y los
+     * filtros pasados como parámetro a la función, y los ordena por ID en orden ascendente.
+     * @param selection Cláusula SQL WHERE para filtrar los resultados.
+     * @param selectionArgs Parámetros de la cláusula SQL WHERE.
+     * @return Arreglo de categorias de evento extraído de la base de datos.
+     */
     public ArrayList<EventCategory> selectCategory(String limit, String selection,
                                                    String... selectionArgs) {
         ArrayList<EventCategory> categories = new ArrayList<>();
@@ -90,20 +133,39 @@ public class EventsSQLiteController extends SQLiteController {
         return categories;
     }
 
+    /**
+     * Inserta en la base de datos una categoria de evento con los valores de las columnas pasados
+     * como parámetro a la función
+     * @param values Valores de las columnas de la categoria de evento.
+     */
     public void insertCategory(Object... values) {
         insert(1, values);
     }
 
+    /**
+     * Elimina todas las filas de la tabla Evento_Categoria.
+     */
     public void deleteCategory() {
         db.execSQL("DELETE FROM " + categoryTablename);
     }
 
+    /**
+     * Crea una cadena válida para crear la tabla Evento_Periodo en la base de datos.
+     * @return Cadena SQL para crear la tabla Evento_Periodo.
+     */
     public static String createPeriodTable(){
         return "CREATE TABLE " + periodTablename + '(' +
                 periodColumns[0] + " INTEGER PRIMARY KEY, " +
                 periodColumns[1] + " TEXT NOT NULL UNIQUE)";
     }
 
+    /**
+     * Obtiene de la base de datos un arreglo de periodos de evento de acuerdo a los filtros pasados
+     * como parámetro a la función, y los ordena por ID en orden ascendente.
+     * @param selection Cláusula SQL WHERE para filtrar los resultados.
+     * @param selectionArgs Parámetros de la cláusula SQL WHERE.
+     * @return Arreglo de periodos de evento extraído de la base de datos.
+     */
     ArrayList<EventPeriod> selectPeriod(String selection, String... selectionArgs) {
         ArrayList<EventPeriod> periods = new ArrayList<>();
         Cursor c = db.query(periodTablename, null, selection, selectionArgs, null,
@@ -117,20 +179,39 @@ public class EventsSQLiteController extends SQLiteController {
         return periods;
     }
 
+    /**
+     * Inserta en la base de datos un periodo de evento con los valores de las columnas pasados como
+     * parámetro a la función
+     * @param values Valores de las columnas del periodo de evento.
+     */
     public void insertPeriod(Object... values) {
         insert(2, values);
     }
 
+    /**
+     * Elimina todas las filas de la tabla Evento_Periodo.
+     */
     public void deletePeriod() {
         db.execSQL("DELETE FROM " + periodTablename);
     }
 
+    /**
+     * Crea una cadena válida para crear la tabla Evento_Fecha en la base de datos.
+     * @return Cadena SQL para crear la tabla Evento_Fecha.
+     */
     public static String createDateTable(){
         return "CREATE TABLE " + dateTablename + '(' + dateColumns[0] + " INTEGER PRIMARY KEY, " +
                 dateColumns[1] + " TEXT NOT NULL, " + dateColumns[2] + " TEXT NOT NULL, " +
                 "UNIQUE(" + dateColumns[1] + ", " + dateColumns[2] + "))";
     }
 
+    /**
+     * Obtiene de la base de datos un arreglo de fechas de evento de acuerdo a los filtros pasados
+     * como parámetro a la función, y las ordena por ID en orden ascendente.
+     * @param selection Cláusula SQL WHERE para filtrar los resultados.
+     * @param selectionArgs Parámetros de la cláusula SQL WHERE.
+     * @return Arreglo de fechas de evento extraído de la base de datos.
+     */
     public ArrayList<EventDate> selectDate(String selection, String... selectionArgs) {
         ArrayList<EventDate> dates = new ArrayList<>();
         Cursor c = db.query(dateTablename, null, selection, selectionArgs, null,
@@ -144,14 +225,26 @@ public class EventsSQLiteController extends SQLiteController {
         return dates;
     }
 
+    /**
+     * Inserta en la base de datos una fecha de evento con los valores de las columnas pasados como
+     * parámetro a la función
+     * @param values Valores de las columnas de la fecha de evento.
+     */
     public void insertDate(Object... values) {
         insert(3, values);
     }
 
+    /**
+     * Elimina todas las filas de la tabla Evento_Fecha.
+     */
     public void deleteDate() {
-        db.execSQL("DELETE FROM "+dateTablename);
+        db.execSQL("DELETE FROM " + dateTablename);
     }
 
+    /**
+     * Crea una cadena válida para crear la tabla Evento_Relacion en la base de datos.
+     * @return Cadena SQL para crear la tabla Evento_Relacion.
+     */
     public static String createRelationTable(){
         return "CREATE TABLE " + relationTablename + '(' +
                 relationColumns[0] + " INTEGER NOT NULL REFERENCES " + categoryTablename + '(' +
@@ -166,6 +259,14 @@ public class EventsSQLiteController extends SQLiteController {
                 relationColumns[2] + ", " + relationColumns[3] + "))";
     }
 
+    /**
+     * Obtiene de la base de datos un arreglo de relaciones de evento de acuerdo a las columnas y
+     * los filtros pasados como parámetro a la función, y las ordena de forma ascendente.
+     * @param columns Columnas a consultar.
+     * @param selection Cláusula SQL WHERE para filtrar los resultados.
+     * @param selectionArgs Parámetros de la cláusula SQL WHERE.
+     * @return Arreglo de relaciones de evento extraído de la base de datos.
+     */
     public ArrayList<EventRelation> selectRelation(String[] columns, String selection,
                                                    String... selectionArgs) {
         ArrayList<EventRelation> relations = new ArrayList<>();
@@ -199,6 +300,11 @@ public class EventsSQLiteController extends SQLiteController {
         return relations;
     }
 
+    /**
+     * Inserta en la base de datos una relacion de evento con los valores de las columnas pasados
+     * como parámetro a la función
+     * @param values Valores de las columnas de la relacion de evento.
+     */
     public void insertRelation(Object... values) {
         insert(4, values);
     }

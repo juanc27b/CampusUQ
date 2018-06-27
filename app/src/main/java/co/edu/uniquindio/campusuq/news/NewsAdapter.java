@@ -17,6 +17,9 @@ import java.util.Locale;
 
 import co.edu.uniquindio.campusuq.R;
 
+/**
+ * Adaptador de noticias.
+ */
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewViewHolder> {
 
     static final String NOTICE    = "notice";
@@ -32,11 +35,20 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewViewHolder>
             "yyyy-MM-dd'T'HH:mm:ssZ", new Locale("es", "CO"));
     private OnClickNewListener listener;
 
+    /**
+     * Constructor que asigna el arreglo de noticias y la interfaz para redireccionar el
+     * procesamiento del click en una noticia.
+     * @param news Arreglo de noticias.
+     * @param newsActivity Actividad que implementa la interfaz OnClickNewListener.
+     */
     NewsAdapter(ArrayList<New> news, NewsActivity newsActivity) {
         this.news = news;
         listener = newsActivity;
     }
 
+    /**
+     * Portador de vistas de noticias, el cual está atento a clicks.
+     */
     public class NewViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ImageView image;
@@ -45,23 +57,33 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewViewHolder>
         private TextView title;
         private TextView summary;
 
-        NewViewHolder(View view) {
-            super(view);
+        /**
+         * Obtiene los objetos de vista a partir de sus identificadores y asigna los listener de
+         * click.
+         * @param itemView Vista de un item en la cual buscar las subvistas que se controlan en el
+         *                 adaptador.
+         */
+        NewViewHolder(View itemView) {
+            super(itemView);
 
-            image = view.findViewById(R.id.new_image);
-            date = view.findViewById(R.id.new_date);
-            author = view.findViewById(R.id.new_author);
-            title = view.findViewById(R.id.new_title);
-            summary = view.findViewById(R.id.new_summary);
+            image = itemView.findViewById(R.id.new_image);
+            date = itemView.findViewById(R.id.new_date);
+            author = itemView.findViewById(R.id.new_author);
+            title = itemView.findViewById(R.id.new_title);
+            summary = itemView.findViewById(R.id.new_summary);
 
-            view.findViewById(R.id.new_layout).setOnClickListener(this);
+            itemView.findViewById(R.id.new_layout).setOnClickListener(this);
             image.setOnClickListener(this);
-            view.findViewById(R.id.new_more_button).setOnClickListener(this);
-            view.findViewById(R.id.new_facebook_button).setOnClickListener(this);
-            view.findViewById(R.id.new_twitter_button).setOnClickListener(this);
-            view.findViewById(R.id.new_whatsapp_button).setOnClickListener(this);
+            itemView.findViewById(R.id.new_more_button).setOnClickListener(this);
+            itemView.findViewById(R.id.new_facebook_button).setOnClickListener(this);
+            itemView.findViewById(R.id.new_twitter_button).setOnClickListener(this);
+            itemView.findViewById(R.id.new_whatsapp_button).setOnClickListener(this);
         }
 
+        /**
+         * Asigna los valores de las vistas a partir de la noticia suministrada.
+         * @param n Noticia a visualizar.
+         */
         void bindItem(New n) {
             File imageFile = new  File("" + n.getImage());
 
@@ -83,6 +105,11 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewViewHolder>
             summary.setText(n.getSummary());
         }
 
+        /**
+         * Redirige hacia la funcion en la actividad que procesara el click en la noticia asignando
+         * una accion que depende de a cual vista se le ha dado click.
+         * @param view Vista en la que se ha hecho click.
+         */
         @Override
         public void onClick(View view) {
             String action;
@@ -102,31 +129,58 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewViewHolder>
 
     }
 
+    /**
+     * Crea el portador de noticias inflando su diseño.
+     * @param parent Vista donde inflar el portador de noticias.
+     * @param viewType Tipo de la vista (no utilizado).
+     * @return Nuevo portador de noticias creado.
+     */
     @Override
     public NewViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new NewViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.new_detail, parent, false));
     }
 
+    /**
+     * Vincula los valores de la noticia con sus vistas.
+     * @param holder Portador de noticias.
+     * @param position Posición de la noticia en el arreglo de noticias.
+     */
     @Override
     public void onBindViewHolder(NewViewHolder holder, int position) {
         holder.bindItem(news.get(position));
     }
 
+    /**
+     * Obtiene la cantidad de ítems en el arreglo de noticias.
+     * @return Cantidad de ítems.
+     */
     @Override
     public int getItemCount() {
         return news.size();
     }
 
+    /**
+     * Obtiene el arrego de noticias.
+     * @return Arreglo de noticias
+     */
     public ArrayList<New> getNews() {
         return news;
     }
 
+    /**
+     * Asigna el nuevo arreglo de noticias y notifica que los datos han cambiado.
+     * @param news Arreglo de noticias.
+     */
     public void setNews(ArrayList<New> news) {
         this.news = news;
         notifyDataSetChanged();
     }
 
+    /**
+     * Interfaz para ser implementada por una actividad hacia la cual se redireccionará el
+     * procesamiento del click.
+     */
     public interface OnClickNewListener {
         void onNewClick(int index, String action);
     }
