@@ -29,6 +29,12 @@ import java.util.List;
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
+/**
+ * Servicio que se encarga de la reproducción del audio de la emisora institucional en un proceso
+ * separado, así como también de manejar los controles (play, pause, stop) para dicha reproducción.
+ * El servicio deja una notificación en primer plano mientras no se haya detenido la reproducción
+ * para que se pueda seguir escuchando y controlando el audio aún después de cerrar la app.
+ */
 public class MediaPlaybackService extends MediaBrowserServiceCompat {
 
     public final static String stream = "http://72.29.81.205:9030/;";
@@ -54,6 +60,10 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
     private Notification pauseNotification;
     private Notification connectNotification;
 
+    /**
+     * Método llamado cuando se crea el servicio. En él se inicializan las variables necesarias
+     * para la reproducción de audio y también los callback para poder controlar dicha reproducción.
+     */
     @Override
     public void onCreate() {
         super.onCreate();
@@ -221,6 +231,14 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
 
     }
 
+    /**
+     * Método llamado cuando se intenta iniciar el servicio, se encarga de iniciarlo en un modo
+     * en que si se cierra inadecuadamente el sistema intentará volver a iniciarlo.
+     * @param intent intento con el que se inició el servicio.
+     * @param flags banderas de parámetros para el inicio del servicio.
+     * @param startId id para el inicio del servicio.
+     * @return modo de inicio para el servicio.
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
@@ -230,6 +248,13 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
         return START_STICKY;
     }
 
+    /**
+     * Método utilizado para obtener la raiz con el fin de usar el contenido multimedial.
+     * @param clientPackageName nombre del paquete del cliente que intenta acceder al contenido.
+     * @param clientUid uid del cliente que intenta explorar el contenido.
+     * @param rootHints pistas usadas para poder obtener la raiz.
+     * @return raiz que decide si el cliente podrá acceder al contenido multimedial o no.
+     */
     @Override
     public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid,
                                  Bundle rootHints) {
@@ -246,10 +271,23 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
         }
     }
 
+    /**
+     * Método para comparar los paqauetes del cliente que intenta usar el servicio y los de esta app,
+     * de manera que solo paquetes coincidentes están autorizados a usar el contenido de audio.
+     * @param clientPackageName nombre del paquete del cliente que intenta usar el servicio.
+     * @param clientUid uid del cliente que intenta usar el servicio.
+     * @return verdadero si se aprueba la utilizacion del contenido del servicio o falso para lo
+     * contrario.
+     */
     public boolean allowBrowsing(String clientPackageName, int clientUid) {
         return clientPackageName.equals(getApplication().getPackageName());
     }
 
+    /**
+     * Método usado para obtener información de un item multimedial.
+     * @param parentMediaId Id del contenido multimedial padre quienes se está solicitando información.
+     * @param result Resultado al cual enviar la información de los hijos del item.
+     */
     @Override
     public void onLoadChildren(@NonNull final String parentMediaId,
                                @NonNull final Result<List<MediaBrowserCompat.MediaItem>> result) {
@@ -274,6 +312,10 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
         result.sendResult(mediaItems);
     }
 
+    /**
+     * Método utilizado para controlar los cambios que deben ocurrir cuando se inicializa el
+     * reproductor y cuando se termina de reproducir una pista.
+     */
     public void initMediaPlayer() {
         // ...initialize the MediaPlayer here...
         mMediaPlayer = new MediaPlayer();
@@ -339,11 +381,21 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
         }
     }
 
+    /**
+     * Método llamado al destruir el servicio que se encarga de liberar los recursos utilizados
+     * en la reproducción de audio.
+     */
     @Override
     public void onDestroy() {
         if (mMediaPlayer != null) mMediaPlayer.release();
     }
 
+    /**
+     * Método encargado de crear la notificación para el control de la reproducción del audio de
+     * la emisora cuando se ha salido de la aplicación.
+     * @param type Tipo de notificación a crear según los controles disponibles.
+     * @return Objeto de notificación para iniciar el servicio en primer plano.
+     */
     public Notification createNotification(String type) {
         // Given a media session and its context (usually the component containing the session)
         // Create a NotificationCompat.Builder

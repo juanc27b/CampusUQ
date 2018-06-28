@@ -190,7 +190,7 @@ public class HistoryActivity extends MainActivity implements View.OnClickListene
 
     /**
      * Define la tarea a realizar cuando se da click en una de las vistas controladas por esta
-     * actividad, en caso de dar clic al doton de seleccionar todos los elementos, como su nombre lo
+     * actividad, en caso de dar clic al boton de seleccionar todos los elementos, como su nombre lo
      * indica, todas las casillas de los elementos seran marcadas, o si ya estanban marcadas,
      * entonces seran todas desmarcadas, en caso de dar clic al boton de aceptar se eliminaran del
      * historial (seran marcados como no leidos) todos los elementos cuyas casillas esten marcadas
