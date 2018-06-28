@@ -29,8 +29,8 @@ import co.edu.uniquindio.campusuq.web.WebService;
 import co.edu.uniquindio.campusuq.users.User;
 
 /**
- * Actividad para visualizar los cupos de salas de cómputo, parqueaderos, laboratorios, zonas de
- * estudio, espacios culturales y deportivos y auditorios.
+ * Actividad para visualizar los cupos de las funcionalidades Salas de cómputo, Parqueaderos,
+ * Laboratorios, Zonas de estudio, Espacios culturales y deportivos y Auditorios.
  */
 public class QuotasActivity extends MainActivity implements QuotasAdapter.OnClickQuotaListener,
         View.OnClickListener {

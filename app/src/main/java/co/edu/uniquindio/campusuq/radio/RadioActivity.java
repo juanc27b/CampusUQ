@@ -23,6 +23,10 @@ import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
+/**
+ * Actividad que permite escuchar la emisora de la Universidad del Quindio la UFM Estereo 102.1 MHz
+ * a traves de streaming por internet.
+ */
 public class RadioActivity extends MainActivity {
 
     public static final int MAX_VOLUME = 100;
@@ -76,11 +80,19 @@ public class RadioActivity extends MainActivity {
 
     private MediaControllerCompat.Callback controllerCallback;
 
+    /**
+     * Constructor que oculta el ícono de navegación reemplazandolo por una flecha de ir atrás, y
+     * oculta también el botón de busqueda.
+     */
     public RadioActivity() {
         super.setHasSearch(false);
         super.setHasNavigationDrawerIcon(false);
     }
 
+    /**
+     * Alade el contenido de la actividad.
+     * @param savedInstanceState Parámetro usado para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
@@ -136,6 +148,9 @@ public class RadioActivity extends MainActivity {
         });
     }
 
+    /**
+     * Construye los controles de transporte.
+     */
     private void buildTransportControls() {
         // Attach a listener to the button
         play.setOnClickListener(new View.OnClickListener() {
@@ -196,6 +211,10 @@ public class RadioActivity extends MainActivity {
         mediaController.registerCallback(controllerCallback);
     }
 
+    /**
+     * Visualiza el estado.
+     * @param state Estado.
+     */
     public void displayState(int state) {
         play.setEnabled(true);
 
@@ -208,12 +227,18 @@ public class RadioActivity extends MainActivity {
         }
     }
 
+    /**
+     * Responde al inicio de la actividad.
+     */
     @Override
     public void onStart() {
         super.onStart();
         mMediaBrowser.connect();
     }
 
+    /**
+     * Responde a la detencion de la actividad.
+     */
     @Override
     public void onStop() {
         super.onStop();

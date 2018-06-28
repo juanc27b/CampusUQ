@@ -26,6 +26,9 @@ import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 import pub.devrel.easypermissions.EasyPermissions;
 
+/**
+ * Actividad que permite inicar sesión con una cuenta de usuario.
+ */
 public class LoginActivity extends MainActivity implements EasyPermissions.PermissionCallbacks {
 
     private TextView title;
@@ -53,10 +56,18 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
         }
     };
 
+    /**
+     * Constructor que oculta el botón de busqueda.
+     */
     public LoginActivity() {
         super.setHasSearch(false);
     }
 
+    /**
+     * Asigna el fondo de la actividad, infla el diseño de inicio de sesión en la actividad superior
+     * y establece los valores de las variables.
+     * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
@@ -132,6 +143,11 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
                 Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * Método para manejar nuevas llamadas a la actividad, dependiendo de la accion del intento
+     * puede cambiar el titulo de la actividad.
+     * @param intent Intento que contiene la accion a realizar.
+     */
     @Override
     public void handleIntent(Intent intent) {
         if (getSupportActionBar() != null) {
@@ -141,12 +157,20 @@ public class LoginActivity extends MainActivity implements EasyPermissions.Permi
         }
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para reanudar la misma, en el que se registra un
+     * receptor para estar atento a los intentos relacionados con los usuarios.
+     */
     @Override
     protected void onResume() {
         super.onResume();
         registerReceiver(usersReceiver, usersFilter);
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para pausar la misma, en el que se invalida el
+     * previo registro del receptor para los usuarios.
+     */
     @Override
     protected void onPause() {
         super.onPause();

@@ -14,6 +14,9 @@ import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.R;
 
+/**
+ * Adaptador de ítems.
+ */
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
 
     private static int colorPrimary = 0;
@@ -21,7 +24,13 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
     private ArrayList<Item> items;
     private OnClickItemListener listener;
 
-    // Provide a suitable constructor (depends on the kind of dataset)
+    /**
+     * Constructor que asigna el arreglo de ítems y la interfaz para redireccionar el procesamiento
+     * del click en un ítem, adicionalmente utiliza el contexto de la actividad pasada como
+     * parametro para optener el color primario de los recursos.
+     * @param items Arreglo de ítems.
+     * @param itemsActivity Actividad que implementa la interfaz OnClickItemListener.
+     */
     ItemsAdapter(ArrayList<Item> items, ItemsActivity itemsActivity) {
         if (colorPrimary == 0) {
             colorPrimary = ContextCompat.getColor(itemsActivity, R.color.colorPrimary);
@@ -31,28 +40,37 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
         listener = itemsActivity;
     }
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
+    /**
+     * Portador de vistas de ítems, el cual está atento a clicks.
+     */
     public class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        // each data item is just a string in this case
         private ImageView circleView;
         private ImageView itemIcon;
         private TextView itemTitle;
         private TextView itemDescription;
 
-        ItemViewHolder(View view) {
-            super(view);
+        /**
+         * Obtiene los objetos de vista a partir de sus identificadores y asigna los listener de
+         * click.
+         * @param itemView Vista de un item en la cual buscar las subvistas que se controlan en el
+         *                 adaptador.
+         */
+        ItemViewHolder(View itemView) {
+            super(itemView);
 
-            circleView = view.findViewById(R.id.background_circle);
-            itemIcon = view.findViewById(R.id.item_icon);
-            itemTitle = view.findViewById(R.id.item_title);
-            itemDescription = view.findViewById(R.id.item_description);
+            circleView = itemView.findViewById(R.id.background_circle);
+            itemIcon = itemView.findViewById(R.id.item_icon);
+            itemTitle = itemView.findViewById(R.id.item_title);
+            itemDescription = itemView.findViewById(R.id.item_description);
 
-            view.setOnClickListener(this);
+            itemView.setOnClickListener(this);
         }
 
+        /**
+         * Asigna los valores de las vistas a partir del ítem suministrado.
+         * @param item Ítem a visualizar.
+         */
         void bindItem(Item item) {
             circleView.setBackgroundResource(item.getBackground());
 
@@ -69,6 +87,10 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
             itemDescription.setText(Html.fromHtml(item.getDescription()));
         }
 
+        /**
+         * Redirige hacia la funcion en la actividad que procesara el click en el ítem.
+         * @param view Vista en la que se ha hecho click.
+         */
         @Override
         public void onClick(View view) {
             view.setEnabled(false);
@@ -78,36 +100,58 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
 
     }
 
-    // Create new views (invoked by the layout manager)
+    /**
+     * Crea el portador de ítems inflando su diseño.
+     * @param parent Vista donde inflar el portador de ítems.
+     * @param viewType Tipo de la vista (no utilizado).
+     * @return Nuevo portador de ítems creado.
+     */
     @Override
     public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ItemViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_detail, parent, false));
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
+    /**
+     * Vincula los valores del ítem con sus vistas.
+     * @param holder Portador de ítems.
+     * @param position Posición del ítem en el arreglo de ítems.
+     */
     @Override
     public void onBindViewHolder(ItemViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
         holder.bindItem(items.get(position));
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
+    /**
+     * Obtiene la cantidad de ítems en el arreglo.
+     * @return Cantidad de ítems.
+     */
     @Override
     public int getItemCount() {
         return items.size();
     }
 
+    /**
+     * Obtiene el arrego de ítems.
+     * @return Arreglo de ítems
+     */
     ArrayList<Item> getItems() {
         return items;
     }
 
+    /**
+     * Asigna el nuevo arreglo de ítems y notifica que los datos han cambiado.
+     * @param items Arreglo de ítems.
+     */
     public void setItems(ArrayList<Item> items) {
         this.items = items;
         notifyDataSetChanged();
     }
 
+    /**
+     * Interfaz para ser implementada por una actividad hacia la cual se redireccionará el
+     * procesamiento del click.
+     */
     public interface OnClickItemListener {
         void onItemClick(int pos);
     }

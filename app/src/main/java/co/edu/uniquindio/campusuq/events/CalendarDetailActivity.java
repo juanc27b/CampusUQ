@@ -15,6 +15,10 @@ import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
+/**
+ * Actividad para visualizar los ítems de detalle de calendario de la funcionalidad Calendario
+ * académico.
+ */
 public class CalendarDetailActivity extends MainActivity {
 
     private TextView eventText;
@@ -24,10 +28,20 @@ public class CalendarDetailActivity extends MainActivity {
     private String event;
     private String category;
 
+    /**
+     * Constructor que oculta el ícono de navegación reemplazandolo por una flecha de ir atrás.
+     */
     public CalendarDetailActivity() {
         super.setHasNavigationDrawerIcon(false);
     }
 
+    /**
+     * Asigna el fondo de la actividad, infla el diseño de ítems de detalle de calendario en la
+     * actividad superior, se crea el adaptador de ítems de detalle de calendario y el manejador de
+     * diseño lineal y se asignan al recilador de vista y finalmente llama a la funcion para cargar
+     * los ítems de detalle de calendario.
+     * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
@@ -55,34 +69,32 @@ public class CalendarDetailActivity extends MainActivity {
         setItems();
     }
 
+    /**
+     * Método para manejar nuevas llamadas a la actividad, dependiendo de la accion del intento,
+     * puede buscar un ítem o cambiar el titulo de la instancia de la actividad.
+     * @param intent Intento que contiene la accion a realizar.
+     */
     @Override
     public void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            boolean found = false;
 
             if (recyclerView != null) {
                 ArrayList<CalendarDetailItem> items =
                         ((CalendarDetailItemsAdapter) recyclerView.getAdapter()).getItems();
 
                 for (CalendarDetailItem item : items) {
-                    if (query.trim().toLowerCase().equals(item.getPeriod().toLowerCase()) ||
-                            item.getPeriod().toLowerCase().contains(query.trim().toLowerCase()) ||
-                            query.trim().toLowerCase().equals(item.getStart().toLowerCase()) ||
+                    if (item.getPeriod().toLowerCase().contains(query.trim().toLowerCase()) ||
                             item.getStart().toLowerCase().contains(query.trim().toLowerCase()) ||
-                            query.trim().toLowerCase().equals(item.getEnd().toLowerCase()) ||
                             item.getEnd().toLowerCase().contains(query.trim().toLowerCase())) {
                         recyclerView.smoothScrollToPosition(items.indexOf(item));
-                        found = true;
-                        break;
+                        return;
                     }
                 }
             }
 
-            if (!found) {
-                Toast.makeText(this, getString(R.string.date_no_found) + ": " + query,
-                        Toast.LENGTH_SHORT).show();
-            }
+            Toast.makeText(this, getString(R.string.date_no_found) + ": " + query,
+                    Toast.LENGTH_SHORT).show();
         } else if (recyclerView != null) {
             setIntent(intent);
             event = intent.getStringExtra("EVENT");
@@ -93,6 +105,9 @@ public class CalendarDetailActivity extends MainActivity {
         }
     }
 
+    /**
+     * Establece los ítems de detalle de calendario obteniendolos desde la base de datos local.
+     */
     private void setItems() {
         ((CalendarDetailItemsAdapter) recyclerView.getAdapter())
                 .setItems(CalendarPresenter.getCalendarDetailItems(event, category, this));

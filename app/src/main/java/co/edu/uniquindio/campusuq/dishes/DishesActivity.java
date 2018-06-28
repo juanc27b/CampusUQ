@@ -31,7 +31,7 @@ import co.edu.uniquindio.campusuq.web.WebService;
 import co.edu.uniquindio.campusuq.users.User;
 
 /**
- * Actividad para visualizar los platos del Menú del restaurante.
+ * Actividad para visualizar los platos de la funcionalidad Menú del restaurante.
  */
 public class DishesActivity extends MainActivity implements DishesAdapter.OnClickDishListener,
         View.OnClickListener {

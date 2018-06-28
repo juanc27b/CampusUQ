@@ -20,6 +20,9 @@ import android.widget.Toast;
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
+/**
+ * Actividad que permite visualizar webs.
+ */
 public class WebActivity extends AppCompatActivity {
 
     public WebView webView;
@@ -28,6 +31,11 @@ public class WebActivity extends AppCompatActivity {
 
     public String pendingURL;
 
+    /**
+     * Asigna el fondo de la actividad, infla el diseño de contenido web en la actividad superior y
+     * asigna las variables de vistas.
+     * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,6 +127,11 @@ public class WebActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Método para manejar nuevas llamadas a la actividad, dependiendo de la accion del intento
+     * puede cambiar el titulo de la actividad.
+     * @param intent Intento que contiene la accion a realizar.
+     */
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -128,6 +141,12 @@ public class WebActivity extends AppCompatActivity {
         webView.clearHistory();
     }
 
+    /**
+     * Permite volver atraz en la vista web.
+     * @param keyCode Codigo de la tecla.
+     * @param event Evento.
+     * @return Retorna el valor que retornaria la actividad superior.
+     */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // Check if the key event was the Back button and if there's history

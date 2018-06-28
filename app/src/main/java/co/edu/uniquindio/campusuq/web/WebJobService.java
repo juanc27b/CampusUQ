@@ -6,6 +6,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.JobIntentService;
 import android.util.Log;
 
+/**
+ * Servicio de trabajo web.
+ */
 public class WebJobService extends JobIntentService {
 
     private static final String TAG = WebJobService.class.getSimpleName();
@@ -18,6 +21,10 @@ public class WebJobService extends JobIntentService {
         enqueueWork(context, WebService.class, WebBroadcastReceiver.JOB_ID, work);
     }
 
+    /**
+     * Responde a la manipulacion del trabajo.
+     * @param intent Intento.
+     */
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
         Log.i(TAG, "Job started!");
@@ -32,12 +39,19 @@ public class WebJobService extends JobIntentService {
         isWorking = false;
     }
 
+    /**
+     * Responde a la detencion del trabajo actual.
+     * @return Valor que indica si se esta trabajando.
+     */
     @Override
     public boolean onStopCurrentWork() {
         Log.i(TAG, "Job cancelled before being completed");
         return isWorking;
     }
 
+    /**
+     * Responde a la destruccion del trabajo.
+     */
     @Override
     public void onDestroy() {
         Log.i(WebJobService.class.getSimpleName(), "Job destroyed!");

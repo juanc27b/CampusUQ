@@ -14,6 +14,10 @@ import java.util.ArrayList;
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
 
+/**
+ * Actividad que permite establecer que tipo de notificaciones puede generar la aplicacion, lo cual
+ * corresponde a la funcionalidad Ajustar notificaciones..
+ */
 public class NotificationsActivity extends MainActivity implements
         CompoundButton.OnCheckedChangeListener {
 
@@ -25,10 +29,18 @@ public class NotificationsActivity extends MainActivity implements
     private Switch billboardInformation;
     private Switch institutionalMail;
 
+    /**
+     * Constructor que oculta el botón de busqueda.
+     */
     public NotificationsActivity() {
         super.setHasSearch(false);
     }
 
+    /**
+     * Asigna el fondo de la actividad, infla el diseño de notificaciones en la actividad superior y
+     * establece los valores de las variables.
+     * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
@@ -50,6 +62,11 @@ public class NotificationsActivity extends MainActivity implements
         setNotifications();
     }
 
+    /**
+     * Método para manejar nuevas llamadas a la actividad, puede llamar a la funcion para establecer
+     * las notificaciones.
+     * @param intent Intento que contiene la accion a realizar.
+     */
     @Override
     public void handleIntent(Intent intent) {
         setIntent(intent);
@@ -57,6 +74,10 @@ public class NotificationsActivity extends MainActivity implements
         if (actionBar != null) setNotifications();
     }
 
+    /**
+     * Establece los valores de los botones switch de las notificaciones a sus respectivos valores
+     * desde la base de datos.
+     */
     public void setNotifications() {
         unregisterListener();
         ArrayList<Notification> notifications =
@@ -71,6 +92,9 @@ public class NotificationsActivity extends MainActivity implements
         registerListener();
     }
 
+    /**
+     * Registra los listener de los botones switch de las notificaciones.
+     */
     public void registerListener() {
         events.setOnCheckedChangeListener(this);
         news.setOnCheckedChangeListener(this);
@@ -81,6 +105,9 @@ public class NotificationsActivity extends MainActivity implements
         institutionalMail.setOnCheckedChangeListener(this);
     }
 
+    /**
+     * Quita el registro de los listener de los botones switch de las notificaciones.
+     */
     public void unregisterListener() {
         events.setOnCheckedChangeListener(null);
         news.setOnCheckedChangeListener(null);
@@ -91,6 +118,12 @@ public class NotificationsActivity extends MainActivity implements
         institutionalMail.setOnCheckedChangeListener(null);
     }
 
+    /**
+     * Actualiza en la base de datos el valor de activacion o desactivacion de una notificacion
+     * cuando este se cambia en su respectivo boton switch.
+     * @param buttonView Boton switch al que se ha cambiado su estado.
+     * @param isChecked Estado de activocion o descativacion del boton switch.
+     */
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         String _ID = "";

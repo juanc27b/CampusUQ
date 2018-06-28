@@ -14,8 +14,18 @@ import java.net.URL;
 
 import co.edu.uniquindio.campusuq.util.Utilities;
 
+/**
+ * Controlador del servicio de usuarios que permite enviar y recivir usuarios desde y hacia el
+ * servidor.
+ */
 public class UsersServiceController {
 
+    /**
+     * Obtiene un usuario desde el servidor, el cual puede contener todos los datos del usuario, o
+     * solo algunos dependiendo de la peticion.
+     * @param json Peticion en formato JSON para obtener el usuario.
+     * @return Usuario.
+     */
     public static User getUser(String json) {
         try {
             int retry = 0;
@@ -78,6 +88,11 @@ public class UsersServiceController {
         }
     }
 
+    /**
+     * Modifica un usuario en el servidor dependiendo de la peticion en formato JSON.
+     * @param json Peticion en formato JSON para nodificar el usuario.
+     * @return Mensaje de respuesta del servidor.
+     */
     public static String modifyUser(String json) {
         try {
             int retry = 0;

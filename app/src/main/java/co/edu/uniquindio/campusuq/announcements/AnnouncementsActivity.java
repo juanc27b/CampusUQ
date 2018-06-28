@@ -56,7 +56,8 @@ import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 
 /**
- * Actividad para visualizar los anuncios de incidentes y comunicados.
+ * Actividad para visualizar los anuncios de las funcionalidades Sistema de seguridad (incidentes) y
+ * Cartelera (comunicados).
  */
 public class AnnouncementsActivity extends MainActivity
         implements AnnouncementsAdapter.OnClickAnnouncementListener, View.OnClickListener {

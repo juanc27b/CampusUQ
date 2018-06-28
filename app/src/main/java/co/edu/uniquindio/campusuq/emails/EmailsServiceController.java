@@ -47,6 +47,13 @@ import co.edu.uniquindio.campusuq.R;
  */
 public class EmailsServiceController {
 
+    /**
+     * Obtiene los correos de internet.
+     * @param context Contexto con el cual realizar la operacion.
+     * @param startHistoryID ID de historial de inicio.
+     * @return Arreglo de correos.
+     * @throws UserRecoverableAuthIOException Excepcion.
+     */
     public static ArrayList<Email> getEmails(Context context, BigInteger startHistoryID)
             throws UserRecoverableAuthIOException {
         ArrayList<Email> emails = new ArrayList<>();
@@ -206,6 +213,13 @@ public class EmailsServiceController {
         return service.users().messages().get(userId, messageId).setFormat("full").execute();
     }
 
+    /**
+     * Añade partes.
+     * @param content Contexto con el cual realizar la operacion.
+     * @param parts partes.
+     * @return Cadena.
+     * @throws UnsupportedEncodingException Excepcion.
+     */
     private static String addParts(String content, List<MessagePart> parts)
             throws UnsupportedEncodingException {
         if (parts != null) for (MessagePart part : parts) {
@@ -226,6 +240,13 @@ public class EmailsServiceController {
         return content;
     }
 
+    /**
+     * Envia el correo.
+     * @param context Contexto con el cual realizar la operacion.
+     * @param email Correo a enviar.
+     * @return Estado de exito o fracaso,.
+     * @throws UserRecoverableAuthIOException Excepcion.
+     */
     public static boolean sendEmail(Context context, Email email)
             throws UserRecoverableAuthIOException {
         boolean success;

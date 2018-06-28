@@ -31,6 +31,9 @@ import java.util.Locale;
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.web.WebService;
 
+/**
+ * Utilidades.
+ */
 public class Utilities {
 
     public static final String CATEGORY = "CATEGORY";
@@ -55,6 +58,10 @@ public class Utilities {
 
     public static final long UPLOAD_FILE_MAX_MB = 11;
 
+    /**
+     * Permite obtener el keyHash para la utilizacion de facebookSDK.
+     * @param context Contexto utilizado para realizar la operacion.
+     */
     public static void getKeyHash(Context context) {
         try {
             PackageInfo info = context.getPackageManager()

@@ -7,12 +7,20 @@ import java.util.ArrayList;
 
 import co.edu.uniquindio.campusuq.util.SQLiteController;
 
+/**
+ * Controlador de la base de datos para la tabla Usuario.
+ */
 public class UsersSQLiteController extends SQLiteController {
 
     private static final String tablename = "Usuario";
     public static final String columns[] = {"_ID", "Nombre", "Correo", "Telefono", "Direccion",
             "Documento", "Contrasena", "Clave_Api", "Administrador"};
 
+    /**
+     * Construye el controlador de la base de datos.
+     * @param context Contexto usado para la construccion.
+     * @param version Versión del controlador.
+     */
     public UsersSQLiteController(Context context, int version) {
         super(context, version);
     }
@@ -49,6 +57,10 @@ public class UsersSQLiteController extends SQLiteController {
                 columns[8] + " TEXT NOT NULL)";
     }
 
+    /**
+     * Selecciona un arreglo de usuarios desde la base de datos.
+     * @return Arreglo de usuarios.
+     */
     public ArrayList<User> select() {
         ArrayList<User> users = new ArrayList<>();
         Cursor c = db.query(tablename, null, null, null,

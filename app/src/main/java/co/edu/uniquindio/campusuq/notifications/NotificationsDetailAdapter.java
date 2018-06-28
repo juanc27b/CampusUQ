@@ -75,6 +75,12 @@ public class NotificationsDetailAdapter
             checkBox.setOnClickListener(this);
         }
 
+        /**
+         * Asigna los valores de las vistas a partir del detalle de notificacion y el valor de
+         * verificacion suministrado.
+         * @param notificationDetail Detalle de notificacion a visualizar.
+         * @param checked Valor de verificacion.
+         */
         void bindItem(NotificationDetail notificationDetail, boolean checked) {
             checkBox.setVisibility(checkBoxes ? View.VISIBLE : View.GONE);
             checkBox.setChecked(checked);
@@ -93,6 +99,11 @@ public class NotificationsDetailAdapter
             description.setText(notificationDetail.getDescription());
         }
 
+        /**
+         * Redirige hacia la funcion en la actividad que procesara el clic en el detalle de
+         * notificacion.
+         * @param view Vista en la que se ha hecho clic.
+         */
         @Override
         public void onClick(View view) {
             switch (view.getId()) {
@@ -105,6 +116,12 @@ public class NotificationsDetailAdapter
             }
         }
 
+        /**
+         * Redirige hacia la funcion en la actividad que procesara el clic largo en el detalle de
+         * notificacion.
+         * @param view Vista en la que se ha hecho clic largo.
+         * @return Valor que indica si se ha procesado el clic largo.
+         */
         @Override
         public boolean onLongClick(View view) {
             checkBoxes = !checkBoxes;
@@ -153,6 +170,10 @@ public class NotificationsDetailAdapter
         return notificationDetails;
     }
 
+    /**
+     * Obtiene el arreglo de verificaciones.
+     * @return Arreglo de verificaciones.
+     */
     ArrayList<Boolean> getCheckeds() {
         return checkeds;
     }

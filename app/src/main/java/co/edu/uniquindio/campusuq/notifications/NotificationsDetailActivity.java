@@ -26,6 +26,10 @@ import co.edu.uniquindio.campusuq.news.NewsActivity;
 import co.edu.uniquindio.campusuq.objects.ObjectsActivity;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
+/**
+ * Actividad que permite visualizar los detalles de notificacion de la funcionalidad Bandeja de
+ * notificaciones.
+ */
 public class NotificationsDetailActivity extends MainActivity
         implements View.OnClickListener, NotificationsDetailAdapter.OnClickNotificationListener {
 
@@ -103,6 +107,9 @@ public class NotificationsDetailActivity extends MainActivity
         }
     }
 
+    /**
+     * Carca desde la base de datos local el arreglo de detalles de notificacion.
+     */
     private void loadNotifications() {
         ArrayList<NotificationDetail> notificationDetails =
                 NotificationsPresenter.loadNotificationDetails(this);
@@ -116,6 +123,15 @@ public class NotificationsDetailActivity extends MainActivity
         }
     }
 
+    /**
+     * Define la tarea a realizar cuando se da click en una de las vistas controladas por esta
+     * actividad, en caso de dar clic en el boton de seleccionar todos los detalles de notificacion,
+     * como se nombre lo indica apareceran seleccionadas todos los detalles de notificacion, si ya
+     * estaban todos seleccionados entonces se les quitara la seleccion a todos, en caso de dar clic
+     * al boton de eliminar se eliminaran todos los detalles de notificacion que esten seleccionados
+     * en ese momento.
+     * @param view Vista a la cual el usuario ha dado click.
+     */
     @Override
     public void onClick(View view) {
         NotificationsDetailAdapter notificationsDetailAdapter =
@@ -144,6 +160,16 @@ public class NotificationsDetailActivity extends MainActivity
         }
     }
 
+    /**
+     * Procesa los clics en un detalle de notificacion, si es un clic normal se abre la
+     * funcionalidad que corresponde al detalle de notificacion y se elimina dicho detalle de
+     * notificacion, si es un clic largo se intercambiara entre el modo de la interfaz para
+     * seleccion de detalles de notificacion y el
+     * modo normal.
+     * @param longClick Valor booleano que determina si el clic dado es normal o largo.
+     * @param checkBoxes Valor que determina si se estab visualizando las casillas de verificación.
+     * @param index Indice del detalle de notificacion al cual se le ha dado clic.
+     */
     @Override
     public void onNotificationClick(boolean longClick, boolean checkBoxes, int index) {
         if (longClick) {

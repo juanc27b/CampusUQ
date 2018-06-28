@@ -42,6 +42,11 @@ import co.edu.uniquindio.campusuq.web.WebActivity;
 import co.edu.uniquindio.campusuq.web.WebContentActivity;
 import co.edu.uniquindio.campusuq.web.WebService;
 
+/**
+ * Actividad para visualizar los ítems de las funcionalidades Información, Servicios, Estado,
+ * Comunicación, Institución, Directorio telefónico, Oferta acedémica, Calendario académico y
+ * Servicios de biblioteca.
+ */
 public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickItemListener {
 
     private static final String DIRECTORY_FRAGMENT = "DIRECTORY_FRAGMENT";
@@ -63,10 +68,19 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         }
     };
 
+    /**
+     * Constructor que oculta el ícono de navegación para reemplazarlo por la flecha de ir atrás.
+     */
     public ItemsActivity() {
         super.setHasNavigationDrawerIcon(false);
     }
 
+    /**
+     * Asigna el fondo de la actividad, infla el diseño de ítems en la actividad superior, se crea
+     * el adaptador de ítems y el manejador de diseño lineal y se asignan al recilador de vista y
+     * finalmente llama a la funcion para cargar los ìtems.
+     * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
@@ -99,6 +113,11 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         setItems(items);
     }
 
+    /**
+     * Método para manejar nuevas llamadas a la actividad, dependiendo de la accion del intento,
+     * puede buscar un ítem, o cambiar el titulo de la actividad y volver a cargar los ítems.
+     * @param intent Intento que contiene la accion a realizar.
+     */
     @Override
     public void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
@@ -133,6 +152,12 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         }
     }
 
+    /**
+     * Dependiendo del ítem al que se le ha dado clic y la categoria a la cual pertenece la
+     * instancia actual de la actividad se puede anvecar entre distintas funcionalidades abriendo
+     * sus respectivas actividades, o modificando la instancia de la actividad actual.
+     * @param index Indice del ítem del arreglo de ítems sobre el cual se ha dado clic.
+     */
     @Override
     public void onItemClick(int index) {
         Item item = ((ItemsAdapter) recyclerView.getAdapter()).getItems().get(index);
@@ -331,7 +356,8 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
                     category = getString(R.string.analytics_informations_category);
                     label = getString(R.string.analytics_normativity_label);
                     intent = new Intent(this, WebActivity.class)
-                            .putExtra(Utilities.URL, getString(R.string.normativity_url));
+                            .putExtra(Utilities.URL,
+                                    getString(R.string.normativity_url));
                 } else if (getString(R.string.symbols).equals(title)) {
                     category = getString(R.string.analytics_informations_category);
                     label = getString(R.string.analytics_symbols_label);
@@ -439,6 +465,11 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         itemsFragment.call.setClickable(grantResults[1] == PackageManager.PERMISSION_GRANTED);
     }
 
+    /**
+     * Carga los ítems desde un arreglo predefinio o desde la base de datos y los almacena en el
+     * adaptador.
+     * @param items Ítems a insertar por defecto.
+     */
     public void setItems(ArrayList<Item> items) {
         ItemsAdapter itemsAdapter = (ItemsAdapter) recyclerView.getAdapter();
 
@@ -525,6 +556,10 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         }
     }
 
+    /**
+     * Emula el funcionamiento de volver atras en la pila de actividades, la cual no se usa
+     * directamente debido a que la actividad funciona en modo singleTop.
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -555,6 +590,10 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         // ¿correo institucional?
     }
 
+    /**
+     * Salva el estado de la instancia.
+     * @param outState Estado de salida.
+     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt(Utilities.CATEGORY, category);
@@ -565,18 +604,24 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         super.onSaveInstanceState(outState);
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para reanudar la misma, en el que se registra un
+     * receptor para estar atento a los intentos relacionados con los ítems.
+     */
     @Override
     protected void onResume() {
         super.onResume();
-        // Register for the particular broadcast based on ACTION string
         registerReceiver(symbolsReceiver, symbolsFilter);
 
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para pausar la misma, en el que se invalida el
+     * previo registro del receptor para los ítems.
+     */
     @Override
     protected void onPause() {
         super.onPause();
-        // Unregister the listener when the application is paused
         unregisterReceiver(symbolsReceiver);
     }
 
@@ -590,6 +635,12 @@ public class ItemsActivity extends MainActivity implements ItemsAdapter.OnClickI
         recyclerView = null;
     }
 
+    /**
+     * Carga el contenido de un programa.
+     * @param name Nombre del programa.
+     * @param type Tipo de contenido (historia, mision y vision, plan de estudios, perfiles o
+     *             información adicional).
+     */
     public void loadProgramContent(String name, int type) {
         if (!progressDialog.isShowing()) progressDialog.show();
 

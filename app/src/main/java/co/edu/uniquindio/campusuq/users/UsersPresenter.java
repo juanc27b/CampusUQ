@@ -4,8 +4,17 @@ import android.content.Context;
 
 import java.util.ArrayList;
 
+/**
+ * Presentador para manejar lógica de los usuarios.
+ * Obtiene usuarios desde la base de datos local.
+ */
 public class UsersPresenter {
 
+    /**
+     * Obtiene el usuario actual desde la base de datos.
+     * @param context Contexto con el cual realizar la operacion.
+     * @return Usuario.
+     */
     public static User loadUser(Context context) {
         User user = null;
 

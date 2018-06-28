@@ -9,8 +9,19 @@ import java.util.Date;
 
 import co.edu.uniquindio.campusuq.R;
 
+/**
+ * Presentador para manejar lógica del calendario.
+ * Obtiene ítems de calendario e items de detalle de calendario desde la base de datos local.
+ */
 class CalendarPresenter {
 
+    /**
+     * Obtiene el arreglo de ítems de calendario de la categoria especificada desde la base de datos
+     * local.
+     * @param categoryName Nombre de la categoria de ítems de calendario.
+     * @param context Contexto con el caul realizar la operacion.
+     * @return Arreglo de ítems de calendario.
+     */
     static ArrayList<CalendarItem> getCalendarItems(String categoryName, Context context) {
         ArrayList<CalendarItem> items = new ArrayList<>();
 
@@ -89,6 +100,14 @@ class CalendarPresenter {
         return items;
     }
 
+    /**
+     * Obtiene el arreglo de ítems de detalle del calendario del evento y la categoria
+     * espesificados.
+     * @param event Evento del calendario.
+     * @param category Categoria del calendario.
+     * @param context Contexto con el caul realizar la operacion.
+     * @return Arreglo de ítems de detalle de calendario.
+     */
     static ArrayList<CalendarDetailItem> getCalendarDetailItems(String event, String category,
                                                                 Context context) {
         ArrayList<CalendarDetailItem> items = new ArrayList<>();

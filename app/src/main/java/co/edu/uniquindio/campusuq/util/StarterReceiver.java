@@ -8,13 +8,26 @@ import android.content.Intent;
 
 import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 
+/**
+ * Iniciador de recepciones.
+ */
 public class StarterReceiver extends BroadcastReceiver {
 
+    /**
+     * Funcion que responde a las recepciones.
+     * @param context Contexto utilizado para realizar la operacion.
+     * @param intent Intetno.
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         scheduleAlarm(context, false);
     }
 
+    /**
+     * Programa una alarma.
+     * @param context Contexto utilizado para realizar la operacion.
+     * @param firstTime Primer tiempo.
+     */
     // Setup a recurring alarm every half hour
     public static void scheduleAlarm(Context context, boolean firstTime) {
         // Construct an intent that will execute the AlarmReceiver
@@ -33,6 +46,10 @@ public class StarterReceiver extends BroadcastReceiver {
                 AlarmManager.INTERVAL_HOUR, pIntent);
     }
 
+    /**
+     * Cancela la alarma.
+     * @param context Contexto utilizado para realizar la operacion.
+     */
     public static void cancelAlarm(Context context) {
         Intent intent = new Intent(context, WebBroadcastReceiver.class);
         intent.setAction(WebBroadcastReceiver.ACTION_START_WEB_SERVICE);

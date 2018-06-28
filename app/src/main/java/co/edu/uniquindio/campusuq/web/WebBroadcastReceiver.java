@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 
+/**
+ * Receptor de transmisiones web.
+ */
 public class WebBroadcastReceiver extends BroadcastReceiver {
 
     public static final String ACTION_START_WEB_SERVICE =
@@ -19,6 +22,11 @@ public class WebBroadcastReceiver extends BroadcastReceiver {
     public static final int JOB_ID = 1000;
 
 
+    /**
+     * Responde a recepciones.
+     * @param context Contexto con el cual realizar la operacion.
+     * @param intent Intento.
+     */
     // Triggered by the Alarm periodically (starts the service to run task)
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -27,6 +35,13 @@ public class WebBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
+    /**
+     * Programa el trabajo.
+     * @param context Contexto con el cual realizar la operacion.
+     * @param action Accion.
+     * @param method Metodo.
+     * @param object Objeto.
+     */
     public static void scheduleJob(Context context, String action, String method, String object) {
         WebJobService.enqueueWork(context, new Intent(context, WebJobService.class)
                 .putExtra("ACTION", action)
@@ -35,6 +50,13 @@ public class WebBroadcastReceiver extends BroadcastReceiver {
         Log.i(WebBroadcastReceiver.class.getSimpleName(), "Job scheduled!");
     }
 
+    /**
+     * Inicia el servicio.
+     * @param context Contexto con el cual realizar la operacion.
+     * @param action Accion.
+     * @param method Metodo.
+     * @param object Objeto.
+     */
     public static void startService(Context context, String action, String method, String object) {
         Intent intent = new Intent(context, WebService.class)
                 .putExtra("ACTION", action)

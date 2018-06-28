@@ -17,6 +17,9 @@ import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
+/**
+ * Actividad para visualizar los ítems de calendario de la funcionalidad Calendario académico.
+ */
 public class CalendarActivity extends MainActivity
         implements CalendarItemsAdapter.OnClickItemListener {
 
@@ -25,10 +28,20 @@ public class CalendarActivity extends MainActivity
 
     private String category;
 
+    /**
+     * Constructor que oculta el ícono de navegación reemplazandolo por una flecha de ir atrás.
+     */
     public CalendarActivity() {
         super.setHasNavigationDrawerIcon(false);
     }
 
+    /**
+     * Asigna el fondo de la actividad, infla el diseño de ítems de calendario en la actividad
+     * superior, se crea el adaptador de ítems de calendario y el manejador de diseño lineal y se
+     * asignan al recilador de vista y finalmente llama a la funcion para cargar los ítems de
+     * calendario.
+     * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
@@ -52,6 +65,11 @@ public class CalendarActivity extends MainActivity
         setItems();
     }
 
+    /**
+     * Método para manejar nuevas llamadas a la actividad, dependiendo de la accion del intento,
+     * puede buscar un ítem o cambiar el titulo de la instancia de la actividad.
+     * @param intent Intento que contiene la accion a realizar.
+     */
     @Override
     public void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
@@ -80,11 +98,18 @@ public class CalendarActivity extends MainActivity
         }
     }
 
+    /**
+     * Establede los ítems de calendario obteniedolos desde la base de datos local.
+     */
     private void setItems() {
         ((CalendarItemsAdapter) recyclerView.getAdapter())
                 .setItems(CalendarPresenter.getCalendarItems(category, this));
     }
 
+    /**
+     * Inicia la actividad de detalle de calendario en el ítem al cual se le ha dado clic.
+     * @param index Indice del ítem de calendario al que se le a dado clic.
+     */
     @Override
     public void onCalendarItemClick(int index) {
         startActivity(new Intent(this, CalendarDetailActivity.class)

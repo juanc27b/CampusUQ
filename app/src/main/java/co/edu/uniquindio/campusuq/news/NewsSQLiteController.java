@@ -129,7 +129,7 @@ public class NewsSQLiteController extends SQLiteController {
 
     /**
      * Inserta en la base de datos una categoria de noticia con los valores de las columnas pasados
-     * como parámetro a la función
+     * como parámetros a la función
      * @param values Valores de las columnas de la categoria de noticia.
      */
     public void insertCategory(Object... values) {
@@ -138,7 +138,7 @@ public class NewsSQLiteController extends SQLiteController {
 
     /**
      * Actualiza en la base de datos una categoria de noticia con los valores de las columnas
-     * pasados como parámetro a la función
+     * pasados como parámetros a la función
      * @param values Valores de las columnas de la categoria de noticia.
      */
     public void updateCategory(Object... values) {
@@ -148,7 +148,7 @@ public class NewsSQLiteController extends SQLiteController {
     /**
      * Elimina de la base de datos las categorías de noticia cuyas IDs se encuentren dentro del
      * arreglo de IDs pasado como parámetro.
-     * @param ids Arreglo de IDs de las categorías de noticia que se quiere eliminar.
+     * @param ids Arreglo de IDs de las categorías de noticia que se quieren eliminar.
      */
     public void deleteCategory(Object... ids) {
         delete(1, ids);

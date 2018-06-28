@@ -16,16 +16,28 @@ import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
 import co.edu.uniquindio.campusuq.util.Utilities;
 
+/**
+ * Actividad que permite visualizar contenido web.
+ */
 public class WebContentActivity extends MainActivity {
 
     public WebView webView;
     public WebSettings webSettings;
 
+    /**
+     * Constructor que oculta el ícono de navegación reemplazandolo por una flecha de ir atrás, y
+     * oculta también el botón de busqueda.
+     */
     public WebContentActivity() {
         super.setHasSearch(false);
         super.setHasNavigationDrawerIcon(false);
     }
 
+    /**
+     * Asigna el fondo de la actividad, infla el diseño de contenido web en la actividad superior y
+     * asigna las variables de vistas.
+     * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
@@ -81,6 +93,11 @@ public class WebContentActivity extends MainActivity {
         }
     }
 
+    /**
+     * Método para manejar nuevas llamadas a la actividad, dependiendo de la accion del intento
+     * puede cambiar el titulo de la actividad.
+     * @param intent Intento que contiene la accion a realizar.
+     */
     @Override
     public void handleIntent(Intent intent) {
         if (webView != null) {
@@ -100,6 +117,12 @@ public class WebContentActivity extends MainActivity {
         }
     }
 
+    /**
+     * Permite volver atraz en la vista web.
+     * @param keyCode Codigo de la tecla.
+     * @param event Evento.
+     * @return Retorna el valor que retornaria la actividad superior.
+     */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // Check if the key event was the Back button and if there's history

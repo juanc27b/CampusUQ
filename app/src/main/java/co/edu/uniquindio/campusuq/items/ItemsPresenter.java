@@ -19,16 +19,27 @@ import co.edu.uniquindio.campusuq.programs.Program;
 import co.edu.uniquindio.campusuq.programs.ProgramCategory;
 import co.edu.uniquindio.campusuq.programs.ProgramFaculty;
 
+/**
+ * Presentador para manejar lógica de los ítems.
+ * Obtiene ítems desde arreglos predefinidos o desde la base de datos local.
+ */
 public class ItemsPresenter {
 
     private static int[] circleColors;
     private static ArrayList<Integer> colors = new ArrayList<>();
 
+    /**
+     * Remueve de forma aleatoria un color del arreglo de colores.
+     * @return Color removido.
+     */
     public static int getColor() {
         if (colors.isEmpty()) fillColors();
         return circleColors[colors.remove((int) (Math.random() * colors.size()))];
     }
 
+    /**
+     * Llena los arreglos de colores.
+     */
     private static void fillColors() {
         if (circleColors == null) {
             circleColors = new int[]{
@@ -51,6 +62,11 @@ public class ItemsPresenter {
         colors.add(6,6);
     }
 
+    /**
+     * Obtiene los ítems de la seccion de Información a partir de un arreglo predefinido.
+     * @param context Contexto con el cual realizar la operacion.
+     * @return Arreglo de ítemsde la seccion de Información.
+     */
     static ArrayList<Item> getInformationItems(Context context) {
         ArrayList<Item> items = new ArrayList<>();
         items.add(new Item(getColor(), R.drawable.ic_menu_events,
@@ -80,6 +96,11 @@ public class ItemsPresenter {
         return items;
     }
 
+    /**
+     * Obtiene los ítems de la seccion de Servicios a partir de un arreglo predefinido.
+     * @param context Contexto con el cual realizar la operacion.
+     * @return Arreglo de ítemsde la seccion de Servicios.
+     */
     static ArrayList<Item> getServicesItems(Context context) {
         ArrayList<Item> items = new ArrayList<>();
         items.add(new Item(getColor(), R.drawable.ic_menu_university_map,
@@ -103,6 +124,11 @@ public class ItemsPresenter {
         return items;
     }
 
+    /**
+     * Obtiene los ítems de la seccion de Estado a partir de un arreglo predefinido.
+     * @param context Contexto con el cual realizar la operacion.
+     * @return Arreglo de ítemsde la seccion de Estado.
+     */
     static ArrayList<Item> getStateItems(Context context) {
         ArrayList<Item> items = new ArrayList<>();
         items.add(new Item(getColor(), R.drawable.ic_menu_restaurant,
@@ -132,6 +158,11 @@ public class ItemsPresenter {
         return items;
     }
 
+    /**
+     * Obtiene los ítems de la seccion de Comunicación a partir de un arreglo predefinido.
+     * @param context Contexto con el cual realizar la operacion.
+     * @return Arreglo de ítemsde la seccion de Comunicación.
+     */
     static ArrayList<Item> getCommunicationItems(Context context) {
         ArrayList<Item> items = new ArrayList<>();
         items.add(new Item(getColor(), R.drawable.ic_menu_institutional_mail,
@@ -146,6 +177,11 @@ public class ItemsPresenter {
         return items;
     }
 
+    /**
+     * Obtiene los ítems de la subseccion de Instutución a partir de un arreglo predefinido.
+     * @param context Contexto con el cual realizar la operacion.
+     * @return Arreglo de ítemsde la subseccion de Instutución.
+     */
     static ArrayList<Item> getInstitutionItems(Context context) {
         ArrayList<Item> items = new ArrayList<>();
         items.add(new Item(getColor(), R.drawable.ic_mission_vision,
@@ -169,6 +205,12 @@ public class ItemsPresenter {
         return items;
     }
 
+    /**
+     * Obtiene los ítems de la subseccion de Servicios de biblioteca a partir de un arreglo
+     * predefinido.
+     * @param context Contexto con el cual realizar la operacion.
+     * @return Arreglo de ítemsde la subseccion de Servicios de biblioteca.
+     */
     static ArrayList<Item> getLibraryItems(Context context) {
         ArrayList<Item> items = new ArrayList<>();
         items.add(new Item(getColor(), R.drawable.ic_digital_repository,
@@ -183,6 +225,12 @@ public class ItemsPresenter {
         return items;
     }
 
+    /**
+     * Obtiene los ítems de la subseccion de un programa de Oferta académica a partir de un arreglo
+     * predefinido.
+     * @param context Contexto con el cual realizar la operacion.
+     * @return Arreglo de ítemsde la subseccion de un programa de Oferta académica.
+     */
     static ArrayList<Item> getProgramItems(Context context) {
         ArrayList<Item> items = new ArrayList<>();
         items.add(new Item(getColor(), 0,
@@ -203,6 +251,12 @@ public class ItemsPresenter {
         return items;
     }
 
+    /**
+     * Obtiene la informacion para los ítems Símbolos, y Cursos Culturales y Deportivos.
+     * @param categoryName Nombre del ítem para el cual obtener la informacion.
+     * @param context Contecto con el cual realizar la operacion.
+     * @return Arreglo de cadenas con la informacion del ítem.
+     */
     public static String[] getInformation(String categoryName, Context context) {
         String[] info = new String[2];
         String link = null;
@@ -233,6 +287,12 @@ public class ItemsPresenter {
         return info;
     }
 
+    /**
+     * Obtiene desde la base de datos local las categorias de contacto para la funcionalidad
+     * Directorio telefónico.
+     * @param context Contexto con el cual realizar la operacion.
+     * @return Arreglo de categorias de contacto.
+     */
     static ArrayList<Item> getContactCategories(Context context) {
         ArrayList<Item> items = new ArrayList<>();
 
@@ -251,6 +311,13 @@ public class ItemsPresenter {
         return items;
     }
 
+    /**
+     * Obtiene desde la base de datos local los contactos de una categoria de contacto para la
+     * funcionalidad Directorio telefónico.
+     * @param categoryName Nombre de la categoria de contacto.
+     * @param context Contexto con el cual realizar la operacion.
+     * @return Arreglo de contactos.
+     */
     static ArrayList<Item> getContacts(String categoryName, Context context) {
         ArrayList<Item> items = new ArrayList<>();
 
@@ -276,6 +343,11 @@ public class ItemsPresenter {
         return items;
     }
 
+    /**
+     * Obtiene desde la base de datos local los programas para la funcionalidad Oferta academica.
+     * @param context Contexto con el cual realizar la operacion.
+     * @return Arreglo de programas.
+     */
     static ArrayList<Item> getPrograms(Context context) {
         ArrayList<Item> items = new ArrayList<>();
 
@@ -336,6 +408,14 @@ public class ItemsPresenter {
         return items;
     }
 
+    /**
+     * Obtiene el contenido de uno de los ítems de la subseccion de un programa de Oferta académica.
+     * @param name Nombre del programa.
+     * @param type Tipo de ítem para el cual obtener el contenido (historia, mision y vision, plan
+     *             de estudios, perfiles o informacion adicional).
+     * @param context Contexto con el cual realizar la operacion.
+     * @return Arreglo de cadenas con el contenido del ítem.
+     */
     static String[] getProgramContent(String name, int type, Context context) {
         ProgramsSQLiteController dbController = new ProgramsSQLiteController(context, 1);
 
@@ -362,6 +442,12 @@ public class ItemsPresenter {
         return null;
     }
 
+    /**
+     * Obtiene desde la base de datos local las categorias de evento para la funcionalidad
+     * Calendario académico.
+     * @param context Contexto con el cual realizar la operacion.
+     * @return Arreglo de categorias de evento.
+     */
     public static ArrayList<Item> getEventCategories(Context context) {
         ArrayList<Item> items = new ArrayList<>();
 

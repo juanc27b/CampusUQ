@@ -20,6 +20,9 @@ import co.edu.uniquindio.campusuq.users.UsersPresenter;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
+/**
+ * Presentadro de correos.
+ */
 public class EmailsPresenter {
 
     public static final int REQUEST_ACCOUNT_PICKER = 1000;
@@ -32,10 +35,18 @@ public class EmailsPresenter {
     private Context context;
     private GoogleAccountCredential mCredential;
 
+    /**
+     * Contruye el presentador de correos.
+     * @param context Contexto utilizado para realizar la operacion.
+     */
     public EmailsPresenter(Context context) {
         this.context = context;
     }
 
+    /**
+     * Obtiene las credenciales.
+     * @return Credenciales.
+     */
     GoogleAccountCredential getCredential() {
         if (mCredential == null) {
             mCredential = GoogleAccountCredential.usingOAuth2(
@@ -119,6 +130,9 @@ public class EmailsPresenter {
         dialog.show();
     }
 
+    /**
+     * Elimina los correos de la base de datos local.
+     */
     public void deleteEmails() {
         EmailsSQLiteController dbController = new EmailsSQLiteController(context, 1);
         ArrayList<String> oldIDs = new ArrayList<>();

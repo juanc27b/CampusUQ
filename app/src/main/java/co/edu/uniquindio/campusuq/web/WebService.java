@@ -144,6 +144,13 @@ public class WebService extends IntentService {
         super("WebService");
     }
 
+    /**
+     * Responde al inicio del comando.
+     * @param intent Intento.
+     * @param flags Banderas.
+     * @param startId ID de inicio.
+     * @return Valor retornado por la actividad superior.
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "Service starting");
@@ -192,6 +199,10 @@ public class WebService extends IntentService {
         }
     }
 
+    /**
+     * Realiza el trabajo.
+     * @param intent Intento.
+     */
     private void doWork(Intent intent) {
         Log.i(TAG, "Working");
         String action = intent.getStringExtra("ACTION");
@@ -283,6 +294,12 @@ public class WebService extends IntentService {
         Log.i(TAG, "Work finished!");
     }
 
+    /**
+     * Contruye una notificacion.
+     * @param type Tipo de notificacion.
+     * @param object Objeto del cual inferir la notificacion.
+     * @return Notificacion.
+     */
     private Notification buildNotification(String type, Object object) {
         NotificationCompat.Builder builder;
 
@@ -404,6 +421,11 @@ public class WebService extends IntentService {
                 .build();
     }
 
+    /**
+     * Contruye un intento pendiente.
+     * @param type Tipo de intetno.
+     * @return Intento pendiente.
+     */
     private PendingIntent buildPendingIntent(String type) {
         Intent resultIntent = null;
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
@@ -467,6 +489,10 @@ public class WebService extends IntentService {
                 .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
+    /**
+     * Carga las noticias.
+     * @param type Tipo de noticias (funcionalidad Noticias o Eventos.).
+     */
     private void loadNews(String type) {
         Context context = getApplicationContext();
         int inserted = 0;
@@ -602,6 +628,9 @@ public class WebService extends IntentService {
                 .putExtra("INSERTED", inserted));
     }
 
+    /**
+     * Carga la informaciones.
+     */
     private void loadInformations() {
         Context context = getApplicationContext();
 
@@ -652,6 +681,9 @@ public class WebService extends IntentService {
         sendBroadcast(new Intent(PENDING_ACTION));
     }
 
+    /**
+     * Carga los contactos.
+     */
     private void loadContacts() {
         Context context = getApplicationContext();
 
@@ -678,6 +710,9 @@ public class WebService extends IntentService {
         sendBroadcast(new Intent(PENDING_ACTION));
     }
 
+    /**
+     * CArga los programas.
+     */
     private void loadPrograms() {
         ProgramsSQLiteController dbController =
                 new ProgramsSQLiteController(getApplicationContext(), 1);
@@ -733,6 +768,9 @@ public class WebService extends IntentService {
         sendBroadcast(new Intent(PENDING_ACTION));
     }
 
+    /**
+     * Carga el calendario.
+     */
     private void loadCalendar() {
         Context context = getApplicationContext();
         EventsSQLiteController dbController = new EventsSQLiteController(context, 1);
@@ -1173,6 +1211,13 @@ public class WebService extends IntentService {
                 .putExtra("RESPONSE", response));
     }
 
+    /**
+     * Codifica una imagen en una cadena con formato Base64.
+     * @param json Objeto JSON del cual extraer la imagen (contien la ruta de la imagen).
+     * @return Objeto JSON con la imagten codificada en formato Base64.
+     * @throws JSONException Indica un error en el objeto JSON.
+     * @throws IOException Indica un error de lectura o escritura.
+     */
     private static String encodeImageString(JSONObject json) throws JSONException, IOException {
         if (!json.isNull("imageString")) {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -1234,6 +1279,11 @@ public class WebService extends IntentService {
                 .putExtra("RESPONSE", response));
     }
 
+    /**
+     * Carga los usuarios.
+     * @param method Metodo.
+     * @param object Objeto.
+     */
     private void loadUsers(String method, String object) {
         User user = null;
 
@@ -1284,6 +1334,11 @@ public class WebService extends IntentService {
                 .putExtra("USER", user));
     }
 
+    /**
+     * CArga los correos
+     * @param method Metodo.
+     * @param object Objeto.
+     */
     private void loadEmails(String method, String object) {
         Intent intent = null;
         int inserted = 0;
@@ -1360,6 +1415,9 @@ public class WebService extends IntentService {
                 .putExtra("INTENT", intent));
     }
 
+    /**
+     * Responde a la destruccion del servicio.
+     */
     @Override
     public void onDestroy() {
         Log.i(WebService.class.getSimpleName(), "Service destroyed!");

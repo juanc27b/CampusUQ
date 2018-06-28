@@ -44,16 +44,16 @@ public class QuotasAdapter extends RecyclerView.Adapter<QuotasAdapter.QuotaViewH
         /**
          * Obtiene los objetos de vista a partir de sus identificadores y asigna los listener de
          * click.
-         * @param view Vista de un item en la cual buscar las subvistas que se controlan en el
-         *             adaptador.
+         * @param itemView Vista de un item en la cual buscar las subvistas que se controlan en el
+         *                 adaptador.
          */
-        QuotaViewHolder(View view) {
-            super(view);
+        QuotaViewHolder(View itemView) {
+            super(itemView);
 
-            icon = view.findViewById(R.id.quota_icon);
-            name = view.findViewById(R.id.quota_name);
-            quota = view.findViewById(R.id.quota_quota);
-            LinearLayout layout = view.findViewById(R.id.quota_layout);
+            icon = itemView.findViewById(R.id.quota_icon);
+            name = itemView.findViewById(R.id.quota_name);
+            quota = itemView.findViewById(R.id.quota_quota);
+            LinearLayout layout = itemView.findViewById(R.id.quota_layout);
 
             layout.setOnClickListener(this);
             layout.setOnLongClickListener(this);

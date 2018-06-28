@@ -21,16 +21,29 @@ import java.util.Locale;
 import co.edu.uniquindio.campusuq.R;
 import co.edu.uniquindio.campusuq.activity.MainActivity;
 
+/**
+ * Actividad que permite ver el contenido completo de un correo para la funcionalidad Correo
+ * institucional.
+ */
 public class EmailsContentActivity extends MainActivity {
 
     public WebView webView;
     public WebSettings webSettings;
 
+    /**
+     * Constructor que oculta el ícono de navegación reemplazandolo por una flecha de ir atrás, y
+     * oculta también el botón de busqueda.
+     */
     public EmailsContentActivity() {
         super.setHasNavigationDrawerIcon(false);
         super.setHasSearch(false);
     }
 
+    /**
+     * Asigna el fondo de la actividad, infla el diseño de contenido de correo en la actividad
+     * superior y asigna las variables de vistas.
+     * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
@@ -94,6 +107,12 @@ public class EmailsContentActivity extends MainActivity {
                 "text/html", null);
     }
 
+    /**
+     * Permite volver atraz en la vista web.
+     * @param keyCode Codigo de la tecla.
+     * @param event Evento.
+     * @return Retorna el valor que retornaria la actividad superior.
+     */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // Check if the key event was the Back button and if there's history

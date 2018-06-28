@@ -31,6 +31,9 @@ import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 import pub.devrel.easypermissions.EasyPermissions;
 
+/**
+ * Actividad que permite enviar un nuevo correo para la funcionalidad Correo institucional.
+ */
 public class EmailsDetailActivity extends MainActivity implements View.OnClickListener,
         EasyPermissions.PermissionCallbacks {
 
@@ -59,11 +62,20 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
         }
     };
 
+    /**
+     * Constructor que oculta el ícono de navegación reemplazandolo por una flecha de ir atrás, y
+     * oculta también el botón de busqueda.
+     */
     public EmailsDetailActivity() {
         super.setHasNavigationDrawerIcon(false);
         super.setHasSearch(false);
     }
 
+    /**
+     * Asigna el fondo de la actividad, infla el diseño de detalle de correo en la actividad
+     * superior y asigna las variables de vistas.
+     * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
@@ -84,6 +96,11 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
         findViewById(R.id.email_detail_ok).setOnClickListener(this);
     }
 
+    /**
+     * Método para manejar nuevas llamadas a la actividad, puede resetear varios campos de la
+     * actividad.
+     * @param intent Intento que contiene la accion a realizar.
+     */
     @Override
     public void handleIntent(Intent intent) {
         setIntent(intent);
@@ -96,6 +113,9 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
         }
     }
 
+    /**
+     * Envia el correo electronico.
+     */
     public void sendEmail() {
         if (from.getText().equals("campusuq@uniquindio.edu.co")) {
             Toast.makeText(this, R.string.email_from_invalid,
@@ -133,6 +153,10 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
         }
     }
 
+    /**
+     * Funcion que detecta el clic en el boton aceptar para enviar el correo.
+     * @param view Vista a la cual el usuario ha dado click.
+     */
     @Override
     public void onClick(View view) {
         switch(view.getId()) {
@@ -142,12 +166,20 @@ public class EmailsDetailActivity extends MainActivity implements View.OnClickLi
         }
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para reanudar la misma, en el que se registra un
+     * receptor para estar atento a los intentos relacionados con los correos.
+     */
     @Override
     protected void onResume() {
         super.onResume();
         registerReceiver(emailsReceiver, emailsFilter);
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para pausar la misma, en el que se invalida el
+     * previo registro del receptor para los correos.
+     */
     @Override
     protected void onPause() {
         super.onPause();

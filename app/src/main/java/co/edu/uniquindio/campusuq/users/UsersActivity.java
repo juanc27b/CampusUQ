@@ -31,6 +31,9 @@ import co.edu.uniquindio.campusuq.web.WebBroadcastReceiver;
 import co.edu.uniquindio.campusuq.web.WebService;
 import pub.devrel.easypermissions.EasyPermissions;
 
+/**
+ * Actividad que permite visualizar o editar la informacion de una cuenta de usuario.
+ */
 public class UsersActivity extends MainActivity implements EasyPermissions.PermissionCallbacks {
 
     private EditText name;
@@ -67,10 +70,18 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
         }
     };
 
+    /**
+     * Constructor que oculta el botón de busqueda.
+     */
     public UsersActivity() {
         super.setHasSearch(false);
     }
 
+    /**
+     * Asigna el fondo de la actividad, infla el diseño de usuario en la actividad superior y
+     * establece los valores de las variables.
+     * @param savedInstanceState Parámetro para recuperar estados anteriores de la actividad.
+     */
     @Override
     public void addContent(Bundle savedInstanceState) {
         super.addContent(savedInstanceState);
@@ -176,6 +187,11 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
         setUser(intent);
     }
 
+    /**
+     * Método para manejar nuevas llamadas a la actividad, dependiendo de la accion del intento
+     * puede cambiar el titulo de la actividad y cambiar su configuración.
+     * @param intent Intento que contiene la accion a realizar.
+     */
     @Override
     public void handleIntent(Intent intent) {
         if (getSupportActionBar() != null) {
@@ -185,6 +201,11 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
         }
     }
 
+    /**
+     * Utilizando el intento establece la informacion del usuario y dependiendo de la categoria
+     * actual modifica la configuracion llamando la funcion para ello.
+     * @param intent Intento que contiene la accion a realizar.
+     */
     public void setUser(Intent intent) {
         user = intent.getParcelableExtra("USER");
 
@@ -227,6 +248,11 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
         }
     }
 
+    /**
+     * Cambia la configuracion de la instancia de la actividad dependiendo de si se va solamente a
+     * visualizar la informacion del usuario o si tambien se va a dar la posibilidad de editarlo.
+     * @param edit Valor booleano que indica si se quiere editar o no el usuario.
+     */
     public void changeConfiguration(boolean edit) {
         name.setClickable(edit);
         name.setCursorVisible(edit);
@@ -253,12 +279,20 @@ public class UsersActivity extends MainActivity implements EasyPermissions.Permi
         document.setHint(edit ? getString(R.string.user_detail_document_hint) : null);
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para reanudar la misma, en el que se registra un
+     * receptor para estar atento a los intentos relacionados con los usuarios.
+     */
     @Override
     protected void onResume() {
         super.onResume();
         registerReceiver(usersReceiver, usersFilter);
     }
 
+    /**
+     * Método del ciclo de la actividad llamado para pausar la misma, en el que se invalida el
+     * previo registro del receptor para los usuarios.
+     */
     @Override
     protected void onPause() {
         super.onPause();
